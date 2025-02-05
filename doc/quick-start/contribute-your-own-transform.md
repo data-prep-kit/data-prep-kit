@@ -205,8 +205,8 @@ from .transform import *
 
 **dpk_digest/runtime.py**  This file implements 3 classes, the first being TransformConfiguration. It defines two user defined methods that must be implemented by the developer for each transform:
 
-* add_input_params() is called by the framework to validate the presence of all required configuration parameters for this transform and specifies guidance to the user if any is missing
-* apply_input_params() is called by the framework to validate the values associated with the configuration parameter.
+* The add_input_params() method is called by the framework to define the set of command line parameters exposed by the runtime to configure the transforms.  The runtime processes the command line parameters and makes them available to the transform instance initializer.
+* The apply_input_params() method is called by the framework to validate the values associated with the configuration parameter.
 
 ```python
 # (C) Copyright IBM Corp. 2024.

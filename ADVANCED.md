@@ -3,6 +3,12 @@
 
 ![alt text](doc/Data-prep-kit-diagram.png)
 
+Below we discuss 
+* Adding your own transform to the repository
+* Running transforms using the CLI
+* Scaling transform execution
+* Using HuggingFace data
+ 
 ### Add your own transform
 
 At the core of the framework, is a data processing library, that provides a systematic way to implement the data processing modules. The library is python-based and enables the application of "transforms" to a one or more input data files to produce one or more output data files. We use the popular [parquet](https://arrow.apache.org/docs/python/parquet.html) format to store the data (code or language). 
@@ -23,25 +29,28 @@ For a deeper understanding of the library's architecture, its transforms, and av
 
 Additionally, check out our [video tutorial](https://www.youtube.com/watch?v=0WUMG6HIgMg) for a visual, example-driven guide on adding custom modules.
 
+### Running Transforms at the Command Line 
 
-## 💻 -> 🖥️☁️ From laptop to cluster <a name = "laptop_cluster"></a>
-Data-prep-kit provides the flexibility to transition your projects from proof-of-concept (PoC) stage to full-scale production mode, offering all the necessary tools to run your data transformations at high volume. In this section, we enable you how to run your transforms at scale and how to automate them. 
+You can run transforms via the command line or from within a docker image.
+* This [document](doc/quick-start/run-transform-cli.md) shows how to
+  run a transform using the command line interface and a virtual environment.
+* You can follow this [document](doc/quick-start/run-transform-image.md) to run using docker image.
 
-### Scaling of Transforms
+
+### 💻 -> 🖥️☁️ From laptop to cluster <a name = "laptop_cluster"></a>
+Data-prep-kit provides the flexibility to transition your projects from 
+proof-of-concept (PoC) stage to full-scale production mode, 
+offering all the necessary tools to run your data transformations at high volume. 
+In this section, we enable you how to run your transforms at scale and how to automate them. 
+
+#### Scaling of Transforms
 
 To enable processing of large data volumes leveraging multi-mode clusters, [Ray](https://docs.ray.io/en/latest/index.html) 
 or [Spark](https://spark.apache.org) wrappers are provided, to readily scale out the Python implementations.
 
 A generalized workflow is shown [here](doc/data-processing.md).
 
-### Run your transform from the command line 
-
-You can run transforms via the command line or from within a docker image.
-* This [document](doc/quick-start/run-transform-cli.md) shows how to 
-run a transform using the command line interface and a virtual environment.
-* You can follow this [document](doc/quick-start/run-transform-image.md) to run using docker image. 
-
-### KFP Automation
+#### KFP Automation
 
 The toolkit also supports transform execution automation based on 
 [Kubeflow pipelines](https://www.kubeflow.org/docs/components/pipelines/v1/introduction/) (KFP),
@@ -58,7 +67,7 @@ In addition, if you want to combine several transformers in a single pipeline, y
 When you finish working with the cluster, and want to clean up or destroy it. See the 
 [clean up the cluster](kfp/doc/setup.md#cleanup)
 
-### Using data from HuggingFace 
+## Using data from HuggingFace 
 
 If you wish to download and use real parquet data files from HuggingFace while testing any of the toolkit transforms, use HuggingFace [download APIs](https://huggingface.co/docs/huggingface_hub/en/guides/download) that provide caching and optimize the download process. Here is an example of the code needed to download a sample file: 
 

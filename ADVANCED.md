@@ -68,4 +68,7 @@ hf_hub_download(repo_id=REPO_ID, filename=FILENAME, repo_type="dataset")
 
 ### Run your first transform using command line options
 
-You can run transforms via docker image or using virtual environments. This [document](doc/quick-start/run-transform-venv.md) shows how to run a transform using virtual environment. You can follow this [document](doc/quick-start/run-transform-image.md) to run using docker image. 
+You can run transforms via the command line or from within a docker image.
+* This [document](doc/quick-start/run-transform-cli.md) shows how to 
+run a transform using the command line interface and a virtual environment.
+* You can follow this [document](doc/quick-start/run-transform-image.md) to run using docker image. 

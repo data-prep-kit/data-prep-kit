@@ -34,7 +34,14 @@ or [Spark](https://spark.apache.org) wrappers are provided, to readily scale out
 
 A generalized workflow is shown [here](doc/data-processing.md).
 
-### Automation
+### Run your transform from the command line 
+
+You can run transforms via the command line or from within a docker image.
+* This [document](doc/quick-start/run-transform-cli.md) shows how to 
+run a transform using the command line interface and a virtual environment.
+* You can follow this [document](doc/quick-start/run-transform-image.md) to run using docker image. 
+
+### KFP Automation
 
 The toolkit also supports transform execution automation based on 
 [Kubeflow pipelines](https://www.kubeflow.org/docs/components/pipelines/v1/introduction/) (KFP),
@@ -66,9 +73,4 @@ FILENAME = "data/CC-MAIN-2013-20/000_00000.parquet"
 hf_hub_download(repo_id=REPO_ID, filename=FILENAME, repo_type="dataset")
 ```
 
-### Run your first transform using command line options
 
-You can run transforms via the command line or from within a docker image.
-* This [document](doc/quick-start/run-transform-cli.md) shows how to 
-run a transform using the command line interface and a virtual environment.
-* You can follow this [document](doc/quick-start/run-transform-image.md) to run using docker image. 

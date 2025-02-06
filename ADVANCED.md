@@ -22,9 +22,15 @@ The annotator design also allows a user to verify the results of the processing 
 - **Filter** A filter transform processes the data and outputs the transformed data, e.g., exact deduplication.
 A general purpose [SQL-based filter transform](transforms/universal/filter) enables a powerful mechanism for identifying columns and rows of interest for downstream processing.
 
-For a new module to be added, a user can pick the right design based on the processing to be applied. More details [here](transforms).
+For a new module to be added, a user can pick the right design based on the 
+processing to be applied. More details [here](transforms).
 
-One can leverage Python-based processing logic and the Data Processing Library to easily build and contribute new transforms. We have provided an [example transform](transforms/universal/noop) that can serve as a template to add new simple transforms. Follow the step by step [tutorial](data-processing-lib/doc/simplest-transform-tutorial.md) to help you add your own new transform. 
+One can leverage Python-based processing logic and the Data Processing Library 
+to easily build and contribute new transforms.
+We have provided an [example transform](transforms/universal/noop) that 
+can serve as a template to add new simple transforms. 
+Follow the step-by-step [tutorial](doc/quick-start/contribute-your-own-transform.md)
+to help you add your own new transform. 
 
 For a deeper understanding of the library's architecture, its transforms, and available runtimes, we encourage the reader to consult the comprehensive [overview document](data-processing-lib/doc/overview.md) alongside dedicated sections on [transforms](data-processing-lib/doc/transforms.md) and [runtimes](data-processing-lib/doc/transform-runtimes.md).
 

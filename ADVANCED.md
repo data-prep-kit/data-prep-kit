@@ -9,7 +9,7 @@ Below we discuss
 * Scaling transform execution
 * Using HuggingFace data
  
-### Add your own transform
+## Add your own transform
 
 At the core of the framework, is a data processing library, that provides a systematic way to implement the data processing modules. The library is python-based and enables the application of "transforms" to a one or more input data files to produce one or more output data files. We use the popular [parquet](https://arrow.apache.org/docs/python/parquet.html) format to store the data (code or language). 
 Every parquet file follows a set [schema](transforms/code/code2parquet/python/README.md). A user can use one or more transforms (or modules) as discussed above to process their data. 
@@ -29,7 +29,7 @@ For a deeper understanding of the library's architecture, its transforms, and av
 
 Additionally, check out our [video tutorial](https://www.youtube.com/watch?v=0WUMG6HIgMg) for a visual, example-driven guide on adding custom modules.
 
-### Running Transforms at the Command Line 
+## Running Transforms at the Command Line 
 
 You can run transforms via the command line or from within a docker image.
 * This [document](doc/quick-start/run-transform-cli.md) shows how to
@@ -37,7 +37,7 @@ You can run transforms via the command line or from within a docker image.
 * You can follow this [document](doc/quick-start/run-transform-image.md) to run using docker image.
 
 
-### 💻 -> 🖥️☁️ From laptop to cluster <a name = "laptop_cluster"></a>
+## From laptop to cluster <a name = "laptop_cluster"></a>💻 -> 🖥️☁️ 
 Data-prep-kit provides the flexibility to transition your projects from 
 proof-of-concept (PoC) stage to full-scale production mode, 
 offering all the necessary tools to run your data transformations at high volume. 
@@ -67,12 +67,20 @@ In addition, if you want to combine several transformers in a single pipeline, y
 When you finish working with the cluster, and want to clean up or destroy it. See the 
 [clean up the cluster](kfp/doc/setup.md#cleanup)
 
-## Using data from HuggingFace 
+## Using HuggingFace Data 
 
-If you wish to download and use real parquet data files from HuggingFace while testing any of the toolkit transforms, use HuggingFace [download APIs](https://huggingface.co/docs/huggingface_hub/en/guides/download) that provide caching and optimize the download process. Here is an example of the code needed to download a sample file: 
+If you wish to download and use parquet data files from HuggingFace 
+while testing any of the toolkit transforms, use HuggingFace 
+[download APIs](https://huggingface.co/docs/huggingface_hub/en/guides/download) 
+that provide caching and optimize the download process.
+Here is an example of the code needed to download a sample file,
+first install huggingface_hub
 
  ```bash
- !pip install --upgrade huggingface_hub
+ pip install --upgrade huggingface_hub
+```
+Then use the following to download a specific file, 
+```python
 from huggingface_hub import hf_hub_download
 import pandas as pd
 

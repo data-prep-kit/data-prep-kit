@@ -76,7 +76,11 @@ def update_markdown_content_updated(markdown: str, replacements: List[Tuple[str,
     if len(replacements) > 0:
         for text, old_value, new_value in replacements:
             log.info(f"Updating Link: text: [{text}], link: {old_value}, updated link: {new_value}")
-            markdown = update_link(markdown, text, old_value, new_value)
+            try:
+                markdown = update_link(markdown, text, old_value, new_value)
+            except Exception as e:
+                log.info(f"Failed to update link: link: {old_value}, updated link: {new_value} due to {e}")
+
     return markdown
 
 

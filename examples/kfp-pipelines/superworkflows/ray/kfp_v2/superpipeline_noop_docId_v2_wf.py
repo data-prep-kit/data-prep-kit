@@ -57,6 +57,7 @@ def super_pipeline(
     p1_pipeline_data_max_files: int = -1,
     p1_pipeline_data_num_samples: int = -1,
     p1_pipeline_data_checkpointing: bool = False,
+    p1_pipeline_ray_run_id_KFPv2: str = "",
     # noop step parameters
     p2_name: str = "noop",
     p2_skip: bool = False,

@@ -21,6 +21,7 @@ Another useful feature of the KFP v2 is the `Json` editor for the `dict` type in
 - It creates just one run that includes all the nested transfroms and their sub-tasks.
 - No need for additional component as `executeSubWorkflowComponent.yaml`. All the implementation in the same pipeline file.
 - In superpipelines of KFP v1 there exists an option to override the common parameters with specific values for each one of the transforms. This option is missing in the KFP v2 superpipelines.
+- In kfp V2 pipelines the user is requested to insert a unique string for the ray cluster created at run creation time (called `ray_run_id_KFPv2`). This is because in KFPv2 `dsl.RUN_ID_PLACEHOLDER` is deprecated and cannot be used since SDK 2.5.0 and we cannot generate a unique string at run-time, see https://github.com/kubeflow/pipelines/issues/10187.
 
 ### How to compile the superpipeline
 ```

@@ -1,5 +1,19 @@
 # Data Prep Kit Release notes
 
+## Release 1.0.0 - 1/24/2025
+
+## General
+
+1. Refactored all language transforms and implemented simplified APIs for the refactored transforms
+1. Added notebook examples for each of the transforms 
+1. Streamlined documentation and added tutorial for developers who want to build new transforms 
+1. Other minor enhancements and bug fixes were done for transforms, workflow pipelines, and CI/CD makefiles
+
+### Transforms
+
+1. Added new similarity transform (for detecting confidentiality, copyright, and/or plagiarism in documents)
+
+
 ## Release 0.2.3 - 12/15/2024
 
 ## General

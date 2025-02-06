@@ -130,7 +130,14 @@ class ClusterAnalysisTransform(AbstractFolderTransform):
             band = int(match.group(1))
             segment = int(match.group(2))
         else:
-            raise ValueError(f"Wrong folder_name {folder_name}, should be band=b/segment=s")
+            match = re.match(r"^band=(\d+)\\segment=(\d+)$", folder_name)
+            if match:
+                band = int(match.group(1))
+                segment = int(match.group(2))
+            else:
+                raise ValueError(
+                    f"Wrong folder_name {folder_name}, should be either band=b/segment=s or band=b\\segment=s (windows)"
+                )
         output_folder = TransformUtils.clean_path(self.data_access.output_folder)
         output_path = os.path.join(output_folder, f"band_{band}_segment_{segment}.parquet")
 

@@ -12,7 +12,9 @@
 
 import abc
 import datetime
-import fcntl
+import platform
+if platform.system() != 'Windows':
+   import fcntl
 import os
 import tempfile
 import threading
@@ -98,7 +100,8 @@ class MultiLock(abc.ABC):
             timeout = max(0, timeout)
         while not locked and (timeout is None or waited <= timeout):
             try:
-                fcntl.lockf(self.fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                if platform.system() != 'Windows':
+                    fcntl.lockf(self.fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
                 locked = True
             except Exception as exc:
                 # Only get here if lock could not be acquired

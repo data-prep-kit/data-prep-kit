@@ -85,6 +85,54 @@ python -m ipykernel install --user --name=data-prep-kit --display-name "dataprep
 * Command line  
     * [Using a docker image](run-transform-image.md) - runs a transform in a docker transform image 
     * [Using a virtual environment](run-transform-venv.md) - runs a transform on the local host 
+
+## Running transforms on Windows
+
+The following transforms have been shown to work on Windows with the patched release described below:
+
+    pdf2parquet
+    doc_chunk
+    doc_quality
+    html2parqet
+    pii_redactor
+    text_encoder
+    doc_id
+    ededup
+    filter
+    hap
+    profiler
+    resize
+    tokenization
+
+
+A working windows environment can be setup using Anaconda Navigator with:
+* Python 3.12.7
+* Windows-11-10.0.22631-SP0
+* 3.12.7 | packaged by Anaconda, Inc. | (main, Oct 4 2024, 13:17:27) [MSC v.1929 64 bit (AMD64)]
+
+To install the transforms on windows, use the following commands:
+
+```
+pip intall data-prep-toolkit==0.2.3.post1
+pip install data-prep-toolkit-transforms[all]
+pip install fasttext-wheel
+```
+
+To install the ray transforms on windows using the ray runtime, use the following commands:
+
+```
+pip intall data-prep-toolkit[ray]==0.2.3.post1
+pip install data-prep-toolkit-transforms[all]
+pip install fasttext-wheel
+```
+
+To install a single transform, for example pdf2parquet, use the following commands:
+```bash
+pip intall data-prep-toolkit==0.2.3.post1
+pip install --user data-prep-toolkit-transforms[pdf2parquet]
+```
+
+If you want to try Notebooks that run many of the transforms in sequence, use the Anaconda Navigator to install and launch an instance of Jupyter Notebook and use the following sample [Notebook](../../transforms/transforms-1.0-lang-Windows.ipynb) for the python runtime and another sample [Notebook for the ray](../../transforms/transforms-1.0-lang-ray-Windows.ipynb) runtime. 
     
 ## Creating transforms
 

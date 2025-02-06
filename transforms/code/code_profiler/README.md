@@ -62,7 +62,7 @@ The set of dictionary keys holding [code_profiler_transform](dpk_code_profiler/t
 configuration for values are as follows:
 
 * content - specifies the column name in the dataframe that has the code snippet
-* language - specifies the programming languages of the code snippet
+* programming_language - specifies the programming languages of the code snippet
 
 ## Running
 

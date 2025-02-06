@@ -24,7 +24,7 @@ from jinja2 import Environment, FileSystemLoader
 from plotly.io import to_html
 
 
-base_constructs = ["UAST_Package_List", "language", "Concepts"]
+base_constructs = ["uast_package_list", "programming_language", "concepts"]
 
 
 class Plot:

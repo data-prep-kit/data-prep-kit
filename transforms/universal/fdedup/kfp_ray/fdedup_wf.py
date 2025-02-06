@@ -64,11 +64,7 @@ if os.getenv("KFPv2", "0") == "1":
     compute_data_cleaning_exec_params_op = dsl.component_decorator.component(
         func=data_cleaning_compute_execution_params, base_image=base_kfp_image
     )
-    print(
-        "WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
-        + "same version of the same pipeline !!!"
-    )
-    run_id = uuid.uuid4().hex
+    
 else:
     compute_common_params_op = comp.create_component_from_func(func=compute_common_params, base_image=base_kfp_image)
     compute_signature_calc_exec_params_op = comp.create_component_from_func(
@@ -114,6 +110,7 @@ def fuzzydedup(
     # folders used
     # Ray cluster
     ray_name: str = "fuzzydedup-kfp-ray",  # name of Ray cluster
+    ray_run_id_KFPv2: str = "",   # Ray cluster unique ID used only in KFP v2
     # Add image_pull_secret and image_pull_policy to ray workers if needed
     ray_head_options: dict = {
         "cpu": 8,
@@ -164,6 +161,7 @@ def fuzzydedup(
     """
     Pipeline to execute FDEDUP transform
     :param ray_name: name of the Ray cluster
+    :param ray_run_id_KFPv2: a unique string id used for the Ray cluster, applicable only in KFP v2.
     :param ray_head_options: head node options, containing the following:
         cpu - number of cpus
         memory - memory
@@ -208,6 +206,16 @@ def fuzzydedup(
     :param fdedup_n_samples - number of samples for parameters computation
     :return: None
     """
+    # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
+    # a unique string in a component (at runtime) and pass it to the `clean_up_task` of `ExitHandler`, due to
+    # https://github.com/kubeflow/pipelines/issues/10187. Therefore, meantime the user is requested to insert
+    # a unique string created at run creation time.
+    if os.getenv("KFPv2", "0") == "1":
+        print("WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
+              "same version of the same pipeline !!!")
+        run_id = ray_run_id_KFPv2
+    else:
+        run_id = dsl.RUN_ID_PLACEHOLDER
     # create clean_up task
     clean_up_task = cleanup_ray_op(
         ray_name=ray_name, run_id=run_id, server_url=server_url, additional_params=additional_params

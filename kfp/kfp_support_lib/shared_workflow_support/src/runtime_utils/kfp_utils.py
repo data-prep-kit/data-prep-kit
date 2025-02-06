@@ -81,9 +81,10 @@ class KFPUtils:
         # the return value plus namespace name will be the name of the Ray Route,
         # which length is restricted to 64 characters,
         # therefore we restrict the return name by 15 character.
-        if run_id != "":
-            return f"{ray_name[:9]}-{run_id[:5]}"
-        return ray_name[:15]
+        if run_id == "":
+            logger.error("Run ID must not be provided")
+            sys.exit(1)
+        return f"{ray_name[:9]}-{run_id[:5]}"
 
     @staticmethod
     def dict_to_req(d: dict[str, Any], executor: str = "transformer_launcher.py") -> str:

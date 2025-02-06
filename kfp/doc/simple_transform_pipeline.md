@@ -41,7 +41,9 @@ Note: the project and the explanation below are based on [KFPv1](https://www.kub
 import kfp.compiler as compiler
 import kfp.components as comp
 import kfp.dsl as dsl
+import os
 from kfp_support.workflow_support.runtime_utils import (
+  DEFAULT_KFP_COMPONENT_SPEC_PATH,
   ONE_HOUR_SEC,
   ONE_WEEK_SEC,
   ComponentUtils,
@@ -56,18 +58,24 @@ Ray cluster. For each step we have to define a component that will execute them:
 
 ```python
     # components
-    base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:0.0.2"
-    # compute execution parameters. Here different transforms might need different implementations. As
-    # a result, instead of creating a component we are creating it in place here.
-    compute_exec_params_op = comp.func_to_container_op(
-      func=ComponentUtils.default_compute_execution_params, base_image=base_kfp_image
-    )
+    base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
+    component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)
+    # KFPv1 and KFP2 uses different methods to create a component from a function. KFPv1 uses the
+    # `create_component_from_func` function, but it is deprecated by KFPv2 and so has a different import path.
+    # KFPv2 recommends using the `@dsl.component` decorator, which doesn't exist in KFPv1. Therefore, here we use
+    # this if/else statement and explicitly call the decorator.
+    if os.getenv("KFPv2", "0") == "1":
+      compute_exec_params_op = dsl.component_decorator.component(
+                func=compute_exec_params_func, base_image=base_kfp_image
+                )
+    else:
+      compute_exec_params_op = comp.create_component_from_func(func=compute_exec_params_func, base_image=base_kfp_image)
     # create Ray cluster
-    create_ray_op = comp.load_component_from_file("../../../kfp_ray_components/createRayComponent.yaml")
+    create_ray_op = comp.load_component_from_file(component_spec_path + "createRayClusterComponent.yaml")
     # execute job
-    execute_ray_jobs_op = comp.load_component_from_file("../../../kfp_ray_components/executeRayJobComponent.yaml")
+    execute_ray_jobs_op = comp.load_component_from_file(component_spec_path + "executeRayJobComponent.yaml")
     # clean up Ray
-    cleanup_ray_op = comp.load_component_from_file("../../../kfp_ray_components/cleanupRayComponent.yaml")
+    cleanup_ray_op = comp.load_component_from_file(component_spec_path + "deleteRayClusterComponent.yaml")
     # Task name is part of the pipeline name, the ray cluster name and the job name in DMF.
     TASK_NAME: str = "noop"
 ```
@@ -84,6 +92,7 @@ The input parameters section defines all the parameters required for the pipelin
 ```python
     # Ray cluster
     ray_name: str = "noop-kfp-ray",  # name of Ray cluster
+    ray_run_id_KFPv2: str = "",
     ray_head_options: str = '{"cpu": 1, "memory": 4, \
                  "image": "' + task_image + '" }',
     ray_worker_options: str = '{"replicas": 2, "max_replicas": 2, "min_replicas": 2, "cpu": 2, "memory": 4, \
@@ -94,6 +103,7 @@ The input parameters section defines all the parameters required for the pipelin
     data_s3_access_secret: str = "s3-secret",
     data_max_files: int = -1,
     data_num_samples: int = -1,
+    data_checkpointing: bool = False,
     # orchestrator
     actor_options: str = "{'num_cpus': 0.8}",
     pipeline_id: str = "pipeline_id",
@@ -107,6 +117,7 @@ The input parameters section defines all the parameters required for the pipelin
 The parameters used here are as follows:
 
 * ray_name: name of the Ray cluster
+* ray_run_id_KFPv2: Ray cluster unique ID used only in KFP v2
 * ray_head_options: head node options, containing the following:
   * cpu - number of cpus
   * memory - memory
@@ -148,21 +159,39 @@ Now, when all components and input parameters are defined, we can implement pipe
 component execution and parameters submitted to every component. 
 
 ```python
+    # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
+    # a unique string in a component (at runtime) and pass it to the `clean_up_task` of `ExitHandler`, due to
+    # https://github.com/kubeflow/pipelines/issues/10187. Therefore, meantime the user is requested to insert
+    # a unique string created at run creation time.
+    if os.getenv("KFPv2", "0") == "1":
+        print("WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
+              "same version of the same pipeline !!!")
+        run_id = ray_run_id_KFPv2
+    else:
+        run_id = dsl.RUN_ID_PLACEHOLDER
     # create clean_up task
-    clean_up_task = cleanup_ray_op(ray_name=ray_name, run_id=dsl.RUN_ID_PLACEHOLDER, server_url=server_url, additional_params=additional_params)
+    clean_up_task = cleanup_ray_op(ray_name=ray_name, run_id=run_id, server_url=server_url, additional_params=additional_params)
     ComponentUtils.add_settings_to_component(clean_up_task, ONE_HOUR_SEC * 2)
     # pipeline definition
     with dsl.ExitHandler(clean_up_task):
       # compute execution params
       compute_exec_params = compute_exec_params_op(
-        worker_options=ray_worker_options,
-        actor_options=actor_options,
+          worker_options=ray_worker_options,
+          actor_options=runtime_actor_options,
+          data_s3_config=data_s3_config,
+          data_max_files=data_max_files,
+          data_num_samples=data_num_samples,
+          data_checkpointing=data_checkpointing,
+          runtime_pipeline_id=runtime_pipeline_id,
+          runtime_job_id=run_id,
+          runtime_code_location=runtime_code_location,
+          noop_sleep_sec=noop_sleep_sec,
       )
       ComponentUtils.add_settings_to_component(compute_exec_params, ONE_HOUR_SEC * 2)
       # start Ray cluster
       ray_cluster = create_ray_op(
         ray_name=ray_name,
-        run_id=dsl.RUN_ID_PLACEHOLDER,
+        run_id=run_id,
         ray_head_options=ray_head_options,
         ray_worker_options=ray_worker_options,
         server_url=server_url,
@@ -173,7 +202,7 @@ component execution and parameters submitted to every component.
       # Execute job
       execute_job = execute_ray_jobs_op(
         ray_name=ray_name,
-        run_id=dsl.RUN_ID_PLACEHOLDER,
+        run_id=run_id,
         additional_params=additional_params,
         # note that the parameters below are specific for NOOP transform
         exec_params={
@@ -183,7 +212,7 @@ component execution and parameters submitted to every component.
           "num_workers": compute_exec_params.output,
           "worker_options": actor_options,
           "pipeline_id": pipeline_id,
-          "job_id": dsl.RUN_ID_PLACEHOLDER,
+          "job_id": run_id,
           "code_location": code_location,
           "noop_sleep_sec": noop_sleep_sec,
         },

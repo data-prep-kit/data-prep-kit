@@ -24,7 +24,7 @@ from workflow_support.compile_utils import (
 
 
 # the name of the job script
-EXEC_SCRIPT_NAME: str = "proglang_select_transform_ray.py"
+EXEC_SCRIPT_NAME: str = "-m dpk_proglang_select.ray.transform"
 
 task_image = "quay.io/dataprep1/data-prep-kit/proglang_select-ray:latest"
 
@@ -33,7 +33,6 @@ base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)
-
 
 
 # compute execution parameters. Here different transforms might need different implementations. As
@@ -94,10 +93,17 @@ PREFIX: str = "proglang_select"
 )
 def lang_select(
     ray_name: str = "proglang-match-kfp-ray",  # name of Ray cluster
-    ray_run_id_KFPv2: str = "",   # Ray cluster unique ID used only in KFP v2
+    ray_run_id_KFPv2: str = "",  # Ray cluster unique ID used only in KFP v2
     # Add image_pull_secret and image_pull_policy to ray workers if needed
     ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
-    ray_worker_options: dict = {"replicas": 2, "max_replicas": 2, "min_replicas": 2, "cpu": 2, "memory": 4, "image": task_image},
+    ray_worker_options: dict = {
+        "replicas": 2,
+        "max_replicas": 2,
+        "min_replicas": 2,
+        "cpu": 2,
+        "memory": 4,
+        "image": task_image,
+    },
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
     data_s3_config: str = "{'input_folder': 'test/proglang_select/input/', 'output_folder': 'test/proglang_select/output/'}",
@@ -105,9 +111,9 @@ def lang_select(
     data_max_files: int = -1,
     data_num_samples: int = -1,
     # orchestrator
-    runtime_actor_options: dict = {'num_cpus': 0.8},
+    runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {'github': 'github', 'commit_hash': '12345', 'path': 'path'},
+    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # Proglang match parameters
     proglang_select_allowed_langs_file: str = "test/proglang_select/languages/allowed-code-languages.txt",
     proglang_select_language_column: str = "language",
@@ -160,13 +166,17 @@ def lang_select(
     # https://github.com/kubeflow/pipelines/issues/10187. Therefore, meantime the user is requested to insert
     # a unique string created at run creation time.
     if os.getenv("KFPv2", "0") == "1":
-        print("WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
-              "same version of the same pipeline !!!")
+        print(
+            "WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
+            "same version of the same pipeline !!!"
+        )
         run_id = ray_run_id_KFPv2
     else:
         run_id = dsl.RUN_ID_PLACEHOLDER
     # create clean_up task
-    clean_up_task = cleanup_ray_op(ray_name=ray_name, run_id=run_id, server_url=server_url, additional_params=additional_params)
+    clean_up_task = cleanup_ray_op(
+        ray_name=ray_name, run_id=run_id, server_url=server_url, additional_params=additional_params
+    )
     ComponentUtils.add_settings_to_component(clean_up_task, ONE_HOUR_SEC * 2)
     # pipeline definition
     with dsl.ExitHandler(clean_up_task):

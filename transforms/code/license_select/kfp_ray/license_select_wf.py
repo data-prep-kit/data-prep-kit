@@ -24,7 +24,7 @@ from workflow_support.compile_utils import (
 
 
 # the name of the job script
-EXEC_SCRIPT_NAME: str = "license_select_transform_ray.py"
+EXEC_SCRIPT_NAME: str = "-m dpk_license_select.ray.transform"
 
 task_image = "quay.io/dataprep1/data-prep-kit/license_select-ray:latest"
 
@@ -94,7 +94,7 @@ PREFIX: str = "license_select"
 )
 def license_select(
     ray_name: str = "license_select-kfp-ray",  # name of Ray cluster
-    ray_run_id_KFPv2: str = "",   # Ray cluster unique ID used only in KFP v2
+    ray_run_id_KFPv2: str = "",  # Ray cluster unique ID used only in KFP v2
     # Add image_pull_secret and image_pull_policy to ray workers if needed
     ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
     ray_worker_options: dict = {
@@ -114,7 +114,7 @@ def license_select(
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.7},
     runtime_pipeline_id: str = "runtime_pipeline_id",
-    runtime_code_location: dict = {'github': 'github', 'commit_hash': '12345', 'path': 'path'},
+    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # license select parameters
     lc_license_column_name: str = "license",
     lc_licenses_file: str = "test/license_select/sample_approved_licenses.json",
@@ -161,8 +161,10 @@ def license_select(
     # https://github.com/kubeflow/pipelines/issues/10187. Therefore, meantime the user is requested to insert
     # a unique string created at run creation time.
     if os.getenv("KFPv2", "0") == "1":
-        print("WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
-              "same version of the same pipeline !!!")
+        print(
+            "WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
+            "same version of the same pipeline !!!"
+        )
         run_id = ray_run_id_KFPv2
     else:
         run_id = dsl.RUN_ID_PLACEHOLDER

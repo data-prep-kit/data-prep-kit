@@ -232,7 +232,15 @@ def fuzzydedup(
             n_samples=fdedup_n_samples,
         )
         ComponentUtils.add_settings_to_component(compute_common_exec_params, ONE_HOUR_SEC * 2)
-        ComponentUtils.set_s3_env_vars_to_component(compute_common_exec_params, data_s3_access_secret)
+        if os.getenv("KFPv2", "0") == "1":
+            from kfp import kubernetes
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=compute_common_exec_params, secret_name="s3-secret", secret_key_to_env=env2key)
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(compute_common_exec_params, data_s3_access_secret)
+
         fdedup_num_segments = compute_common_exec_params.outputs["num_segments"]
         runtime_num_actors = compute_common_exec_params.outputs["num_actors"]
         runtime_actor_cpus = compute_common_exec_params.outputs["actor_cpu"]

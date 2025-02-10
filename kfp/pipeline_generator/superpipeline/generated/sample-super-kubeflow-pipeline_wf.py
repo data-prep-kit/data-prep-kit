@@ -11,6 +11,8 @@ from workflow_support.compile_utils import (
     ComponentUtils,
 )
 
+# The secret name containing the s3 credentials.
+S3_SECRET = "s3-secret"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)

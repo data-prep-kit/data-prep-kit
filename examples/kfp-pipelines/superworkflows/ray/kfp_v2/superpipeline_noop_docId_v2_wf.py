@@ -20,6 +20,8 @@ from universal.noop.kfp_ray.noop_wf import noop
 
 from kfp import dsl
 
+# The secret name containing the s3 credentials.
+S3_SECRET = "s3-secret"
 
 noop_image = "quay.io/dataprep1/data-prep-kit/noop-ray:latest"
 doc_id_image = "quay.io/dataprep1/data-prep-kit/doc_id-ray:latest"

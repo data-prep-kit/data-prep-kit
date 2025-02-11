@@ -34,6 +34,7 @@ class TestLangIdentificationTransform(AbstractTableTransformTest):
             "output_lang_column_name": "l",
             "output_score_column_name": "s",
         }
+        print(config)
         table = pa.Table.from_arrays(
             [
                 pa.array(

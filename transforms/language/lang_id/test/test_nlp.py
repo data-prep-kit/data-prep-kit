@@ -10,6 +10,7 @@
 # limitations under the License.
 ################################################################################
 
+import os
 import pyarrow as pa
 from dpk_lang_id.lang_models import KIND_FASTTEXT, LangModelFactory
 from dpk_lang_id.nlp import get_lang_ds_pa
@@ -17,8 +18,11 @@ from dpk_lang_id.nlp import get_lang_ds_pa
 
 def test_language_identification():
     nlp_langid = LangModelFactory.create_model(
-        KIND_FASTTEXT, "facebook/fasttext-language-identification", "YOUR HUGGING FACE ACCOUNT TOKEN"
+        KIND_FASTTEXT, 
+        "facebook/fasttext-language-identification", 
+        os.environ.get('HF_READ_ACCESS_TOKEN', "YOUR HUGGING FACE ACCOUNT TOKEN")
     )
+
     documents = pa.array(
         [
             "Der Tell Sabi Abyad („Hügel des weißen Jungen“) ist eine historische "

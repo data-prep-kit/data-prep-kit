@@ -34,7 +34,7 @@ class TestLangIdentificationTransform(AbstractTableTransformTest):
             "output_lang_column_name": "l",
             "output_score_column_name": "s",
         }
-        print(os.environ)
+        print(os.environ['HF_READ_ACCESS_TOKEN'])
         table = pa.Table.from_arrays(
             [
                 pa.array(

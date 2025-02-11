@@ -71,6 +71,8 @@ jobs:
         runs-on: ubuntu-22.04
         env:
             HF_READ_ACCESS_TOKEN: ${{ secrets.HF_READ_ACCESS_TOKEN }}
+            DOCKER_REGISTRY_USER: ${{ secrets.DOCKER_REGISTRY_USER }}
+            DOCKER_REGISTRY_KEY: ${{ secrets.DOCKER_REGISTRY_KEY }}
         steps:
             - name: Checkout
               uses: actions/checkout@v4

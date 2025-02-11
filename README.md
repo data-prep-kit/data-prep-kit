@@ -48,7 +48,9 @@ We have a complete set of data processing [recipes](examples) for such use cases
 
 We also have [a developer tutorial](doc/quick-start/contribute-your-own-transform.md) for contributing a new transform to the kit. 
 
-For advanced users, [here](ADVANCED.md) is more information for adding your own transform, its scaling and automation. Also,repository structure and use are discussed [here](doc/repo.md).
+For advanced users, [here](ADVANCED.md) is more information for adding your own transform, 
+running transforms from the command line, scaling and automation and more. 
+Also, repository structure and use are discussed [here](doc/repo.md).
 
 ### Windows users
 

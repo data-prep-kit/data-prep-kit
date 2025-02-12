@@ -42,13 +42,13 @@ the command above install the complete library with all the tansforms. In certai
 To install the lang_id transform, use the following command:
 
 ```shell
-pip3 install 'data-prep-toolkit-tranforms[lang_id]' 
+pip3 install 'data-prep-toolkit-transforms[lang_id]' 
 ```
 
 to install the lang_id transform with the ray runtime, use the following command:
 
 ```shell
-pip3 install 'data-prep-toolkit-tranforms[ray,lang_id]' 
+pip3 install 'data-prep-toolkit-transforms[ray,lang_id]' 
 ```
 
 

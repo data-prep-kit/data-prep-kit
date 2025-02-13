@@ -14,12 +14,12 @@ import ast
 import os
 import sys
 
-from code2parquet.transform import (  # domain_key,; snapshot_key,
+from data_processing.runtime.pure_python import PythonTransformLauncher
+from data_processing.utils import ParamsUtils
+from dpk_code2parquet.transform import (
     detect_programming_lang_cli_key,
     supported_langs_file_cli_key,
 )
-from data_processing.runtime.pure_python import PythonTransformLauncher
-from data_processing.utils import ParamsUtils
 from dpk_code2parquet.transform_python import CodeToParquetPythonConfiguration
 
 

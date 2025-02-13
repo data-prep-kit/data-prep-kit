@@ -10,10 +10,13 @@
 # limitations under the License.
 ################################################################################
 
+import os
+import sys
 from typing import Any
 
 import ray
 from data_processing.data_access import DataAccessFactoryBase
+from data_processing.utils import ParamsUtils, get_logger
 from data_processing_ray.runtime.ray import (
     DefaultRayTransformRuntime,
     RayTransformLauncher,
@@ -25,7 +28,11 @@ from dpk_code2parquet.transform import (
     CodeToParquetTransform,
     CodeToParquetTransformConfiguration,
     data_factory_key,
+    detect_programming_lang_cli_key,
+    detect_programming_lang_default,
+    detect_programming_lang_key,
     get_supported_languages,
+    supported_langs_file_cli_key,
     supported_langs_file_key,
     supported_languages_key,
 )
@@ -116,6 +123,48 @@ class CodeToParquetRayConfiguration(RayTransformRuntimeConfiguration):
             transform_config=CodeToParquetTransformConfiguration(transform_class=CodeToParquetRayTransform),
             runtime_class=CodeToParquetRuntime,
         )
+
+
+class Code2Parquet:
+    def __init__(self, **kwargs):
+        self.params = {}
+        for key in kwargs:
+            self.params[key] = kwargs[key]
+        # if input_folder and output_folder are specified, then assume it is represent data_local_config
+        try:
+            local_conf = {k: self.params[k] for k in ("input_folder", "output_folder")}
+            self.params["data_local_config"] = ParamsUtils.convert_to_ast(local_conf)
+            del self.params["input_folder"]
+            del self.params["output_folder"]
+        except:
+            pass
+
+        # create parameters
+
+        detect_programming_lang_key = "detect_programming_lang"
+
+        if detect_programming_lang_key not in self.params:
+            self.params[detect_programming_lang_cli_key] = detect_programming_lang_default
+        else:
+            self.params[detect_programming_lang_cli_key] = self.params[detect_programming_lang_key]
+            del self.params[detect_programming_lang_key]
+
+        if "supported_languages" not in self.params:
+            supported_languages_file = os.path.abspath(
+                os.path.join(os.path.dirname(__file__), "../../test-data/languages/lang_extensions.json")
+            )
+            self.params[supported_langs_file_cli_key] = supported_languages_file
+        else:
+            self.params[supported_langs_file_cli_key] = self.params["supported_languages"]
+            del self.params["supported_languages"]
+
+    def transform(self):
+        sys.argv = ParamsUtils.dict_to_req(d=(self.params))
+        # create launcher
+        launcher = RayTransformLauncher(CodeToParquetRayConfiguration())
+        # launch
+        return_code = launcher.launch()
+        return return_code
 
 
 if __name__ == "__main__":

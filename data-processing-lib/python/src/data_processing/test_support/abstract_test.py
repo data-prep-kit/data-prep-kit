@@ -92,6 +92,9 @@ class AbstractTest:
         for i in range(l1):
             t1 = table_list[i]
             t2 = expected_table_list[i]
+            # The merge transformer cannot guarantee the column order, so we have to reorder the columns
+            column_order = t2.column_names
+            t1 = t1.select(column_order)
             assert t1.schema == t2.schema, f"Schema of the two tables is not the same"
             rows1 = t1.num_rows
             rows2 = t2.num_rows

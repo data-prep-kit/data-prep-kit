@@ -37,6 +37,6 @@ class MergeSparkTransformConfiguration(SparkTransformRuntimeConfiguration):
 if __name__ == "__main__":
     # create launcher
     launcher = SparkTransformLauncher(runtime_config=MergeSparkTransformConfiguration())
-    logger.info("Launching noop transform")
+    logger.info("Launching merge transform")
     # Launch the ray actor(s) to process the input
     launcher.launch()

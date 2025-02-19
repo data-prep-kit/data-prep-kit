@@ -28,7 +28,7 @@ s3_cred = {
     "url": "http://localhost:9000",
 }
 s3_conf = {
-    "input_folder": "test/merge/input",
+    "input_folder": "test/merge/input/",
     "output_folder": "test/merge/output/",
 }
 worker_options = {"num_cpus": 0.8}
@@ -47,11 +47,8 @@ params = {
     "runtime_creation_delay": 0,
     "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
     # merge params
-    "merge_input_dirs": "test/merge/input1,test/merge/input2",
+    "merge_input_dirs": "test/merge/input1/,test/merge/input2",
 }
 sys.argv = ParamsUtils.dict_to_req(d=params)
-# for arg in sys.argv:
-#     print(arg)
-
 # launch
 launcher.launch()

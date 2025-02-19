@@ -11,6 +11,7 @@
 ################################################################################
 
 from argparse import ArgumentParser, Namespace
+from pathlib import Path
 from typing import Any
 
 import pyarrow as pa
@@ -46,39 +47,32 @@ class MergeTransform(AbstractTableTransform):
             input_dirs = config.get(input_dirs_key)
         if input_dirs is not None:
             input_dirs = input_dirs.split(",")
-            self.data_access = config.get("data_access")
-            main_input_folder = self.data_access.get_input_folder()
-            for input_for_merge in input_dirs:
-                self.input_dirs.append(MergeTransform._input_path(main_input_folder, input_for_merge))
+            for input_dir in input_dirs:
+                self.input_dirs.append(Path(input_dir))
 
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
+
         self.logger.debug(f"Transforming one table with {len(table)} rows")
+        file_path = Path(file_name)
+        data_access = self.config.get("data_access")
+        parent_path = Path(data_access.get_input_folder())
+        relative_path = file_path.relative_to(parent_path)
         added_columns = 0
-        for input_dir in self.input_dirs:
-            data_access_input_folder = self.data_access.get_input_folder()
-            if not data_access_input_folder.endswith("/"):
-                data_access_input_folder += "/"
-            new_file_name = file_name.replace(data_access_input_folder, input_dir)
-            t, _ = self.data_access.get_table(new_file_name)
+        for input_path in self.input_dirs:
+            merged_file_path = input_path / relative_path
+            self.logger.debug(f"merging a table from {merged_file_path}")
+            t, _ = data_access.get_table(str(merged_file_path))
             table, i = MergeTransform._copy_columns(table, t)
             added_columns += i
         # Add some sample metadata.
-        self.logger.debug(f"Transformed one table with {len(table)} rows")
-        metadata = {"nfiles": 1, "nrows": len(table), "added_columns": added_columns}
+        self.logger.debug(f"Transformed one table with {len(table)} rows, added {added_columns} columns from {len(self.input_dirs)} tables")
+        metadata = {
+            "nfiles": 1,
+            "nrows": len(table),
+            "merged_tables": len(self.input_dirs),
+            "added_columns": added_columns,
+        }
         return [table], metadata
-
-    @staticmethod
-    def _input_path(main_input_path: str, merged_input_path: str) -> str:
-        if not main_input_path.endswith("/"):
-            main_input_path += "/"
-        if not merged_input_path.endswith("/"):
-            merged_input_path += "/"
-        main_splits = main_input_path.split("/")
-        merged_splits = merged_input_path.split("/")
-        # TODO check that the merged input path is not longer then the main input path
-        for i in range(-1, -len(merged_splits) - 1, -1):
-            main_splits[i] = merged_splits[i]
-        return "/".join(main_splits)
 
     @staticmethod
     def _copy_columns(main_table: pa.Table, merged_table: pa.Table):
@@ -116,16 +110,14 @@ class MergeTransformConfiguration(TransformConfiguration):
 
     def add_input_params(self, parser: ArgumentParser) -> None:
         """
-        Add Transform-specific arguments to the given  parser.
-        This will be included in a dictionary used to initialize the MergeTransform.
-        By convention a common prefix should be used for all transform-specific CLI args
-        (e.g, merge_, pii_, etc.)
+        Absolute paths from which the merged content should be taken.
+        Note: in the case of S3 storage the absolute path starts from the bucket name.
         """
         parser.add_argument(
             f"--{input_dirs_cli_param}",
             type=str,
             default=None,
-            help="Comma-separated list of strings",
+            help="Comma-separated list of absolute paths from which the merged content should be taken",
         )
 
     def apply_input_params(self, args: Namespace) -> bool:

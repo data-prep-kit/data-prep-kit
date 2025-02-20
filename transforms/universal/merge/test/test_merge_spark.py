@@ -16,7 +16,7 @@ from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
 from data_processing_spark.runtime.spark import SparkTransformLauncher
-from dpk_merge.spark.runtime import MergeSparkTransformConfiguration
+from dpk_merge.spark.transform import MergeSparkTransformConfiguration
 from dpk_merge.transform import input_dirs_cli_param
 
 

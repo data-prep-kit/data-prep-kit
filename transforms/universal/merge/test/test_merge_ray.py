@@ -16,7 +16,7 @@ from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
 from data_processing_ray.runtime.ray import RayTransformLauncher
-from dpk_merge.ray.runtime import MergeRayTransformConfiguration
+from dpk_merge.ray.transform import MergeRayTransformConfiguration
 from dpk_merge.transform import input_dirs_cli_param
 
 

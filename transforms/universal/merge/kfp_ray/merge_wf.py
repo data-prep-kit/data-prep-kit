@@ -26,7 +26,7 @@ from workflow_support.compile_utils import (
 task_image = "quay.io/dataprep1/data-prep-kit/merge-ray:latest"
 
 # the name of the job script
-EXEC_SCRIPT_NAME: str = "-m dpk_merge.ray.runtime"
+EXEC_SCRIPT_NAME: str = "-m dpk_merge.ray.transform"
 
 # components
 base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing_v2:latest"

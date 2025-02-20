@@ -64,7 +64,13 @@ class MergeTransform(AbstractTableTransform):
             t, _ = data_access.get_table(str(merged_file_path))
             table, i = MergeTransform._copy_columns(table, t)
             added_columns += i
-        # Add some sample metadata.
+        # transfer table column names into a set, breaks their order. In order to provide reproducible results we sort
+        # the result table columns.
+        # Sort columns alphabetically
+        sorted_columns = sorted(table.column_names)
+        table = table.select(sorted_columns)
+
+        # Add metadata.
         self.logger.debug(f"Transformed one table with {len(table)} rows, added {added_columns} columns from {len(self.input_dirs)} tables")
         metadata = {
             "nfiles": 1,

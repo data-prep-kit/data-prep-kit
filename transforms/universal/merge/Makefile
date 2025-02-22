@@ -34,10 +34,3 @@ run-cli-ray-sample:
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.transform \
                 --run_locally True --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
                 --merge_input_dirs "test-data/input1,test-data/input2"
-
-run-cli-spark-sample:
-	$(MAKE) venv
-	source venv/bin/activate && \
-	$(PYTHON) -m dpk_$(TRANSFORM_NAME).spark.transform \
-                --run_locally True --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
-                --merge_input_dirs "test-data/input1,test-data/input2"

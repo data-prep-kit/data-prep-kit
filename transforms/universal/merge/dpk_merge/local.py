@@ -18,7 +18,7 @@ from dpk_merge.transform import MergeTransform
 
 # create parameters
 input_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "test-data", "input"))
-merge_params = {"merge_input_dirs": "test-data/input1,test-data/input2"}
+merge_params = {"input_dirs": "test-data/input1,test-data/input2"}
 
 if __name__ == "__main__":
     # Here we show how to run outside the runtime

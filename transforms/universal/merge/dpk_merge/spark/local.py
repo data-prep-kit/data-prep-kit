@@ -15,7 +15,7 @@ import sys
 
 from data_processing.utils import ParamsUtils
 from data_processing_spark.runtime.spark import SparkTransformLauncher
-from dpk_merge.spark.runtime import MergeSparkTransformConfiguration
+from dpk_merge.spark.transform import MergeSparkTransformConfiguration
 
 
 # create parameters

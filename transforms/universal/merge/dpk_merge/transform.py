@@ -16,7 +16,7 @@ from typing import Any
 
 import pyarrow as pa
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import CLIArgumentProvider
+from data_processing.utils import CLIArgumentProvider, UnrecoverableException
 
 
 short_name = "merge"
@@ -40,28 +40,28 @@ class MergeTransform(AbstractTableTransform):
         # Make sure that the param name corresponds to the name used in apply_input_params method
         # of MergeTransformConfiguration class
         super().__init__(config)
-        input_dirs = config.get(input_dirs_cli_param)
+        print(f"{config=}")
         self.input_dirs = []
-        if input_dirs == None:
-            # For backwards compatibility after we started encouraging the use of cli prefix in the configuration keys
-            input_dirs = config.get(input_dirs_key)
-        if input_dirs is not None:
-            input_dirs = input_dirs.split(",")
-            for input_dir in input_dirs:
-                self.input_dirs.append(Path(input_dir))
+        input_dirs = config.get(input_dirs_key)
+        if input_dirs is None:
+            raise UnrecoverableException("At least one merge path should be provided.")
+        input_dirs = input_dirs.split(",")
+        for input_dir in input_dirs:
+            self.input_dirs.append(Path(input_dir))
+        self.data_access = config.get("data_access")
+        self.parent_path = Path(self.data_access.get_input_folder())
 
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
 
         self.logger.debug(f"Transforming one table with {len(table)} rows")
         file_path = Path(file_name)
-        data_access = self.config.get("data_access")
-        parent_path = Path(data_access.get_input_folder())
-        relative_path = file_path.relative_to(parent_path)
+
+        relative_path = file_path.relative_to(self.parent_path)
         added_columns = 0
         for input_path in self.input_dirs:
             merged_file_path = input_path / relative_path
             self.logger.debug(f"merging a table from {merged_file_path}")
-            t, _ = data_access.get_table(str(merged_file_path))
+            t, _ = self.data_access.get_table(str(merged_file_path))
             table, i = MergeTransform._copy_columns(table, t)
             added_columns += i
         # transfer table column names into a set, breaks their order. In order to provide reproducible results we sort
@@ -73,8 +73,6 @@ class MergeTransform(AbstractTableTransform):
         # Add metadata.
         self.logger.debug(f"Transformed one table with {len(table)} rows, added {added_columns} columns from {len(self.input_dirs)} tables")
         metadata = {
-            "nfiles": 1,
-            "nrows": len(table),
             "merged_tables": len(self.input_dirs),
             "added_columns": added_columns,
         }

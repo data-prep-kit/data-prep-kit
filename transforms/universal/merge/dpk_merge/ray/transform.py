@@ -12,9 +12,8 @@
 
 from data_processing.utils import get_logger
 from data_processing_ray.runtime.ray import RayTransformLauncher
-from data_processing_ray.runtime.ray.runtime_configuration import (
-    RayTransformRuntimeConfiguration,
-)
+from data_processing_ray.runtime.ray.runtime_configuration import RayTransformRuntimeConfiguration
+
 from dpk_merge.transform import MergeTransformConfiguration
 
 

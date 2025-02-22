@@ -15,12 +15,10 @@ import sys
 
 from data_processing.utils import ParamsUtils
 from data_processing_ray.runtime.ray import RayTransformLauncher
-from dpk_merge.ray.runtime import MergeRayTransformConfiguration
+from dpk_merge.ray.transform import MergeRayTransformConfiguration
+from dpk_merge.transform import input_dirs_cli_param
 
 
-print(os.environ)
-# create launcher
-launcher = RayTransformLauncher(MergeRayTransformConfiguration())
 # create parameters
 s3_cred = {
     "access_key": "minioadmin",
@@ -47,8 +45,10 @@ params = {
     "runtime_creation_delay": 0,
     "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
     # merge params
-    "merge_input_dirs": "test/merge/input1/,test/merge/input2",
+    input_dirs_cli_param: "test/merge/input1/,test/merge/input2",
 }
 sys.argv = ParamsUtils.dict_to_req(d=params)
+# create launcher
+launcher = RayTransformLauncher(MergeRayTransformConfiguration())
 # launch
 launcher.launch()

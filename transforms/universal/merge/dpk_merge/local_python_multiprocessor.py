@@ -16,7 +16,7 @@ import sys
 from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.utils import ParamsUtils
 from dpk_merge.runtime import MergePythonTransformConfiguration
-
+from dpk_merge.transform import input_dirs_cli_param
 
 # create parameters
 input_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "test-data", "input"))
@@ -35,7 +35,7 @@ params = {
     "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
     "runtime_num_processors": 2,
     # merge params
-    "merge_input_dirs": "test-data/input1,test-data/input2",
+    input_dirs_cli_param: "test-data/input1,test-data/input2",
 }
 if __name__ == "__main__":
     # Set the simulated command line args

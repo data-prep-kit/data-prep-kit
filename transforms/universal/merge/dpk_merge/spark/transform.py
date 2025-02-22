@@ -21,12 +21,6 @@ logger = get_logger(__name__)
 
 
 class MergeSparkTransformConfiguration(SparkTransformRuntimeConfiguration):
-    """
-    Implements the SparkTransformConfiguration for NOOP as required by the PythonTransformLauncher.
-    Merge does not use a RayRuntime class so the superclass only needs the base
-    python-only configuration.
-    """
-
     def __init__(self):
         """
         Initialization

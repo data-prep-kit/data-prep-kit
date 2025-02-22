@@ -22,9 +22,22 @@ TRANSFORM_NAME=$(shell basename `pwd`)
 #### user defined Target
 
 run-cli-sample:
-	@# Help: Run the NOOP transform in a python runtime to read data in test-data/input and write to output directory.
 	$(MAKE) venv
 	source venv/bin/activate && \
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
-             --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output', 'merge_input_dirs': 'test-data/input1,test-data/input2'}"
+             --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
+             --merge_input_dirs "test-data/input1,test-data/input2"
 
+run-cli-ray-sample:
+	$(MAKE) venv
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.transform \
+                --run_locally True --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
+                --merge_input_dirs "test-data/input1,test-data/input2"
+
+run-cli-spark-sample:
+	$(MAKE) venv
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).spark.transform \
+                --run_locally True --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
+                --merge_input_dirs "test-data/input1,test-data/input2"

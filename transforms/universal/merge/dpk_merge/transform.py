@@ -78,7 +78,7 @@ class MergeTransform(AbstractTableTransform):
             "added_columns": added_columns,
         }
         if retries > 0:
-            metadata["merge data access retries"] = retries
+            metadata["data access retries"] = retries
         return [table], metadata
 
     @staticmethod

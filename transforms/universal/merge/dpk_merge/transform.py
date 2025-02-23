@@ -58,10 +58,11 @@ class MergeTransform(AbstractTableTransform):
 
         relative_path = file_path.relative_to(self.parent_path)
         added_columns = 0
+        retries = 0
         for input_path in self.input_dirs:
             merged_file_path = input_path / relative_path
             self.logger.debug(f"merging a table from {merged_file_path}")
-            t, _ = self.data_access.get_table(str(merged_file_path))
+            t, retries = self.data_access.get_table(str(merged_file_path))
             table, i = MergeTransform._copy_columns(table, t)
             added_columns += i
         # transfer table column names into a set, breaks their order. In order to provide reproducible results we sort
@@ -76,6 +77,8 @@ class MergeTransform(AbstractTableTransform):
             "merged_tables": len(self.input_dirs),
             "added_columns": added_columns,
         }
+        if retries > 0:
+            metadata["merge data access retries"] = retries
         return [table], metadata
 
     @staticmethod

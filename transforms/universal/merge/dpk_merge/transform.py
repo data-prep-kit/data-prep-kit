@@ -40,7 +40,6 @@ class MergeTransform(AbstractTableTransform):
         # Make sure that the param name corresponds to the name used in apply_input_params method
         # of MergeTransformConfiguration class
         super().__init__(config)
-        print(f"{config=}")
         self.input_dirs = []
         input_dirs = config.get(input_dirs_key)
         if input_dirs is None:

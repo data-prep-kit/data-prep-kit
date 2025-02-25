@@ -29,7 +29,7 @@ task_image = "quay.io/dataprep1/data-prep-kit/merge-ray:latest"
 EXEC_SCRIPT_NAME: str = "-m dpk_merge.ray.transform"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing_v2:latest"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)
@@ -114,7 +114,7 @@ def merge(
     additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
 ):
     """
-    Pipeline to execute noop transform
+    Pipeline to execute merge transform
     :param ray_name: name of the Ray cluster
     :param ray_run_id_KFPv2: a unique string id used for the Ray cluster, applicable only in KFP v2.
     :param ray_head_options: head node options, containing the following:

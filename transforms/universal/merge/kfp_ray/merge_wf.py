@@ -100,7 +100,7 @@ def merge(
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
     data_s3_config: str = "{'input_folder': 'test/merge/input/', 'output_folder': 'test/merge/output/'}",
-    data_s3_access_secret: str = "s3-minio",
+    data_s3_access_secret: str = "s3-secret",
     data_max_files: int = -1,
     data_num_samples: int = -1,
     data_checkpointing: bool = False,

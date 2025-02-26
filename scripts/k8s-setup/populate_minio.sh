@@ -46,3 +46,5 @@ mc cp --recursive ${REPOROOT}/transforms/universal/tokenization/test-data/ds01/i
 mc cp --recursive ${REPOROOT}/transforms/universal/profiler/test-data/input/ kfp/test/profiler/input
 mc cp --recursive ${REPOROOT}/transforms/universal/resize/test-data/input/ kfp/test/resize/input
 mc cp --recursive ${REPOROOT}/transforms/universal/hap/test-data/input/ kfp/test/hap/input
+# the next directive should NOT include "/" at the end of the source path
+mc cp --recursive ${REPOROOT}/transforms/universal/merge/test-data/input kfp/test/merge/

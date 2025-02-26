@@ -19,7 +19,7 @@ TRANSFORM_NAME=$(shell basename `pwd`)
 run-cli-sample:
 	$(MAKE) venv
 	source venv/bin/activate && \
-	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).transform_python \
              --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
              --merge_input_dirs "test-data/input1,test-data/input2"
 

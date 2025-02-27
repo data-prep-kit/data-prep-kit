@@ -27,7 +27,7 @@ run_lang_id_op = comp.load_component_from_file(component_spec_path + "executeSub
 run_filter_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
 run_tokenization_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
 run_doc_quality_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
-run_merge_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
+run_merge_op = comp.load_component_from_file(component_spec_path + "executeMergeSubWorkflowComponent.yaml")
 
 ededup_image = "quay.io/dataprep1/data-prep-kit/ededup-ray:latest"
 lang_id_image = "quay.io/dataprep1/data-prep-kit/lang_id-ray:latest"
@@ -36,12 +36,6 @@ filter_image = "quay.io/dataprep1/data-prep-kit/filter-ray:latest"
 tokenization_image = "quay.io/dataprep1/data-prep-kit/tokenization-ray:latest"
 doc_quality_image = "quay.io/dataprep1/data-prep-kit/doc_quality-ray:latest"
 merge_image = "quay.io/dataprep1/data-prep-kit/merge-ray:latest"
-
-def prepare_merge_params(prefix: str, params: dict, merged_dir: str) -> dict:
-    params[prefix + "merge_input_dirs"] = merged_dir
-    return params
-
-run_prepare_merge_params_op = comp.create_component_from_func(func=prepare_merge_params)
 
 # Pipeline to invoke execution on remote resource
 @dsl.pipeline(
@@ -195,9 +189,9 @@ def sample_ray_orchestrator(
     _set_component(doc_quality, "doc quality", exact_dedup)
 
     # merge component
-    prep_merge = run_prepare_merge_params_op(prefix="p8_", params=args, merged_dir=doc_quality.output)
     merge = run_merge_op(
-        name=p1_orch_merge_name, prefix="p8_", params=prep_merge.output, host=orch_host, input_folder=doc_id.output
+        name=p1_orch_merge_name, prefix="p8_", params=args, host=orch_host, input_folder=doc_id.output,
+        merge_folder1=doc_quality.output
     )
     _set_component(merge, "merge", doc_id)
 

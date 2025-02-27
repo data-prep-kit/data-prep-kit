@@ -95,8 +95,8 @@ def merge(
     ray_name: str = "merge-kfp-ray",  # name of Ray cluster
     ray_run_id_KFPv2: str = "",
     # Add image_pull_secret, image_pull_policy and tolerations to ray options if needed
-    ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
-    ray_worker_options: dict = {"replicas": 2, "max_replicas": 2, "min_replicas": 2, "cpu": 2, "memory": 4, "image": task_image},
+    ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image, "image_pull_policy": "Always"},
+    ray_worker_options: dict = {"replicas": 2, "max_replicas": 2, "min_replicas": 2, "cpu": 2, "memory": 4, "image": task_image, "image_pull_policy": "Always"},
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
     data_s3_config: str = "{'input_folder': 'test/merge/input/', 'output_folder': 'test/merge/output/'}",

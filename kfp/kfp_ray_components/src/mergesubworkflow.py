@@ -44,7 +44,7 @@ if __name__ == "__main__":
     if args.merge_folder5 is not None and args.merge_folder5 != "":
         merge_folders.append(args.merge_folder5)
 
-    command = ['python', './subworkflow.py']
+    command = ['python', '/pipelines/component/src/subworkflow.py']
     if args.prefix:
         command.extend(["prefix", args.prefix])
     if len(merge_folders) > 0:

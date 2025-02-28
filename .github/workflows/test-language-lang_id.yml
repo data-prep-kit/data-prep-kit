@@ -24,9 +24,9 @@ on:
             - "!**/images/**"
             - "!**.gitignore"
     pull_request_target:
-        branches:
-            - "dev"
-            - "releases/**"
+#        branches:
+#            - "dev"
+#            - "releases/**"
         paths:
             - ".make.*"
             - "transforms/.make.transforms"

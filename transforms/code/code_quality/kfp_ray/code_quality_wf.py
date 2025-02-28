@@ -24,6 +24,7 @@ from workflow_support.compile_utils import (
 
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "code_quality_transform_ray.py"
+HF_TOKEN=os.environ.get('HF_READ_ACCESS_TOKEN', "None")
 PREFIX: str = ""
 
 task_image = "quay.io/dataprep1/data-prep-kit/code_quality-ray:latest"
@@ -118,7 +119,7 @@ def code_quality(
     cq_contents_column_name: str = "contents",
     cq_language_column_name: str = "language",
     cq_tokenizer: str = "codeparrot/codeparrot",
-    cq_hf_token: str = "None",
+    cq_hf_token: str = HF_TOKEN,
     # additional parameters
     additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
 ):

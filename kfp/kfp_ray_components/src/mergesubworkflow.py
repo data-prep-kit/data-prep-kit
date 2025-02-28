@@ -46,7 +46,7 @@ if __name__ == "__main__":
 
     command = ['python', '/pipelines/component/src/subworkflow.py']
     if args.prefix:
-        command.extend(["prefix", args.prefix])
+        command.extend(["--prefix", args.prefix])
     if len(merge_folders) > 0:
         if args.params:
             params = args.params
@@ -56,7 +56,12 @@ if __name__ == "__main__":
             dic[args.prefix + 'merge_input_dirs'] = ",".join(merge_folders)
             command.extend(['--params', json.dumps(dic)])
     command.extend(unknown_args)
-    print(command)
+    print('\n'.join(command))
     # Execute the merge sub process
-    result = subprocess.run(command, capture_output=True, text=True)
-    print(result.stdout)
+    try:
+        result = subprocess.run(command, capture_output=True, text=True, check=True)
+        print(result.stdout)
+    except subprocess.CalledProcessError as e:
+        print(f"An error occurred: {e}")
+        print(f"Error output: {e.stderr}")
+        sys.exit(1)

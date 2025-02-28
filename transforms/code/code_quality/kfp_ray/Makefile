@@ -45,6 +45,7 @@ workflow-build: workflow-venv
 
 .PHONY: workflow-test
 workflow-test: workflow-build
+	cat code_quality_wf.yaml
 	$(MAKE) .workflows.test-pipeline TRANSFORM_SRC=${SRC_DIR} PIPELINE_FILE=code_quality_wf.yaml
 
 .PHONY: workflow-upload

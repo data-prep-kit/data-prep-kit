@@ -293,7 +293,7 @@ class CodeQualityTransformConfiguration(TransformConfiguration):
             required=False,
             type=str,
             dest="hf_token",
-            default=None,
+            default=os.environ.get('HF_READ_ACCESS_TOKEN'),
             help="Huggingface auth token to download and use the tokenizer.",
         )
 

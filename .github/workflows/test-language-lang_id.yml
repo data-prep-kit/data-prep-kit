@@ -24,6 +24,7 @@ on:
             - "!**/images/**"
             - "!**.gitignore"
     pull_request_target:
+        types: [assigned, opened, synchronize, reopened]
         branches:
             - "dev"
             - "releases/**"

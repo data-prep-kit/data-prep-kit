@@ -23,10 +23,10 @@ on:
             - "!**/doc/**"
             - "!**/images/**"
             - "!**.gitignore"
-    pull_request_target:
-#        branches:
-#            - "dev"
-#            - "releases/**"
+    pull_request:
+        branches:
+            - "dev"
+            - "releases/**"
         paths:
             - ".make.*"
             - "transforms/.make.transforms"

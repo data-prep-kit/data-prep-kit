@@ -12,8 +12,6 @@ on:
         tags:
             - "*"
         paths:
-            - ".github/workflows/test-language-lang_id-kfp.yml"
-            - ".github/workflows/test-language-lang_id.yml"
             - ".make.*"
             - "scripts/k8s-setup/requirements.env"
             - "transforms/.make.workflows"
@@ -29,8 +27,6 @@ on:
             - "dev"
             - "releases/**"
         paths:
-            - ".github/workflows/test-language-lang_id-kfp.yml"
-            - ".github/workflows/test-language-lang_id.yml"
             - ".make.*"
             - "scripts/k8s-setup/requirements.env"
             - "transforms/.make.workflows"

@@ -261,7 +261,8 @@ class CodeQualityTransform(AbstractTableTransform):
 
 class CodeQualityTransformConfiguration(TransformConfiguration):
     def __init__(self):
-        super().__init__(name="code_quality", transform_class=CodeQualityTransform)
+        super().__init__(name="code_quality", transform_class=CodeQualityTransform, remove_from_metadata=['hf_token'])
+
 
     def add_input_params(self, parser: ArgumentParser) -> None:
         parser.add_argument(

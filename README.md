@@ -71,8 +71,8 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 | [Fuzzy dedup filter](transforms/universal/fdedup/README.md)                      | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [Unique ID annotation](transforms/universal/doc_id/README.md)                    | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [Filter on annotations](transforms/universal/filter/README.md)                   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| [Profiler](transforms/universal/profiler/python/README.md)                       | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| [Resize](transforms/universal/resize/python/README.md)                           | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [Profiler](transforms/universal/profiler/README.md)                       | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [Resize](transforms/universal/resize/README.md)                           | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [Hate, Abuse, Profanity (HAP)](transforms/universal/hap/README.md)               | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Tokenizer](transforms/universal/tokenization/README.md)                         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | **Language-only**                                                                    |                    |                    |                    |                    |

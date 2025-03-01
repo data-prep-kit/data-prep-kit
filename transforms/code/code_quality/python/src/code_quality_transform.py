@@ -199,6 +199,7 @@ class CodeQualityTransform(AbstractTableTransform):
             self.code_quality["tokenizer"], 
             token= self.code_quality['hf_token'] or os.environ.get('HF_READ_ACCESS_TOKEN')
         )
+        assert 0, "Exiting new code"
 
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict]:
         """

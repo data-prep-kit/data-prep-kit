@@ -42,10 +42,12 @@ docker-save-image::
 .PHONY: workflow-build
 workflow-build: workflow-venv
 	$(MAKE) $(YAML_WF)
+	echo " ##### Workflow-build complete.... Listing yaml"
+	cat code_quality_wf.yaml
+	echo " ##### Workflow-build complete...."
 
 .PHONY: workflow-test
 workflow-test: workflow-build
-	cat code_quality_wf.yaml
 	$(MAKE) .workflows.test-pipeline TRANSFORM_SRC=${SRC_DIR} PIPELINE_FILE=code_quality_wf.yaml
 
 .PHONY: workflow-upload

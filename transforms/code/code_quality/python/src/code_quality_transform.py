@@ -196,7 +196,7 @@ class CodeQualityTransform(AbstractTableTransform):
 
         self.code_quality = config.get(CODE_QUALITY_PARAMS)
         self.tokenizer = AutoTokenizer.from_pretrained(
-            self.code_quality["tokenizer"], token=self.code_quality["hf_token"]
+            self.code_quality["tokenizer"], use_auth_token=self.code_quality["hf_token"]
         )
 
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict]:

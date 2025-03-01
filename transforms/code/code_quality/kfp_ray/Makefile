@@ -45,6 +45,7 @@ workflow-build: workflow-venv
 
 .PHONY: workflow-test
 workflow-test: workflow-build
+	$(error ##### Are we even getting here ?)
 	$(info ##### Cat code_quality_wf.yaml)
 	variable := $(shell cat code_quality_wf.yaml)
 	$(info ${variable} )

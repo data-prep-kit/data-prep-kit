@@ -24,7 +24,7 @@ on:
             - "!**/images/**"
             - "!**.gitignore"
     pull_request:
-        types: [opened, synchronize]
+#        types: [opened, synchronize]
         branches:
             - "dev"
             - "releases/**"
@@ -106,7 +106,7 @@ jobs:
                   if [[ "x${{ secrets.HF_READ_ACCESS_TOKEN }}y" == "xy" ]]; then
                      echo "No Access to secrets"
                      exit 1
-
+                  fi
                   if [ -e "transforms/code/code_quality/Makefile" ]; then
                       make -C transforms/code/code_quality DOCKER=docker test-src
                   else

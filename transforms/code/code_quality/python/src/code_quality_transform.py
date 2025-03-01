@@ -196,8 +196,10 @@ class CodeQualityTransform(AbstractTableTransform):
 
         self.code_quality = config.get(CODE_QUALITY_PARAMS)
         self.tokenizer = AutoTokenizer.from_pretrained(
-            self.code_quality["tokenizer"], use_auth_token=self.code_quality["hf_token"]
+            self.code_quality["tokenizer"], 
+            use_auth_token=self.code_quality["hf_token"] or os.environ.get('HF_READ_ACCESS_TOKEN')
         )
+        print ('.',self.code_quality["hf_token"] or os.environ.get('HF_READ_ACCESS_TOKEN'),'.')
 
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict]:
         """

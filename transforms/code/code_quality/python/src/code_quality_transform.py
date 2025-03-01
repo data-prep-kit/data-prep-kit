@@ -193,11 +193,11 @@ class CodeQualityTransform(AbstractTableTransform):
 
     def __init__(self, config: dict):
         super().__init__(config)
+        self.code_quality = config.get(CODE_QUALITY_PARAMS)
         hf_token=self.code_quality['hf_token']
         print("self.code_quality['hf_token']: ", hf_token)
         hf_token=self.code_quality['hf_token'] or os.environ.get('HF_READ_ACCESS_TOKEN')
         print("self.code_quality['hf_token'] or os.environ.get('HF_READ_ACCESS_TOKEN')", hf_token)
-        self.code_quality = config.get(CODE_QUALITY_PARAMS)
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.code_quality["tokenizer"], 
             use_auth_token= self.code_quality['hf_token'],

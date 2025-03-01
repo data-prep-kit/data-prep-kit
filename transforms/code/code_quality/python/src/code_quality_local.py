@@ -24,6 +24,7 @@ if __name__ == "__main__":
             "contents_column_name": "contents",
             "language_column_name": "language",
             "tokenizer": "codeparrot/codeparrot",
+            "hf_token": os.environ.get('HF_READ_ACCESS_TOKEN'),
         }
     }
     transform = CodeQualityTransform(codequality_params)

@@ -197,7 +197,7 @@ class CodeQualityTransform(AbstractTableTransform):
         self.code_quality = config.get(CODE_QUALITY_PARAMS)
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.code_quality["tokenizer"], 
-            use_auth_token= self.code_quality['hf_token'] or os.environ.get('HF_READ_ACCESS_TOKEN')
+            use_auth_token= self.code_quality['hf_token'],
         )
         print("Exiting new code")
         import sys

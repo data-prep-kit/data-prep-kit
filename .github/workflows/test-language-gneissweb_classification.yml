@@ -25,9 +25,9 @@ on:
             - "!**.gitignore"
     pull_request_target:
         branches:
-            - "dev"
-            - "releases/**"
             - "test-pr-request"
+#            - "dev"
+#            - "releases/**"
         paths:
             - ".github/workflows/**"   # used for testing
             - ".make.*"

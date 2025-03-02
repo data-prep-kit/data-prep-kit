@@ -81,13 +81,13 @@ jobs:
             - name: Expose secret to trusted users working in a fork
               run: |
                 allowed=false
-                echo "allowed == $allowed"
                 allowed_list=("revit13" "roytman")
                 for user in "${allowed_list[@]}"; do
                     if [ "$user" ==  "${{ github.triggering_actor }}" ]; then
                        allowed=true
                        break
                     fi
+                done
                 if $allowed; then
                    echo "Checking ${{ github.triggering_actor }} permissions."
                    echo "Only select users will be able to trigger this workflow from a fork"

@@ -27,8 +27,9 @@ on:
         branches:
             - "dev"
             - "releases/**"
-            - "test-**"
+            - "test-pr-request"
         paths:
+            - ".github/workflows/**"   # used for testing
             - ".make.*"
             - "transforms/.make.transforms"
             - "transforms/language/lang_id/**"

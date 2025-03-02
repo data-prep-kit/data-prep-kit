@@ -52,27 +52,9 @@ jobs:
         steps:
             - name: Expose secret to trusted users working in a fork
               run: |
-                restricted_access=${{ github.event.pull_request.head.repo.fork }}
-                allowed_list=("revit13" "roytman")
-                for user in "${allowed_list[@]}"; do
-                    if [ "$user" ==  "${{ github.triggering_actor }}" ]; then
-                       restricted_access=false
-                       break
-                    fi
-                done
-                if $restricted_access; then
-                    echo "User ${{ github.triggering_actor }} is not allowed to trigger this workflow."
-                    echo "${{ github.triggering_actor }} is not in list: $allowed_list "
-                    echo "pr head:  ${{ github.event.pull_request.head.sha }}"
-                    echo "github ref:  ${{ github.ref }}"
-                    exit 1
-                else
-                   echo "Checking ${{ github.triggering_actor }} permissions."
-                   echo "Only select users will be able to trigger this workflow from a fork"
-                   echo "This prevents the secret from being exposed to all public users"
-                   echo "pr head:  ${{ github.event.pull_request.head.sha }}"
-                   echo "github ref:  ${{ github.ref }}"
-                fi
+                echo "Checking access- PR head:  ${{ github.event.pull_request.head.sha }}"
+                echo "Checking access- github ref:  ${{ github.ref }}"
+                ./scripts/check-restricted_access ${{ github.triggering_actor }} ${{ github.event.pull_request.head.repo.fork }}
 
             - name: Checkout
               uses: actions/checkout@v4

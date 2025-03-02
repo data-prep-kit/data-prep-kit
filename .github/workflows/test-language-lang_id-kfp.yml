@@ -50,17 +50,17 @@ jobs:
         env:
             HF_READ_ACCESS_TOKEN: ${{ secrets.HF_READ_ACCESS_TOKEN }}
         steps:
-            - name: Expose secret to trusted users working in a fork
-              run: |
-                echo "Checking access- PR head:  ${{ github.event.pull_request.head.sha }}"
-                echo "Checking access- github ref:  ${{ github.ref }}"
-                ./scripts/check-restricted-access.sh ${{ github.triggering_actor }} ${{ github.event.pull_request.head.repo.fork }}
-
             - name: Checkout
               uses: actions/checkout@v4
               with:
                 # Requires careful code review prior to triggering workflow
                 ref: ${{ github.event.pull_request.head.sha }}
+
+            - name: Expose secret to trusted users working in a fork
+              run: |
+                echo "Checking access- PR head:  ${{ github.event.pull_request.head.sha }}"
+                echo "Checking access- github ref:  ${{ github.ref }}"
+                $PWD/scripts/check-restricted-access.sh ${{ github.triggering_actor }} ${{ github.event.pull_request.head.repo.fork }}
 
             - name: Free up space in github runner
               # Free space as indicated here : https://github.com/actions/runner-images/issues/2840#issuecomment-790492173

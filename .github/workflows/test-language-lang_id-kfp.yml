@@ -75,19 +75,35 @@ jobs:
 
     test-kfp-v1:
         runs-on: ubuntu-22.04
+        env:
+            HF_READ_ACCESS_TOKEN: ${{ secrets.HF_READ_ACCESS_TOKEN }}
         steps:
             - name: Expose secret to trusted users working in a fork
-              if: contains('["revit13","roytman"]', ${{ github.triggering_actor }}) == 'true'
-              env:
-                HF_READ_ACCESS_TOKEN: ${{ secrets.HF_READ_ACCESS_TOKEN }}
               run: |
-                 echo "Checking ${{ github.triggering_actor }} permissions."
-                 echo "Only select users will be able to trigger this workflow from a fork"
-                 echo "This prevents the secret from being exposed to all public users"
-                 echo "pr head:  ${{ github.event.pull_request.head.sha }}"
-                 echo "github ref:  ${{ github.ref }}"
-                 echo "Secret is: ${{ secrets.HF_READ_ACCESS_TOKEN }}"
-                 echo "Env variable is : $HF_READ_ACCESS_TOKEN"
+                allowed=false
+                actor = ${{ github.triggering_actor }}
+                allowed_list=("revit13" "roytman")
+                for user in "${allowed_list[@]}"; do
+                    if [ "$user" ==  ${{ github.triggering_actor }} ]; then
+                       allowed=true
+                       break
+                    fi
+                if $allowed; then
+                   echo "Checking ${{ github.triggering_actor }} permissions."
+                   echo "Only select users will be able to trigger this workflow from a fork"
+                   echo "This prevents the secret from being exposed to all public users"
+                   echo "pr head:  ${{ github.event.pull_request.head.sha }}"
+                   echo "github ref:  ${{ github.ref }}"
+                   echo "Secret is: ${{ secrets.HF_READ_ACCESS_TOKEN }}"
+                   echo "Env variable is : $HF_READ_ACCESS_TOKEN"
+                else
+                   echo "Checking ${{ github.triggering_actor }} not allowed."
+                   echo "Only select users will be able to trigger this workflow from a fork"
+                   echo "This prevents the secret from being exposed to all public users"
+                   echo "pr head:  ${{ github.event.pull_request.head.sha }}"
+                   echo "github ref:  ${{ github.ref }}"
+                   exit 1
+                fi
 
             - name: Checkout
               uses: actions/checkout@v4

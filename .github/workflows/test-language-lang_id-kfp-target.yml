@@ -25,7 +25,7 @@ on:
         branches:
             - "test-pr-target"
         paths:
-            - ".github/workflows/test-language-lang_id-kfp-target.yml"   # used for testing
+            - ".github/workflows/**"   # used for testing
             - ".make.*"
             - "scripts/k8s-setup/requirements.env"
             - "transforms/.make.workflows"

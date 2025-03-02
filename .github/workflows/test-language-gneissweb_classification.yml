@@ -27,7 +27,9 @@ on:
         branches:
             - "dev"
             - "releases/**"
+            - "test-**"
         paths:
+            - ".github/workflows/**"   # used for testing
             - ".make.*"
             - "transforms/.make.transforms"
             - "transforms/language/gneissweb_classification/**"
@@ -74,6 +76,17 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4
+              with:
+                # Requires careful code review prior to triggering workflow
+                ref: ${{ github.event.pull_request.head.sha }}
+              run: |
+                  echo "Checking actor- :  ${{ github.actor }}"
+                  echo "Checking Trigger_actor- :  ${{ github.triggering_actor }}"
+                  echo "Checking user.login- :  ${{ github.event.pull_request.user.login }}"
+                  echo "Checking access- PR head:  ${{ github.event.pull_request.head.sha }}"
+                  echo "Checking access- github ref:  ${{ github.ref }}"
+                  $PWD/scripts/check-restricted-access.sh ${{ github.triggering_actor }} ${{ github.event.pull_request.head.repo.fork }}
+
             - name: Free up space in github runner
               # Free space as indicated here : https://github.com/actions/runner-images/issues/2840#issuecomment-790492173
               run: |
@@ -100,6 +113,17 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4
+              with:
+                # Requires careful code review prior to triggering workflow
+                ref: ${{ github.event.pull_request.head.sha }}
+              run: |
+                  echo "Checking actor- :  ${{ github.actor }}"
+                  echo "Checking Trigger_actor- :  ${{ github.triggering_actor }}"
+                  echo "Checking user.login- :  ${{ github.event.pull_request.user.login }}"
+                  echo "Checking access- PR head:  ${{ github.event.pull_request.head.sha }}"
+                  echo "Checking access- github ref:  ${{ github.ref }}"
+                  $PWD/scripts/check-restricted-access.sh ${{ github.triggering_actor }} ${{ github.event.pull_request.head.repo.fork }}
+
             - name: Free up space in github runner
               # Free space as indicated here : https://github.com/actions/runner-images/issues/2840#issuecomment-790492173
               run: |

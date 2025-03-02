@@ -74,15 +74,14 @@ jobs:
           run: echo "$MATRIX_CONTEXT"
 
     test-kfp-v1:
-        if: "contains(' revit13 roytman ', ${{ github.triggering_actor }})"
-        env:
-          HF_READ_ACCESS_TOKEN: ${{ secrets.HF_READ_ACCESS_TOKEN }}
         runs-on: ubuntu-22.04
         steps:
             - name: Expose secret to trusted users working in a fork
+              if: contains('["touma-I","revit13","roytman"]', ${{ github.triggering_actor }})
+              env:
+                HF_READ_ACCESS_TOKEN: ${{ secrets.HF_READ_ACCESS_TOKEN }}
               run: |
                  echo "Checking ${{ github.triggering_actor }} permissions."
-                 echo "Checking ' ${{ github.triggering_actor }} ' permissions."
                  echo "Only select users will be able to trigger this workflow from a fork"
                  echo "This prevents the secret from being exposed to all public users"
                  echo "pr head:  ${{ github.event.pull_request.head.sha }}"
@@ -140,8 +139,6 @@ jobs:
                  echo "Checking ${{ github.triggering_actor }} permissions."
                  echo "Only select users will be able to trigger this workflow from a fork"
                  echo "This prevents the secret from being exposed to all public users"
-                 echo "Secret is: ${{ secrets.HF_READ_ACCESS_TOKEN }}"
-                 echo "Env variable is : $HF_READ_ACCESS_TOKEN"
 
             - name: Checkout
               uses: actions/checkout@v4

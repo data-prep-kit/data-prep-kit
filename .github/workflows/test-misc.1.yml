@@ -20,7 +20,7 @@ on:
         branches:
             - "dev"
             - "releases/**"
-            - "test-pr-target"
+            - "test-*"
             
         paths-ignore:
             - ".make.*"

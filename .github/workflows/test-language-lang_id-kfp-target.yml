@@ -54,7 +54,7 @@ jobs:
                 # Requires careful code review prior to triggering workflow
                 ref: ${{ github.event.pull_request.head.sha }}
 
-            - name: Expose secret to trusted users working in a fork
+            - name: Expose secret to trusted users working in a fork or anyone on base repo
               run: |
                   echo "Checking access- PR head:  ${{ github.event.pull_request.head.sha }}"
                   echo "Checking access- github ref:  ${{ github.ref }}"

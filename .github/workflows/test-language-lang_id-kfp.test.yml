@@ -54,7 +54,7 @@ jobs:
               run: |
                 echo "Checking access- PR head:  ${{ github.event.pull_request.head.sha }}"
                 echo "Checking access- github ref:  ${{ github.ref }}"
-                ./scripts/check-restricted_access.sh ${{ github.triggering_actor }} ${{ github.event.pull_request.head.repo.fork }}
+                $PWD/scripts/check-restricted-access.sh ${{ github.triggering_actor }} ${{ github.event.pull_request.head.repo.fork }}
 
             - name: Checkout
               uses: actions/checkout@v4

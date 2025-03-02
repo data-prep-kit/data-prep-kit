@@ -20,6 +20,8 @@ on:
         branches:
             - "dev"
             - "releases/**"
+            - "test-pr-target"
+            
         paths-ignore:
             - ".make.*"
             - "**.md"

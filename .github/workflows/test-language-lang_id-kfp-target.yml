@@ -56,6 +56,9 @@ jobs:
 
             - name: Expose secret to trusted users working in a fork or anyone on base repo
               run: |
+                  echo "Checking actor- :  ${{ github.actor }}"
+                  echo "Checking Trigger_actor- :  ${{ github.triggering_actor }}"
+                  echo "Checking user.login- :  ${{ github.event.pull_request.user.login }}"
                   echo "Checking access- PR head:  ${{ github.event.pull_request.head.sha }}"
                   echo "Checking access- github ref:  ${{ github.ref }}"
                   $PWD/scripts/check-restricted-access.sh ${{ github.triggering_actor }} ${{ github.event.pull_request.head.repo.fork }}

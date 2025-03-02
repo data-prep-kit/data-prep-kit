@@ -26,6 +26,7 @@ clean:
 .PHONY: workflow-build
 workflow-build: workflow-venv
 	$(MAKE) $(YAML_WF)
+	cat $(TRANSFORM_NAME)_wf.yaml
 
 .PHONY: workflow-test
 workflow-test: workflow-build

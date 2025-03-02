@@ -56,6 +56,7 @@ jobs:
               with:
                 # Requires careful code review prior to triggering workflow
                 ref: ${{ github.event.pull_request.head.sha }}
+            - name: Expose secret to trusted users working in a fork
               run: |
                   echo "Checking actor- :  ${{ github.actor }}"
                   echo "Checking Trigger_actor- :  ${{ github.triggering_actor }}"

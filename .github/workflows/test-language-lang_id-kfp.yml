@@ -22,7 +22,7 @@ on:
             - "!**/doc/**"
             - "!**/images/**"
             - "!**.gitignore"
-    pull_request_target:
+    pull_request:
         branches:
             - "dev"
             - "releases/**"
@@ -52,26 +52,26 @@ jobs:
         steps:
             - name: Expose secret to trusted users working in a fork
               run: |
-                allowed=false
-                allowed_list=("touma-I" "revit13" "roytman")
+                restricted_access=${{ github.event.pull_request.head.repo.fork }}
+                allowed_list=("revit13" "roytman")
                 for user in "${allowed_list[@]}"; do
                     if [ "$user" ==  "${{ github.triggering_actor }}" ]; then
-                       allowed=true
+                       restricted_access=false
                        break
                     fi
                 done
-                if $allowed; then
+                if $restricted_access; then
+                    echo "User ${{ github.triggering_actor }} is not allowed to trigger this workflow."
+                    echo "${{ github.triggering_actor }} is not in list: $allowed_list "
+                    echo "pr head:  ${{ github.event.pull_request.head.sha }}"
+                    echo "github ref:  ${{ github.ref }}"
+                    exit 1
+                else
                    echo "Checking ${{ github.triggering_actor }} permissions."
                    echo "Only select users will be able to trigger this workflow from a fork"
                    echo "This prevents the secret from being exposed to all public users"
                    echo "pr head:  ${{ github.event.pull_request.head.sha }}"
                    echo "github ref:  ${{ github.ref }}"
-                else
-                   echo "User ${{ github.triggering_actor }} is not allowed to trigger this workflow."
-                   echo "${{ github.triggering_actor }} is not in list: $allowed_list "
-                   echo "pr head:  ${{ github.event.pull_request.head.sha }}"
-                   echo "github ref:  ${{ github.ref }}"
-                   exit 1
                 fi
 
             - name: Checkout

@@ -26,6 +26,9 @@ clean:
 .PHONY: workflow-build
 workflow-build: workflow-venv
 	$(MAKE) $(YAML_WF)
+	echo "### Dump produced yaml"
+	cat $(TRANSFORM_NAME)_wf.yaml
+	echo "### Dump produced yaml complete"
 
 .PHONY: workflow-test
 workflow-test: workflow-build

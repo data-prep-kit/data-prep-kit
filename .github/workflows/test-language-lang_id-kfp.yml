@@ -89,11 +89,13 @@ jobs:
               uses: actions/checkout@v4
               with:
                 # Requires careful code review prior to triggering workflow
-                ref: ${{  github.event.pull_request.head.sha }}
+                ref: ${{ github.event.pull_request.head.sha }}
 
             - name: Free up space in github runner
               # Free space as indicated here : https://github.com/actions/runner-images/issues/2840#issuecomment-790492173
               run: |
+                  echo "pr head:  ${{ github.event.pull_request.head.sha }}"
+                  echo "github ref:  ${{ github.ref }}"
                   df -h
                   sudo rm -rf "/usr/local/share/boost"
                   sudo rm -rf "$AGENT_TOOLSDIRECTORY"

@@ -81,10 +81,10 @@ jobs:
             - name: Expose secret to trusted users working in a fork
               run: |
                 allowed=false
-                actor = ${{ github.triggering_actor }}
+                echo "allowed == $allowed"
                 allowed_list=("revit13" "roytman")
                 for user in "${allowed_list[@]}"; do
-                    if [ "$user" ==  ${{ github.triggering_actor }} ]; then
+                    if [ "$user" ==  "${{ github.triggering_actor }}" ]; then
                        allowed=true
                        break
                     fi

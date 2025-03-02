@@ -74,7 +74,7 @@ jobs:
           run: echo "$MATRIX_CONTEXT"
 
     test-kfp-v1:
-        if: contains(' touma-I revit13 roytman ', ' ${{ github.triggering_actor }} ')
+        if: contains(' revit13 roytman ', ' ${{ github.triggering_actor }} ')
         env:
           HF_READ_ACCESS_TOKEN: ${{ secrets.HF_READ_ACCESS_TOKEN }}
         runs-on: ubuntu-22.04
@@ -140,6 +140,8 @@ jobs:
                  echo "Checking ${{ github.triggering_actor }} permissions."
                  echo "Only select users will be able to trigger this workflow from a fork"
                  echo "This prevents the secret from being exposed to all public users"
+                 echo "Secret is: ${{ secrets.HF_READ_ACCESS_TOKEN }}"
+                 echo "Env variable is : $HF_READ_ACCESS_TOKEN"
 
             - name: Checkout
               uses: actions/checkout@v4

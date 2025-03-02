@@ -5,7 +5,7 @@ restricted_access=$2    # restricted_access is set to true for forks
 
 allowed_list=("touma-I" "revit13" "roytman")
 for user in "${allowed_list[@]}"; do
-    if [ "$user" ==  "${{ github.triggering_actor }}" ]; then
+    if [ "$user" ==  "$actor" ]; then
         restricted_access=false
         break
     fi

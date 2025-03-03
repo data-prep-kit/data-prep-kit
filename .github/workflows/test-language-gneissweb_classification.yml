@@ -78,10 +78,12 @@ jobs:
         steps:
             - id: permission
               run: |
-                echo "Check if user is allowed to run priviledge workflows"
+                echo "Check if ${{ github.triggering_actor }} is allowed to run priviledge workflows"
+                echo "Check if ${{ github.triggering_actor }} is in the priviledge access list ${{ vars.PRIVILEGED_USERS }}"
                 restricted_acccess=${{ github.event.pull_request.head.repo.fork }}
-
+                echo "IsFork is ${{ github.event.pull_request.head.repo.fork }}"
                 if [[ "${{ vars.PRIVILEGED_USERS }}" == *+${{ github.triggering_actor }}+* ]]; then
+                        echo "user  ${{ github.triggering_actor }} is not restricted"
                         restricted_access=false
                 fi
 

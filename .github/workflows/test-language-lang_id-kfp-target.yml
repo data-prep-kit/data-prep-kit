@@ -24,6 +24,8 @@ on:
             - "!**.gitignore"
     pull_request_target:
         branches:
+            - "dev"
+            - "releases/**"
             - "test-*"
         paths:
             - ".github/workflows/**"   # used for testing

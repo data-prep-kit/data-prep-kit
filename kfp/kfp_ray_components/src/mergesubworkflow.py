@@ -24,6 +24,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Start merge sub workflow")
     parser.add_argument("--prefix", type=str)
     parser.add_argument("--params", type=str, default=None)
+    parser.add_argument("-of", "--output_folder", default="", type=str)
     parser.add_argument("--merge_folder1", type=str, nargs='?', const='', default=None)
     parser.add_argument("--merge_folder2", type=str, nargs='?', const='', default=None)
     parser.add_argument("--merge_folder3", type=str, nargs='?', const='', default=None)
@@ -47,21 +48,22 @@ if __name__ == "__main__":
     command = ['python', '/pipelines/component/src/subworkflow.py']
     if args.prefix:
         command.extend(["--prefix", args.prefix])
+    if args.output_folder:
+        command.extend(["--output_folder", args.output_folder])
     if len(merge_folders) > 0:
         if args.params:
             params = args.params
             params = params.replace('}"', "}")
             params = params.replace('"{', "{")
             dic = KFPUtils.load_from_json(params)
-            dic[args.prefix + 'merge_input_dirs'] = ",".join(merge_folders)
+            dic[args.prefix + 'merge_input_dirs'] = merge_folders
             command.extend(['--params', json.dumps(dic)])
     command.extend(unknown_args)
-    print('\n'.join(command))
     # Execute the merge sub process
     try:
         result = subprocess.run(command, capture_output=True, text=True, check=True)
-        print(result.stdout)
     except subprocess.CalledProcessError as e:
         print(f"An error occurred: {e}")
         print(f"Error output: {e.stderr}")
         sys.exit(1)
+    print(result.stdout)

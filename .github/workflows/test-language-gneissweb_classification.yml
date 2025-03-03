@@ -78,8 +78,10 @@ jobs:
             - id: permission
               run: |
                 # Check if user is allowed to run priviledge workflows
-                restricted_acccess = ${{ github.event.pull_request.head.repo.fork }}
-                actor = ${{ github.triggering_actor }}
+                echo "Checking permission"
+                restricted_acccess=${{ github.event.pull_request.head.repo.fork }}
+                actor=${{ github.triggering_actor }}
+                echo "$restricted_acccess  $actor"
                 allowed_list=("touma-I" "revit13" "roytman")
                 for user in "${allowed_list[@]}"; do
                     if [ "$user" ==  "$actor" ]; then

@@ -131,7 +131,7 @@ jobs:
                       echo "transforms/language/gneissweb_classification/Makefile not found - source testing disabled for this transform."
                   fi
     test-image:
-        needs: [check_if_push_image]
+        needs: [check_if_push_image, check_if_allowed]
         runs-on: ubuntu-22.04
         timeout-minutes: 120
         env:
@@ -139,13 +139,10 @@ jobs:
             DOCKER_REGISTRY_KEY: ${{ secrets.DOCKER_REGISTRY_KEY }}
         steps:
             - name: Expose secret to trusted users working in a fork
+              if: needs.check_if_allowed.outputs.restricted_access == 'false'
               run: |
-                  echo "Checking actor- :  ${{ github.actor }}"
-                  echo "Checking Trigger_actor- :  ${{ github.triggering_actor }}"
-                  echo "Checking user.login- :  ${{ github.event.pull_request.user.login }}"
-                  echo "Checking access- PR head:  ${{ github.event.pull_request.head.sha }}"
-                  echo "Checking access- github ref:  ${{ github.ref }}"
-                  $PWD/scripts/check-restricted-access.sh ${{ github.triggering_actor }} ${{ github.event.pull_request.head.repo.fork }}
+                  echo "Checking actor:${{ github.actor }} Trigger_actor:${{ github.triggering_actor }} user.login=${{ github.event.pull_request.user.login }}"
+                  echo "Checking PR.head.sha:${{ github.event.pull_request.head.sha }} github.ref: ${{ github.ref }}"
 
             - name: Checkout
               uses: actions/checkout@v4

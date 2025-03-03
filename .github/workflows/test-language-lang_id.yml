@@ -29,7 +29,6 @@ on:
             - "releases/**"
             - "staging-*"
         paths:
-            - ".github/workflows/**"   # used for testing
             - ".make.*"
             - "transforms/.make.transforms"
             - "transforms/language/lang_id/**"

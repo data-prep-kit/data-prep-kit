@@ -121,7 +121,7 @@ def doc_id(
     data_max_files: int = -1,
     data_num_samples: int = -1,
     data_checkpointing: bool = False,
-    data_data_sets: str = "",
+    # data_data_sets: str = "",
     data_files_to_use: str = "['.parquet']",
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
@@ -200,7 +200,7 @@ def doc_id(
             data_max_files=data_max_files,
             data_num_samples=data_num_samples,
             data_checkpointing=data_checkpointing,
-            data_data_sets=data_data_sets,
+            data_data_sets="",
             data_files_to_use=data_files_to_use,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,

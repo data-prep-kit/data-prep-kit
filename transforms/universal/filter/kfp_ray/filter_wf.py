@@ -11,15 +11,16 @@
 ################################################################################
 import os
 
-import kfp.compiler as compiler
-import kfp.components as comp
-import kfp.dsl as dsl
 from workflow_support.compile_utils import (
     DEFAULT_KFP_COMPONENT_SPEC_PATH,
     ONE_HOUR_SEC,
     ONE_WEEK_SEC,
     ComponentUtils,
 )
+
+import kfp.compiler as compiler
+import kfp.components as comp
+import kfp.dsl as dsl
 
 
 # the name of the job script
@@ -95,10 +96,17 @@ TASK_NAME: str = "filter"
 def filtering(
     # Ray cluster
     ray_name: str = "filter-kfp-ray",  # name of Ray cluster
-    ray_run_id_KFPv2: str = "",   # Ray cluster unique ID used only in KFP v2
+    ray_run_id_KFPv2: str = "",  # Ray cluster unique ID used only in KFP v2
     # Add image_pull_secret and image_pull_policy to ray workers if needed
     ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
-    ray_worker_options: dict = {"replicas": 2, "max_replicas": 2, "min_replicas": 2, "cpu": 2, "memory": 4, "image": task_image},
+    ray_worker_options: dict = {
+        "replicas": 2,
+        "max_replicas": 2,
+        "min_replicas": 2,
+        "cpu": 2,
+        "memory": 4,
+        "image": task_image,
+    },
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
     data_s3_config: str = "{'input_folder': 'test/filter/input/', 'output_folder': 'test/filter/output/'}",
@@ -106,9 +114,9 @@ def filtering(
     data_max_files: int = -1,
     data_num_samples: int = -1,
     # orchestrator
-    runtime_actor_options: dict = {'num_cpus': 0.8},
+    runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {'github': 'github', 'commit_hash': '12345', 'path': 'path'},
+    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # filtering parameters
     filter_criteria_list: str = "['docq_total_words > 100 AND docq_total_words < 200', 'ibmkenlm_docq_perplex_score < 230']",
     filter_logical_operator: str = "AND",
@@ -160,13 +168,17 @@ def filtering(
     # https://github.com/kubeflow/pipelines/issues/10187. Therefore, meantime the user is requested to insert
     # a unique string created at run creation time.
     if os.getenv("KFPv2", "0") == "1":
-        print("WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
-              "same version of the same pipeline !!!")
+        print(
+            "WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
+            "same version of the same pipeline !!!"
+        )
         run_id = ray_run_id_KFPv2
     else:
         run_id = dsl.RUN_ID_PLACEHOLDER
     # create clean_up task
-    clean_up_task = cleanup_ray_op(ray_name=ray_name, run_id=run_id, server_url=server_url, additional_params=additional_params)
+    clean_up_task = cleanup_ray_op(
+        ray_name=ray_name, run_id=run_id, server_url=server_url, additional_params=additional_params
+    )
     ComponentUtils.add_settings_to_component(clean_up_task, ONE_HOUR_SEC * 2)
     # pipeline definition
     with dsl.ExitHandler(clean_up_task):

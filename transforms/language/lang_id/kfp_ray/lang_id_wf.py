@@ -142,7 +142,7 @@ def lang_id(
     # lang_id parameters
     lang_id_model_kind: str = "fasttext",
     lang_id_model_url: str = "facebook/fasttext-language-identification",
-    lang_id_content_column_name: str = "text",
+    lang_id_content_column_name: str = "contents",
     lang_id_output_lang_column_name: str = "lang",
     lang_id_output_score_column_name: str = "score",
     # additional parameters
@@ -248,6 +248,7 @@ def lang_id(
         )
         ComponentUtils.add_settings_to_component(execute_job, ONE_WEEK_SEC)
         ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
+
         execute_job.after(ray_cluster)
 
 

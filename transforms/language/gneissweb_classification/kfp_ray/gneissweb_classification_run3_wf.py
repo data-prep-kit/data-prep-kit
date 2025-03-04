@@ -190,56 +190,56 @@ def gneissweb_classification_run3(
     else:
         run_id = dsl.RUN_ID_PLACEHOLDER
     # create clean_up task
-    clean_up_task = cleanup_ray_op(
-        ray_name=ray_name, run_id=run_id, server_url=server_url, additional_params=additional_params
-    )
-    ComponentUtils.add_settings_to_component(clean_up_task, ONE_HOUR_SEC * 2)
+    # clean_up_task = cleanup_ray_op(
+    #     ray_name=ray_name, run_id=run_id, server_url=server_url, additional_params=additional_params
+    # )
+    # ComponentUtils.add_settings_to_component(clean_up_task, ONE_HOUR_SEC * 2)
     # pipeline definition
-    with dsl.ExitHandler(clean_up_task):
+  #  with dsl.ExitHandler(clean_up_task):
         # compute execution params
-        compute_exec_params = compute_exec_params_op(
-            worker_options=ray_worker_options,
-            actor_options=runtime_actor_options,
-            data_s3_config=data_s3_config,
-            data_max_files=data_max_files,
-            data_num_samples=data_num_samples,
-            data_checkpointing=data_checkpointing,
-            runtime_pipeline_id=runtime_pipeline_id,
-            runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
-            gcls_model_credential=gcls_model_credential,
-            gcls_model_file_name=gcls_model_file_name,
-            gcls_model_url=gcls_model_url,
-            gcls_content_column_name=gcls_content_column_name,
-            gcls_output_label_column_name=gcls_output_label_column_name,
-            gcls_output_score_column_name=gcls_output_score_column_name,
-        )
+    compute_exec_params = compute_exec_params_op(
+        worker_options=ray_worker_options,
+        actor_options=runtime_actor_options,
+        data_s3_config=data_s3_config,
+        data_max_files=data_max_files,
+        data_num_samples=data_num_samples,
+        data_checkpointing=data_checkpointing,
+        runtime_pipeline_id=runtime_pipeline_id,
+        runtime_job_id=run_id,
+        runtime_code_location=runtime_code_location,
+        gcls_model_credential=gcls_model_credential,
+        gcls_model_file_name=gcls_model_file_name,
+        gcls_model_url=gcls_model_url,
+        gcls_content_column_name=gcls_content_column_name,
+        gcls_output_label_column_name=gcls_output_label_column_name,
+        gcls_output_score_column_name=gcls_output_score_column_name,
+    )
 
-        ComponentUtils.add_settings_to_component(compute_exec_params, ONE_HOUR_SEC * 2)
-        # start Ray cluster
-        ray_cluster = create_ray_op(
-            ray_name=ray_name,
-            run_id=run_id,
-            ray_head_options=ray_head_options,
-            ray_worker_options=ray_worker_options,
-            server_url=server_url,
-            additional_params=additional_params,
-        )
-        ComponentUtils.add_settings_to_component(ray_cluster, ONE_HOUR_SEC * 2)
-        ray_cluster.after(compute_exec_params)
+    ComponentUtils.add_settings_to_component(compute_exec_params, ONE_HOUR_SEC * 2)
+    # start Ray cluster
+    ray_cluster = create_ray_op(
+        ray_name=ray_name,
+        run_id=run_id,
+        ray_head_options=ray_head_options,
+        ray_worker_options=ray_worker_options,
+        server_url=server_url,
+        additional_params=additional_params,
+    )
+    ComponentUtils.add_settings_to_component(ray_cluster, ONE_HOUR_SEC * 2)
+    ray_cluster.after(compute_exec_params)
 
-        # Execute job
-        execute_job = execute_ray_jobs_op(
-            ray_name=ray_name,
-            run_id=run_id,
-            additional_params=additional_params,
-            exec_params=compute_exec_params.output,
-            exec_script_name=EXEC_SCRIPT_NAME,
-            server_url=server_url,
-        )
-        ComponentUtils.add_settings_to_component(execute_job, ONE_WEEK_SEC)
-        ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
-        execute_job.after(ray_cluster)
+    # Execute job
+    execute_job = execute_ray_jobs_op(
+        ray_name=ray_name,
+        run_id=run_id,
+        additional_params=additional_params,
+        exec_params=compute_exec_params.output,
+        exec_script_name=EXEC_SCRIPT_NAME,
+        server_url=server_url,
+    )
+    ComponentUtils.add_settings_to_component(execute_job, ONE_WEEK_SEC)
+    ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
+    execute_job.after(ray_cluster)
 
 
 if __name__ == "__main__":

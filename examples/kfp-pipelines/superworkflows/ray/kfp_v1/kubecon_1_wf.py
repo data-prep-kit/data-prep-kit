@@ -16,6 +16,8 @@ import kfp.components as comp
 import kfp.dsl as dsl
 
 
+ORCH_HOST = "http://ml-pipeline:8888"
+
 # Components
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", "../../../../../kfp/kfp_ray_components/")
@@ -180,86 +182,119 @@ def sample_ray_orchestrator(
 
     # get all arguments
     args = locals()
-    orch_host = "http://ml-pipeline:8888"
 
-    def _set_component(op: dsl.BaseOp, displayed_name: str, prev_op: dsl.BaseOp = None):
+    def _create_component(
+        comp_factory,
+        pipeline_name: str,
+        displayed_name: str,
+        prefix="p3_",
+        input_folder="",
+        prev_op: dsl.BaseOp = None,
+    ):
+        component = comp_factory(
+            name=pipeline_name, prefix=prefix, params=args, host=ORCH_HOST, input_folder=input_folder
+        )
         # set the sub component UI name
-        op.set_display_name(displayed_name)
+        component.set_display_name(displayed_name)
 
         # Add pod labels
-        op.add_pod_label("app", "ml-pipeline").add_pod_label("component", "data-science-pipelines")
+        component.add_pod_label("app", "ml-pipeline").add_pod_label("component", "data-science-pipelines")
         # No cashing
-        op.execution_options.caching_strategy.max_cache_staleness = "P0D"
+        component.execution_options.caching_strategy.max_cache_staleness = "P0D"
         # image pull policy
         # op.set_image_pull_policy("Always")
         if prev_op is not None:
-            op.after(prev_op)
+            component.after(prev_op)
+        return component
+
+    # document ID
+    doc_id = _create_component(
+        run_doc_id_op,
+        pipeline_name=p1_orch_doc_id_name,
+        displayed_name="doc ID",
+        prefix="p3_",
+        input_folder=p2_pipeline_input_parent_path,
+    )
 
     # exact deduplication
-    # document ID
-    doc_id = run_doc_id_op(
-        name=p1_orch_doc_id_name, prefix="p3_", params=args, host=orch_host, input_folder=p2_pipeline_input_parent_path
+    exact_dedup = _create_component(
+        run_exact_dedup_op,
+        pipeline_name=p1_orch_exact_dedup_name,
+        displayed_name="exact dedup",
+        prefix="p4_",
+        input_folder=doc_id.output,
+        prev_op=doc_id,
     )
-    _set_component(doc_id, "doc ID")
-
-    exact_dedup = run_exact_dedup_op(
-        name=p1_orch_exact_dedup_name, prefix="p4_", params=args, host=orch_host, input_folder=doc_id.output
-    )
-    _set_component(exact_dedup, "exact dedup", doc_id)
 
     # language ID
-    lang_id = run_lang_id_op(
-        name=p1_orch_lang_id_name, prefix="p5_", params=args, host=orch_host, input_folder=exact_dedup.output
+    lang_id = _create_component(
+        run_lang_id_op,
+        pipeline_name=p1_orch_lang_id_name,
+        displayed_name="language ID",
+        prefix="p5_",
+        input_folder=exact_dedup.output,
+        prev_op=exact_dedup,
     )
-    _set_component(lang_id, "language ID", exact_dedup)
 
     # English filter
-    filter_en = run_filter_op(
-        name=p1_orch_filter_name,
+    filter_en = _create_component(
+        run_filter_op,
+        pipeline_name=p1_orch_filter_name,
+        displayed_name="filter en",
         prefix="p6_",
-        params=args,
-        host=orch_host,
         input_folder=lang_id.output,
+        prev_op=lang_id,
     )
-    _set_component(filter_en, "filter en", lang_id)
 
-    # document quality en
-    doc_quality_en = run_doc_quality_op(
-        name=p1_orch_doc_quality_name, prefix="p7_", params=args, host=orch_host, input_folder=filter_en.output
+    # English document quality annotator
+    doc_quality_en = _create_component(
+        run_doc_quality_op,
+        pipeline_name=p1_orch_doc_quality_name,
+        displayed_name="doc quality en",
+        prefix="p7_",
+        input_folder=filter_en.output,
+        prev_op=filter_en,
     )
-    _set_component(doc_quality_en, "doc quality en", filter_en)
 
     # Japanese filter
-    filter_ja = run_filter_op(
-        name=p1_orch_filter_name,
+    filter_ja = _create_component(
+        run_filter_op,
+        pipeline_name=p1_orch_filter_name,
+        displayed_name="filter ja",
         prefix="p8_",
-        params=args,
-        host=orch_host,
         input_folder=lang_id.output,
+        prev_op=lang_id,
     )
-    _set_component(filter_ja, "filter ja", lang_id)
 
-    # document quality ja
-    doc_quality_ja = run_doc_quality_op(
-        name=p1_orch_doc_quality_name, prefix="p9_", params=args, host=orch_host, input_folder=filter_ja.output
+    # Japanese document quality annotator
+    doc_quality_ja = _create_component(
+        run_doc_quality_op,
+        pipeline_name=p1_orch_doc_quality_name,
+        displayed_name="doc quality ja",
+        prefix="p9_",
+        input_folder=filter_ja.output,
+        prev_op=filter_ja,
     )
-    _set_component(doc_quality_ja, "doc quality ja", filter_ja)
 
     # French filter
-    filter_fr = run_filter_op(
-        name=p1_orch_filter_name,
+    filter_fr = _create_component(
+        run_filter_op,
+        pipeline_name=p1_orch_filter_name,
+        displayed_name="filter fr",
         prefix="p10_",
-        params=args,
-        host=orch_host,
         input_folder=lang_id.output,
+        prev_op=lang_id,
     )
-    _set_component(filter_fr, "filter fr", lang_id)
 
-    # document quality fr
-    doc_quality_fr = run_doc_quality_op(
-        name=p1_orch_doc_quality_name, prefix="p11_", params=args, host=orch_host, input_folder=filter_fr.output
+    # French document quality annotator
+    doc_quality_fr = _create_component(
+        run_doc_quality_op,
+        pipeline_name=p1_orch_doc_quality_name,
+        displayed_name="doc quality fr",
+        prefix="p11_",
+        input_folder=filter_fr.output,
+        prev_op=filter_fr,
     )
-    _set_component(doc_quality_fr, "doc quality fr", filter_fr)
 
 
 if __name__ == "__main__":

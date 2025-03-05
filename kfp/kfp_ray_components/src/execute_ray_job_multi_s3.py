@@ -23,14 +23,15 @@ if __name__ == "__main__":
     one for the data access and one for the additional data, for example, config files, models, etc.
     """
     parser = argparse.ArgumentParser(description="Execute Ray job operation")
-    parser.add_argument("--ray_name", type=str, default="")
-    parser.add_argument("--run_id", type=str, default="")
-    parser.add_argument("--additional_params", type=str, default="{}")
-    parser.add_argument("--server_url", type=str, default="")
-    parser.add_argument("--prefix", type=str, default="")
+
+    parser.add_argument("-rn", "--ray_name", type=str, default="")
+    parser.add_argument("-id", "--run_id", type=str, default="")
+    parser.add_argument("-ap", "--additional_params", type=str, default="{}")
+    parser.add_argument("-su", "--server_url", type=str, default="")
+    parser.add_argument("-p", "--prefix", type=str, default="")
     # The component converts the dictionary to json string
-    parser.add_argument("--exec_params", type=str, default="{}")
-    parser.add_argument("--exec_script_name", default="transformer_launcher.py", type=str)
+    parser.add_argument("-ep", "--exec_params", type=str, default="{}")
+    parser.add_argument("-esn", "--exec_script_name", default="transformer_launcher.py", type=str)
 
     args = parser.parse_args()
     cluster_name = KFPUtils.runtime_name(

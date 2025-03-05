@@ -63,4 +63,4 @@ endif
 #
 # If you change the versions numbers, be sure to run "make set-versions" to 
 # update version numbers across the transform (e.g., pyproject.toml).
-TRANSFORMS_PKG_VERSION=1.0.0a0
+TRANSFORMS_PKG_VERSION=1.0.1.dev0

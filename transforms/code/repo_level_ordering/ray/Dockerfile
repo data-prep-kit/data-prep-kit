@@ -4,7 +4,7 @@ FROM ${BASE_IMAGE}
 
 # see https://docs.openshift.com/container-platform/4.17/openshift_images/create-images.html#use-uid_create-images
 USER root
-RUN chown ray:root /home/ray && chmod 775 /home/ray
+RUN chown ray:root /home/ray && chmod g=u /home/ray
 USER ray
 
 RUN pip install --upgrade --no-cache-dir pip 
@@ -24,13 +24,13 @@ COPY --chmod=775 --chown=ray:root README.md README.md
 RUN pip install --no-cache-dir -e .
 
 # copy source data
-COPY ./src/repo_level_order_transform_ray.py .
-COPY ./src/repo_level_order_local_ray.py local/
-COPY ./src/repo_level_order_s3_ray.py local/
+COPY --chmod=775 --chown=ray:root ./src/repo_level_order_transform_ray.py .
+COPY --chmod=775 --chown=ray:root ./src/repo_level_order_local_ray.py local/
+COPY --chmod=775 --chown=ray:root ./src/repo_level_order_s3_ray.py local/
 
 # copy test
-COPY test/ test/
-COPY test-data/ test-data/
+COPY --chmod=775 --chown=ray:root test/ test/
+COPY --chmod=775 --chown=ray:root test-data/ test-data/
 
 # Set environment
 ENV PYTHONPATH /home/ray:/home/ray/src

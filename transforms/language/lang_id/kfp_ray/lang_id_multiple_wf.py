@@ -26,6 +26,7 @@ task_image = "quay.io/dataprep1/data-prep-kit/lang_id-ray:latest"
 
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_lang_id.ray.transform"
+HF_SECRET = os.environ.get('HF_READ_ACCESS_TOKEN', "PUT YOUR OWN HUGGINGFACE CREDENTIAL")
 
 # components
 base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:0.2.3"
@@ -77,23 +78,11 @@ def compute_exec_params_func(
 # KFPv2 recommends using the `@dsl.component` decorator, which doesn't exist in KFPv1. Therefore, here we use
 # this if/else statement and explicitly call the decorator.
 if os.getenv("KFPv2", "0") == "1":
-    # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
-    # a unique string in a component (at runtime) and pass it to the `clean_up_task` of `ExitHandler`, due to
-    # https://github.com/kubeflow/pipelines/issues/10187. Therefore, meantime we use a unique string created at
-    # compilation time.
-    import uuid
-
     compute_exec_params_op = dsl.component_decorator.component(
         func=compute_exec_params_func, base_image=base_kfp_image
     )
-    print(
-        "WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
-        + "same version of the same pipeline !!!"
-    )
-    run_id = uuid.uuid4().hex
 else:
     compute_exec_params_op = comp.create_component_from_func(func=compute_exec_params_func, base_image=base_kfp_image)
-    run_id = dsl.RUN_ID_PLACEHOLDER
 
 # create Ray cluster
 create_ray_op = comp.load_component_from_file(component_spec_path + "createRayClusterComponent.yaml")
@@ -112,6 +101,7 @@ TASK_NAME: str = "lang_id"
 def lang_id(
     # Ray cluster
     ray_name: str = "lang_id-kfp-ray",  # name of Ray cluster
+    ray_run_id_KFPv2: str = "",   # Ray cluster unique ID used only in KFP v2
     # Add image_pull_secret and image_pull_policy to ray workers if needed
     ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
     ray_worker_options: dict = {
@@ -133,7 +123,7 @@ def lang_id(
     runtime_pipeline_id: str = "pipeline_id",
     runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # lang_id parameters
-    lang_id_model_credential: str = "PUT YOUR OWN HUGGINGFACE CREDENTIAL",
+    lang_id_model_credential: str = HF_SECRET,
     lang_id_model_kind: str = "fasttext",
     lang_id_model_url: str = "facebook/fasttext-language-identification",
     lang_id_content_column_name: str = "text",
@@ -145,6 +135,7 @@ def lang_id(
     """
     Pipeline to execute Language Identification transform
     :param ray_name: name of the Ray cluster
+    :param ray_run_id_KFPv2: a unique string id used for the Ray cluster, applicable only in KFP v2.
     :param ray_head_options: head node options, containing the following:
         cpu - number of cpus
         memory - memory
@@ -183,6 +174,16 @@ def lang_id(
     :param lang_id_output_score_column_name - name of the output column to hold score of prediction
     :return: None
     """
+    # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
+    # a unique string in a component (at runtime) and pass it to the `clean_up_task` of `ExitHandler`, due to
+    # https://github.com/kubeflow/pipelines/issues/10187. Therefore, meantime the user is requested to insert
+    # a unique string created at run creation time.
+    if os.getenv("KFPv2", "0") == "1":
+        print("WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
+              "same version of the same pipeline !!!")
+        run_id = ray_run_id_KFPv2
+    else:
+        run_id = dsl.RUN_ID_PLACEHOLDER
     # create clean_up task
     clean_up_task = cleanup_ray_op(
         ray_name=ray_name, run_id=run_id, server_url=server_url, additional_params=additional_params

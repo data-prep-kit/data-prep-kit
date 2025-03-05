@@ -62,7 +62,7 @@ The set of dictionary keys holding [code_profiler_transform](dpk_code_profiler/t
 configuration for values are as follows:
 
 * content - specifies the column name in the dataframe that has the code snippet
-* language - specifies the programming languages of the code snippet
+* programming_language - specifies the programming languages of the code snippet
 
 ## Running
 
@@ -124,7 +124,7 @@ Document Quality configuration and command line options are the same as for the 
 When running the transform with the Ray launcher (i.e., TransformLauncher),
 In addition to those available to the transform as defined here,
 the set of 
-[ray launcher](../../../data-processing-lib/doc/ray-launcher-options.md) are available.
+[launcher options](../../../data-processing-lib/doc/launcher-options.md) are available.
 
 #### Running the samples
 To run the samples, use the following `make` target

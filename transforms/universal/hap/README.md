@@ -107,4 +107,4 @@ Configuration and command line options are the same as for the base python trans
 ### Launched Command Line Options 
 In addition to those available to the transform as defined here,
 the set of 
-[ray launcher](../../../data-processing-lib/doc/ray-launcher-options.md) are available.
+[launcher options](../../../data-processing-lib/doc/launcher-options.md) are available.

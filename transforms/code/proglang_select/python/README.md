@@ -33,8 +33,7 @@ The set of dictionary keys holding configuration for values are as follows:
 
 ### Launched Command Line Options 
 The following command line arguments are available in addition to 
-the options provided by the [python launcher](../../../../data-processing-lib/doc/python-launcher-options.md)
-and the [python launcher](../../../../data-processing-lib/doc/python-launcher-options.md).
+the options provided by the [launcher](../../../../data-processing-lib/doc/launcher-options.md).
 
 ```
   --proglang_select_allowed_langs_file PROGLANG_MATCH_ALLOWED_LANGS_FILE

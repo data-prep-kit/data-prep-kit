@@ -87,7 +87,7 @@ Here is a sample [notebook](text_encoder-ray.ipynb)
 ### Launched Command Line Options 
 
 In addition to those available to the transform as defined here,
-[ray launcher options](../../../data-processing-lib/doc/ray-launcher-options.md) are available.
+[launcher options](../../../data-processing-lib/doc/launcher-options.md) are available.
 
 ### Transforming data using the transform image
 

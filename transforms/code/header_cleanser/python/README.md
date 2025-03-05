@@ -28,7 +28,7 @@ You can run the [header_cleanser_local.py](src/header_cleanser_local.py) (python
 ### Launched Command Line Options 
 When running the transform with the Ray launcher (i.e. TransformLauncher),
 the following command line arguments are available in addition to 
-the [python launcher](../../../../data-processing-lib/doc/python-launcher-options.md).
+the [launcher](../../../../data-processing-lib/doc/launcher-options.md).
 * --header_cleanser_contents_column_name - set the contents_column_name configuration key.
 * --header_cleanser_document_id_column_name - set the document_id_column_name configuration key.
 * --header_cleanser_license - set the license configuration key.

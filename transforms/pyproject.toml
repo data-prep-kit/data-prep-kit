@@ -1,6 +1,6 @@
 [project]
 name = "data_prep_toolkit_transforms"
-version = "1.0.0a5"
+version = "1.0.1.dev1"
 requires-python = ">=3.10,<3.13"
 keywords = ["transforms", "data preprocessing", "data preparation", "llm", "generative", "ai", "fine-tuning", "llmapps" ]
 description = "Data Preparation Toolkit Transforms using Ray"
@@ -16,6 +16,7 @@ requires = ["setuptools>=68.0.0", "wheel", "setuptools_scm[toml]>=7.1.0"]
 build-backend = "setuptools.build_meta"
 
 
+
 [tool.setuptools.dynamic.dependencies]
 file = ["requirements.txt"]
 
@@ -28,13 +29,12 @@ all = { file = [
 "code/license_select/python/requirements.txt",
 "code/code_quality/python/requirements.txt",
 "code/code2parquet/python/requirements.txt",
-
 "code/code_profiler/requirements.txt",
 
 "language/pii_redactor/requirements.txt",
 
-"universal/profiler/python/requirements.txt",
-"universal/resize/python/requirements.txt",
+"universal/profiler/requirements.txt",
+"universal/resize/requirements.txt",
 
 "language/lang_id/requirements.txt",
 "language/doc_quality/requirements.txt",
@@ -42,6 +42,9 @@ all = { file = [
 "language/doc_chunk/requirements.txt",
 "language/text_encoder/requirements.txt",
 "language/similarity/requirements.txt",
+"language/extreme_tokenized/requirements.txt",
+"language/readability/requirements.txt",
+"language/gneissweb_classification/requirements.txt",
 
 ##### Cannot have html2parquet until we solve
 ## docling-ibm-models 1.1.7 depends on lxml<5.0.0 and >=4.9.1
@@ -54,7 +57,8 @@ all = { file = [
 "universal/fdedup/requirements.txt",
 "universal/hap/requirements.txt",
 "universal/tokenization/requirements.txt",
-"universal/web2parquet/requirements.txt"
+"universal/web2parquet/requirements.txt",
+"universal/rep_removal/requirements.txt"
 ]}
 
 language = { file = [
@@ -66,6 +70,9 @@ language = { file = [
 "language/doc_chunk/requirements.txt",
 "language/text_encoder/requirements.txt",
 "language/similarity/requirements.txt",
+"language/extreme_tokenized/requirements.txt",
+"language/readability/requirements.txt",
+"language/gneissweb_classification/requirements.txt",
 
 ##### Cannot have html2parquet until we solve
 ## docling-ibm-models 1.1.7 depends on lxml<5.0.0 and >=4.9.1
@@ -78,7 +85,10 @@ language = { file = [
 "universal/fdedup/requirements.txt",
 "universal/hap/requirements.txt",
 "universal/tokenization/requirements.txt",
-"universal/web2parquet/requirements.txt"
+"universal/web2parquet/requirements.txt",
+"universal/profiler/requirements.txt",
+"universal/resize/requirements.txt",
+"universal/rep_removal/requirements.txt"
 ]}
 
 # pyproject.toml must be in a parent and cannot be in sibling
@@ -90,8 +100,8 @@ license_select = { file = ["code/license_select/python/requirements.txt"]}
 code_quality = { file = ["code/code_quality/python/requirements.txt"]} 
 code2parquet = {file =  ["code/code2parquet/python/requirements.txt"]}
 
-profiler = { file = ["universal/profiler/python/requirements.txt"]} 
-resize = { file = ["universal/resize/python/requirements.txt"]} 
+profiler = { file = ["universal/profiler/requirements.txt"]} 
+resize = { file = ["universal/resize/requirements.txt"]} 
 
 ######## Named transforms
 doc_chunk = { file = ["language/doc_chunk/requirements.txt"]}
@@ -112,9 +122,14 @@ tokenization = { file = ["universal/tokenization/requirements.txt"]}
 web2parquet = { file = ["universal/web2parquet/requirements.txt"]}
 
 similarity = { file = ["language/similarity/requirements.txt"]}
+extreme_tokenized = { file = ["language/extreme_tokenized/requirements.txt"]}
+readability = { file = ["language/readability/requirements.txt"]}
 
 code_profiler = { file = ["code/code_profiler/requirements.txt"]} 
 
+gneissweb_classification = { file = ["language/gneissweb_classification/requirements.txt"]}
+
+rep_removal = { file = ["universal/rep_removal/requirements.txt"]}
 # Does not seem to work for our custom layout
 # copy all files to a single src and let automatic discovery find them
 
@@ -138,10 +153,18 @@ dpk_tokenization = "universal/tokenization/dpk_tokenization"
 dpk_similarity = "language/similarity/dpk_similarity"
 dpk_filter = "universal/filter/dpk_filter"
 dpk_code_profiler = "code/code_profiler/dpk_code_profiler"
+dpk_extreme_tokenized = "language/extreme_tokenized/dpk_extreme_tokenized"
+dpk_readability = "language/readability/dpk_readability"
+dpk_profiler = "universal/profiler/dpk_profiler"
+dpk_resize = "universal/resize/dpk_resize"
+dpk_gneissweb_classification = "language/gneissweb_classification/dpk_gneissweb_classification"
+dpk_rep_removal = "universal/rep_removal/dpk_rep_removal"
 
 
-#[tool.setuptools.package-data]
+[tool.setuptools.package-data]
 #"*" = ["*.txt"]
+"dpk_rep_removal.rust" = ["**"]
+"dpk_rep_removal.gpt2" = ["**"]
 
 [options]
 package_dir = ["src","test"]

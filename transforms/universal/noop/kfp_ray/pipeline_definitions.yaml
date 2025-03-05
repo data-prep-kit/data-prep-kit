@@ -1,7 +1,7 @@
 pipeline_parameters:
     name: "noop"
     description: "Pipeline for noop task"
-    script_name: "noop_transform_ray.py"
+    script_name: "-m dpk_noop.ray.runtime"
     prefix: ""
     multi_s3: False
     compute_func_name: ""

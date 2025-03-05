@@ -72,23 +72,11 @@ def compute_exec_params_func(
 # KFPv2 recommends using the `@dsl.component` decorator, which doesn't exist in KFPv1. Therefore, here we use
 # this if/else statement and explicitly call the decorator.
 if os.getenv("KFPv2", "0") == "1":
-    # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
-    # a unique string in a component (at runtime) and pass it to the `clean_up_task` of `ExitHandler`, due to
-    # https://github.com/kubeflow/pipelines/issues/10187. Therefore, meantime we use a unique string created at
-    # compilation time.
-    import uuid
-
     compute_exec_params_op = dsl.component_decorator.component(
         func=compute_exec_params_func, base_image=base_kfp_image
     )
-    print(
-        "WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
-        + "same version of the same pipeline !!!"
-    )
-    run_id = uuid.uuid4().hex
 else:
     compute_exec_params_op = comp.create_component_from_func(func=compute_exec_params_func, base_image=base_kfp_image)
-    run_id = dsl.RUN_ID_PLACEHOLDER
 
 # create Ray cluster
 create_ray_op = comp.load_component_from_file(component_spec_path + "createRayClusterComponent.yaml")
@@ -107,6 +95,7 @@ TASK_NAME: str = "doc_quality"
 def doc_quality(
     # Ray cluster
     ray_name: str = "doc_quality-kfp-ray",  # name of Ray cluster
+    ray_run_id_KFPv2: str = "",
     ray_head_options: dict = {
         "cpu": 1,
         "memory": 4,
@@ -143,6 +132,7 @@ def doc_quality(
     """
     Pipeline to execute Document Quality transform
     :param ray_name: name of the Ray cluster
+    :param ray_run_id_KFPv2: a unique string id used for the Ray cluster, applicable only in KFP v2.
     :param ray_head_options: head node options, containing the following:
         cpu - number of cpus
         memory - memory
@@ -178,6 +168,17 @@ def doc_quality(
     :param docq_bad_word_filepath - a path to bad word file
     :return: None
     """
+    # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
+    # a unique string in a component (at runtime) and pass it to the `clean_up_task` of `ExitHandler`, due to
+    # https://github.com/kubeflow/pipelines/issues/10187. Therefore, meantime we use a unique string created at
+    # compilation time.
+    if os.getenv("KFPv2", "0") == "1":
+        print("WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
+              "same version of the same pipeline !!!")
+        run_id = ray_run_id_KFPv2
+    else:
+        run_id = dsl.RUN_ID_PLACEHOLDER
+
     # create clean_up task
     clean_up_task = cleanup_ray_op(
         ray_name=ray_name, run_id=run_id, server_url=server_url, additional_params=additional_params

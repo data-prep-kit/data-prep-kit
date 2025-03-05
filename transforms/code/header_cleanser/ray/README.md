@@ -17,7 +17,8 @@ This project wraps the [header cleanser transform](../python) with a Ray runtime
 ## Running
 
 ### Launched Command Line Options 
-In addition to those available to the transform as defined in [here](../python/README.md), the set of [ray launcher](../../../../data-processing-lib/doc/ray-launcher-options.md) are available.
+In addition to those available to the transform as defined in [here](../python/README.md), 
+the set of [launcher options](../../../../data-processing-lib/doc/launcher-options.md) are available.
 
 ### Running the samples
 To run the samples, use the following `make` targets

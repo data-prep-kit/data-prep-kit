@@ -1,0 +1,4 @@
+fasttext>=0.9.3 ; platform_system != "Windows"
+langcodes>=3.5.0
+huggingface-hub >= 0.21.4, <1.0.0
+numpy>=1.26.4, < 1.29.0

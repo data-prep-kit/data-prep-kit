@@ -27,7 +27,7 @@ local_conf = {
     "input_folder": input_folder,
     "output_folder": output_folder,
     "contents": "contents",
-    "language": "language",
+    "programming_language": "programming_language",
 }
 worker_options = {"num_cpus": 1}
 # Code location and parameters

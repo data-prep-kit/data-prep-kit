@@ -1,0 +1,40 @@
+## Data prep kit
+data-prep-toolkit-transforms[ray,all]==1.0.0
+
+# Milvus
+pymilvus
+pymilvus[model]
+
+# datasets
+datasets
+
+## --- Replicate
+replicate
+
+## --- llama-index
+
+llama-index
+
+### llama-index embedding models
+llama-index-embeddings-huggingface
+
+### llama-index LLM interfaces
+llama-index-llms-replicate
+
+### llama-index Vector dbs
+llama-index-vector-stores-milvus
+
+
+
+# --- Utils
+python-dotenv
+humanfriendly
+
+## --- Jupyter Utils
+jupyterlab
+ipykernel
+ipython
+ipywidgets
+IProgress
+chardet==5.2.0
+charset-normalizer==3.3.2

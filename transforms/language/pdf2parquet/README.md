@@ -142,7 +142,7 @@ Ingest PDF to Parquet configuration and command line options are the same as for
 When running the transform with the Ray launcher (i.e., TransformLauncher),
 in addition to those available to the transform for the Python version in this file,
 the set of 
-[ray launcher](../../../data-processing-lib/doc/ray-launcher-options.md) are available.
+[launcher options](../../../data-processing-lib/doc/launcher-options.md) are available.
 
 ### Transforming data using the transform image
 

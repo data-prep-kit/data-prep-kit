@@ -27,7 +27,10 @@ EXEC_SCRIPT_NAME: str = "code_quality_transform_ray.py"
 PREFIX: str = ""
 
 task_image = "quay.io/dataprep1/data-prep-kit/code_quality-ray:latest"
-
+# Need to further investigate but for now:
+# When using None for the hf_token, the workflow works fine with v1 
+# but for v2, it fails with None and requires the string "None"
+HF_TOKEN= "None" if os.getenv("KFPv2", "0") == "1" else None
 # components
 base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
@@ -74,23 +77,11 @@ def compute_exec_params_func(
 # KFPv2 recommends using the `@dsl.component` decorator, which doesn't exist in KFPv1. Therefore, here we use
 # this if/else statement and explicitly call the decorator.
 if os.getenv("KFPv2", "0") == "1":
-    # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
-    # a unique string in a component (at runtime) and pass it to the `clean_up_task` of `ExitHandler`, due to
-    # https://github.com/kubeflow/pipelines/issues/10187. Therefore, meantime we use a unique string created at
-    # compilation time.
-    import uuid
-
     compute_exec_params_op = dsl.component_decorator.component(
         func=compute_exec_params_func, base_image=base_kfp_image
     )
-    print(
-        "WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
-        + "same version of the same pipeline !!!"
-    )
-    run_id = uuid.uuid4().hex
 else:
     compute_exec_params_op = comp.create_component_from_func(func=compute_exec_params_func, base_image=base_kfp_image)
-    run_id = dsl.RUN_ID_PLACEHOLDER
 
 
 # create Ray cluster
@@ -112,6 +103,7 @@ TASK_NAME: str = "code_quality"
 def code_quality(
     # Ray cluster
     ray_name: str = "code_quality-kfp-ray",  # name of Ray cluster
+    ray_run_id_KFPv2: str = "",   # Ray cluster unique ID used only in KFP v2
     # Add image_pull_secret and image_pull_policy to ray workers if needed
     ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
     ray_worker_options: dict = {"replicas": 2, "max_replicas": 2, "min_replicas": 2, "cpu": 2, "memory": 4, "image": task_image},
@@ -129,13 +121,14 @@ def code_quality(
     cq_contents_column_name: str = "contents",
     cq_language_column_name: str = "language",
     cq_tokenizer: str = "codeparrot/codeparrot",
-    cq_hf_token: str = "None",
+    cq_hf_token: str = HF_TOKEN,
     # additional parameters
     additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
 ):
     """
     Pipeline to execute Code Quality transform
     :param ray_name: name of the Ray cluster
+    :param ray_run_id_KFPv2: a unique string id used for the Ray cluster, applicable only in KFP v2.
     :param ray_head_options: head node options, containing the following:
         cpu - number of cpus
         memory - memory
@@ -171,6 +164,16 @@ def code_quality(
     :param cq_hf_token - Huggingface auth token to download and use the tokenizer
     :return: None
     """
+    # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
+    # a unique string in a component (at runtime) and pass it to the `clean_up_task` of `ExitHandler`, due to
+    # https://github.com/kubeflow/pipelines/issues/10187. Therefore, meantime the user is requested to insert
+    # a unique string created at run creation time.
+    if os.getenv("KFPv2", "0") == "1":
+        print("WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
+              "same version of the same pipeline !!!")
+        run_id = ray_run_id_KFPv2
+    else:
+        run_id = dsl.RUN_ID_PLACEHOLDER
     # create clean_up task
     clean_up_task = cleanup_ray_op(ray_name=ray_name, run_id=run_id, server_url=server_url, additional_params=additional_params)
     ComponentUtils.add_settings_to_component(clean_up_task, ONE_HOUR_SEC * 2)

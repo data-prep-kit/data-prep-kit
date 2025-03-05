@@ -40,9 +40,9 @@ mc cp --recursive ${REPOROOT}/transforms/language/html2parquet/test-data/input/t
 mc cp --recursive ${REPOROOT}/transforms/universal/doc_id/test-data/input/ kfp/test/doc_id/input
 mc cp --recursive ${REPOROOT}/transforms/universal/ededup/test-data/input/ kfp/test/ededup/input
 mc cp --recursive ${REPOROOT}/transforms/universal/fdedup/ray/test-data/input/ kfp/test/fdedup/input
-mc cp --recursive ${REPOROOT}/transforms/universal/filter/ray/test-data/input/ kfp/test/filter/input
-mc cp --recursive ${REPOROOT}/transforms/universal/noop/ray/test-data/input/ kfp/test/noop/input
+mc cp --recursive ${REPOROOT}/transforms/universal/filter/test-data/input/ kfp/test/filter/input
+mc cp --recursive ${REPOROOT}/transforms/universal/noop/test-data/input/ kfp/test/noop/input
 mc cp --recursive ${REPOROOT}/transforms/universal/tokenization/test-data/ds01/input/ kfp/test/tokenization/ds01/input
-mc cp --recursive ${REPOROOT}/transforms/universal/profiler/ray/test-data/input/ kfp/test/profiler/input
-mc cp --recursive ${REPOROOT}/transforms/universal/resize/ray/test-data/input/ kfp/test/resize/input
+mc cp --recursive ${REPOROOT}/transforms/universal/profiler/test-data/input/ kfp/test/profiler/input
+mc cp --recursive ${REPOROOT}/transforms/universal/resize/test-data/input/ kfp/test/resize/input
 mc cp --recursive ${REPOROOT}/transforms/universal/hap/test-data/input/ kfp/test/hap/input

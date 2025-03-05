@@ -37,7 +37,7 @@ from dpk_code_profiler.UAST_parser import UASTParser, uast_read
 
 short_name = "CodeProfiler"
 cli_prefix = f"{short_name}_"
-language = "language"
+language = "programming_language"
 contents = "contents"
 
 
@@ -54,7 +54,7 @@ class CodeProfilerTransform(AbstractTableTransform):
         super().__init__(config)
 
         self.contents = self.config.get("contents", "contents")
-        self.language = self.config.get("language", "language")
+        self.language = self.config.get("programming_language", "programming_language")
 
         if not isinstance(self.contents, str):
             raise ValueError(f"'contents' should be a string, got {type(self.contents).__name__}")
@@ -195,7 +195,7 @@ class CodeProfilerTransform(AbstractTableTransform):
             raise FileNotFoundError(f"File not found: {self.null_libs_file}")
 
         # Higher order semantic features
-        self.metrics_list = config.get("metrics_list", ["CCR", "code_snippet_len", "avg_fn_len_in_snippet"])
+        self.metrics_list = config.get("metrics_list", ["ccr", "code_snippet_len", "avg_fn_len_in_snippet"])
 
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
         """
@@ -268,9 +268,9 @@ class CodeProfilerTransform(AbstractTableTransform):
             uast_column = pa.array(uasts)
             package_list_column = pa.array(package_lists)
 
-            tmp_table_with_uast = tmp_table.append_column("UAST", uast_column)
+            tmp_table_with_uast = tmp_table.append_column("uast", uast_column)
             # Add the uast_package column
-            table_with_package_list = tmp_table_with_uast.append_column("UAST_Package_List", package_list_column)
+            table_with_package_list = tmp_table_with_uast.append_column("uast_package_list", package_list_column)
             return table_with_package_list
 
         table_with_uast = get_uast_parquet(table)
@@ -285,34 +285,34 @@ class CodeProfilerTransform(AbstractTableTransform):
         ikb.load_ikb_trie()
 
         # Extract concept from IKB
-        libraries = table_with_uast.column("UAST_Package_List").to_pylist()
-        language = table_with_uast.column("language").to_pylist()
+        libraries = table_with_uast.column("uast_package_list").to_pylist()
+        language = table_with_uast.column("programming_language").to_pylist()
         concepts = [concept_extractor(lib, lang, ikb) for lib, lang in zip(libraries, language)]
 
         # Append concepts column to table and record unknown libraries
         new_col = pa.array(concepts)
-        table_with_uast = table_with_uast.append_column("Concepts", new_col)
+        table_with_uast = table_with_uast.append_column("concepts", new_col)
         ikb.write_null_files()
 
         # Higher order syntactic profiler
         self.logger.debug(f"Transforming one table with {len(table_with_uast)} rows")
 
         if self.metrics_list is not None:
-            uasts = [uast_read(uast_json) for uast_json in table_with_uast["UAST"].to_pylist()]
+            uasts = [uast_read(uast_json) for uast_json in table_with_uast["uast"].to_pylist()]
             ccrs = []
             code_snippet_len = []
             avg_fn_len_in_snippet = []
 
             for uast in uasts:
-                if "CCR" in self.metrics_list:
+                if "ccr" in self.metrics_list:
                     ccrs.append(extract_ccr(uast))
                 if "code_snippet_len" in self.metrics_list:
                     code_snippet_len.append(extract_code_snippet_length(uast))
                 if "avg_fn_len_in_snippet" in self.metrics_list:
                     avg_fn_len_in_snippet.append(extract_code_avg_fn_len_in_snippet(uast))
 
-            if "CCR" in self.metrics_list:
-                table_with_uast = table_with_uast.append_column("CCR", pa.array(ccrs))
+            if "ccr" in self.metrics_list:
+                table_with_uast = table_with_uast.append_column("ccr", pa.array(ccrs))
             if "code_snippet_len" in self.metrics_list:
                 table_with_uast = table_with_uast.append_column("code_snippet_len", pa.array(code_snippet_len))
             if "avg_fn_len_in_snippet" in self.metrics_list:
@@ -323,7 +323,7 @@ class CodeProfilerTransform(AbstractTableTransform):
         self.logger.debug(f"Transformed one table with {len(table_with_uast)} rows")
         metadata = {"nfiles": 1, "nrows": len(table_with_uast)}
         # Report generation
-        if "UAST" in table_with_uast.schema.names and "Concepts" in table_with_uast.schema.names:
+        if "uast" in table_with_uast.schema.names and "concepts" in table_with_uast.schema.names:
             generate_report(table_with_uast, self.metrics_list)
 
         # Add some sample metadata.
@@ -355,7 +355,7 @@ class CodeProfilerTransformConfiguration(TransformConfiguration):
         parser.add_argument(
             f"--{language}",
             type=str,
-            default="language",
+            default="programming_language",
             help="Column name that denotes the programming language",
         )
         parser.add_argument(

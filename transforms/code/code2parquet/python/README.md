@@ -95,7 +95,7 @@ the file specified in `supported_langs_file`.
 ### Launched Command Line Options
 When running the transform with the Ray launcher (i.e. TransformLauncher),
 the following command line arguments are available in addition to
-[the options provided by the launcher](../../../../data-processing-lib/doc/ray-launcher-options.md).
+[the options provided by the launcher](../../../../data-processing-lib/doc/launcher-options.md).
 
 * `--code2parquet_supported_langs_file` - set the `supported_langs_file` configuration key. 
 * `--code2parquet_detect_programming_lang` - set the `detect_programming_lang` configuration key. 

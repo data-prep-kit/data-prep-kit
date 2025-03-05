@@ -48,7 +48,7 @@ Note that the launcher defines some additional CLI parameters that are used to c
 [data access](../python/src/data_processing/data_access/data_access_factory.py).  Things such as data access configuration,
 number of workers, worker resources, etc.
 Discussion of these options is beyond the scope of this document 
-(see [Launcher Options](ray-launcher-options.md) for a list of available options.)
+(see [Launcher Options](launcher-options.md) for a list of available options.)
 
 ## Transform Configuration
 In general, a transform should be able to run in both the python and Ray runtimes.

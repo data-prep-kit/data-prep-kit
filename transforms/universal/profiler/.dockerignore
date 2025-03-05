@@ -1,0 +1,10 @@
+venv/
+test-data/output
+output/*
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+

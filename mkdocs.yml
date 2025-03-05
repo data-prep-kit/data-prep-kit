@@ -7,9 +7,15 @@ nav:
     - Overview: data-processing-lib/doc/overview.md
     - Tutorials:
           - QuickStart: doc/quick-start/quick-start.md
-          - Simple: data-processing-lib/doc/simplest-transform-tutorial.md
-          - Advanced: data-processing-lib/doc/advanced-transform-tutorial.md
+          - Developer Tutorial: doc/quick-start/contribute-your-own-transform.md
+          - Run Virtual: doc/quick-start/run-transform-venv.md
+          - Run Image: doc/quick-start/run-transform-image.md
+          - Advanced: ADVANCED.md
+          - Windows Support: doc/quick-start/quick-start.md#running-transforms-on-windows
           - KFP Pipeline: kfp/doc/simple_transform_pipeline.md
+    - Quick Links:
+          - How to Contribute: CONTRIBUTING.md
+          - Learn about DPK: resources.md
 theme:
     name: "material"
     palette:

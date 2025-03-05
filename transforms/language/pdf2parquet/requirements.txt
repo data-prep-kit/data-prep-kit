@@ -1,5 +1,6 @@
-docling-core==2.3.0
-docling-ibm-models==2.0.3
-deepsearch-glm==0.26.1
-docling==2.3.1
+docling-core==2.18.0
+docling-ibm-models==3.3.1
+docling-parse==3.3.0
+deepsearch-glm==1.0.0
+docling==2.21.0
 filetype >=1.2.0, <2.0.0

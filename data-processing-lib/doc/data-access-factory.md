@@ -9,7 +9,7 @@ the processing of input data files and the expected destination
 of the processed files.
 The `DataAccessFactory` is most often configured using command line arguments
 to specify the type of `DataAccess` instance to create
-(see `--data_*` options [here](python-launcher-options.md).
+(see `--data_*` options [here](launcher-options.md).
 Currently,  it supports
 [DataAccessLocal](../python/src/data_processing/data_access/data_access_local.py)
 and 

@@ -55,7 +55,7 @@ By default, the value of `--tkn_chunk_size` is `0`, indicating that each documen
 
 ### CLI Options
 The following command line arguments are available in addition to 
-the options provided by the [python launcher](../../../data-processing-lib/doc/python-launcher-options.md).
+the options provided by the [launcher](../../../data-processing-lib/doc/launcher-options.md).
 ```
   --tkn_tokenizer TKN_TOKENIZER
                         Tokenizer used for tokenization. It also can be a path to a pre-trained tokenizer. By defaut, `hf-internal-testing/llama-tokenizer` from HuggingFace is used
@@ -118,5 +118,5 @@ Configuration and command line options are the same as for the base python trans
 ### Launched Command Line Options 
 In addition to those available to the transform as defined in here,
 the set of 
-[ray launcher options](../../../data-processing-lib/doc/ray-launcher-options.md) are available.
+[launcher options](../../../data-processing-lib/doc/launcher-options.md) are available.
 

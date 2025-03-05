@@ -135,7 +135,7 @@ Document Quality configuration and command line options are the same as for the 
 When running the transform with the Ray launcher (i.e., TransformLauncher),
 In addition to those available to the transform as defined here,
 the set of 
-[ray launcher](../../../data-processing-lib/doc/ray-launcher-options.md) are available.
+[launcher options](../../../data-processing-lib/doc/launcher-options.md) are available.
 
 #### Running the samples
 To run the samples, use the following `make` target

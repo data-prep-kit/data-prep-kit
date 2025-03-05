@@ -1,8 +1,8 @@
 # MAINTAINERS
 
-David Wood - dawood@us.ibm.com
+Maroun Touma - touma@us.ibm.com
 
-Boris Lublinsky - blublinsky@ibm.com
+Shivdeep Singh - shivdeep.singh@ibm.com
 
 Revital Eres - eres@il.ibm.com
 

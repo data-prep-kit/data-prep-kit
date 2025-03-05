@@ -1,16 +1,27 @@
 # Transforms
 
-The transformation framework is designed to operate on rows of columnar data, generally contained
-in [parquet](https://arrow.apache.org/docs/python/parquet.html) files
-and read as [pyarrow tables](https://arrow.apache.org/docs/python/index.html).
+The transformation framework is designed to operate on arbitrary input data,
+usually tabular data read from  
+[parquet](https://arrow.apache.org/docs/python/parquet.html) files
+as [pyarrow tables](https://arrow.apache.org/docs/python/index.html), but also any binary data.
+For details on some of the key classes, listed here,
+* AbstractBinaryTransform
+* AbstractTableTransform
+* TransformConfiguration
+* DefaultTransformRuntime
 
-Transforms are written to process the [table](https://arrow.apache.org/docs/python/generated/pyarrow.Table.html)
-to, for example:
+please refer to 
+[DPK core library documentation](../data-processing-lib/doc/overview.md).
 
-* Annotate the tables to add additional data such as document quality score, language, etc.
-* Filter the table to remove or edit rows and/or columns, for example to remove rows from blocked domain.
+If starting to develop a new transform, you will likely want to start with one of the following:
 
-While these transformation modules were originally built for pre-training, they are also useful for fine-tuning data preparation.
+* [quick start tutorial](../doc/quick-start/contribute-your-own-transform.md) - provides
+a gentle introduction to developing your first transform.
+* [NOOP transform](universal/noop/) - this can be used as a template to start your new transform. 
+
+## Importing Transforms 
+These are generally binary transforms that take in one format and convert
+to another usually, a parquet formatted PyArrow table.
 
 ## Annotating Transforms
 Annotating transforms examine 1 or more columns of data, typically a _content_ column containing a document
@@ -30,7 +41,7 @@ For example,
 * Document quality threshold - remove rows that do not meet a minimum document quality value.
 * Block listing - remove rows that have been flagged as having been sourced from undesirable domains.
 
-## Transform Organization
+# Transform Organization
 This directory hierarchy of transforms is organized as follows:
 
 * `universal` - transforms applicable across code and language model data include
@@ -38,142 +49,200 @@ This directory hierarchy of transforms is organized as follows:
 * `code` - programming language specific transforms.
 
 Each of the `universal`, `language` and `code`  directories contains a directory for a specific transform.
-Each transform is expected to be a standalone entity that generally runs at scale from within a docker image.
-As such they each have their own virtual environments for development.
+Each transform is expected to be a standalone entity that can be run locally on small data sets
+or runs at scale to process terabytes of data. 
+They each run in their own virtual environments.
 
 ## Transform Project Conventions
 
-The transform projects all try to use a common set of conventions including code layout,
-build, documentation and IDE recommendations.  For a transformed named `xyz`, it is
-expected to have its project located under one of
+For transform projects it is encourraged to use a common set of conventions 
+including code layout, build, documentation and IDE recommendations.  
+For a transformed named `xyz`, it is expected to have its project located under one of
 
 `transforms/code/xyz`   
 `transforms/language/xyz`, OR   
 `transforms/universal/xyz`.
 
+Additional conventions follow.
+
 ### Makefile
-The Makefile is the primary entry point for performing most functions
-for the build and management of a transform.
-This includes cleanup,
-testing, creating the virtual environment, building
-a docker image and more.
+The Makefile is the primary entry point for performing most CLI-based functions
+for the build and management of a transform, including 
+[git CI/CD workflows](../.github/workflows).
+This includes 
+
+* creating the virtual environment
+* testing
+* building docker images
+* cleanup
+ 
 Use `make help` in any directory with a Makefile to see the available targets.
-Each Makefile generally requires 
-the following macro definitions:
+Each Makefile generally requires the following macro definitions:
 
 * REPOROOT - specifies a relative path to the local directory
 that is the root of the repository.
-* TRANSFORM_NAME - specifies the simple name of the transform
+* TRANSFORM_NAME - specifies the short name of the transform
 that will be used in creating pypi artifacts and docker images.
-* DOCKER_IMAGE_VERSION - sets the version of the docker image
-and is usually set from one of the macros in `.make.versions` at the top
-of the repository
+This is set by default, for the examples above, `xyz` based on the directory name.
 
-These are used with the project conventions outlined below to 
-build and manage the transform.
+A transform's Makefile is most often based on the 
+[Makefile.transform.template](Makefile.transform.template)
+found in this directory.
 
-### Runtime Organization
+### Mimimum Transform Project Structure  
 
-Transforms support one or more _runtimes_ (e.,g python, Ray, Spark, KFP, etc).
-Each runtime implementation is placed in a sub-directory under the transform's
-primary directory, for example:
+Each transform project directory (e.g., `universal/xyz` implementing the xyz 
+transform) contains implementation of the python transform.
+The directory structure is as follows (and recall that 
+[NOOP transform](universal/noop/) can serve as a good template if developing a new transform). 
 
-`transforms/universal/xyz/python`  
-`transforms/universal/xyz/ray`  
-`transforms/universal/xyz/spark`  
-`transforms/universal/xyz/kfp`
+```
+data-prep-kit
+│
+└───transforms
+│   |
+│   └───universal
+│       │
+│       └───xyz
+│            |
+│            └───dpk_xyz * 
+│            |      │
+│            |      │ __init__.py
+│            |      │ transform.py 
+│            └───test  * 
+│            │    |
+│            │    | test_xyz.py 
+│            │
+│            └───test-data
+│            │     |
+│            |     └───input
+│            |     |     │
+│            |     |     │ testfile.parquet
+│            |     |     
+│            |     └───expected
+│            |          │
+│            |          │ testfile.parquet
+│            |          │ metadata.json
+│            | 
+│            | Makefile  *
+│            | requirements.txt  *
+│            | README.md  
+```
+`*` Required to make use of and pass CI/CD.  
 
-A transform only need implement the python runtime, and the others generally build on this.
-
-All runtime projects are structured as a _standard_ python project with the following:
-
-* `src` - directory contains all implementation code
-* `test` - directory contains test code
-* `test-data` - directory containing data used in the tests
-* `pyproject.toml` or `requirements.txt` (the latter is being phased out)
-* `Makefile`- runs most operations, try `make help` to see a list of targets.
-* `Dockerfile` to build the transform and runtime into a docker image 
-* `output` - temporary directory capturing any test/local run output.  Ignored by .gitignore.
-
-
-A virtual environment is created for the runtime project using `make venv`.
-
-In general, all runtime-specific python files use an `_<runtime>.py>` suffix,
-and docker images use a `-<runtime>` suffix in their names.  For example,
-
-* `noop_transform_python.py`
-* `test_noop_spark.py`
-* `dpk-noop-transform-ray`
-
-Finally, the command `make conventions` run from within a runtime
+Contents are described as follows:
+* `dpk_xyz/` - directory contains all python implementation code where `xyz` is the name
+  of the parent directory (e.g., `transforms/universal/xyz`). 
+    * `transform.py` generally contains the core transform implementation:
+        * `XYZTransform` class implementing the transformation
+        * `XYXTransformConfiguration` class that defines CLI configuration for the transform
+    * Additional files can be added as necessary in support of the transform.
+* `test/` - directory contains test code 
+    * `test_xyz.py` - a standalone (non-runtime launched) transform test.  This is best for initial debugging.
+Inherits from an abstract test class so that to test one needs only to provide test data.
+    * NOTE: Tests are expected to be run from anywhere and so need to use
+      `__file__` location to create absolute directory paths to the data in the `../test-data` directory.
+      From the command line, `make test` sets up the virtual environment and PYTHONPATH to include `dpk_xyz`
+      Do **not** add `sys.path.append(...)` in the test python code.
+      All test data should be referenced as `../test-data` relative
+      to `os.path.abspath(os.path.dirname(__file__))`.
+* `test-data/` - optional directory containing data used in the tests
+* `Makefile` - provides most targets expected by CI/CD and is usually
+  based on a copy of [Makefile.transform.template](Makefile.transform.template) in this directory. `make help` to see a list of targets.
+* `requirements.txt` - defines requirements specific to the python transform (Ray and Spark requirements are handled by automation).
+* `README.md` -  documents use and implementation.  Consider using [README.md.template](README.md.template) in this directory as a starting point.
+ 
+The command `make conventions` run from within a transform
 directory will examine the runtime project structure and make recommendations.
 
-#### Python Runtime
-The python runtime project contains the core transform implementation and
-its configuration, along with the python-runtime classes to launch the transform.
-The following organization and  naming conventions are strongly recommended
-and in some cases required for the Makefile to do its work.
+#### Adding Runtime Support
+If adding support for Ray and/or Spark runtimes the following additions are generally
+required.
+```
+data-prep-kit
+│
+└───transforms
+│   |
+│   └───universal
+│       │
+│       └───xyz
+│            |
+│            └───dpk_xyz 
+│            |      | runtime.py *, **
+│            |      └───ray  
+│            |           │ __init__.py
+│            |           | runtime.py *, **
+│            |           │ 
+│            |      └───spark  
+│            |           │ __init__.py
+│            |           | runtime.py  *, **
+│            |           │ 
+│            └───test  
+│            │    |
+│            │    |test_xyz_python.py  **
+│            │    |test_xyz_ray.py  **
+│            │    |test_xyz_spark.py  **
+│            │
+│            | Dockerfile.python ** 
+│            | Dockerfile.ray ** 
+│            | Dockerfile.spark ** 
+```
+`*` Recommended naming.  Other naming requires changes to Makefile.  
+`**` Required for corresponding Python, Ray and/or Spark runtime images. 
 
-1. `src` directory contain python source for the transform with the following naming conventions/requirements.
-    * `xyz_transform.py` generally contains the core transform implementation:
-        * `XYZTransform` class implementing the transformation
-        * `XYXTransformConfiguration` class that defines CLI configuration for the transform 
-   * `xyz_transform_python.py` - runs the transform on input using the python runtime 
+The contents are defined as follows:
+* `dpk_xyz`
+    * `runtime.py` - runs the transform on input using the python runtime
         * `XYZPythonTransformConfiguration` class
         * main() to start the `PythonTransformLauncher` with the above.
-1. `test` directory contains pytest test sources
-    * `test_xyz.py` - a standalone (non-ray launched) transform test.  This is best for initial debugging.
-        * Inherits from an abstract test class so that to test one needs only to provide test data.
-    * `test_xyz_python.py` - runs the transform via the Python launcher. 
+    * `ray/` - directory contains code to enable the python transform in a Ray runtime.
+        * `runtime.py` - ray runtime artifacts to enable the transform in the DPK Ray runtime.
+            * `XYZRayTransformConfiguration` class
+            * main() to start the `RayTransformLauncher` with the above.
+    * `spark/` - directory contains code to enable the python transform in a Spark runtime.
+        * `runtime.py` - spark runtime artifacts to enable the transform in the DPK Spark runtime.
+            * `XYZSparkTransformConfiguration` class
+            * main() to start the `SparkTransformLauncher` with the above. 
+* `test/`
+    * `test_xyz_python.py` - defines the transform tests running in the Python launcher.
         * Again, inherits from an abstract test class so that to test one needs only to provide test data.
-         
-   Tests are expected to be run from anywhere and so need to use
-   `__file__` location to create absolute directory paths to the data in the `../test-data` directory.  
-   From the command line, `make test` sets up the virtual environment and PYTHONPATH to include `src`
-   From the IDE, you **must** add the `src` directory to the project's Sources Root (see below).
-   Do **not** add `sys.path.append(...)` in the test python code.
-   All test data should be referenced as `../test-data`.
-
-#### Ray/Spark Runtimes
-These projects are structured in a similar way and replace the python 
-runtime source and test files with the following:
-
-`src/xyz_transform_[ray|spark].py` 
-    * `[Ray|Spark]TransformRuntimeConfiguration` - runtime configuration class
-    * contains a main() that launches the runtime
-`test/test_xyz_[ray|spark].py` - tests the transform running in the given runtime.
+    * `test_xyz_ray.py` - defines the transform tests running in the Ray launcher.
+    * `test_xyz_spark.py` - defines the transform tests running in the Spark launcher. 
+* `Dockerfile.python` - to build the transform and python runtime into a docker image,
+  generally, based on the template [Dockerfile.python.template](Dockerfile.python.template) in this directory.
+* `Dockerfile.ray` - to build the transform and ray runtime into a docker image,
+  generally, based on the template [Dockerfile.ray.template](Dockerfile.ray.template) in this directory.
+* `Dockerfile.spark` -  to build the transform and spark runtime into a docker image,
+  generally, based on the template [Dockerfile.spark.template](Dockerfile.spark.template) in this directory.
 
 ### Configuration and command line options
 A transform generally accepts a dictionary of configuration to
 control its operation.  For example, the size of a table, the location
 of a model, etc. These are set either explicitly in dictionaries
-(e.g. during testing) or from the command line when run from a Ray launcher.
+(e.g. during testing) or from the command line when run from a runtime launcher.
 
-When specified on the command line, transform `xyz` should use an `xyz` prefix with
+When specified on the command line, transform `xyz` should use an `xyz_` prefix with
 `--xyz_` (dash dash) to define its command line options.
 For example, `--xyz_some_cfg somevalue` sets
 the value for the `xyz_some_cfg` configuration key value to `somevalue`.
-To avoid potential collisions with options for the Ray launcher, Data Access Factory and others,
+To avoid potential collisions with options for the runtime launcher, 
+Data Access Factory and others,
 it is strongly encouraged to not use single dash options with a single
 or small number of characters (e.g. -n).
 
-## Release process
-The transform versions are managed in a central file named [`.make.versions`](../.make.versions).
-This file is where the versions are automatically propagated to the Makefile rules when building and pushing the transform images.
-When a new transform version is created, the tag of the transform should be updated in this file.
-If there is no entry for the transform in the file yet, create a new one and add a reference to it in the transform Makefile,
- following the format used for other transforms.
-ore specifically, the entry should be of the following format: `<transform image name>_<RUNTIME>_VERSION=<version>`, 
-for example: `FDEDUP_RAY_VERSION=0.2.77`
+### Docker Images
+Generally, to build the docker images, one uses the Makefile with the following make targets
 
-### Building the docker image
-Generally to build a docker image, one uses the `make image` command, which uses
-the `Dockerfile`, which in turn uses the `src` and `requirements.txt` to build the image.
-Note that the `Makefile` defines the TRANSFORM_NAME and DOCKER_IMAGE_VERSION
-and should be redefined if copying from another transform project.
+* `image-python` - uses `Dockerfile.python` to build the python runtime image for the transform.
+* `image-ray` - uses `Dockerfile.ray` to build the python runtime image for the transform.
+* `image-spark` - uses `Dockerfile.spark` to build the python runtime image for the transform.
+* `image` - build all images.
 
-To build individual transform image use `make -C <path to transform directory>`, for example: `make -C universal/fdedup image`.
-To push all the images run `make push`, or `make -C <path to transform directory> push` for individual transform.
+Similarly, to test the docker images, 
+
+* `test-image-python` - runs a simple --help run of the transform in the python image. 
+* `test-image-ray` - runs a simple --help run of the transform in the Ray image. 
+* `test-image-spark` - runs a simple --help run of the transform in the Spark image. 
 
 ### IDE Setup
 When running in an IDE, such as PyCharm or VS Code, the following are generally required:
@@ -183,6 +252,6 @@ When running in an IDE, such as PyCharm or VS Code, the following are generally 
     * Set your project/run configuration to use the venv/bin/python as your runtime virtual environment.
         * In PyCharm, this can be done through the PyCharm->Settings->Project...->Python Interpreter page
         * In VS Code, click on the current Python Interpreter in the bottom right corner and make sure that the Interpreter path is venv/bin/python
-    * Mark the `src` as a _source root_ so that it is included in your PYTHONPATH when running .py files in the IDE
-        * In Pycharm this can be done by selecting the `src` directory, and then selecting `Mark Directory as` -> `Sources Root`
+    * Mark the `dpk_xyz` directory as a _source root_ so that it is included in your PYTHONPATH when running .py files in the IDE
+        * In Pycharm this can be done by selecting the `dpk_xyz` directory, and then selecting `Mark Directory as` -> `Sources Root`
  

@@ -50,7 +50,7 @@ execution
 ## Usage
 
 The following command line arguments (corresponding to the configuration keys described above) are available in addition
-to the options provided by the [python launcher](../../../data-processing-lib/doc/python-launcher-options.md).
+to the options provided by the [launcher](../../../data-processing-lib/doc/launcher-options.md).
 ```text
   --ededup_doc_column EDEDUP_DOC_COLUMN
                         name of the column containing document
@@ -121,7 +121,7 @@ To see results of the transform.
 
 ### Launched Command Line Options
 When running the transform with the Ray launcher (i.e., RayTransformLauncher), these additional command line arguments are available 
-[the options provided by the launcher](../../../data-processing-lib/doc/ray-launcher-options.md).
+[the options provided by the launcher](../../../data-processing-lib/doc/launcher-options.md).
 
 ```
   --ededup_hash_cpu EDEDUP_HASH_CPU

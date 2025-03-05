@@ -5,13 +5,13 @@ We'll use the noop transform as an example, but in general, this process
 will work for any of the transforms contained in the repository.
 Additionally, what follows uses the 
 [python runtime](../../data-processing-lib/doc/python-runtime.md)
-(e.g., noop/python directory), 
+(e.g., transforms/universal/noop/dpk_noop directory), 
 but the examples below should also work for the
 [ray](../../data-processing-lib/doc/ray-runtime.md)
-(noop/ray directory)
+(transforms/universal/noop/dpk_noop/ray directory)
 or
 [spark ](../../data-processing-lib/doc/spark-runtime.md)
-(noop/spark directory)
+(transforms/universal/noop/dpk_noop/spark directory)
 runtimes.
 
 ### Creating the Virtual Environment
@@ -20,7 +20,7 @@ the virtual environment in a directory named `venv`.
 To create the virtual environment for the `noop` transform:
 
 ```shell
-cd transforms/univeral/noop/python
+cd transforms/universal/noop
 make venv 
 ```
 Note, if needed, you can override the default `python` command used 
@@ -38,9 +38,9 @@ So for example, using the `noop` transform
 to read parquet files from `/home/me/input`:
 
 ```shell
-cd transforms/univeral/noop/python
+cd transforms/universal/noop
 source venv/bin/activate
-python src/noop_transform_python.py \
+python -m dpk_noop.runtime \
     --data_local_config "{ \
 	    'input_folder'  : '/home/me/input', \
 	    'output_folder' : '/home/me/output' \
@@ -53,9 +53,9 @@ When processing data located in S3 buckets, one can use the same
 approach and specify different `--data_s3_*` configuration as follows: 
 
 ```shell
-cd transforms/univerals/noop/python
+cd transforms/universal/noop
 source venv/bin/activate
-python src/noop_transform_python.py \
+python -m dpk_noop.runtime \
 	--data_s3_cred "{ \
 	    'access_key'  : '...', \
 	    'secret_key' : '...', \

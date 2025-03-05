@@ -1,79 +1,30 @@
 REPOROOT=../../..
 # Use make help, to see the available rules
-include $(REPOROOT)/.make.defaults
+include $(REPOROOT)/transforms/.make.cicd.targets
 
-setup::
-	@# Help: Recursively make $@ all subdirs 
-	$(MAKE) RULE=$@ .recurse
+# Until we make runtime.py the standard supported by Makefile infra
+TRANSFORM_PYTHON_SRC="-m dpk_$(TRANSFORM_NAME).runtime"
+TRANSFORM_RAY_SRC="-m dpk_$(TRANSFORM_NAME).ray.runtime"
+TRANSFORM_SPARK_SRC="-m dpk_$(TRANSFORM_NAME).spark.runtime"
 
-clean::
-	@# Help: Recursively make $@ all subdirs 
-	$(MAKE) RULE=$@ .recurse
+#
+# This is intended to be included across the Makefiles provided within
+# a given transform's directory tree,  so must use compatible syntax.
+#
+################################################################################
+# This defines the name of the transform and is used to match against
+# expected files and is used to define the transform's image name. 
+TRANSFORM_NAME=$(shell basename `pwd`)
 
-build::
-	@# Help: Recursively make $@ in subdirs 
-	$(MAKE) RULE=$@ .recurse
-venv::
-	@# Help: Recursively make $@ in subdirs 
-	$(MAKE) RULE=$@ .recurse
+################################################################################
 
-image:: 
-	@# Help: Recursively make $@ in all subdirs 
-	@$(MAKE) RULE=$@ .recurse
 
-set-versions:  
-	@# Help: Recursively $@ in all subdirs 
-	@$(MAKE) RULE=$@ .recurse
+#### user defined Target
 
-publish:: 
-	@# Help: Recursively make $@ in all subdirs 
-	@$(MAKE) RULE=$@ .recurse
-
-test-image:: 
-	@# Help: Recursively make $@ in all subdirs 
-	@$(MAKE) RULE=$@ .recurse
-
-test:: 
-	@# Help: Recursively make $@ in all subdirs 
-	@$(MAKE) RULE=$@ .recurse
-
-test-src::
-	@# Help: Recursively make $@ in all subdirs 
-	$(MAKE) RULE=$@ .recurse
-
-kind-load-image::
-	@# Help: Recursively make $@ in all subdirs 
-	$(MAKE) RULE=$@ .recurse
-
-docker-load-image::
-	@# Help: Recursively make $@ in all subdirs
-	$(MAKE) RULE=$@ .recurse
-
-docker-save-image::
-	@# Help: Recursively make $@ in all subdirs 
-	$(MAKE) RULE=$@ .recurse
-
-.PHONY: workflow-venv
-workflow-venv:
-	if [ -e kfp_ray ]; then                 \
-	    $(MAKE) -C kfp_ray workflow-venv;   \
-	fi
-
-.PHONY: workflow-test
-workflow-test:
-	if [ -e kfp_ray ]; then                 \
-	    $(MAKE) -C kfp_ray workflow-test;   \
-	fi
-	
-.PHONY: workflow-upload
-workflow-upload:
-	if [ -e kfp_ray ]; then                 \
-	    $(MAKE) -C kfp_ray workflow-upload; \
-	fi
-
-.PHONY: workflow-build
-workflow-build:
-	if [ -e kfp_ray ]; then                 \
-	    $(MAKE) -C  kfp_ray workflow-build; \
-	fi
+run-cli-sample:
+	@# Help: Run the NOOP transform in a python runtime to read data in test-data/input and write to output directory.
+	$(MAKE) venv
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
+             --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  
 

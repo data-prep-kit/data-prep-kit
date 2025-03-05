@@ -71,7 +71,7 @@ When `redact` operator is chosen the output will look like below
 ### Launched Command Line Options 
 The following command line arguments are available in addition to 
 the options provided by 
-the [python launcher](../../../data-processing-lib/doc/python-launcher-options.md).
+the [launcher](../../../data-processing-lib/doc/launcher-options.md).
 
 ```
   --pii_redactor_entities PII_ENTITIES
@@ -96,7 +96,7 @@ This project wraps the pii redactor transform with a Ray runtime.
 ### Launched Command Line Options 
 In addition to those available to the transform as defined here,
 the set of 
-[ray launcher options](../../../data-processing-lib/doc/ray-launcher-options.md) are available.
+[launcher options](../../../data-processing-lib/doc/launcher-options.md) are available.
 
 ### Transforming data using the transform image
 

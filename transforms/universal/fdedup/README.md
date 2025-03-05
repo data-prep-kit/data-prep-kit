@@ -253,7 +253,7 @@ Fuzzy Dedup configuration and command line options are the same as for the base 
 When running the transform with the Ray launcher (i.e., TransformLauncher),
 in addition to those available to the transform as defined in here,
 the set of 
-[ray launcher options](../../../data-processing-lib/doc/ray-launcher-options.md) are available.
+[launcher options](../../../data-processing-lib/doc/launcher-options.md) are available.
 
 ### Running the samples
 To run the samples, use the following `make` target to create a virtual environment:
@@ -325,7 +325,7 @@ Fuzzy Dedup configuration and command line options are the same as for the base 
 When running the transform with the Spark launcher (i.e., TransformLauncher),
 in addition to those available to the transform as defined in here,
 the set of 
-[spark launcher options](../../../data-processing-lib/doc/spark-launcher-options.md) are available.
+[spark launcher options](../../../data-processing-lib/doc/launcher-options.md) are available.
 
 ### Running the samples
 To run the samples, use the following `make` target to create a virtual environment:

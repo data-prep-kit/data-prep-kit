@@ -50,7 +50,7 @@ At least one of _hash_column_ or _int_id_column_ must be specified.
 ### Launched Command Line Options 
 When running the transform with the Ray launcher (i.e. TransformLauncher),
 the following command line arguments are available in addition to 
-[the options provided by the ray launcher](../../../data-processing-lib/doc/ray-launcher-options.md).
+[the options provided by the launcher](../../../data-processing-lib/doc/launcher-options.md).
 ```
   --doc_id_doc_column DOC_ID_DOC_COLUMN
                         doc column name
@@ -108,7 +108,7 @@ make build
 ### Launched Command Line Options 
 When running the transform with the Ray launcher (i.e., RayTransformLauncher), in addition to Python 
 command line options, 
-[there are options provided by the ray launcher](../../../data-processing-lib/doc/ray-launcher-options.md).
+[there are options provided by the launcher](../../../data-processing-lib/doc/launcher-options.md).
 
 To use the transform image to transform your data, please refer to the
 [running images quickstart](../../../doc/quick-start/run-transform-image.md),
@@ -140,7 +140,7 @@ the new annotated `test1.parquet` file and the `metadata.json` file.
 ### Launched Command Line Options 
 When running the transform with the Spark launcher (i.e., SparkTransformLauncher), the following command line arguments
 are available in addition to the options provided by the
-[python launcher](../../../data-processing-lib/doc/python-launcher-options.md).
+[launcher](../../../data-processing-lib/doc/launcher-options.md).
 
 ```
   --doc_id_column_name DOC_ID_COLUMN_NAME

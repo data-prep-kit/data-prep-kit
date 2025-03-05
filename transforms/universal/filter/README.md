@@ -234,7 +234,7 @@ As shown in the output of the local run of filtering, the metadata contains seve
 ### Additional Launched Command Line Options 
 The following command line arguments are available in addition to 
 the options provided by 
-the [python launcher](../../../data-processing-lib/doc/python-launcher-options.md).
+the [launcher](../../../data-processing-lib/doc/launcher-options.md).
 
 ```
   --filter_criteria_list FILTER_CRITERIA_LIST
@@ -274,7 +274,7 @@ This project wraps the filter transform with a Ray runtime.
 ### Launched Command Line Options 
 In addition to those available to the transform as defined here,
 the set of 
-[ray launcher options](../../../data-processing-lib/doc/ray-launcher-options.md) are available.
+[launcher options](../../../data-processing-lib/doc/launcher-options.md) are available.
 
 ### Code example (Ray)
 
@@ -320,7 +320,7 @@ When filter runs from the command line, it needs to include the entire `filter_c
 ### Launched Command Line Options 
 When running the transform with the Spark launcher (i.e., SparkTransformLauncher),
 the following command line arguments are available in addition to 
-the options provided by the [spark launcher](../../../data-processing-lib/doc/spark-launcher-options.md).
+the options provided by the [spark launcher](../../../data-processing-lib/doc/launcher-options.md).
 
 ```
   --filter_criteria_list FILTER_CRITERIA_LIST

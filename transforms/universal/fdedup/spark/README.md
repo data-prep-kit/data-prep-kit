@@ -16,7 +16,7 @@ Fuzzy Dedup configuration and command line options are the same as for the base 
 When running the transform with the Spark launcher (i.e. TransformLauncher),
 In addition to those available to the transform as defined in [here](../python/README.md),
 the set of 
-[spark launcher](../../../../data-processing-lib/doc/spark-launcher-options.md) are available.
+[spark launcher](../../../../data-processing-lib/doc/launcher-options.md) are available.
 
 ### Running the samples
 To run the samples, use the following `make` target to create a virtual environment:

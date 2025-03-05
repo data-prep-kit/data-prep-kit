@@ -76,7 +76,7 @@ Limitation of transform. This expects a flat input folder structure with parquet
 
 ### Launched Command Line Options 
 
-Ray runtime options of [ray launcher](../../../../data-processing-lib/doc/ray-launcher-options.md) are available.
+Ray runtime [launcher options](../../../../data-processing-lib/doc/launcher-options.md) are available.
 
 ### Running the samples
 

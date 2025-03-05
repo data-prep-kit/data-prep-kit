@@ -1,0 +1,40 @@
+ARG BASE_IMAGE=docker.io/rayproject/ray:2.24.0-py310
+FROM ${BASE_IMAGE}
+
+# see https://docs.openshift.com/container-platform/4.17/openshift_images/create-images.html#use-uid_create-images
+USER root
+RUN chown ray:root /home/ray && chmod 775 /home/ray
+
+RUN pip install --upgrade --no-cache-dir pip
+RUN apt update && apt install curl -y && apt install gcc -y
+
+USER ray
+
+# install pytest
+RUN pip install --no-cache-dir pytest
+ARG DPK_WHEEL_FILE_NAME
+ARG TRANSFORM_NAME
+
+ENV HOME="/home/ray"
+# install rust and set path
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="$PATH:$HOME/.cargo/bin"
+
+# Copy and install data processing libraries 
+# These are expected to be placed in the docker context before this is run (see the make image).
+COPY --chmod=775 --chown=ray:root data-processing-dist data-processing-dist
+RUN  pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}[ray]
+
+
+COPY --chmod=775 --chown=ray:root dpk_${TRANSFORM_NAME}/ dpk_${TRANSFORM_NAME}/
+COPY --chmod=775 --chown=ray:root requirements.txt requirements.txt 
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Set environment
+ENV PYTHONPATH="/home/ray"
+
+# Put these at the end since they seem to upset the docker cache.
+ARG BUILD_DATE
+ARG GIT_COMMIT
+LABEL build-date=$BUILD_DATE
+LABEL git-commit=$GIT_COMMIT

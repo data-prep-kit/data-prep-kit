@@ -18,7 +18,7 @@ Transform configuration options are the same as the base python transform.
 ### Launched Command Line Options
 In addition to those available to the transform as defined in [here](../python/README.md),
 the set of
-[ray launcher](../../../../data-processing-lib/doc/ray-launcher-options.md) are available.
+[launcher options](../../../../data-processing-lib/doc/launcher-options.md) are available.
 
 
 ### Running the samples

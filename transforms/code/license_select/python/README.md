@@ -47,7 +47,7 @@ The transform can be configured with the following key/value pairs from the conf
 ### Launcher Command Line Options 
 
 The following command line arguments are available in addition to 
-the options provided by the [python launcher](../../../../data-processing-lib/doc/python-launcher-options.md).
+the options provided by the [launcher](../../../../data-processing-lib/doc/launcher-options.md).
 
   `--lc_license_column_name` - set the name of the column holds license to process
 

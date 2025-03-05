@@ -88,7 +88,7 @@ with open(input_file, "r") as f:
     data = json.load(f)
 
 # Metrics to process
-metrics_to_process = {"CCR", "code_snippet_len", "avg_fn_len_in_snippet"}
+metrics_to_process = {"ccr", "code_snippet_len", "avg_fn_len_in_snippet"}
 output_data = {}
 
 # Process and save for selected metrics

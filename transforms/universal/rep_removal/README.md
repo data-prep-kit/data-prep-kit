@@ -71,6 +71,9 @@ pip install --no-binary :all: psutil
 [//]: # (cargo install --path $PACKAGE_LOCATION/dpk_rep_removal/rust)
 
 [//]: # (```)
+
+B) When we tested the transform with a large data file on an M1 Mac, we realized that more than 16GB of memory is needed. If the machine has less than 16GB of memory, we recommend using the [resize](https://github.com/IBM/data-prep-kit/tree/dev/transforms/universal/resize) transform to make the file smaller. 
+
 ## Input Parameters
 
 The transform can be initialized with the following parameters:

@@ -358,7 +358,7 @@ class Pdf2ParquetTransform(AbstractBinaryTransform):
 
             else:
                 logger.warning(
-                    f"File {file_name=} is not detected as a supported type nor as ZIP but {kind=}. Skipping."
+                    f"File {file_name=} is not detected as a supported type nor as ZIP but {root_kind=}. Skipping."
                 )
 
             

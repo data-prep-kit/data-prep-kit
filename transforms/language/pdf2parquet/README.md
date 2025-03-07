@@ -27,6 +27,8 @@ This transform supports the following input formats:
 - HTML pages
 - Markdown documents
 - ASCII Docs documents
+- XML in JATS format (e.g. scientific publications)
+- XML of USPTO publications
 
 The input documents can be provided in a folder structure, or as a zip archive.
 Please see the configuration section for specifying the input files.

@@ -1,6 +1,6 @@
 [project]
 name = "data_prep_toolkit_transforms"
-version = "1.0.1.dev2"
+version = "1.0.1.dev3"
 requires-python = ">=3.10,<3.13"
 keywords = ["transforms", "data preprocessing", "data preparation", "llm", "generative", "ai", "fine-tuning", "llmapps" ]
 description = "Data Preparation Toolkit Transforms using Ray"
@@ -59,8 +59,7 @@ all = { file = [
 "universal/tokenization/requirements.txt",
 "universal/web2parquet/requirements.txt",
 "universal/rep_removal/requirements.txt",
-"universal/tokenization2arrow/requirements.txt",
-"universal/bloom/requirements.txt"
+"universal/tokenization2arrow/requirements.txt"
 ]}
 
 language = { file = [
@@ -91,8 +90,7 @@ language = { file = [
 "universal/profiler/requirements.txt",
 "universal/resize/requirements.txt",
 "universal/rep_removal/requirements.txt",
-"universal/tokenization2arrow/requirements.txt",
-"universal/bloom/requirements.txt"
+"universal/tokenization2arrow/requirements.txt"
 ]}
 
 gneissweb = { file = [
@@ -103,8 +101,7 @@ gneissweb = { file = [
 "universal/tokenization/requirements.txt",
 "universal/resize/requirements.txt",
 "universal/rep_removal/requirements.txt",
-"universal/tokenization2arrow/requirements.txt",
-"universal/bloom/requirements.txt"
+"universal/tokenization2arrow/requirements.txt"
 ]}
 
 # pyproject.toml must be in a parent and cannot be in sibling
@@ -147,7 +144,6 @@ gneissweb_classification = { file = ["language/gneissweb_classification/requirem
 
 rep_removal = { file = ["universal/rep_removal/requirements.txt"]}
 tokenization2arrow = { file = ["universal/tokenization2arrow/requirements.txt"]}
-bloom = { file = ["universal/bloom/requirements.txt"]}
 
 # Does not seem to work for our custom layout
 # copy all files to a single src and let automatic discovery find them
@@ -179,7 +175,6 @@ dpk_resize = "universal/resize/dpk_resize"
 dpk_gneissweb_classification = "language/gneissweb_classification/dpk_gneissweb_classification"
 dpk_rep_removal = "universal/rep_removal/dpk_rep_removal"
 dpk_tokenization2arrow = "universal/tokenization2arrow/dpk_tokenization2arrow"
-dpk_bloom = "universal/bloom/dpk_bloom"
 
 [tool.setuptools.package-data]
 #"*" = ["*.txt"]

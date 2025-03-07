@@ -9,28 +9,37 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ################################################################################
+import json
 import os
 
 import kfp.compiler as compiler
 import kfp.components as comp
 import kfp.dsl as dsl
 
+from python_apiserver_client.params import (
+    EnvironmentVariables,
+    EnvVarFrom,
+    EnvVarSource,
+)
 
 ORCH_HOST = "http://ml-pipeline:8888"
+
+# The name of the secret that holds the HugginFace token
+HF_SECRET = "hf-secret"
+# The secret key that holds the HugginFace token
+HF_SECRET_KEY = "hf-token"
+
+env_v = EnvVarFrom(source=EnvVarSource.SECRET, name=HF_SECRET, key=HF_SECRET_KEY)
+envs = EnvironmentVariables(from_ref={"HF_READ_ACCESS_TOKEN": env_v})
 
 # Components
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", "../../../../../kfp/kfp_ray_components/")
 
-# For every sub workflow we need a separate components, that knows about this subworkflow.
-run_exact_dedup_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
-run_doc_id_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
-run_lang_id_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
-run_filter_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
-run_doc_quality_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
+run_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
 
 ededup_image = "quay.io/dataprep1/data-prep-kit/ededup-ray:latest"
-lang_id_image = "quay.io/dataprep1/data-prep-kit/lang_id-ray:latest"
+lang_id_image = "quay.io/dataprep1/data-prep-kit/lang_id-ray:2.2"
 doc_id_image = "quay.io/dataprep1/data-prep-kit/doc_id-ray:latest"
 filter_image = "quay.io/dataprep1/data-prep-kit/filter-ray:latest"
 doc_quality_image = "quay.io/dataprep1/data-prep-kit/doc_quality-ray:latest"
@@ -62,31 +71,29 @@ def sample_ray_orchestrator(
         "image_pull_secret": "",
     },
     p2_pipeline_server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
-    p2_pipeline_input_parent_path: str = "test/kubecon",
-    p2_pipeline_output_parent_path: str = "test/super/output/",
+    p2_pipeline_input_parent_path: str = "test/kubecon/input",
+    p2_pipeline_output_parent_path: str = "test/kubecon/output/",
     p2_pipeline_parent_path_suffix: str = "",
-    p2_pipeline_additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
+    p2_pipeline_additional_params: str = '{"wait_interval": 1, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 10, "delete_cluster_delay_minutes": 0}',
     p2_pipeline_data_s3_access_secret: str = "s3-secret",
     p2_pipeline_runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     p2_pipeline_runtime_actor_options: dict = {"num_cpus": 0.7},
     # data access.
     p2_pipeline_data_max_files: int = -1,
     p2_pipeline_data_num_samples: int = -1,
+
     # Document ID step parameters
-    p3_name: str = "doc id",
-    # doc id parameters
-    # p3_doc_id_doc_column: str = "contents",
+    p3_name: str = "doc_ID",
     p3_doc_id_hash_column: str = "document_id",
-    # p3_doc_id_start_id: int = 0,
     # overriding parameters
     p3_overriding_params: str = '{"ray_worker_options": {"image": "'
     + doc_id_image
     + '"}, "ray_head_options": {"image": "'
     + doc_id_image
     + '"}}',
+
     # Exact dedup step parameters
-    p4_name: str = "exact dedup",
-    # p4_ededup_doc_column: str = "contents",
+    p4_name: str = "ededup",
     p4_ededup_hash_cpu: float = 0.5,
     p4_ededup_use_snapshot: bool = False,
     p4_ededup_snapshot_directory: str = None,
@@ -98,9 +105,9 @@ def sample_ray_orchestrator(
     + '"}, "ray_head_options": {"image": "'
     + ededup_image
     + '"}}',
+
     # language ID step parameters
-    p5_name: str = "lang_id",
-    p5_lang_id_model_credential: str = "PUT YOUR HF TOKEN HERE",
+    p5_name: str = "lang_ID",
     p5_lang_id_model_kind: str = "fasttext",
     p5_lang_id_model_url: str = "facebook/fasttext-language-identification",
     p5_lang_id_content_column_name: str = "contents",
@@ -109,20 +116,25 @@ def sample_ray_orchestrator(
     # overriding parameters
     p5_overriding_params: str = '{"ray_worker_options": {"image": "'
     + lang_id_image
+    + '", "environment": "'
+    + json.dumps(envs.to_dict())
     + '"}, "ray_head_options": {"image": "'
     + lang_id_image
+    + '", "environment": "'
+    + json.dumps(envs.to_dict())
     + '"}}',
+
     # filter_en step parameters
     p6_name: str = "filter_en",
     p6_filter_criteria_list: str = "['lang=\\\\'en\\\\'', 'score>=0.8', 'contents!=\\\\'\\\\'']",
     p6_filter_logical_operator: str = "AND",
-    p6_filter_columns_to_drop: str = "",
     # overriding parameters
     p6_overriding_params: str = '{"ray_worker_options": {"image": "'
     + filter_image
     + '"}, "ray_head_options": {"image": "'
     + filter_image
     + '"}}',
+
     # document en quality step parameters
     p7_name: str = "doc_quality_en",
     p7_docq_text_lang: str = "en",
@@ -134,21 +146,21 @@ def sample_ray_orchestrator(
     + '"}, "ray_head_options": {"image": "'
     + doc_quality_image
     + '"}}',
+
     # filter ja step parameters
     p8_name: str = "filter_ja",
     p8_filter_criteria_list: list = "['lang=\\\\'ja\\\\'', 'score>=0.8', 'contents!=\\\\'\\\\'']",
     p8_filter_logical_operator: str = "AND",
-    p8_filter_columns_to_drop: str = "",
     # overriding parameters
     p8_overriding_params: str = '{"ray_worker_options": {"image": "'
     + filter_image
     + '"}, "ray_head_options": {"image": "'
     + filter_image
     + '"}}',
+
     # document ja quality step parameters
     p9_name: str = "doc_quality_ja",
     p9_docq_text_lang: str = "ja",
-    # p9_docq_doc_content_column: str = "contents",
     p9_docq_bad_word_filepath: str = "/home/ray/dpk_doc_quality/ldnoobw/ja",
     # overriding parameters
     p9_overriding_params: str = '{"ray_worker_options": {"image": "'
@@ -156,21 +168,21 @@ def sample_ray_orchestrator(
     + '"}, "ray_head_options": {"image": "'
     + doc_quality_image
     + '"}}',
+
     # filter fr step parameters
     p10_name: str = "filter_fr",
     p10_filter_criteria_list: list = "['lang=\\\\'fr\\\\'', 'score>=0.8', 'contents!=\\\\'\\\\'']",
     p10_filter_logical_operator: str = "AND",
-    p10_filter_columns_to_drop: str = "",
     # overriding parameters
     p10_overriding_params: str = '{"ray_worker_options": {"image": "'
     + filter_image
     + '"}, "ray_head_options": {"image": "'
     + filter_image
     + '"}}',
+
     # document fr quality step parameters
     p11_name: str = "doc_quality_fr",
     p11_docq_text_lang: str = "fr",
-    # p11_docq_doc_content_column: str = "contents",
     p11_docq_bad_word_filepath: str = "/home/ray/dpk_doc_quality/ldnoobw/fr",
     # overriding parameters
     p11_overriding_params: str = '{"ray_worker_options": {"image": "'
@@ -184,14 +196,13 @@ def sample_ray_orchestrator(
     args = locals()
 
     def _create_component(
-        comp_factory,
         pipeline_name: str,
         displayed_name: str,
         prefix="p3_",
         input_folder="",
         prev_op: dsl.BaseOp = None,
     ):
-        component = comp_factory(
+        component = run_op(
             name=pipeline_name, prefix=prefix, params=args, host=ORCH_HOST, input_folder=input_folder
         )
         # set the sub component UI name
@@ -202,14 +213,13 @@ def sample_ray_orchestrator(
         # No cashing
         component.execution_options.caching_strategy.max_cache_staleness = "P0D"
         # image pull policy
-        # op.set_image_pull_policy("Always")
+        # component.set_image_pull_policy("Always")
         if prev_op is not None:
             component.after(prev_op)
         return component
 
     # document ID
     doc_id = _create_component(
-        run_doc_id_op,
         pipeline_name=p1_orch_doc_id_name,
         displayed_name="doc ID",
         prefix="p3_",
@@ -218,7 +228,6 @@ def sample_ray_orchestrator(
 
     # exact deduplication
     exact_dedup = _create_component(
-        run_exact_dedup_op,
         pipeline_name=p1_orch_exact_dedup_name,
         displayed_name="exact dedup",
         prefix="p4_",
@@ -228,7 +237,6 @@ def sample_ray_orchestrator(
 
     # language ID
     lang_id = _create_component(
-        run_lang_id_op,
         pipeline_name=p1_orch_lang_id_name,
         displayed_name="language ID",
         prefix="p5_",
@@ -238,7 +246,6 @@ def sample_ray_orchestrator(
 
     # English filter
     filter_en = _create_component(
-        run_filter_op,
         pipeline_name=p1_orch_filter_name,
         displayed_name="filter en",
         prefix="p6_",
@@ -248,7 +255,6 @@ def sample_ray_orchestrator(
 
     # English document quality annotator
     doc_quality_en = _create_component(
-        run_doc_quality_op,
         pipeline_name=p1_orch_doc_quality_name,
         displayed_name="doc quality en",
         prefix="p7_",
@@ -258,7 +264,6 @@ def sample_ray_orchestrator(
 
     # Japanese filter
     filter_ja = _create_component(
-        run_filter_op,
         pipeline_name=p1_orch_filter_name,
         displayed_name="filter ja",
         prefix="p8_",
@@ -268,7 +273,6 @@ def sample_ray_orchestrator(
 
     # Japanese document quality annotator
     doc_quality_ja = _create_component(
-        run_doc_quality_op,
         pipeline_name=p1_orch_doc_quality_name,
         displayed_name="doc quality ja",
         prefix="p9_",
@@ -278,7 +282,6 @@ def sample_ray_orchestrator(
 
     # French filter
     filter_fr = _create_component(
-        run_filter_op,
         pipeline_name=p1_orch_filter_name,
         displayed_name="filter fr",
         prefix="p10_",
@@ -288,14 +291,12 @@ def sample_ray_orchestrator(
 
     # French document quality annotator
     doc_quality_fr = _create_component(
-        run_doc_quality_op,
         pipeline_name=p1_orch_doc_quality_name,
         displayed_name="doc quality fr",
         prefix="p11_",
         input_folder=filter_fr.output,
         prev_op=filter_fr,
     )
-
 
 if __name__ == "__main__":
     # Compiling the pipeline

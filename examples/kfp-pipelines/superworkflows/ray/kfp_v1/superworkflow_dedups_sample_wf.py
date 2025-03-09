@@ -16,13 +16,10 @@ import kfp.components as comp
 import kfp.dsl as dsl
 from workflow_support.compile_utils import ONE_WEEK_SEC
 
-# Components
-# path to kfp component specifications files
+ORCH_HOST = "http://ml-pipeline:8888"
+
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", "../../../../../kfp/kfp_ray_components/")
-# For every sub workflow we need a separate components, that knows about this subworkflow.
-run_doc_id_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
-run_exact_dedup_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
-run_fuzzy_dedup_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
+run_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
 
 doc_id_image = "quay.io/dataprep1/data-prep-kit/doc_id-ray:latest"
 ededup_image = "quay.io/dataprep1/data-prep-kit/ededup-ray:latest"
@@ -85,25 +82,16 @@ def sample_ray_orchestrator(
     # Fuzzy dedup step parameters
     p5_name: str = "fdedup",
     p5_skip: bool = False,
-    # columns used
-    p5_fdedup_doc_column: str = "contents",
-    p5_fdedup_id_column: str = "int_id_column",
-    p5_fdedup_cluster_column: str = "cluster",
-    # infrastructure
-    p5_fdedup_bucket_cpu: float = 0.5,
-    p5_fdedup_doc_cpu: float = 0.5,
-    p5_fdedup_mhash_cpu: float = 0.5,
-    # fuzzy parameters
-    p5_fdedup_num_permutations: int = 64,
-    p5_fdedup_threshold: float = 0.8,
-    p5_fdedup_shingles_size: int = 5,
-    p5_fdedup_delimiters: str = " ",
-    # random delay between reads
-    p5_fdedup_random_delay_limit: int = 5,
-    # snapshotting
-    p5_fdedup_snapshot_delay: int = 1,
-    p5_fdedup_use_doc_snapshot: bool = False,
-    p5_fdedup_use_bucket_snapshot: bool = False,
+    p5_fdedup_contents_column: str = "contents",
+    p5_fdedup_document_id_column: str = "int_id_column",
+    p5_fdedup_num_permutations: int = 112,
+    p5_fdedup_num_bands: int = 14,
+    p5_fdedup_num_minhashes_per_band: int = 8,
+    p5_fdedup_word_shingle_size: int = 5,
+    p5_fdedup_shingle_option: str = "word",
+    p5_fdedup_jaccard_similarity_threshold: float = 0.75,
+    p5_fdedup_seed: int = 42,
+    p5_fdedup_operation_mode: str = "annotate",
     # data sampling
     p5_fdedup_n_samples: int = 10,
     # overriding parameters
@@ -116,40 +104,55 @@ def sample_ray_orchestrator(
 
     # get all arguments
     args = locals()
-    orch_host = "http://ml-pipeline:8888"
 
-    def _set_component(op: dsl.BaseOp, displaied_name: str, prev_op: dsl.BaseOp = None):
+    def _create_component(
+            pipeline_name: str,
+            displayed_name: str,
+            prefix="p3_",
+            input_folder="",
+            prev_op: dsl.BaseOp = None,
+    ):
+        component = run_op(
+            name=pipeline_name, prefix=prefix, params=args, host=ORCH_HOST, input_folder=input_folder
+        )
         # set the sub component UI name
-        op.set_display_name(displaied_name)
+        component.set_display_name(displayed_name)
 
         # Add pod labels
-        op.add_pod_label("app", "ml-pipeline").add_pod_label("component", "data-science-pipelines")
+        component.add_pod_label("app", "ml-pipeline").add_pod_label("component", "data-science-pipelines")
         # No cashing
-        op.execution_options.caching_strategy.max_cache_staleness = "P0D"
+        component.execution_options.caching_strategy.max_cache_staleness = "P0D"
         # image pull policy
-        op.set_image_pull_policy("Always")
-        # Set the timeout for each task to one week (in seconds)
-        op.set_timeout(ONE_WEEK_SEC)
+        # component.set_image_pull_policy("Always")
         if prev_op is not None:
-            op.after(prev_op)
+            component.after(prev_op)
+        return component
 
     # document ID
-    doc_id = run_doc_id_op(
-        name=p1_orch_doc_id_name, prefix="p3_", params=args, host=orch_host, input_folder=p2_pipeline_input_parent_path
+    doc_id = _create_component(
+        pipeline_name=p1_orch_doc_id_name,
+        displayed_name="doc ID",
+        prefix="p3_",
+        input_folder=p2_pipeline_input_parent_path,
     )
-    _set_component(doc_id, "doc ID")
 
     # exact deduplication
-    exact_dedup = run_exact_dedup_op(
-        name=p1_orch_exact_dedup_name, prefix="p4_", params=args, host=orch_host, input_folder=doc_id.output
+    exact_dedup = _create_component(
+        pipeline_name=p1_orch_exact_dedup_name,
+        displayed_name="exact dedup",
+        prefix="p4_",
+        input_folder=doc_id.output,
+        prev_op=doc_id,
     )
-    _set_component(exact_dedup, "exact dedup", doc_id)
 
     # fuzzy deduplication
-    fuzzy_dedup = run_fuzzy_dedup_op(
-        name=p1_orch_fuzzy_dedup_name, prefix="p5_", params=args, host=orch_host, input_folder=exact_dedup.output
-    )
-    _set_component(fuzzy_dedup, "fuzzy dedup", exact_dedup)
+    # fuzzy_dedup = _create_component(
+    #     pipeline_name=p1_orch_fuzzy_dedup_name,
+    #     displayed_name="fuzzy dedup",
+    #     prefix="p5_",
+    #     input_folder=exact_dedup.output,
+    #     prev_op=exact_dedup,
+    # )
 
     # Configure the pipeline level to one week (in seconds)
     dsl.get_pipeline_conf().set_timeout(ONE_WEEK_SEC)

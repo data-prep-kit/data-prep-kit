@@ -260,7 +260,7 @@ def sample_code_ray_orchestrator(
     # malware
     malware = _create_component(
         pipeline_name=p1_orch_malware_name,
-        displayed_name="code_quality",
+        displayed_name="malware",
         prefix="p8_",
         input_folder=code_quality.output,
         prev_op=code_quality,

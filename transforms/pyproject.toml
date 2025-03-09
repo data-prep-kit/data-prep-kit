@@ -1,6 +1,6 @@
 [project]
 name = "data_prep_toolkit_transforms"
-version = "1.0.1.dev1"
+version = "1.0.1.dev3"
 requires-python = ">=3.10,<3.13"
 keywords = ["transforms", "data preprocessing", "data preparation", "llm", "generative", "ai", "fine-tuning", "llmapps" ]
 description = "Data Preparation Toolkit Transforms using Ray"
@@ -59,7 +59,8 @@ all = { file = [
 "universal/bloom/requirements.txt",
 "universal/tokenization/requirements.txt",
 "universal/web2parquet/requirements.txt",
-"universal/rep_removal/requirements.txt"
+"universal/rep_removal/requirements.txt",
+"universal/tokenization2arrow/requirements.txt"
 ]}
 
 language = { file = [
@@ -90,7 +91,20 @@ language = { file = [
 "universal/web2parquet/requirements.txt",
 "universal/profiler/requirements.txt",
 "universal/resize/requirements.txt",
-"universal/rep_removal/requirements.txt"
+"universal/rep_removal/requirements.txt",
+"universal/tokenization2arrow/requirements.txt"
+]}
+
+gneissweb = { file = [
+"language/extreme_tokenized/requirements.txt",
+"language/readability/requirements.txt",
+"language/gneissweb_classification/requirements.txt",
+"universal/filter/requirements.txt",
+"universal/tokenization/requirements.txt",
+"universal/resize/requirements.txt",
+"universal/rep_removal/requirements.txt",
+"universal/bloom/requirements.txt",
+"universal/tokenization2arrow/requirements.txt"
 ]}
 
 # pyproject.toml must be in a parent and cannot be in sibling
@@ -133,6 +147,8 @@ code_profiler = { file = ["code/code_profiler/requirements.txt"]}
 gneissweb_classification = { file = ["language/gneissweb_classification/requirements.txt"]}
 
 rep_removal = { file = ["universal/rep_removal/requirements.txt"]}
+tokenization2arrow = { file = ["universal/tokenization2arrow/requirements.txt"]}
+
 # Does not seem to work for our custom layout
 # copy all files to a single src and let automatic discovery find them
 

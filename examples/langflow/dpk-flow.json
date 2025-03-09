@@ -20,7 +20,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "from langflow.custom import Component\nfrom langflow.io import DataInput, MessageTextInput, Output\nfrom argparse import ArgumentParser, Namespace\nfrom langflow.schema import Data\nfrom data_processing.utils import CLIArgumentProvider\nfrom typing import Any\nimport pyarrow as pa\nfrom data_processing.runtime.pure_python.runtime_configuration import (\n    PythonTransformRuntimeConfiguration,\n)\nimport time\nfrom noop_transform_python import NOOPPythonTransformConfiguration\n\n\nshort_name = \"noop\"\ncli_prefix = f\"{short_name}_\"\nsleep_key = \"sleep_sec\"\npwd_key = \"pwd\"\nsleep_cli_param = f\"{cli_prefix}{sleep_key}\"\npwd_cli_param = f\"{cli_prefix}{pwd_key}\"\n\nclass NOOPComponent(Component):\n    display_name = \"Noop\"\n    description = \"DPK noop.\"\n    icon = \"noop\"\n    name = \"noop\"\n\n    inputs = [\n        StrInput(\n            name=\"input_folder\",\n            display_name=\"input folder\",\n            input_types=[\"StrInput\", \"str\", \"Text\"],\n            info=\"input folder to process.\",\n        ),\n        StrInput(\n            name=\"output_folder\",\n            display_name=\"output folder\",\n            input_types=[\"StrInput\", \"str\", \"Text\"],\n            info=\"output folder to store processed files.\",\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Filtered Data\", name=\"filtered_data\", method=\"filter_data\"),\n    ]\n\n\n    def filter_data(self) -> str:\n        import os\n        import sys\n        \n        from data_processing.runtime.pure_python import PythonTransformLauncher\n        from data_processing.utils import ParamsUtils\n        # from dpk_noop.transform_python import NOOPPythonTransformConfiguration\n        from data_processing.transform import AbstractTableTransform, TransformConfiguration\n\n        # create parameters\n        input_folder = self.input_folder\n        output_folder = self.output_folder\n        local_conf = {\n            \"input_folder\": input_folder,\n            \"output_folder\": output_folder,\n        }\n        code_location = {\"github\": \"github\", \"commit_hash\": \"12345\", \"path\": \"path\"}\n        params = {\n            # Data access. Only required parameters are specified\n            \"data_local_config\": ParamsUtils.convert_to_ast(local_conf),\n            # execution info\n            \"runtime_pipeline_id\": \"pipeline_id\",\n            \"runtime_job_id\": \"job_id\",\n            \"runtime_code_location\": ParamsUtils.convert_to_ast(code_location),\n            # noop params\n            \"noop_sleep_sec\": 1,\n        }\n        # Set the simulated command line args\n        sys.argv = ParamsUtils.dict_to_req(d=params)\n        # create launcher\n        launcher = PythonTransformLauncher(runtime_config=NOOPPythonTransformConfiguration())\n        print(f\"************************noop************************\")\n        launcher.launch()\n        return output_folder\n",
+                "value": "from langflow.custom import Component\nfrom langflow.io import DataInput, MessageTextInput, Output\nfrom argparse import ArgumentParser, Namespace\nfrom langflow.schema import Data\nfrom data_processing.utils import CLIArgumentProvider\nfrom typing import Any\nimport pyarrow as pa\nfrom data_processing.runtime.pure_python.runtime_configuration import (\n    PythonTransformRuntimeConfiguration,\n)\nimport time\nfrom noop_transform_python import NOOPPythonTransformConfiguration\n\n\nshort_name = \"noop\"\ncli_prefix = f\"{short_name}_\"\nsleep_key = \"sleep_sec\"\npwd_key = \"pwd\"\nsleep_cli_param = f\"{cli_prefix}{sleep_key}\"\npwd_cli_param = f\"{cli_prefix}{pwd_key}\"\n\nclass NOOPComponent(Component):\n    display_name = \"Noop\"\n    description = \"DPK noop.\"\n    icon = \"noop\"\n    name = \"noop\"\n\n    inputs = [\n        StrInput(\n            name=\"input_folder\",\n            display_name=\"input folder\",\n            input_types=[\"StrInput\", \"str\", \"Text\"],\n            info=\"input folder to process.\",\n        ),\n        StrInput(\n            name=\"output_folder\",\n            display_name=\"output folder\",\n            input_types=[\"StrInput\", \"str\", \"Text\"],\n            info=\"output folder to store processed files.\",\n        ),\n        IntInput(\n            name=\"noop_sleep_sec\",\n            display_name=\"noop_sleep_sec\",\n            info=\"noop sleep parameter.\",\n            value=1\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Filtered Data\", name=\"filtered_data\", method=\"filter_data\"),\n    ]\n\n\n    def filter_data(self) -> str:\n        import os\n        import sys\n        \n        from data_processing.runtime.pure_python import PythonTransformLauncher\n        from data_processing.utils import ParamsUtils\n        # from dpk_noop.transform_python import NOOPPythonTransformConfiguration\n        from data_processing.transform import AbstractTableTransform, TransformConfiguration\n\n        # create parameters\n        input_folder = self.input_folder\n        output_folder = self.output_folder\n        sleep_sec = self.noop_sleep_sec\n        local_conf = {\n            \"input_folder\": input_folder,\n            \"output_folder\": output_folder,\n        }\n        code_location = {\"github\": \"github\", \"commit_hash\": \"12345\", \"path\": \"path\"}\n        params = {\n            # Data access. Only required parameters are specified\n            \"data_local_config\": ParamsUtils.convert_to_ast(local_conf),\n            # execution info\n            \"runtime_pipeline_id\": \"pipeline_id\",\n            \"runtime_job_id\": \"job_id\",\n            \"runtime_code_location\": ParamsUtils.convert_to_ast(code_location),\n            # noop params\n            \"noop_sleep_sec\": sleep_sec,\n        }\n        # Set the simulated command line args\n        sys.argv = ParamsUtils.dict_to_req(d=params)\n        # create launcher\n        launcher = PythonTransformLauncher(runtime_config=NOOPPythonTransformConfiguration())\n        print(f\"************************noop************************\")\n        launcher.launch()\n        return output_folder\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -55,6 +55,25 @@
                 "type": "str",
                 "_input_type": "StrInput"
               },
+              "noop_sleep_sec": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "noop_sleep_sec",
+                "value": 3,
+                "display_name": "noop_sleep_sec",
+                "advanced": false,
+                "dynamic": false,
+                "info": "noop sleep parameter.",
+                "title_case": false,
+                "type": "int",
+                "_input_type": "IntInput",
+                "load_from_db": false
+              },
               "output_folder": {
                 "tool_mode": false,
                 "trace_as_metadata": true,
@@ -65,7 +84,7 @@
                 "placeholder": "",
                 "show": true,
                 "name": "output_folder",
-                "value": "output3",
+                "value": "output1",
                 "display_name": "output folder",
                 "advanced": false,
                 "input_types": [
@@ -112,15 +131,15 @@
             ],
             "field_order": [
               "input_folder",
-              "output_folder"
+              "output_folder",
+              "noop_sleep_sec"
             ],
             "beta": false,
             "legacy": false,
             "edited": true,
             "metadata": {},
             "tool_mode": false,
-            "lf_version": "1.2.0",
-            "official": false
+            "lf_version": "1.2.0"
           },
           "showNode": true,
           "type": "noop",
@@ -129,7 +148,7 @@
         "selected": false,
         "measured": {
           "width": 320,
-          "height": 312
+          "height": 394
         },
         "dragging": false
       },
@@ -151,7 +170,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "from langflow.custom import Component\nfrom langflow.io import DataInput, MessageTextInput, Output\nfrom argparse import ArgumentParser, Namespace\nfrom langflow.schema import Data\nfrom data_processing.utils import CLIArgumentProvider\nfrom typing import Any\nimport pyarrow as pa\nfrom data_processing.runtime.pure_python.runtime_configuration import (\n    PythonTransformRuntimeConfiguration,\n)\nimport time\n\n\nclass DocIdComponent(Component):\n    display_name = \"DocId\"\n    description = \"docid transform\"\n    icon = \"docid\"\n    name = \"docid\"\n\n    inputs = [\n        StrInput(\n            name=\"input_folder\",\n            display_name=\"input folder\",\n            input_types=[\"StrInput\", \"str\", \"Text\"],\n            info=\"input folder to process.\",\n        ),\n        StrInput(\n            name=\"output_folder\",\n            display_name=\"output folder\",\n            input_types=[\"StrInput\", \"str\", \"Text\"],\n            info=\"output folder to store processed files.\",\n        ),\n        StrInput(\n            name=\"doc_id_doc_column\",\n            display_name=\"doc coumn\",\n            info=\"document column name\",\n            value=\"contents\",\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Filtered Data\", name=\"filtered_data\", method=\"filter_data\"),\n    ]\n\n    \n\n\n    def filter_data(self) -> str:\n        import os\n        import sys\n        \n        from data_processing.runtime.pure_python import PythonTransformLauncher\n        from data_processing.utils import ParamsUtils\n        from dpk_doc_id.transform import (\n            doc_column_name_cli_param,\n            hash_column_name_cli_param,\n            int_column_name_cli_param,\n            start_id_cli_param,\n        )\n        from dpk_doc_id.transform_python import DocIDPythonTransformRuntimeConfiguration\n\n        # create parameters\n        input_folder = self.input_folder\n        output_folder = self.output_folder\n        doc_column = self.doc_id_doc_column\n        local_conf = {\n            \"input_folder\": input_folder,\n            \"output_folder\": output_folder,\n        }\n        code_location = {\"github\": \"github\", \"commit_hash\": \"12345\", \"path\": \"path\"}\n        params = {\n            # Data access. Only required parameters are specified\n            \"data_local_config\": ParamsUtils.convert_to_ast(local_conf),\n            # execution info\n            \"runtime_pipeline_id\": \"pipeline_id\",\n            \"runtime_job_id\": \"job_id\",\n            \"runtime_code_location\": ParamsUtils.convert_to_ast(code_location),\n            # doc id params\n            doc_column_name_cli_param: doc_column,\n            hash_column_name_cli_param: \"hash_column\",\n            int_column_name_cli_param: \"int_id_column\",\n            start_id_cli_param: 5,\n        }\n        # Set the simulated command line args\n        sys.argv = ParamsUtils.dict_to_req(d=params)\n        # create launcher\n        launcher = PythonTransformLauncher(runtime_config=DocIDPythonTransformRuntimeConfiguration())\n        print(f\"************************doc id************************\")\n        launcher.launch()\n        return output_folder\n",
+                "value": "from langflow.custom import Component\nfrom langflow.io import DataInput, MessageTextInput, Output\nfrom argparse import ArgumentParser, Namespace\nfrom langflow.schema import Data\nfrom data_processing.utils import CLIArgumentProvider\nfrom typing import Any\nimport pyarrow as pa\nfrom data_processing.runtime.pure_python.runtime_configuration import (\n    PythonTransformRuntimeConfiguration,\n)\nimport time\n\n\nclass DocIdComponent(Component):\n    display_name = \"DocId\"\n    description = \"docid transform\"\n    icon = \"docid\"\n    name = \"docid\"\n\n    inputs = [\n        StrInput(\n            name=\"input_folder\",\n            display_name=\"input folder\",\n            input_types=[\"StrInput\", \"str\", \"Text\"],\n            info=\"input folder to process.\",\n        ),\n        StrInput(\n            name=\"output_folder\",\n            display_name=\"output folder\",\n            input_types=[\"StrInput\", \"str\", \"Text\"],\n            info=\"output folder to store processed files.\",\n        ),\n        StrInput(\n            name=\"doc_id_doc_column\",\n            display_name=\"doc column\",\n            info=\"document column name\",\n            value=\"contents\",\n        ),\n        StrInput(\n            name=\"doc_id_hash_column\",\n            display_name=\"doc_id_hash_column\",\n            info=\"hash column name\",\n            value=\"hash_column\",\n        ),\n        StrInput(\n            name=\"doc_id_int_column\",\n            display_name=\"doc_id_int_column\",\n            info=\"Compute unique integer id and place in the given named column\",\n            value=\"int_id_column\",\n        ),\n        IntInput(\n            name=\"doc_id_start_id\",\n            display_name=\"doc_id_start_id\",\n            info=\"starting integer id\",\n            value=5,\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Filtered Data\", name=\"filtered_data\", method=\"filter_data\"),\n    ]\n\n    \n\n\n    def filter_data(self) -> str:\n        import os\n        import sys\n        \n        from data_processing.runtime.pure_python import PythonTransformLauncher\n        from data_processing.utils import ParamsUtils\n        from dpk_doc_id.transform import (\n            doc_column_name_cli_param,\n            hash_column_name_cli_param,\n            int_column_name_cli_param,\n            start_id_cli_param,\n        )\n        from dpk_doc_id.transform_python import DocIDPythonTransformRuntimeConfiguration\n\n        # create parameters\n        input_folder = self.input_folder\n        output_folder = self.output_folder\n        doc_column = self.doc_id_doc_column\n        hash_column = self.doc_id_hash_column\n        int_column = self.doc_id_int_column\n        start_id = self.doc_id_start_id\n        local_conf = {\n            \"input_folder\": input_folder,\n            \"output_folder\": output_folder,\n        }\n        code_location = {\"github\": \"github\", \"commit_hash\": \"12345\", \"path\": \"path\"}\n        params = {\n            # Data access. Only required parameters are specified\n            \"data_local_config\": ParamsUtils.convert_to_ast(local_conf),\n            # execution info\n            \"runtime_pipeline_id\": \"pipeline_id\",\n            \"runtime_job_id\": \"job_id\",\n            \"runtime_code_location\": ParamsUtils.convert_to_ast(code_location),\n            # doc id params\n            doc_column_name_cli_param: doc_column,\n            hash_column_name_cli_param: hash_column,\n            int_column_name_cli_param: int_column,\n            start_id_cli_param: start_id,\n        }\n        # Set the simulated command line args\n        sys.argv = ParamsUtils.dict_to_req(d=params)\n        # create launcher\n        launcher = PythonTransformLauncher(runtime_config=DocIDPythonTransformRuntimeConfiguration())\n        print(f\"************************doc id************************\")\n        launcher.launch()\n        return output_folder\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -173,13 +192,69 @@
                 "show": true,
                 "name": "doc_id_doc_column",
                 "value": "contents",
-                "display_name": "doc coumn",
+                "display_name": "doc column",
                 "advanced": false,
                 "dynamic": false,
                 "info": "document column name",
                 "title_case": false,
                 "type": "str",
                 "_input_type": "StrInput"
+              },
+              "doc_id_hash_column": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "doc_id_hash_column",
+                "value": "hash_column",
+                "display_name": "doc_id_hash_column",
+                "advanced": false,
+                "dynamic": false,
+                "info": "hash column name",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              },
+              "doc_id_int_column": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "doc_id_int_column",
+                "value": "int_id_column",
+                "display_name": "doc_id_int_column",
+                "advanced": false,
+                "dynamic": false,
+                "info": "Compute unique integer id and place in the given named column",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              },
+              "doc_id_start_id": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "doc_id_start_id",
+                "value": 5,
+                "display_name": "doc_id_start_id",
+                "advanced": false,
+                "dynamic": false,
+                "info": "starting integer id",
+                "title_case": false,
+                "type": "int",
+                "_input_type": "IntInput"
               },
               "input_folder": {
                 "tool_mode": false,
@@ -215,7 +290,7 @@
                 "placeholder": "",
                 "show": true,
                 "name": "output_folder",
-                "value": "output4",
+                "value": "output2",
                 "display_name": "output folder",
                 "advanced": false,
                 "input_types": [
@@ -263,14 +338,16 @@
             "field_order": [
               "input_folder",
               "output_folder",
-              "doc_id_doc_column"
+              "doc_id_doc_column",
+              "doc_id_hash_column",
+              "doc_id_int_column",
+              "doc_id_start_id"
             ],
             "beta": false,
             "legacy": false,
             "edited": true,
             "metadata": {},
             "tool_mode": false,
-            "official": false,
             "lf_version": "1.2.0"
           },
           "showNode": true,
@@ -280,7 +357,7 @@
         "selected": true,
         "measured": {
           "width": 320,
-          "height": 395
+          "height": 643
         },
         "dragging": false
       }
@@ -317,9 +394,9 @@
       }
     ],
     "viewport": {
-      "x": 0,
-      "y": 0,
-      "zoom": 1
+      "x": 217.1068019361174,
+      "y": 40.42751900027051,
+      "zoom": 0.8451060999743883
     }
   },
   "description": "Flow into the Future of Language.",

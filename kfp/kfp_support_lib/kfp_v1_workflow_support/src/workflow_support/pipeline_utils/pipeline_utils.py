@@ -99,7 +99,7 @@ class PipelinesUtils:
         """
         name_prefix = params.pop("name", None)
         if name_prefix is not None and name_prefix.strip() != "":
-            job_name = name_prefix + " " + pipeline.name + " " + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+            job_name = name_prefix + " " + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
         else:
             job_name = pipeline.name + " " + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
         try:

@@ -100,7 +100,6 @@ def invoke_sub_workflow(
         d.pop("output_parent_path", None)
         d.pop("parent_path_suffix", None)
         d.pop("skip", None)
-        # d.pop("name", None)
         d.pop("overriding_params", None)
         return
 

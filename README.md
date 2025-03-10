@@ -2,7 +2,7 @@
 
 <h1 align="center">Data Prep Kit</h1>
 
-Data Prep Kit is a community-driven project that simplifies unstructured data preparation for LLM application development. It addresses the growing challenge of preparing diverse data (language, code, vision, multimodal) for fine-tuning, instruction-tuning, and RAG applications. The modules in the kit have been tested in producing pre-training datasets for the [Granite open source LLM models](https://huggingface.co/ibm-granite).
+Data Prep Kit is a community-driven project that simplifies unstructured data preparation for LLM application development. It addresses the growing challenge of preparing diverse data (language, code, vision, multimodal) for such LLM applications as: Generative AI Data Preparation, LLM Data Engineering, RAG Pipeline Data Preparation, LLM Pretraining Data Optimization, Explainable AI Data Preparation, Multimodal LLM Data Preparation, Open Source LLM Tooling, Fine-tuning, and Instruction-tuning applications. The modules in the kit have been tested extensively in producing pre-training datasets for the [Granite open source LLM models](https://huggingface.co/ibm-granite) and in creating [IBM GneissWeb](https://research.ibm.com/blog/gneissweb-for-granite-training) dataset. 
 
 
 ## Features <a name = "features"></a>
@@ -75,14 +75,20 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 | [Resize](transforms/universal/resize/README.md)                           | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [Hate, Abuse, Profanity (HAP)](transforms/universal/hap/README.md)               | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Tokenizer](transforms/universal/tokenization/README.md)                         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
-| **Language-only**                                                                    |                    |                    |                    |                    |
+| [Tokenization2Arrow](transforms/universal/tokenization2arrow/README.md)                         | :white_check_mark: | :white_check_mark: | 
+| [Repetition removal](transforms/universal/rep_removal/README.md)                         | :white_check_mark: | :white_check_mark: |                   |  |
+| [Bloom filter](transforms/universal/bloom/README.md)                         | :white_check_mark: |  |                    |  |
+**Language-only**                                                                    |                    |                    |                    |                    |
 | [Language identification](transforms/language/lang_id/README.md)              | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Document quality](transforms/language/doc_quality/README.md)                 | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Document chunking for RAG](transforms/language/doc_chunk/README.md)          | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Text encoder](transforms/language/text_encoder/README.md)                    | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [PII Annotator/Redactor](transforms/language/pii_redactor/README.md)          | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
-| [Similarity](transforms/language/similarity/README.md)                        | :white_check_mark: |                    |                    |                    |
-| **Code-only**                                                                         |                    |                     |             |                    |
+| [Similarity](transforms/language/similarity/README.md)                        | :white_check_mark: |                    |                    |                    |  |
+| [GneissWeb classification](transforms/language/gneissweb_classification/README.md)          | :white_check_mark: | :white_check_mark: |                    |  |
+| [Readability scores](transforms/language/readability/README.md)          | :white_check_mark: | :white_check_mark: |                    |  |
+| [Extreme tokenized annotation](transforms/language/extreme_tokenized/README.md)          | :white_check_mark: | :white_check_mark: |                    |  |
+**Code-only**                                                                         |                    |                     |             |                    |
 | [Programming language annotation](transforms/code/proglang_select/python/README.md)  | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Code quality annotation](transforms/code/code_quality/python/README.md)             | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Malware annotation](transforms/code/malware/python/README.md)                       | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |

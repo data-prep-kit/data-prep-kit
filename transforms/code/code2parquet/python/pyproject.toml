@@ -1,6 +1,6 @@
 [project]
 name = "dpk_code2parquet_transform_python"
-version = "0.2.4"
+version = "0.2.5.dev0"
 requires-python = ">=3.10,<3.13"
 description = "code2parquet Python Transform"
 license = {text = "Apache-2.0"}

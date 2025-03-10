@@ -16,10 +16,10 @@ DPK_MAJOR_VERSION=0
 # The minor version is incremented manually when significant features have been added that are backward compatible with the previous major.minor release.
 DPK_MINOR_VERSION=2
 # The minor version is incremented AUTOMATICALLY by the release.sh script when a new release is set.
-DPK_MICRO_VERSION=4
+DPK_MICRO_VERSION=5
 # The suffix is generally always set in the main/development branch and only nulled out when creating release branches.
 # It can be manually incremented, for example, to allow publishing a new intermediate version wheel to pypi. 
-DPK_VERSION_SUFFIX=
+DPK_VERSION_SUFFIX=.dev0
 
 DPK_VERSION=$(DPK_MAJOR_VERSION).$(DPK_MINOR_VERSION).$(DPK_MICRO_VERSION)$(DPK_VERSION_SUFFIX)
 
@@ -36,7 +36,7 @@ DPK_LIB_KFP_VERSION=$(DPK_VERSION)
 DPK_LIB_KFP_VERSION_v2=$(DPK_VERSION)
 DPK_LIB_KFP_SHARED=$(DPK_VERSION)
 
-DPK_CONNECTOR_VERSION=0.2.3
+DPK_CONNECTOR_VERSION=0.2.4.dev0
 
 ################## ################## ################## ################## ################## ##################
 # Begin versions that the repo depends on. 
@@ -63,4 +63,4 @@ endif
 #
 # If you change the versions numbers, be sure to run "make set-versions" to 
 # update version numbers across the transform (e.g., pyproject.toml).
-TRANSFORMS_PKG_VERSION=1.1.0
+TRANSFORMS_PKG_VERSION=1.1.1.dev0

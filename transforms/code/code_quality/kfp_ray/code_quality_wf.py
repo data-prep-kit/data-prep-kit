@@ -32,7 +32,7 @@ task_image = "quay.io/dataprep1/data-prep-kit/code_quality-ray:latest"
 # but for v2, it fails with None and requires the string "None"
 HF_TOKEN= "None" if os.getenv("KFPv2", "0") == "1" else None
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:0.2.4"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)

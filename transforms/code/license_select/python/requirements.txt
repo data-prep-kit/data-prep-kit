@@ -1,1 +1,1 @@
-data-prep-toolkit>=0.2.4
+data-prep-toolkit>=0.2.5.dev0

@@ -29,7 +29,7 @@ task_image = "quay.io/dataprep1/data-prep-kit/repo_level_order-ray:latest"
 EXEC_SCRIPT_NAME: str = "repo_level_order_transform_ray.py"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:0.2.4"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)

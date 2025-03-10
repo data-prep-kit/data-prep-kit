@@ -1,0 +1,52 @@
+{
+    "mappings": {
+        "dynamic": "true",
+        "dynamic_date_formats": [
+            "yyyy-MM-dd HH:mm:ss",
+            "basic_date_time",
+            "basic_date_time_no_millis",
+            "strict_hour_minute_second",
+            "strict_hour_minute_second_millis",
+            "strict_date_time"
+        ],
+        "dynamic_templates": [
+            {
+                "strings": {
+                    "match_mapping_type": "string",
+                    "mapping": {
+                        "fields": {
+                            "keyword": {
+                                "ignore_above": 2048,
+                                "type": "keyword"
+                            }
+                        },
+                        "type": "text"
+                    }
+                }
+            }
+        ],
+        "numeric_detection": true,
+        "properties": {
+            "contents": {
+                "type": "text",
+                "fields": {
+                    "keyword": {
+                        "type": "keyword",
+                        "ignore_above": 2048
+                    }
+                }
+            },
+            "sentence_transformers_384": {
+                "type": "dense_vector",
+                "dims": 384,
+                "index": true,
+                "similarity": "cosine",
+                "index_options": {
+                    "type": "int8_hnsw",
+                    "m": 16,
+                    "ef_construction": 100
+                }
+            }
+        }
+    }
+}

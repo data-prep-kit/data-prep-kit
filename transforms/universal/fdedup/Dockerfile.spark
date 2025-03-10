@@ -1,0 +1,40 @@
+FROM quay.io/dataprep1/data-prep-kit/data-prep-kit-spark-3.5.2:latest
+
+USER root
+# install pytest
+RUN pip install --no-cache-dir pytest
+
+WORKDIR ${SPARK_HOME}/work-dir
+ARG DPK_WHEEL_FILE_NAME
+
+# Copy and install data processing libraries 
+# These are expected to be placed in the docker context before this is run (see the make image).
+COPY --chown=spark:root data-processing-dist data-processing-dist
+RUN  pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}[spark]
+
+
+# Install project source
+
+## Copy the python version of the tansform
+COPY --chown=spark:root dpk_fdedup/ dpk_fdedup/
+COPY --chown=spark:root requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+
+RUN mkdir -p /opt/spark/work-dir/src/templates && \
+    mkdir -p /opt/spark/work-dir/config
+COPY --chown=spark:root spark/deployment/kubernetes/spark-executor-pod-template.yml /opt/spark/work-dir/src/templates/
+COPY --chown=spark:root spark/deployment/kubernetes/spark_profile.yml /opt/spark/work-dir/config/
+
+
+USER spark
+
+# Set environment
+ENV PYTHONPATH=${SPARK_HOME}/work-dir/:${SPARK_HOME}/work-dir/src/:${PYTHONPATH}
+ENV PATH=${SPARK_HOME}/work-dir/.local/bin/:${PATH}
+
+# Put these at the end since they seem to upset the docker cache.
+ARG BUILD_DATE
+ARG GIT_COMMIT
+LABEL build-date=$BUILD_DATE
+LABEL git-commit=$GIT_COMMIT
+

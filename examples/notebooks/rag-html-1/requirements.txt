@@ -1,0 +1,31 @@
+### DPK 1.0.0a4
+data-prep-toolkit==0.2.3
+data-prep-toolkit-transforms[html2parquet]==1.0.0a4
+data-prep-toolkit-transforms[web2parquet]==1.0.0a4
+
+## HTML processing
+trafilatura
+
+# Milvus
+pymilvus
+pymilvus[model]
+
+## --- Replicate
+replicate
+
+## --- llama-index
+llama-index
+llama-index-embeddings-huggingface
+llama-index-llms-replicate
+llama-index-vector-stores-milvus
+
+## utils
+humanfriendly
+pandas
+mimetypes-magic
+nest-asyncio
+
+## jupyter and friends
+jupyterlab
+ipykernel
+ipywidgets

@@ -1,0 +1,1230 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.7">
+    
+    
+      
+        <title>Fuzzy Dedup - Data Prep Kit</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.8608ea7d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/badge.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#fuzzy-dedup" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Data Prep Kit" class="md-header__button md-logo" aria-label="Data Prep Kit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Data Prep Kit
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Fuzzy Dedup
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/IBM/data-prep-kit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../data-processing-lib/doc/overview/" class="md-tabs__link">
+        
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../doc/quick-start/quick-start/" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../CONTRIBUTING/" class="md-tabs__link">
+          
+  
+  Quick Links
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Data Prep Kit" class="md-nav__button md-logo" aria-label="Data Prep Kit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Data Prep Kit
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/IBM/data-prep-kit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../data-processing-lib/doc/overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../doc/quick-start/quick-start/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    QuickStart
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../doc/quick-start/contribute-your-own-transform/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Developer Tutorial
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../doc/quick-start/run-transform-venv/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Run Virtual
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../doc/quick-start/run-transform-image/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Run Image
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ADVANCED/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Advanced
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../doc/quick-start/quick-start.md#running-transforms-on-windows" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Windows Support
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../kfp/doc/simple_transform_pipeline/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    KFP Pipeline
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Quick Links
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Quick Links
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    How to Contribute
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../resources/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Learn about DPK
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#contributors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contributors
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#description" class="md-nav__link">
+    <span class="md-ellipsis">
+      Description
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Description">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#signature-calculation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Signature Calculation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cluster Analysis
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#duplicate-list-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Duplicate List Generation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-cleaning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Cleaning
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#input-columns-used-by-this-transform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Input Columns Used by This Transform
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-columns-annotated-by-this-transform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Output Columns Annotated by This Transform
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-and-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration and Usage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration and Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fuzzy-deduplication-transform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fuzzy Deduplication Transform
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#signature-calculation-transform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Signature Calculation Transform
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cluster-analysis-transform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cluster Analysis Transform
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-duplicates-list-transform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get Duplicates List Transform
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-cleaning-transform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Cleaning Transform
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-the-samples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running the samples
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code example
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transforming-data-using-the-transform-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transforming data using the transform image
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="fuzzy-dedup">Fuzzy Dedup</h1>
+<p>Please see the set of
+<a href="../../#transform-project-conventions">transform project conventions</a>
+for details on general project conventions, transform configuration,
+testing and IDE set up.</p>
+<h2 id="contributors">Contributors</h2>
+<ul>
+<li>Nelson Bore (kibnelson@gmail.com)</li>
+<li>Constantin Adam (cmadam@us.ibm.com)</li>
+</ul>
+<h2 id="description">Description</h2>
+<p>The fdedup transform eliminates documents that are highly similar to each other (but not necessarily identical) from a
+set of Parquet files. This ensures that the resulting dataset contains only unique or sufficiently distinct entries.</p>
+<p>Fuzzy dedup is a complex process made up of a pipeline that performs four main steps:</p>
+<ol>
+<li><strong>Signature Calculation</strong>: creates a set of minhashes for each document, and uses them to create band signatures for
+the document.</li>
+<li><strong>Cluster Analysis</strong>: groups documents into clusters based on matching band signatures. Within each cluster, it
+retains only the documents that have a Jaccard similarity above a specified threshold, and it identifies which documents
+to keep as unique and which ones to mark as duplicates.</li>
+<li><strong>Duplicate List Generation</strong>: combines the similarity clusters identified in each band to create a single, unified
+list of duplicate documents.</li>
+<li><strong>Data Cleaning</strong>: processes the documents by either filtering out duplicates or adding annotations to distinguish
+duplicates from non-duplicates.</li>
+</ol>
+<p>Each one of these steps is described in more detail below.</p>
+<h3 id="signature-calculation">Signature Calculation</h3>
+<p>This transform computes <code>num_permutations</code> minhashes and <code>num_bands</code> signatures for each document in the dataset, by
+following these processing steps:
+1. <strong>Shingle Generation</strong>: create a set of character or word shingles, using a specified window length. Character
+shingles are more effective at detecting similar documents, but require more computational resources compared to word
+shingles.
+2. <strong>Minhash Calculation</strong>: using the shingles as input, compute <code>num_permutations</code> minhashes for each document.
+3. <strong>Band Signature Calculation</strong>: divide the minhashes into <code>num_bands</code>, where each band contains
+<code>num_minhashes_per_band</code> minhashes. For each document, generate a unique signature for every band.</p>
+<p>The values for <code>num_bands</code> and <code>num_minhashes_per_band</code> determine the likelihood that documents with a certain Jaccard
+similarity will be marked as duplicates. A Jupyter notebook in the <a href="https://github.com/IBM/data-prep-kit/blob/dev/transforms/universal/fdedup/utils/calc_r_and_b.ipynb">utils</a> folder generates a graph of this
+probability function, helping users explore how different settings for <code>num_bands</code> and <code>num_minhashes_per_band</code> impact
+the deduplication process.</p>
+<p>To help distribute the workload and speed up processing of the next steps, the hash space of each band is divided into
+<code>num_segments</code> segments. The band signatures, the minhashes, the document ids, and lengths are stored in an organized
+output folder structure <code>bands/band=b/segment=s</code>, where <code>b</code> is the band number and <code>s</code> is the segment number.</p>
+<h3 id="cluster-analysis">Cluster Analysis</h3>
+<p>This transform leverages segmented processing to analyze the data generated by the <strong>Signature Calculation</strong> step
+efficiently and in parallel. Each worker processes a specific segment <code>s</code> of a band <code>b</code> by loading and analyzing all
+Parquet files from the folder <code>bands/band=b/segment=s</code>. Each row in the Parquet files contains, for a document:
+* <code>band_hash</code>, the document's band signature, and 
+* <code>data</code>, a structure with three fields: the unique <code>document_id</code>, document's <code>minhashes</code>, and <code>document_size</code>.</p>
+<p>The transform runs the following processing steps:
+1. <strong>Data Loading</strong>: combine into a single dataframe all Parquet files in <code>bands/band=b/segment=s</code>.
+2. <strong>Clustering</strong>: run a <code>group_by</code> operation on the <code>band_hash</code> column that will group documents with the same band
+signature into clusters.
+3. <strong>Similarity Analysis</strong>: for each cluster, calculate Jaccard similarity between pairs of documents using their
+minhashes, and move documents below the specified Jaccard similarity threshold into new clusters.
+4. <strong>Duplicate Identification</strong>: in clusters with more than one document remaining, retain the largest document with the
+smallest document id, and mark as duplicates all other documents in the cluster.
+5. <strong>Persist Results</strong>: save the duplicate clusters in a file.</p>
+<h3 id="duplicate-list-generation">Duplicate List Generation</h3>
+<p>The <strong>Cluster Analysis</strong> step identifies duplicates across multiple bands, meaning a document can be marked as a
+duplicate in one or more bands (e.g., if two documents are identical, one will be marked as a duplicate in all bands).
+This transform consolidates all duplicate information from each band segment into a single file, providing a unified
+record of duplicates detected across the dataset.</p>
+<h3 id="data-cleaning">Data Cleaning</h3>
+<p>This transform processes the original dataset using the list of duplicate documents generated by the <strong>Duplicate List
+Generation</strong> step. It imports each file in the original dataset into a table and produces a new dataset. The directory
+structure of the input dataset is preserved, but the contents of the output files depend on the selected operating mode:
+1. <strong>Annotate</strong> - add a new <code>duplicate</code> column to the dataset, that contains a <code>d</code> for documents marked as duplicates,
+and is empty for non-duplicates
+2. <strong>Filter duplicates</strong> - removes all documents identified as duplicates from the dataset.
+3. <strong>Filter non-duplicates</strong> - removes from the dataset all documents that were not marked as duplicates, leaving only
+the duplicates.</p>
+<p>The output dataset reflects the selected mode, providing flexibility for downstream processing.</p>
+<h2 id="input-columns-used-by-this-transform">Input Columns Used by This Transform</h2>
+<table>
+<thead>
+<tr>
+<th>Input Column Name</th>
+<th>Data Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Column specified by the <em>contents_column</em> configuration argument</td>
+<td>str</td>
+<td>Column that stores document text</td>
+</tr>
+<tr>
+<td>Column specified by the <em>document_id_column</em> configuration argument</td>
+<td>int64</td>
+<td>Column that stores document ID</td>
+</tr>
+</tbody>
+</table>
+<h2 id="output-columns-annotated-by-this-transform">Output Columns Annotated by This Transform</h2>
+<table>
+<thead>
+<tr>
+<th>Output Column Name</th>
+<th>Data Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>duplicate</td>
+<td>str</td>
+<td>Column added if fuzzy dedup runs in 'annotate' mode. Value is 'd' for duplicate documents, empty for non-duplicates</td>
+</tr>
+</tbody>
+</table>
+<h2 id="configuration-and-usage">Configuration and Usage</h2>
+<h3 id="fuzzy-deduplication-transform">Fuzzy Deduplication Transform</h3>
+<p>The set of dictionary keys holding <a href="https://github.com/IBM/data-prep-kit/blob/dev/transforms/universal/fdedup/dpk_fdedup/transform_python.py">Fuzzy Dedup</a> configuration for values are as
+follows:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>--input_folder INPUT_FOLDER
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                    Input folder path
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>--output_folder OUTPUT_FOLDER
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>                    Output folder path
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>--operation_mode {filter_duplicates,filter_non_duplicates,annotate}
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>                    operation mode for data cleanup: filter out duplicates/non-duplicates, or annotate duplicate documents
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>--contents_column CONTENTS_COLUMN
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                    name of the column that stores document text
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>--document_id_column DOCUMENT_ID_COLUMN
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                    name of the column that stores document ID
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>--seed SEED         seed of the random number generator
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>--num_permutations NUM_PERMUTATIONS
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                    number of permutations to use for minhash calculation
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>--num_bands NUM_BANDS
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                    number of bands to use for band hash calculation
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>--num_minhashes_per_band NUM_MINHASHES_PER_BAND
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>                    number of minhashes to use in each band
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>--word_shingle_size WORD_SHINGLE_SIZE
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>                    number of words included in one shingle
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>--jaccard_similarity_threshold JACCARD_SIMILARITY_THRESHOLD
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>                    jaccard similarity threshold above which two documents are similar
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>--num_segments NUM_SEGMENTS
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>                    the number of segments dividing the hashing space for each band (for scalability)
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>--duplicate_list_location DUPLICATE_LIST_LOCATION
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>                    path to the file with all the duplicate document ids
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>--services SERVICES   Comma-separated list of services to run (e.g., SignatureCalculation,ClusterAnalysis,GetDuplicateList,DataCleaning)
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>--use_s3 USE_S3       use s3
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>--s3_cred S3_CRED     ast string of options for s3 credentials
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>--shingle_option SHINGLE_OPTION
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>                    Option used for shingling
+</span></code></pre></div></p>
+<h3 id="signature-calculation-transform">Signature Calculation Transform</h3>
+<p>The set of dictionary keys holding <a href="https://github.com/IBM/data-prep-kit/blob/dev/transforms/universal/fdedup/dpk_fdedup/signature_calc/transform.py">SignatureCalcTransform</a> configuration for values
+are as follows:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>--minhash_document_id_column MINHASH_DOCUMENT_ID_COLUMN
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>                    name of the column storing the unique ID assigned to each document
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>--minhash_contents_column MINHASH_CONTENTS_COLUMN
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>                    name of the column storing the contents of each document
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>--minhash_seed MINHASH_SEED
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>                    the seed used to instantiate the random number generator
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>--minhash_num_permutations MINHASH_NUM_PERMUTATIONS
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>                    number of permutations (minhashes) calculated for each document
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>--minhash_word_shingle_size MINHASH_WORD_SHINGLE_SIZE
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>                    the size of the word shingles calculated for each document
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>--minhash_num_bands MINHASH_NUM_BANDS
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>                    the number of bands to use in the banding technique
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>--minhash_num_minhashes_per_band MINHASH_NUM_MINHASHES_PER_BAND
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>                    the number of minhashes to use in each band
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>--minhash_num_segments MINHASH_NUM_SEGMENTS
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>                    the number of segments across which we divide the hashing space for each band
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>--minhash_shingle_option MINHASH_SHINGLE_OPTION
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>                    Shingling option (&#39;word&#39; or &#39;char&#39;)
+</span></code></pre></div></p>
+<h3 id="cluster-analysis-transform">Cluster Analysis Transform</h3>
+<p>The set of dictionary keys holding <a href="https://github.com/IBM/data-prep-kit/blob/dev/transforms/universal/fdedup/dpk_fdedup/cluster_analysis/transform.py">ClusterAnalysisTransform</a> configuration for values
+are as follows:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>--cluster_jaccard_similarity_threshold CLUSTER_JACCARD_SIMILARITY_THRESHOLD
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>                      Jaccard similarity threshold above which two documents are duplicates
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>--cluster_num_bands CLUSTER_NUM_BANDS
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>                      The number of bands used in the banding technique
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>--cluster_num_segments CLUSTER_NUM_SEGMENTS
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>                      The number of segments dividing the hashing space for each band
+</span></code></pre></div></p>
+<h3 id="get-duplicates-list-transform">Get Duplicates List Transform</h3>
+<p>This transform currently has no configuration parameters.</p>
+<h3 id="data-cleaning-transform">Data Cleaning Transform</h3>
+<p>The set of dictionary keys holding <a href="https://github.com/IBM/data-prep-kit/blob/dev/transforms/universal/fdedup/dpk_fdedup/data_cleaning/transform.py">DataCleaningTransform</a> configuration for values
+are as follows:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>  --fdclean_document_id_column FDCLEAN_DOCUMENT_ID_COLUMN
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>                        name of the column storing the unique ID assigned to each document
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>  --fdclean_operation_mode {filter_duplicates,filter_non_duplicates,annotate}
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>                        operation mode: filter out duplicates/non-duplicates, or annotate duplicate documents
+</span></code></pre></div></p>
+<h3 id="running-the-samples">Running the samples</h3>
+<p>To run the samples, use the following <code>make</code> target to create a virtual environment:</p>
+<p><div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>make venv
+</span></code></pre></div>
+Subsequently, the main orchestration program can run with:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>source venv/bin/activate
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>python -m dpk_fdedup.transform_python
+</span></code></pre></div>
+Alternatively the transforms included in fuzzy dedup can be launched independently:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>source venv/bin/activate
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>python -m dpk_fdedup.signature_calc.local_python
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>python -m dpk_fdedup.cluster_analysis.local_python
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>python -m dpk_fdedup.get_duplicate_list.transform_local_python
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>python -m dpk_fdedup.data_cleaning.local_python
+</span></code></pre></div>
+After running the transforms, execute:
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>ls<span class="w"> </span>output
+</span></code></pre></div>
+To see results of the transform.</p>
+<h3 id="code-example">Code example</h3>
+<p>This is a <a href="https://github.com/IBM/data-prep-kit/blob/dev/transforms/universal/fdedup/fdedup_python.ipynb">sample notebook</a> that shows how to invoke the python fuzzy dedup transform.</p>
+<h3 id="transforming-data-using-the-transform-image">Transforming data using the transform image</h3>
+<p>To use the transform image to transform your data, please refer to the 
+<a href="../../../doc/quick-start/run-transform-image/">running images quickstart</a>,
+substituting the name of this transform image and runtime as appropriate.</p>
+<h2 id="testing">Testing</h2>
+<p>For testing fuzzy deduplication in a pure python runtime, use the following <code>make</code> targets. To launch integration tests
+for all the component transforms of fuzzy dedup (signature calculation, cluster analysis, get duplicate list and data
+cleaning) use: 
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>make test-src
+</span></code></pre></div></p>
+<p>To test the creation of the Docker image for fuzzy dedup transform and the capability to run a local program inside that
+image, use:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>make test-image
+</span></code></pre></div></p>
+<h1 id="fuzzy-dedup-ray-implementation">Fuzzy Dedup - Ray implementation</h1>
+<p>Please see the set of <a href="../../#transform-project-conventions">transform project conventions</a> for details on general project conventions, transform
+configuration,  testing and IDE set up.</p>
+<h2 id="summary">Summary</h2>
+<p>This project wraps the Fuzzy Dedup transform with a Ray runtime.</p>
+<h2 id="configuration-and-command-line-options">Configuration and command line Options</h2>
+<p>Fuzzy Dedup configuration and command line options are the same as for the base python transform. </p>
+<h2 id="running">Running</h2>
+<h3 id="launched-command-line-options">Launched Command Line Options</h3>
+<p>When running the transform with the Ray launcher (i.e., TransformLauncher),
+in addition to those available to the transform as defined in here,
+the set of 
+<a href="../../../data-processing-lib/doc/launcher-options/">launcher options</a> are available.</p>
+<h3 id="running-the-samples_1">Running the samples</h3>
+<p>To run the samples, use the following <code>make</code> target to create a virtual environment:</p>
+<p><div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>make venv
+</span></code></pre></div>
+Subsequently, the main orchestration program can run with:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>source venv/bin/activate
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>python -m dpk_fdedup.ray.transform
+</span></code></pre></div>
+Alternatively the transforms included in fuzzy dedup can be launched independently:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>source venv/bin/activate
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>python -m dpk_fdedup.signature_calc.ray.local
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>python -m dpk_fdedup.cluster_analysis.ray.local
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>python -m dpk_fdedup.get_duplicate_list.ray.tarnsform
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>python -m dpk_fdedup.data_cleaning.ray.local
+</span></code></pre></div>
+After running the transforms, execute:
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>ls<span class="w"> </span>output
+</span></code></pre></div>
+To see results of the transform.</p>
+<h3 id="transforming-data-using-the-transform-image_1">Transforming data using the transform image</h3>
+<p>To use the transform image to transform your data, please refer to the 
+<a href="../../../doc/quick-start/run-transform-image/">running images quickstart</a>,
+substituting the name of this transform image and runtime as appropriate.</p>
+<h2 id="code-example_1">Code Example</h2>
+<p>This is a <a href="https://github.com/IBM/data-prep-kit/blob/dev/transforms/universal/fdedup/fdedup_ray.ipynb">sample notebook</a> that shows how to invoke the ray fuzzy dedup transform.</p>
+<h2 id="testing_1">Testing</h2>
+<p>For testing fuzzy deduplication in a ray runtime, use the following <code>make</code> targets. To launch integration tests
+for all the component transforms of fuzzy dedup (signature calculation, cluster analysis, get duplicate list and data
+cleaning) use: 
+<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>make test-src
+</span></code></pre></div></p>
+<p>To test the creation of the Docker image for fuzzy dedup transform and the capability to run a local program inside that
+image, use:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>make test-image
+</span></code></pre></div></p>
+<h1 id="fuzzy-dedup-spark">Fuzzy Dedup -- Spark</h1>
+<p>Please see the set of <a href="../../#transform-project-conventions">transform project conventions</a> for details on general project conventions, transform
+configuration,  testing and IDE set up.</p>
+<h2 id="summary_1">Summary</h2>
+<p>This project wraps the Fuzzy Dedup transform with a Spark runtime.</p>
+<h2 id="configuration-and-command-line-options_1">Configuration and command line Options</h2>
+<p>Fuzzy Dedup configuration and command line options are the same as for the base python transform. </p>
+<h2 id="running_1">Running</h2>
+<h3 id="launched-command-line-options_1">Launched Command Line Options</h3>
+<p>When running the transform with the Spark launcher (i.e., TransformLauncher),
+in addition to those available to the transform as defined in here,
+the set of 
+<a href="../../../data-processing-lib/doc/launcher-options/">spark launcher options</a> are available.</p>
+<h3 id="running-the-samples_2">Running the samples</h3>
+<p>To run the samples, use the following <code>make</code> target to create a virtual environment:</p>
+<p><div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>make venv
+</span></code></pre></div>
+Subsequently, the main orchestration program can run with:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>source venv/bin/activate
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>python -m dpk_fdedup.spark.transform
+</span></code></pre></div>
+Alternatively the transforms included in fuzzy dedup can be launched independently:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>source venv/bin/activate
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>python -m dpk_fdedup.signature_calc.spark.local
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>python -m dpk_fdedup.cluster_analysis.spark.local
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>python -m dpk_fdedup.get_duplicate_list.transform
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>python -m dpk_fdedup.data_cleaning.spark.local
+</span></code></pre></div>
+After running the transforms, execute:
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>ls<span class="w"> </span>output
+</span></code></pre></div>
+To see results of the transform.</p>
+<h3 id="transforming-data-using-the-transform-image_2">Transforming data using the transform image</h3>
+<p>To use the transform image to transform your data, please refer to the 
+<a href="../../../doc/quick-start/run-transform-image/">running images quickstart</a>,
+substituting the name of this transform image and runtime as appropriate.</p>
+<h2 id="code-example_2">Code Example</h2>
+<p>This is a <a href="https://github.com/IBM/data-prep-kit/blob/dev/transforms/universal/fdedup/fdedup_spark.ipynb">sample notebook</a> that shows how to invoke the spark fuzzy dedup transform.</p>
+<h2 id="testing_2">Testing</h2>
+<p>For testing fuzzy deduplication in a spark runtime, use the following <code>make</code> targets. To launch integration tests
+for all the component transforms of fuzzy dedup (signature calculation, cluster analysis, get duplicate list and data
+cleaning) use: 
+<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>make test-src
+</span></code></pre></div></p>
+<p>To test the creation of the Docker image for fuzzy dedup transform and the capability to run a local program inside that
+image, use:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>make test-image
+</span></code></pre></div></p>
+<h2 id="further-resources">Further Resources</h2>
+<p>The following is a list of references to research articles and github repositories that inspired the module's design:</p>
+<ol>
+<li><a href="http://infolab.stanford.edu/~ullman/mmds/ch3n.pdf">Jure Leskovec, Anand Rajaraman, Jeff Ullman, Mining of Massive Datasets, Chapter 3: Finding Similar Items</a> </li>
+<li><a href="https://arxiv.org/pdf/2406.17557">G Penedo et al., The FineWeb Datasets: Decanting the Web for the Finest Text Data at Scale</a></li>
+<li><a href="https://github.com/huggingface/datatrove">Datatrove github repo</a></li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs"], "search": "../../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+        <script src="../../../assets/javascripts/badge.js" async></script>
+      
+    
+  </body>
+</html>

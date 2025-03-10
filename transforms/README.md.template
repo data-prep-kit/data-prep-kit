@@ -1,0 +1,95 @@
+# XYZ Transform 
+
+=================================================================
+THIS IS A TEMPLATE README WITH XYZ AS THE ASSUMED TRANSFORM NAME. 
+PLEASE SEARCH FOR XYX AND xyz AND UPDATE ACCORDINGLY.  
+PLEASE ADD AS MUCH DETAIL AS YOU WOULD LIKE.
+THANK YOU!
+=================================================================
+
+
+Please see the set of
+[transform project conventions](../../README.md#transform-project-conventions)
+for details on general project conventions, transform configuration,
+testing and IDE set up.
+
+## Summary 
+This transform serves as a template for transform writers as it does
+not perform any transformations on the input (i.e., a no-operation transform).
+As such, it simply copies the input parquet files to the output directory.
+It shows the basics of creating a simple 1:1 table transform.
+It also implements a single configuration value to show how configuration
+of the transform is implemented.
+
+## Output Format
+The XYZ transform simply copies the input, so the output format is the same as the input.
+
+| Output column name | Data type | Description |
+|--------------------|-|-|
+| ...        | ... | ... |
+
+## Configuration and command line Options
+The transform can be initialized with the following parameters
+found in [XYZTransform](dpk_xyz/transform.py)
+
+| Parameter        | Default | Description                                                                                                                                                 |
+|------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| xyz_        | ... | ... |
+
+When running the transform with a launcher (i.e. TransformLauncher),
+the above are available as command line options in addition to
+[the options provided by the launcher](../../../../data-processing-lib/doc/launcher-options.md).
+
+
+## Usage
+
+### Command Line-Launched
+
+#### Creating the Virtual Environment
+First we need a python environment containing the Noop transform.
+We create the virtual environment in the project:
+```shell
+make venv
+source venv/bin/activate
+```
+or by installing the DPK transform wheel
+```shell
+python -m venv venv
+source venv/bin/activate
+pip install data-prep-transforms
+```
+Now that we have a virtual environment containing the transform,
+we invoke the transform from the CLI using the runtime parameters and those from the transform itself (i.e. the table above).
+For example, to run the transform in the python runtime,
+```shell
+make venv
+source venv/bin/activate
+python -m dpk_xyz.runtime \
+    --data_local '{ "input_folder": "test-data/input", "output_folder": "output" }'
+deactivate
+```
+or in the Ray runtime using a local Ray cluster,
+```shell
+...
+python -m dpk_xyz.ray.runtime --run_locally True \
+    --data_local '{ "input_folder": "test-data/input", "output_folder": "output" }'
+...
+```
+or in the spark runtime,
+```shell
+...
+python -m dpk_xyz.spark.runtime \
+    --data_local '{ "input_folder": "test-data/input", "output_folder": "output" }'
+...
+```
+
+```shell
+ls output
+```
+To see results of the transform.
+
+### Image-Launched
+
+To use the transform image to transform your data, please refer to the
+[running images quickstart](../../../doc/quick-start/run-transform-image.md),
+substituting the name of this transform image and runtime as appropriate.

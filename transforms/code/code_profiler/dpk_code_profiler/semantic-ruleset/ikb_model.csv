@@ -1,0 +1,2002 @@
+Library,Language,Category
+dynamic_bitset,Cpp,Algorithms and Data Structures
+tries,Cpp,Algorithms and Data Structures
+algorithm,Cpp,Algorithms and Data Structures
+uni-algo,Cpp,Algorithms and Data Structures
+boost.asio,Cpp,Networking and Messaging
+cpp-netlib,Cpp,Networking and Messaging
+zmq,Cpp,Networking and Messaging
+azmq,Cpp,Networking and Messaging
+thread-pool,Cpp,Scheduling and Concurrency
+chrono,Cpp,Scheduling and Concurrency
+concurrencpp,Cpp,Scheduling and Concurrency
+time,Cpp,Scheduling and Concurrency
+libressl,Cpp,Security
+libgcrypt,Cpp,Security
+nettle,Cpp,Security
+digestpp,Cpp,Security
+jwt-cpp,Cpp,Security
+libfv,Cpp,Mathematics and Numerics
+blaze,Cpp,Mathematics and Numerics
+cnl,Cpp,Mathematics and Numerics
+eigen,Cpp,Mathematics and Numerics
+linalg,Cpp,Mathematics and Numerics
+clickhouse,Cpp,Database Management
+leveldb,Cpp,Database Management
+libpqxx,Cpp,Database Management
+sqlite,Cpp,Database Management
+filesystem,Cpp,File Handling
+llfio,Cpp,File Handling
+glob,Cpp,File Handling
+tinydir,Cpp,File Handling
+spdlog,Cpp,Logging and Monitoring
+boost.log,Cpp,Logging and Monitoring
+glog,Cpp,Logging and Monitoring
+reckless,Cpp,Algorithms and Data Structures
+clang-tidy,Cpp,Code Analysis and Linting
+clangd,Cpp,Code Analysis and Linting
+cquery,Cpp,Code Analysis and Linting
+cppcheck,Cpp,Code Analysis and Linting
+boost.test,Cpp,Testing
+benchmark,Cpp,Testing
+cpputest,Cpp,Testing
+ctest,Cpp,Testing
+dlib,Cpp,Algorithms and Data Structures
+blitz,Cpp,Algorithms and Data Structures
+armadillo,Cpp,Algorithms and Data Structures
+oneapi/dal,Cpp,Database Management
+frozen,Cpp,Data Serialization
+glaze,Cpp,Data Serialization
+cppcodec,Cpp,Data Serialization
+boost.serialization,Cpp,Data Serialization
+infra,Cpp,Networking and Messaging
+workflow,Cpp,Scheduling and Concurrency
+taskflow,Cpp,Scheduling and Concurrency
+libthrift,Cpp,Networking and Messaging
+cegui,Cpp,Graphical User Interface Design
+wxwidgets,Cpp,Graphical User Interface Design
+gtk,Cpp,Graphical User Interface Design
+nanogui,Cpp,Graphical User Interface Design
+com.leansoft.bigqueue,Java,Algorithms and Data Structures
+com.liveramp.hyperminhash,Java,Algorithms and Data Structures
+org.pcollections,Java,Algorithms and Data Structures
+org.ojalgo,Java,Algorithms and Data Structures
+com.cisco.commons.networking,Java,Networking and Messaging
+io.netty,Java,Networking and Messaging
+org.apache.kafka,Java,Networking and Messaging
+com.rabbitmq,Java,Networking and Messaging
+net.time4j,Java,Scheduling and Concurrency
+org.jobrunr:jobrunr,Java,Scheduling and Concurrency
+org.quartz,Java,Scheduling and Concurrency
+org.knowm.sundial,Java,Scheduling and Concurrency
+org.apache.shiro,Java,Security
+org.bouncycastle,Java,Security
+jdk.crypto.cryptoki,Java,Security
+jdk.security,Java,Security
+io.activej.codegen,Java,Code Analysis and Linting
+ninja,Java,Code Analysis and Linting
+org.apache.commons.math4,Java,Mathematics and Numerics
+org.apache.commons.numbers,Java,Mathematics and Numerics
+org.apache.commons.rng,Java,Mathematics and Numerics
+com.mathLibrary,Java,Mathematics and Numerics
+ch.vorburger.mariaDB4j,Java,Database Management
+java.sql,Java,Database Management
+redis.clients.jedis,Java,Database Management
+org.jooq,Java,Database Management
+com.google.jimfs,Java,File Handling
+java.io,Java,File Handling
+java.nio.file,Java,File Handling
+org.apache.commons.vfs2,Java,File Handling
+java.logging,Java,Logging and Monitoring
+jdk.jconsole,Java,IT Automation
+java.util.logging,Java,Logging and Monitoring
+org.slf4j.Logger,Java,Logging and Monitoring
+org.sonar,Java,Code Analysis and Linting
+fr.inria.gforge.spoon,Java,Code Analysis and Linting
+com.puppycrawl.tools.checkstyle,Java,Code Analysis and Linting
+net.sourceforge.pmd,Java,Code Analysis and Linting
+org.junit,Java,Testing
+com.intuit.karate,Java,Testing
+org.mockito,Java,Testing
+org.apache.jmeter,Java,Testing
+org.influxdb,Java,Data Analysis
+org.apache.spark,Java,Data Analysis
+org.apache.flink,Java,Data Analysis
+weka,Java,Data Analysis
+com.cedarsoftware:json-io,Java,Data Serialization
+com.google.flatbuffers,Java,Data Serialization
+org.msgpack,Java,Data Serialization
+com.esotericsoftware.kryo,Java,Data Serialization
+jenkins.model.Jenkins,Java,IT Automation
+org.apache.maven,Java,IT Automation
+org.gradle,Java,IT Automation
+com.microsoft.terraform,Java,IT Automation
+java.desktop,Java,Graphical User Interface Design
+java.awt,Java,Graphical User Interface Design
+org.openjfx,Java,Graphical User Interface Design
+org.eclipse.swt,Java,Graphical User Interface Design
+java.util.List,Java,Algorithms and Data Structures
+java.util.ArrayList,Java,Algorithms and Data Structures
+java.util.Map,Java,Algorithms and Data Structures
+java.util.Set,Java,Algorithms and Data Structures
+java.util.Arrays,Java,Algorithms and Data Structures
+java.util.HashMap,Java,Algorithms and Data Structures
+java.util.Collections,Java,Algorithms and Data Structures
+java.util.Iterator,Java,Algorithms and Data Structures
+java.util.Collection,Java,Algorithms and Data Structures
+java.util.Hashtable,Java,Algorithms and Data Structures
+java.util.Vector,Java,Algorithms and Data Structures
+java.util.LinkedList,Java,Algorithms and Data Structures
+java.util.*,Java,Algorithms and Data Structures
+java.io.File,Java,File Handling
+java.nio.file.Path,Java,File Handling
+java.util.Properties,Java,File Handling
+java.nio.file.Paths,Java,File Handling
+java.nio.file.Files,Java,File Handling
+java.nio.file.*,Java,File Handling
+java.io.InputStream,Java,File Handling
+java.io.PrintWriter,Java,File Handling
+java.io.OutputStream,Java,File Handling
+java.io.PrintStream,Java,File Handling
+java.io.ByteArrayOutputStream,Java,File Handling
+java.io.ByteArrayInputStream,Java,File Handling
+java.io.FileInputStream,Java,File Handling
+java.io.BufferedReader,Java,File Handling
+java.io.ObjectInputStream,Java,File Handling
+java.io.FileOutputStream,Java,File Handling
+java.io.ObjectOutputStream,Java,File Handling
+java.io.FileNotFoundException,Java,File Handling
+java.io.StringWriter,Java,File Handling
+java.io.UnsupportedEncodingException,Java,File Handling
+java.io.StringReader,Java,File Handling
+java.io.Reader,Java,File Handling
+java.io.FileWriter,Java,File Handling
+org.testng.annotations.Test,Java,Testing
+org.junit.Test,Java,Testing
+org.testng.Assert,Java,Testing
+org.junit.jupiter.api.Test,Java,Testing
+org.junit.BeforeClass,Java,Testing
+org.junit.runner.RunWith,Java,Testing
+org.junit.AfterClass,Java,Testing
+org.junit.Before,Java,Testing
+org.junit.After,Java,Testing
+org.junit.Assert,Java,Testing
+java.util.logging.Level,Java,Logging and Monitoring
+java.util.logging.Logger,Java,Logging and Monitoring
+java.util.logging.LogRecord,Java,Logging and Monitoring
+java.io.Serializable,Java,Data Serialization
+java.lang.reflect.Method,Java,Data Serialization
+ngraph.graph,JavaScript,Algorithms and Data Structures
+buckets,JavaScript,Algorithms and Data Structures
+mori,JavaScript,Algorithms and Data Structures
+graphlib,JavaScript,Algorithms and Data Structures
+socket.io,JavaScript,Networking and Messaging
+amqplib,JavaScript,Networking and Messaging
+mqtt,JavaScript,Networking and Messaging
+fullcalendar,JavaScript,Graphical User Interface Design
+later,JavaScript,Scheduling and Concurrency
+date-fns,JavaScript,Mathematics and Numerics
+Moment,JavaScript,Mathematics and Numerics
+helmet,JavaScript,Security
+bcrypt,JavaScript,Security
+js-xss,JavaScript,Security
+xss-filters,JavaScript,Security
+vue,JavaScript,Graphical User Interface Design
+react,JavaScript,Graphical User Interface Design
+angular,JavaScript,Graphical User Interface Design
+Polynomial,JavaScript,Mathematics and Numerics
+Numeral-js,JavaScript,Mathematics and Numerics
+accounting,JavaScript,Mathematics and Numerics
+odometer,JavaScript,Mathematics and Numerics
+datavore,JavaScript,Data Analysis
+DB,JavaScript,Database Management
+sql,JavaScript,Database Management
+NeDB,JavaScript,Database Management
+jStorage,JavaScript,Database Management
+store,JavaScript,Database Management
+cross-storage,JavaScript,File Handling
+localForage,JavaScript,File Handling
+console.log-wrapper,JavaScript,Logging and Monitoring
+storybook,JavaScript,Graphical User Interface Design
+minilog,JavaScript,Logging and Monitoring
+loglevel,JavaScript,Logging and Monitoring
+eslint,JavaScript,Code Analysis and Linting
+jshint,JavaScript,Code Analysis and Linting
+tslint,JavaScript,Code Analysis and Linting
+sonarqube,JavaScript,Code Analysis and Linting
+jest,JavaScript,Testing
+Cypress,JavaScript,Testing
+jasmine,JavaScript,Testing
+qunit,JavaScript,Testing
+d3,JavaScript,Graphical User Interface Design
+three,JavaScript,Graphical User Interface Design
+sigma,JavaScript,Graphical User Interface Design
+tempo,JavaScript,Graphical User Interface Design
+jsfmt,JavaScript,Data Serialization
+fecha,JavaScript,Data Serialization
+protobufjs,JavaScript,Data Serialization
+shelljs,JavaScript,IT Automation
+forever,JavaScript,Scheduling and Concurrency
+node-cron,JavaScript,Scheduling and Concurrency
+jenkins,JavaScript,IT Automation
+stdgpu,C,Algorithms and Data Structures
+urdfdom,C,Algorithms and Data Structures
+cxxgraph,C,Algorithms and Data Structures
+metis,C,Algorithms and Data Structures
+nanomsg,C,Networking and Messaging
+librabbitmq,C,Networking and Messaging
+mosquitto,C,Networking and Messaging
+uv,C,Scheduling and Concurrency
+time,C,Scheduling and Concurrency
+pth,C,Scheduling and Concurrency
+pthread,C,Scheduling and Concurrency
+OpenSSL,C,Security
+GnuTLS,C,Security
+libsodium,C,Security
+libgcrypt,C,Security
+facil.io,C,File Handling
+apophenia,C,Data Analysis
+cmathl,C,Mathematics and Numerics
+GSL,C,Mathematics and Numerics
+SLEPc,C,Mathematics and Numerics
+DuckDB,C,Database Management
+MySQL,C,Database Management
+sophia,C,Database Management
+SQLite,C,Database Management
+stdio,C,File Handling
+POSIX,C,IT Automation
+HDF5,C,File Handling
+fstream,C,File Handling
+syslog,C,Logging and Monitoring
+spdlog,C,Logging and Monitoring
+collectd,C,Data Analysis
+nagios-plugins,C,IT Automation
+libclang,C,Code Analysis and Linting
+Cppcheck,C,Code Analysis and Linting
+libclang-tidy,C,Code Analysis and Linting
+Infer,C,Code Analysis and Linting
+CMocka,C,Testing
+MinUnit,C,Testing
+Valgrind,C,Testing
+Check,C,Testing
+gsl-lite,C,Mathematics and Numerics
+libcsv,C,Data Analysis
+dataframe,C,Data Analysis
+iqa,C,Data Analysis
+libyaml,C,Data Serialization
+libfmt,C,Data Serialization
+flatbuffers,C,Data Serialization
+msgpack-c,C,Data Serialization
+nix_api_util,C,IT Automation
+libcircmetrics,C,Logging and Monitoring
+etcd-api,C,Networking and Messaging
+cetcd,C,Networking and Messaging
+microui,C,Graphical User Interface Design
+tinyfiledialogs,C,Graphical User Interface Design
+luigi ,C,IT Automation
+GTK,C,Graphical User Interface Design
+Akade.IndexedSet,C#,Algorithms and Data Structures
+Akka.DistributedData,C#,Algorithms and Data Structures
+dotnet-mgcb-compute,C#,Mathematics and Numerics
+QuantConnect.Algorithm.CSharp,C#,Algorithms and Data Structures
+Microsoft.AspNetCore.Connections,C#,Networking and Messaging
+MessagePipe,C#,Networking and Messaging
+Microsoft.SemanticKernel.Plugins.MsGraph,C#,Algorithms and Data Structures
+System.Threading.Tasks,C#,Scheduling and Concurrency
+Hangfire,C#,Scheduling and Concurrency
+OrchardCore.PublishLater,C#,Scheduling and Concurrency
+CefSharp.WinForm.Net.Core,C#,Graphical User Interface Design
+System.DirectoryServices.AccountManagement,C#,IT Automation
+System.Security.Permissions,C#,Security
+System.Security.AccessControl,C#,Security
+@pavelsavara/dotnet-runtime,C#,IT Automation
+@abp/ng.oauth,C#,Security
+SharpDX.Mathematics,C#,Mathematics and Numerics
+AvaloniaMath,C#,Mathematics and Numerics
+WpfMath,C#,Mathematics and Numerics
+NCalcSync,C#,Mathematics and Numerics
+microsoft.entityframeworkcore.tools,C#,Database Management
+Dapper,C#,Database Management
+Microsoft.Azure.Management.PostgreSQL,C#,Database Management
+Microsoft.Azure.Management.CosmosDB,C#,Database Management
+Reloaded.Mod.Loader.IO,C#,File Handling
+DICOMcloud,C#,Data Analysis
+Aurio,C#,Graphical User Interface Design
+SeekableS3Stream,C#,File Handling
+Microsoft.Extensions.Logging,C#,Logging and Monitoring
+Microsoft.Azure.Management.Profiles.hybrid_2019_03_01.Monitor,C#,IT Automation
+Azure.Monitor.OpenTelemetry.AspNetCore,C#,Logging and Monitoring
+Microsoft.AspNetCore.Identity,C#,Security
+roslyn,C#,Code Analysis and Linting
+Microsoft.Toolkit.Uwp.PlatformSpecificAnalyzer,C#,Code Analysis and Linting
+Uno.Microsoft.Toolkit.Uwp.PlatformSpecificAnalyzer,C#,Code Analysis and Linting
+Microsoft.CST.ApplicationInspector.Common,C#,Code Analysis and Linting
+Microsoft.AspNetCore.TestHost,C#,Testing
+Microsoft.AspNetCore.Mvc.Testing,C#,Testing
+Microsoft.AspNetCore.SignalR.Specification.Tests,C#,Testing
+KIF,C#,Algorithms and Data Structures
+Microsoft.Data.Analysis,C#,Data Analysis
+Azure.Media.VideoAnalyzer.Edge,C#,Data Analysis
+Google.Cloud.Trace.V1,C#,Logging and Monitoring
+ClosedXML.Report,C#,Data Serialization
+System.Formats,C#,Data Serialization
+System.IO.Ports,C#,File Handling
+System.Text.Json,C#,Data Serialization
+App.Metrics.Formatters.Graphite,C#,Logging and Monitoring
+Microsoft.Crank.AzureDevOpsWorker,C#,IT Automation
+AWSSDK.DevOpsGuru,C#,IT Automation
+Microsoft.SourceLink.AzureDevOpsServer.Git,C#,IT Automation
+Saritasa.Tools.Messages.TestRuns,C#,Testing
+SSRD.IdentityUI,C#,Security
+bashforms,C#,Graphical User Interface Design
+NSCI,C#,Algorithms and Data Structures
+WSCT.GUI,C#,Graphical User Interface Design
+lock-free,D,Algorithms and Data Structures
+liblfdsd,D,Algorithms and Data Structures
+bitranged,D,Algorithms and Data Structures
+dstruct,D,Algorithms and Data Structures
+hunt-net,D,Networking and Messaging
+nbuff,D,Algorithms and Data Structures
+collie,D,Algorithms and Data Structures
+photon,D,Algorithms and Data Structures
+scheduled,D,Scheduling and Concurrency
+meta,D,Code Analysis and Linting
+ctini,D,Security
+hunt-security,D,Security
+hunt-shiro,D,Security
+secured,D,Security
+csprng,D,Security
+hunt-cache,D,Data Analysis
+formoshlep,D,Data Analysis
+simple-math,D,Mathematics and Numerics
+evalex,D,Mathematics and Numerics
+dualnumbers,D,Mathematics and Numerics
+tau,D,Mathematics and Numerics
+mysql-native,D,Database Management
+derelict-pq,D,Database Management
+ddbc,D,Database Management
+dpq2,D,Database Management
+inifiled,D,File Handling
+fswatch,D,File Handling
+tinyfiledialogs,D,Graphical User Interface Design
+thepath,D,File Handling
+hunt,D,Testing
+gogga,D,Data Analysis
+dlog,D,Logging and Monitoring
+colorlog,D,Logging and Monitoring
+code_checker,D,Code Analysis and Linting
+dfmt,D,Data Serialization
+dscanner,D,Code Analysis and Linting
+dparse,D,Algorithms and Data Structures
+silly,D,Algorithms and Data Structures
+unit-threaded,D,Testing
+fluent-asserts,D,Testing
+dests,D,Algorithms and Data Structures
+magpie,D,Algorithms and Data Structures
+dvec,D,Mathematics and Numerics
+d-tree,D,Algorithms and Data Structures
+d_dataframes,D,Data Analysis
+jsonizer,D,Data Serialization
+mir-ion,D,Algorithms and Data Structures
+protobuf,D,Data Serialization
+siryul,D,Security
+iup,D,Graphical User Interface Design
+declui,D,Graphical User Interface Design
+d_imgui,D,Graphical User Interface Design
+dlangui,D,Graphical User Interface Design
+libgit2,D,Database Management
+yamkeys,D,Security
+lua-jit-d,D,IT Automation
+led,D,Graphical User Interface Design
+array-tool,Rust,Algorithms and Data Structures
+petgraph,Rust,Algorithms and Data Structures
+heapless,Rust,Algorithms and Data Structures
+argon2,Rust,Security
+mio,Rust,Networking and Messaging
+actix-rt,Rust,Scheduling and Concurrency
+socket2,Rust,Networking and Messaging
+crossbeam-channel,Rust,Networking and Messaging
+cron,Rust,Scheduling and Concurrency
+crossbeam-deque,Rust,Algorithms and Data Structures
+smolscale,Rust,Data Analysis
+job_scheduler,Rust,Scheduling and Concurrency
+zeroize,Rust,Security
+rpassword,Rust,Security
+trust-dns-resolver,Rust,Networking and Messaging
+@farmfe/core,Rust,IT Automation
+seed,Rust,Graphical User Interface Design
+@farmfe/cli,Rust,IT Automation
+num-traits,Rust,Mathematics and Numerics
+num,Rust,Mathematics and Numerics
+num-bigint,Rust,Mathematics and Numerics
+cgmath,Rust,Mathematics and Numerics
+rusqlite,Rust,Database Management
+redis,Rust,Database Management
+diesel,Rust,Database Management
+postgres,Rust,Database Management
+fs_extra,Rust,File Handling
+toml,Rust,Data Serialization
+tempfile,Rust,File Handling
+zip,Rust,File Handling
+log,Rust,Logging and Monitoring
+env_logger,Rust,Logging and Monitoring
+tracing,Rust,Logging and Monitoring
+slog,Rust,Logging and Monitoring
+@cubejs-backend/linter,Rust,Code Analysis and Linting
+selene-lib,Rust,Data Analysis
+ast-grep,Rust,Code Analysis and Linting
+cargo-crev,Rust,Code Analysis and Linting
+assert_cmd,Rust,Testing
+quickcheck,Rust,Testing
+proptest,Rust,Testing
+wasm-bindgen-test,Rust,Testing
+rls-analysis,Rust,Code Analysis and Linting
+rstats,Rust,Data Analysis
+amadeus-commoncrawl,Rust,Data Analysis
+opendp,Rust,Data Analysis
+serde,Rust,Data Serialization
+serde_json,Rust,Data Serialization
+serde_yaml,Rust,Data Serialization
+bincode,Rust,Data Serialization
+lsio,Rust,File Handling
+shuttle-runtime,Rust,IT Automation
+rustc_data_structures,Rust,Algorithms and Data Structures
+compiler_base_span,Rust,Algorithms and Data Structures
+slint,Rust,Algorithms and Data Structures
+qinpel-wiz,Rust,Algorithms and Data Structures
+arc,Rust,Algorithms and Data Structures
+cushy,Rust,Algorithms and Data Structures
+tumblr/XExtensionItem,Objective-C,Algorithms and Data Structures
+TBQuadTree,Objective-C,Algorithms and Data Structures
+POSDataStructures,Objective-C,Algorithms and Data Structures
+PESGraph,Objective-C,Algorithms and Data Structures
+AFNetworking,Objective-C,Networking and Messaging
+CocoaAsyncSocket,Objective-C,Networking and Messaging
+Atlas,Objective-C,Graphical User Interface Design
+SZServerTimeManager,Objective-C,Scheduling and Concurrency
+CalendarLib,Objective-C,Scheduling and Concurrency
+Selene,Objective-C,Security
+ZMJGanttChart,Objective-C,Graphical User Interface Design
+AWSCognitoIdentityProviderASF,Objective-C,Security
+gObfuscator,Objective-C,Security
+Lockbox,Objective-C,Security
+STPrivilegedTask,Objective-C,IT Automation
+vtx,Objective-C,Algorithms and Data Structures
+@abp/ng.oauth,Objective-C,Security
+vMAT,Objective-C,Mathematics and Numerics
+crlibm,Objective-C,Mathematics and Numerics
+MCKNumerics,Objective-C,Mathematics and Numerics
+ACMatrix,Objective-C,Mathematics and Numerics
+DKDBManager,Objective-C,Database Management
+FlexileDatabase,Objective-C,Database Management
+KKDSqlite,Objective-C,Database Management
+SNDBManager,Objective-C,Database Management
+APSmartStorage,Objective-C,File Handling
+zipzap,Objective-C,File Handling
+AliyunOSSiOS,Objective-C,File Handling
+YTKKeyValueStore,Objective-C,Data Serialization
+github.com/github.com/CocoaLumberjack/CocoaLumberjack,Objective-C,Logging and Monitoring
+VENVersionTracker,Objective-C,IT Automation
+NSLogger,Objective-C,Logging and Monitoring
+NetworkEye,Objective-C,Networking and Messaging
+nq-test-react-native-maps,Objective-C,Graphical User Interface Design
+KIF,Objective-C,Testing
+facebookarchive/xctool,Objective-C,Code Analysis and Linting
+xctool,Objective-C,Code Analysis and Linting
+KRGreyTheory,Objective-C,Mathematics and Numerics
+DataGrinch,Objective-C,Data Analysis
+XsdaKit,Objective-C,Data Serialization
+sbjson,Objective-C,Data Serialization
+FXParser,Objective-C,Data Analysis
+CSV,Objective-C,Data Analysis
+NSMutableData+MultipartFormData,Objective-C,File Handling
+Masonry,Objective-C,Graphical User Interface Design
+Chameleon,Objective-C,Graphical User Interface Design
+Nimbus,Objective-C,Graphical User Interface Design
+GPUImage,Objective-C,Graphical User Interface Design
+infer,Objective-C,Code Analysis and Linting
+OCLint,Objective-C,Code Analysis and Linting
+sonatype,Objective-C,IT Automation
+sigrid,Objective-C,IT Automation
+fastlane,Objective-C,IT Automation
+hammerspoon,Objective-C,Graphical User Interface Design
+punic,Objective-C,IT Automation
+jenkins-mobile-pipeline-shared-libraries,Objective-C,IT Automation
+dtoa,Ocaml,Algorithms and Data Structures
+bin_tree,Ocaml,Algorithms and Data Structures
+base_trie,Ocaml,Algorithms and Data Structures
+apero-net,Ocaml,Networking and Messaging
+conduit,Ocaml,Networking and Messaging
+netamqp,Ocaml,Networking and Messaging
+posix-mqueue,Ocaml,File Handling
+bap-primus-exploring-scheduler,Ocaml,Scheduling and Concurrency
+builder,Ocaml,IT Automation
+daypack-lib,Ocaml,Data Analysis
+tls,Ocaml,Security
+osx-acl,Ocaml,Security
+content_security_policy,Ocaml,Security
+aws-sts,Ocaml,Security
+posix-math,Ocaml,Mathematics and Numerics
+smol,Ocaml,Data Serialization
+crlibm,Ocaml,Mathematics and Numerics
+lem,Ocaml,Code Analysis and Linting
+caqti,Ocaml,Database Management
+dbforge,Ocaml,Database Management
+irmin,Ocaml,Database Management
+links-mysql,Ocaml,Database Management
+bitlib,Ocaml,Algorithms and Data Structures
+fpath,Ocaml,File Handling
+fileutils,Ocaml,File Handling
+bolt,Ocaml,Algorithms and Data Structures
+dolog,Ocaml,Logging and Monitoring
+easy_logging,Ocaml,Logging and Monitoring
+loga,Ocaml,Logging and Monitoring
+bisect_ppx,Ocaml,Code Analysis and Linting
+calli,Ocaml,Algorithms and Data Structures
+clangml-transforms,Ocaml,Algorithms and Data Structures
+dolmen_bin,Ocaml,Algorithms and Data Structures
+base_quickcheck,Ocaml,Testing
+kaputt,Ocaml,Algorithms and Data Structures
+ounit2,Ocaml,Testing
+conformist,Ocaml,Code Analysis and Linting
+dataframe,Ocaml,Data Analysis
+dsfo,Ocaml,Data Analysis
+llama_midi,Ocaml,Graphical User Interface Design
+atdgen,Ocaml,Code Analysis and Linting
+bitpack_serializer,Ocaml,Data Serialization
+coq-serapi,Ocaml,Algorithms and Data Structures
+grpc,Ocaml,Networking and Messaging
+bap-build,Ocaml,IT Automation
+argsh,Ocaml,IT Automation
+conf-automake,Ocaml,IT Automation
+dtools,Ocaml,IT Automation
+bogue,Ocaml,Algorithms and Data Structures
+unison-gui,Ocaml,Graphical User Interface Design
+imguiml,Ocaml,Graphical User Interface Design
+altgr-ergo,Ocaml,Algorithms and Data Structures
+bk-tree,Haskell,Algorithms and Data Structures
+algebraic-graphs,Haskell,Algorithms and Data Structures
+recursion-schemes,Haskell,Algorithms and Data Structures
+AvlTree,Haskell,Algorithms and Data Structures
+grenade,Haskell,Security
+network-conduit,Haskell,Networking and Messaging
+streamly,Haskell,Algorithms and Data Structures
+hedgehog,Haskell,Testing
+amazonka-scheduler,Haskell,Scheduling and Concurrency
+massiv-scheduler,Haskell,Scheduling and Concurrency
+gogol-datafusion,Haskell,Data Analysis
+tamarin-prover-theory,Haskell,Mathematics and Numerics
+tamarin-prover,Haskell,Mathematics and Numerics
+yst,Haskell,Data Analysis
+fireward,Haskell,Security
+gogol-indexing,Haskell,Data Analysis
+pandoc,Haskell,Data Serialization
+Agda,Haskell,Mathematics and Numerics
+math-functions,Haskell,Mathematics and Numerics
+commodities,Haskell,Data Analysis
+gogol-spanner,Haskell,Database Management
+gogol-sqladmin,Haskell,Database Management
+gogol-datastore,Haskell,Database Management
+dbmigrations,Haskell,Database Management
+bytestring,Haskell,File Handling
+io-streams,Haskell,File Handling
+regions,Haskell,Algorithms and Data Structures
+amazonka-kinesis-video-webrtc-storage,Haskell,Data Analysis
+tensorflow-logging,Haskell,Logging and Monitoring
+co-log,Haskell,Logging and Monitoring
+gogol-cloudmonitoring,Haskell,IT Automation
+pandoc,Haskell,Data Serialization
+cassava,Haskell,Data Analysis
+commonmark,Haskell,Data Serialization
+auto,Haskell,Code Analysis and Linting
+amazonka-devops-guru,Haskell,IT Automation
+deptrack-devops,Haskell,IT Automation
+gogol-testing,Haskell,Testing
+LogicGrowsOnTrees,Haskell,Algorithms and Data Structures
+gogol-datafusion,Haskell,Data Analysis
+vty-ui,Haskell,Graphical User Interface Design
+YampaSynth,Haskell,Algorithms and Data Structures
+master-plan,Haskell,IT Automation
+stan,Haskell,Data Analysis
+hlint,Haskell,Code Analysis and Linting
+liquidhaskell,Haskell,Code Analysis and Linting
+ghc,Haskell,IT Automation
+purescript,Haskell,Code Analysis and Linting
+ghcide-test-utils,Haskell,Testing
+hls-test-utils,Haskell,Testing
+yesod-test,Haskell,Testing
+statistics,Haskell,Mathematics and Numerics
+statistics-skinny,Haskell,Mathematics and Numerics
+ajhc,Haskell,Code Analysis and Linting
+fortran-src,Haskell,Algorithms and Data Structures
+BitVector,Nim,Algorithms and Data Structures
+rbtree,Nim,Algorithms and Data Structures
+binaryheap,Nim,Algorithms and Data Structures
+algorithm,Nim,Algorithms and Data Structures
+nativesockets,Nim,Networking and Messaging
+net,Nim,Networking and Messaging
+nimrdkafka,Nim,Networking and Messaging
+mqtt,Nim,Networking and Messaging
+monotimes,Nim,Scheduling and Concurrency
+times,Nim,Scheduling and Concurrency
+osproc,Nim,IT Automation
+schedules,Nim,Scheduling and Concurrency
+nimcrypt,Nim,Security
+seccomp,Nim,Security
+nimpass,Nim,Security
+quickcrypt,Nim,Security
+nerve,Nim,Networking and Messaging
+seqmath,Nim,Mathematics and Numerics
+extmath,Nim,Mathematics and Numerics
+geometrymath,Nim,Mathematics and Numerics
+neo,Nim,Database Management
+niledb,Nim,Database Management
+couchdb,Nim,Database Management
+zfdbms,Nim,Database Management
+pdba,Nim,Database Management
+osfiles,Nim,File Handling
+fileinput,Nim,File Handling
+filetype,Nim,File Handling
+stor,Nim,File Handling
+octolog,Nim,Logging and Monitoring
+morelogging,Nim,Logging and Monitoring
+promexplorer,Nim,Data Analysis
+metrics,Nim,Data Analysis
+nimfmt,Nim,Code Analysis and Linting
+coco,Nim,Code Analysis and Linting
+treesitter,Nim,Code Analysis and Linting
+nimalyzer,Nim,Code Analysis and Linting
+testify,Nim,Testing
+nimtest,Nim,Testing
+testutils,Nim,Testing
+halonium,Nim,Networking and Messaging
+nimdata,Nim,Data Analysis
+datamancer,Nim,Data Analysis
+nimdataframe,Nim,Data Analysis
+mpfit,Nim,Mathematics and Numerics
+tomlserialization,Nim,Data Serialization
+protobufserialization,Nim,Data Serialization
+bson,Nim,Data Serialization
+eminim,Nim,Algorithms and Data Structures
+autome,Nim,IT Automation
+monit,Nim,Logging and Monitoring
+autonim,Nim,IT Automation
+nake,Nim,IT Automation
+nimblegui,Nim,Graphical User Interface Design
+nigui,Nim,Graphical User Interface Design
+sigui,Nim,Graphical User Interface Design
+rdgui,Nim,Graphical User Interface Design
+de.sciss:fingertree_2.11,Scala,Algorithms and Data Structures
+org.scalameta:semanticdb-scalac-core_2.11.12,Scala,Code Analysis and Linting
+org.axle-lang:axle-algorithms_2.11,Scala,Algorithms and Data Structures
+de.sciss:strugatzki_2.10,Scala,Algorithms and Data Structures
+org.apache.spark:spark-network-common_2.11,Scala,Networking and Messaging
+com.github.molecule-labs:molecule-net_2.9.3,Scala,Networking and Messaging
+org.elasticmq,Scala,Database Management
+com.typesafe.akka:akka-stream_2.12,Scala,Networking and Messaging
+com.miguno.akka:akka-mock-scheduler_2.11,Scala,Scheduling and Concurrency
+com.enragedginger:akka-quartz-scheduler_2.11,Scala,Scheduling and Concurrency
+edu.gemini:lucuma-typed-scheduler_sjs1_3,Scala,Scheduling and Concurrency
+io.getkyo:kyo-scheduler_2.13,Scala,Scheduling and Concurrency
+dev.zio:zio-json_3,Scala,Data Serialization
+dev.zio:zio-json_2.12,Scala,Data Serialization
+recheck,Scala,Code Analysis and Linting
+org.beangle.security:beangle-security-core,Scala,Security
+com.softwaremill.sttp.client3:slf4j-backend_2.12,Scala,Logging and Monitoring
+com.github.vagmcs:optimus_2.11,Scala,Mathematics and Numerics
+com.github.vagmcs:optimus-solver-oj_2.11,Scala,Mathematics and Numerics
+io.github.scalamath:vecmatlib,Scala,Mathematics and Numerics
+io.github.scalamath:cmplxlib,Scala,Mathematics and Numerics
+com.typesafe.slick:slick_2.11,Scala,Database Management
+org.tpolecat:doobie-core_2.12,Scala,Database Management
+org.reactivemongo:reactivemongo_2.11,Scala,Database Management
+org.tpolecat:doobie-postgres_2.12,Scala,Database Management
+org.specs2:specs2_2.11,Scala,Testing
+com.github.pathikrit:better-files_2.12,Scala,File Handling
+com.github.scala-incubator.io:scala-io-file_2.10,Scala,File Handling
+de.sciss:audiofile_2.11,Scala,Data Analysis
+com.typesafe.scala-logging:scala-logging_2.12,Scala,Logging and Monitoring
+com.typesafe.scala-logging:scala-logging-slf4j_2.11,Scala,Logging and Monitoring
+org.clapper:grizzled-slf4j_2.11,Scala,Logging and Monitoring
+com.outr:scribe_2.12,Scala,Data Serialization
+org.psywerx.hairyfotr.linter,Scala,Code Analysis and Linting
+scala.meta.parsers,Scala,Algorithms and Data Structures
+org.scalastyle,Scala,Code Analysis and Linting
+com.sksamuel.scapegoat,Scala,Code Analysis and Linting
+org.scala-js:scalajs-test-bridge_2.13,Scala,Testing
+org.scala-js:scalajs-test-interface_2.12,Scala,Testing
+com.typesafe.play:play-test_2.11,Scala,Testing
+org.scalatest:scalatest_2.9.1,Scala,Testing
+org.finra.megasparkdiff:mega-spark-diff,Scala,Data Analysis
+com.github.vicpara:exploratory-data-analysis_2.10,Scala,Data Analysis
+org.emmalanguage:emma,Scala,Data Analysis
+org.emmalanguage:emma-benchmarks,Scala,Data Analysis
+org.simplex3d:simplex3d-data-format_2.10,Scala,Data Serialization
+org.wvlet.airframe:airframe-tablet_2.13.0-RC2,Scala,Data Serialization
+org.gnieh:fs2-data-text_2.13,Scala,Data Serialization
+com.fasterxml.jackson.module:jackson-module-scala_2.12,Scala,Data Serialization
+tech.orkestra:orkestra-core_sjs0.6_2.12,Scala,IT Automation
+com.goyeau:orchestra-cron_2.12,Scala,Scheduling and Concurrency
+com.aamend.spark:archetype,Scala,IT Automation
+io.kevinlee:sbt-devoops-github-core_2.12_1.0,Scala,IT Automation
+de.sciss:dotterweide-ui_2.11,Scala,Graphical User Interface Design
+org.scala-lang.modules.scala-swing,Scala,Graphical User Interface Design
+io.github.mimoguz.layeredfonticon-core,Scala,Graphical User Interface Design
+piecemeal,Dart,Algorithms and Data Structures
+collection,Dart,Algorithms and Data Structures
+pointycastle,Dart,Security
+graphs,Dart,Algorithms and Data Structures
+connectivity_plus,Dart,Networking and Messaging
+cached_network_image,Dart,File Handling
+connectivity,Dart,Networking and Messaging
+firebase_messaging,Dart,Networking and Messaging
+create-fullstack-app-cli,Dart,IT Automation
+flutter_local_notifications,Dart,Graphical User Interface Design
+cron,Dart,Scheduling and Concurrency
+timer_builder,Dart,Scheduling and Concurrency
+syncfusion_flutter_calendar,Dart,Graphical User Interface Design
+google_sign_in,Dart,Security
+mqtt_client,Dart,Networking and Messaging
+angel_security,Dart,Security
+envied,Dart,Code Analysis and Linting
+math_expressions,Dart,Mathematics and Numerics
+more,Dart,Algorithms and Data Structures
+ml_linalg,Dart,Mathematics and Numerics
+fixed,Dart,Algorithms and Data Structures
+sqflite,Dart,Database Management
+cloud_firestore,Dart,Database Management
+postgres,Dart,Database Management
+hive,Dart,Database Management
+path_provider,Dart,File Handling
+image,Dart,Graphical User Interface Design
+glob,Dart,File Handling
+file,Dart,File Handling
+logging,Dart,Logging and Monitoring
+logger,Dart,Logging and Monitoring
+ansicolor,Dart,Logging and Monitoring
+pretty_dio_logger,Dart,Logging and Monitoring
+flutter_lints,Dart,Code Analysis and Linting
+pedantic_mono,Dart,Code Analysis and Linting
+carapacik_lints,Dart,Code Analysis and Linting
+velvet_custom_lints,Dart,Code Analysis and Linting
+test,Dart,Testing
+unittest,Dart,Testing
+build_test,Dart,Testing
+mocktail,Dart,Testing
+grizzly_array,Dart,Algorithms and Data Structures
+flutter_insights,Dart,Data Analysis
+packhorse,Dart,IT Automation
+plugin_mappintelligence,Dart,IT Automation
+yaml,Dart,Data Serialization
+built_value,Dart,Data Serialization
+bson,Dart,Data Serialization
+unleash,Dart,IT Automation
+docrunner,Dart,IT Automation
+cobertura,Dart,Code Analysis and Linting
+bitwarden_secrets,Dart,Security
+magical_widget,Dart,Graphical User Interface Design
+flutter_auto_gui,Dart,Graphical User Interface Design
+gui_shape,Dart,Graphical User Interface Design
+rinf,Dart,Algorithms and Data Structures
+collections,Python,Algorithms and Data Structures
+heapq,Python,Algorithms and Data Structures
+algorithms,Python,Algorithms and Data Structures
+sortedcontainers,Python,Algorithms and Data Structures
+asyncio,Python,Networking and Messaging
+socket,Python,Networking and Messaging
+kafka-python,Python,Networking and Messaging
+dramatiq,Python,Networking and Messaging
+arrow,Python,Scheduling and Concurrency
+dateutil,Python,Scheduling and Concurrency
+threading-framework,Python,Scheduling and Concurrency
+schedule,Python,Scheduling and Concurrency
+authlib,Python,Security
+pyjwt,Python,Security
+django-allauth,Python,Security
+cryptography,Python,Security
+scipy,Python,Mathematics and Numerics
+numpy,Python,Mathematics and Numerics
+statsmodel,Python,Mathematics and Numerics
+sympy,Python,Mathematics and Numerics
+pymysql,Python,Database Management
+psycopg,Python,Database Management
+pymongo,Python,Database Management
+pickledb,Python,Database Management
+mimetypes,Python,File Handling
+pathlib,Python,File Handling
+python-magic,Python,File Handling
+wqtchdog,Python,Scheduling and Concurrency
+logging,Python,Logging and Monitoring
+structlog,Python,Logging and Monitoring
+loguru,Python,Logging and Monitoring
+flake8,Python,Code Analysis and Linting
+pyflakes,Python,Code Analysis and Linting
+pycodestyle,Python,Code Analysis and Linting
+pylint,Python,Code Analysis and Linting
+mamba,Python,Testing
+pytest,Python,Testing
+unittest,Python,Testing
+pandas,Python,Data Analysis
+optimus,Python,Data Analysis
+schema,Python,Data Analysis
+pydantic,Python,Data Serialization
+marshmallow,Python,Data Serialization
+pysimdjson,Python,Data Serialization
+json,Python,Data Serialization
+prophy,Python,Data Analysis
+ansible,Python,IT Automation
+pyinfra,Python,IT Automation
+fabric,Python,IT Automation
+tkinter,Python,Graphical User Interface Design
+pyglet,Python,Graphical User Interface Design
+pyqt,Python,Graphical User Interface Design
+kivy,Python,Graphical User Interface Design
+Graph,Perl,Algorithms and Data Structures
+MetaMap-DataStructures,Perl,Algorithms and Data Structures
+Array-Circular,Perl,Algorithms and Data Structures
+Tree-R,Perl,Algorithms and Data Structures
+NetAddr-MAC,Perl,Networking and Messaging
+Net-OpenSSH,Perl,Networking and Messaging
+Parse-IPCommand,Perl,Networking and Messaging
+Net-SSH2,Perl,Networking and Messaging
+docpad-plugin-scheduling,Perl,Scheduling and Concurrency
+Async-Event-Interval,Perl,Scheduling and Concurrency
+Schedule-SGELK,Perl,Scheduling and Concurrency
+Mojolicious-Plugin-Cron-Scheduler,Perl,Scheduling and Concurrency
+DBIx-Class-BcryptColumn,Perl,Security
+Crypt-DRBG,Perl,Security
+Plack-Middleware-SecureHeaders,Perl,Security
+SPVM-Math,Perl,Mathematics and Numerics
+App-Math-Tutor,Perl,Mathematics and Numerics
+Math-RPN-Tiny,Perl,Mathematics and Numerics
+Math-Sidef,Perl,Mathematics and Numerics
+DBD-mysql,Perl,Database Management
+Redis,Perl,Database Management
+github.com/percona/percona-toolkit,Perl,Database Management
+Database-Abstraction,Perl,Database Management
+Path-Tiny,Perl,File Handling
+File-Util,Perl,File Handling
+PDF-API2,Perl,Data Serialization
+IO-All,Perl,File Handling
+CPAN-Testers-Schema,Perl,Data Analysis
+Log-Report,Perl,Logging and Monitoring
+Log-Contextual,Perl,Logging and Monitoring
+event-tracer,Perl,Logging and Monitoring
+Perl-Lint,Perl,Code Analysis and Linting
+Perl-Critic,Perl,Code Analysis and Linting
+B-Lint,Perl,Code Analysis and Linting
+Perl-Analyzer,Perl,Code Analysis and Linting
+Test-Strict,Perl,Testing
+Math-BigInt,Perl,Mathematics and Numerics
+Test-MockModule,Perl,Testing
+Test-Without-Module,Perl,Testing
+CLIPSeqTools,Perl,Data Analysis
+App-RecordStream,Perl,Data Analysis
+Data::Table,Perl,Data Analysis
+PDL::Dataframe,Perl,Data Analysis
+wxPerl,Perl,Graphical User Interface Design
+Perl-Tk,Perl,Graphical User Interface Design
+Prima,Perl,Graphical User Interface Design
+Perl/KDE,Perl,Graphical User Interface Design
+AnyData,Perl,Data Serialization
+Data-Format-Pretty-YAML,Perl,Data Serialization
+TOML-Tiny,Perl,Data Serialization
+Rex,Perl,IT Automation
+com.viliussutkus89:SampleLibraryForSonatypePromotionTesting,Perl,IT Automation
+Jenkins::API,Perl,IT Automation
+Minilla,Perl,IT Automation
+@discordjs/collection,TypeScript,Algorithms and Data Structures
+js-sdsl,TypeScript,Algorithms and Data Structures
+typescript-collections,TypeScript,Algorithms and Data Structures
+fast-array-diff,TypeScript,Algorithms and Data Structures
+libp2p,TypeScript,Networking and Messaging
+@multiformats/multiaddr,TypeScript,Networking and Messaging
+@ethersproject/networks,TypeScript,Networking and Messaging
+nats,TypeScript,Networking and Messaging
+@types/node-schedule,TypeScript,Scheduling and Concurrency
+agenda,TypeScript,Scheduling and Concurrency
+@nestjs/schedule,TypeScript,Scheduling and Concurrency
+@solid-primitives/scheduled,TypeScript,Scheduling and Concurrency
+helmet,TypeScript,Security
+snyk,TypeScript,Security
+jssha,TypeScript,Security
+@testing-library/user-event,TypeScript,Testing
+antd,TypeScript,Graphical User Interface Design
+random-js,TypeScript,Mathematics and Numerics
+math-expression-evaluator,TypeScript,Mathematics and Numerics
+normal-distribution,TypeScript,Mathematics and Numerics
+@mathigon/fermat,TypeScript,Mathematics and Numerics
+mongodb,TypeScript,Database Management
+sequelize,TypeScript,Database Management
+firebase,TypeScript,Database Management
+typeorm,TypeScript,Database Management
+rollup-plugin-dts,TypeScript,Code Analysis and Linting
+tsx,TypeScript,Code Analysis and Linting
+ts-node-dev,TypeScript,Code Analysis and Linting
+@storybook/addon-console,TypeScript,Graphical User Interface Design
+conventional-changelog-writer,TypeScript,IT Automation
+git-raw-commits,TypeScript,IT Automation
+@codemirror/lint,TypeScript,Code Analysis and Linting
+@start/plugin-lib-eslint,TypeScript,Code Analysis and Linting
+remark-lint-fenced-code-flag-case,TypeScript,Code Analysis and Linting
+tslint-rxjs-subject-restrictions-rule,TypeScript,Code Analysis and Linting
+jest,TypeScript,Testing
+ts-jest,TypeScript,Testing
+babel-jest,TypeScript,Testing
+vitest,TypeScript,Testing
+data-forge,TypeScript,Data Analysis
+vue-component-meta,TypeScript,Graphical User Interface Design
+@opticss/element-analysis,TypeScript,Graphical User Interface Design
+@antv/l7-scene,TypeScript,Graphical User Interface Design
+table,TypeScript,Data Analysis
+form-data-encoder,TypeScript,File Handling
+@nsis/language-data,TypeScript,Data Analysis
+docker-compose,TypeScript,IT Automation
+commitlint-azure-pipelines-cli,TypeScript,IT Automation
+azure-devops-node-api,TypeScript,IT Automation
+@karmaniverous/get-dotenv,TypeScript,File Handling
+happy-dom,TypeScript,Graphical User Interface Design
+react-png-tooltip,TypeScript,Graphical User Interface Design
+infamous,TypeScript,Graphical User Interface Design
+github.com/davecgh/go-spew,Go,Algorithms and Data Structures
+github.com/google/btree,Go,Algorithms and Data Structures
+github.com/lann/ps,Go,Algorithms and Data Structures
+github.com/cespare/xxhash/v2,Go,Algorithms and Data Structures
+golang.org/x/net,Go,Networking and Messaging
+github.com/vishvananda/netns,Go,Networking and Messaging
+github.com/nats-io/nats,Go,Networking and Messaging
+github.com/jackc/pgproto3/v2,Go,Database Management
+k8s.io/kubernetes,Go,IT Automation
+github.com/go-co-op/gocron,Go,Scheduling and Concurrency
+atomicgo.dev/schedule,Go,Scheduling and Concurrency
+github.com/jasonlvhit/gocron,Go,Scheduling and Concurrency
+github.com/google/uuid,Go,Algorithms and Data Structures
+github.com/golang-jwt/jwt/v4,Go,Security
+github.com/microcosm-cc/bluemonday,Go,Security
+github.com/99designs/keyring,Go,Security
+github.com/go-redis/cache/v8,Go,Database Management
+gopkg.in/inf.v0,Go,Algorithms and Data Structures
+github.com/go-corelibs/maths,Go,Mathematics and Numerics
+github.com/go-inf/inf,Go,Algorithms and Data Structures
+github.com/pkg/math,Go,Mathematics and Numerics
+github.com/go-sql-driver/mysql,Go,Database Management
+github.com/lib/pq,Go,Database Management
+go.mongodb.org/mongo-driver,Go,Database Management
+go.etcd.io/bbolt,Go,Database Management
+github.com/pelletier/go-toml/v2,Go,Data Serialization
+github.com/joho/godotenv,Go,File Handling
+cloud.google.com/go/storage,Go,Database Management
+github.com/minio/minio-go/v7,Go,Database Management
+github.com/sirupsen/logrus,Go,Logging and Monitoring
+go.uber.org/zap,Go,Logging and Monitoring
+github.com/go-logr/logr,Go,Logging and Monitoring
+go.opentelemetry.io/otel,Go,Logging and Monitoring
+golang.org/x/lint,Go,Code Analysis and Linting
+github.com/golangci/lint-1,Go,Code Analysis and Linting
+github.com/mvdan/lint,Go,Code Analysis and Linting
+github.com/golang/lint,Go,Code Analysis and Linting
+github.com/stretchr/testify,Go,Testing
+github.com/google/go-cmp,Go,Code Analysis and Linting
+gopkg.in/check.v1,Go,Testing
+github.com/onsi/ginkgo,Go,Testing
+github.com/rocketlaunchr/dataframe-go,Go,Data Analysis
+github.com/fjukstad/walrus,Go,Algorithms and Data Structures
+github.com/hokiegeek/hgtealib,Go,Algorithms and Data Structures
+github.com/forchain/bitcoinbigdata,Go,Data Analysis
+github.com/google/orderedcode,Go,Code Analysis and Linting
+github.com/ipfs/go-block-format,Go,File Handling
+github.com/linkedin/goavro/v2,Go,Data Serialization
+github.com/minio/sio,Go,File Handling
+github.com/power-devops/perfstat,Go,Logging and Monitoring
+github.com/gruntwork-io/terratest,Go,Testing
+go.mozilla.org/sops/v3,Go,Security
+github.com/vladimirvivien/gexe,Go,Algorithms and Data Structures
+qtypes,Go,Algorithms and Data Structures
+github.com/ctessum/gobra,Go,Algorithms and Data Structures
+github.com/yogischogi/ui2go,Go,Graphical User Interface Design
+github.com/bhojpur/gui,Go,Graphical User Interface Design
+the,Rust,File Handling
+java.util.function.Predicate,Java,Algorithms and Data Structures
+std::io::{self,Rust,File Handling
+prefect,Python,Scheduling and Concurrency
+com.fasterxml.jackson.databind.JsonNode,Java,Data Serialization
+urllib3,Python,Networking and Messaging
+com.ibm.storage.defender.security_context.services.sas.AccessService.ResourceType,Java,Security
+requests,Python,Networking and Messaging
+@polar/impersonation,TypeScript,Security
+sklearn,Python,Mathematics and Numerics
+static,Java,Algorithms and Data Structures
+com.fasterxml.jackson.databind.node.ObjectNode,Java,Data Serialization
+~/__tests__/cypress/cypress/types,TypeScript,Testing
+mockall::*,Rust,Testing
+std::fs::File,Rust,File Handling
+./testutil,JavaScript,Testing
+std::path::Path,Rust,File Handling
+org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter,Java,Security
+os,Python,File Handling
+utils,Python,Algorithms and Data Structures
+./../types,TypeScript,Data Serialization
+com.ibm.storage.defender.security_context.models.rbac.ResourceType,Java,Security
+org.bouncycastle.util.io.pem.PemObject,Java,Security
+boto3,Python,Networking and Messaging
+java.security.spec.X509EncodedKeySpec,Java,Security
+stdio.h,C++,File Handling
+tokio::runtime::Handle,Rust,Scheduling and Concurrency
+org.bouncycastle.openssl.PEMParser,Java,Security
+org.slf4j.LoggerFactory,Java,Logging and Monitoring
+com.ibm.storage.utils.SerializerProvider,Java,Data Serialization
+jsonwebtoken::{Algorithm,Rust,Security
+java.security.spec.InvalidKeySpecException,Java,Security
+java.security.interfaces.RSAPublicKey,Java,Security
+stdlib.h,C++,File Handling
+super::*,Rust,Testing
+java.security.NoSuchAlgorithmException,Java,Security
+axios,JavaScript,Networking and Messaging
+mockall::predicate::*,Rust,Testing
+string.h,C++,File Handling
+./CalculateReviewRequiredFields,JavaScript,Algorithms and Data Structures
+opentelemetry::{global,Rust,Logging and Monitoring
+java.security.KeyFactory,Java,Security
+boxsdk,Python,Networking and Messaging
+@polar/logger,TypeScript,Logging and Monitoring
+pyspark,Python,Data Analysis
+artifactory,Python,File Handling
+java.lang.reflect.InvocationTargetException,Java,Code Analysis and Linting
+openssl/evp.h,C,Security
+apic,Python,Networking and Messaging
+MetaKey.h,C++,Security
+vectorestore_util,Python,Data Serialization
+carbon-components-angular/tabs,TypeScript,Graphical User Interface Design
+org.apache.poi.xssf.usermodel.XSSFWorkbook,Java,File Handling
+random,C++,Mathematics and Numerics
+cplex,Python,Mathematics and Numerics
+opentelemetry,Python,Logging and Monitoring
+org.testng.annotations.AfterClass,Java,Testing
+org.openqa.selenium.WebElement,Java,Testing
+com.ibm.brmt.cpp.cognos.rest.exceptions.RESTApiLogonExpiredException,Java,Security
+java.awt.Window,Java,Graphical User Interface Design
+java.nio.channels.FileChannel,Java,File Handling
+System.Text,C#,File Handling
+java.util.TreeSet,Java,Algorithms and Data Structures
+lombok.NonNull,Java,Code Analysis and Linting
+shared/utils/matchProduct,JavaScript,Algorithms and Data Structures
+PyPDF2,Python,File Handling
+java.io.InputStreamReader,Java,File Handling
+ssl,Python,Security
+sqlcli1.h,C++,Database Management
+sys/stat.h,C,File Handling
+shared_ptr.h,C++,Algorithms and Data Structures
+System.IO,C#,File Handling
+pdb,Python,Code Analysis and Linting
+psdi.util.logging.*,Java,Logging and Monitoring
+org.apache.parquet.example.data.simple.SimpleGroupFactory,Java,Data Serialization
+utilities,Python,Algorithms and Data Structures
+joblib,Python,Scheduling and Concurrency
+itertools,Python,Algorithms and Data Structures
+./welcome/welcome.component,TypeScript,Graphical User Interface Design
+org.apache.parquet.example.data.Group,Java,Data Serialization
+ProcessLog,Perl,Logging and Monitoring
+copy,Python,File Handling
+org.springframework.vault.core.VaultOperations,Java,Security
+com.ibm.bi.dml.api.DMLScript,Java,Mathematics and Numerics
+Newtonsoft.Json,C#,Data Serialization
+rand::Rng,Rust,Mathematics and Numerics
+com.ibm.bi.dml.test.integration.AutomatedTestBase,Java,Testing
+functools,Python,Algorithms and Data Structures
+iomanip,C++,File Handling
+com.google.gson.GsonBuilder,Java,Data Serialization
+rdkit,Python,Mathematics and Numerics
+au.com.bytecode.opencsv.CSVReader,Java,File Handling
+@playwright/test,JavaScript,Testing
+monaco-editor,JavaScript,Graphical User Interface Design
+ObjectIndex.h,C++,Algorithms and Data Structures
+ctypes,Python,Security
+aws/s3/S3Client.h,C++,Networking and Messaging
+java.lang.reflect.Constructor,Java,Code Analysis and Linting
+ctype.h,C,Algorithms and Data Structures
+javax.xml.bind.annotation.XmlSeeAlso,Java,Data Serialization
+mas,Python,Mathematics and Numerics
+uuid,TypeScript,Data Serialization
+com.ibm.brmt.cpp.cognos.rest.exceptions.RESTApiRuntimeException,Java,Security
+io.vertx.core.json.JsonArray,Java,Data Serialization
+stddef.h,C,File Handling
+osprules,Python,Algorithms and Data Structures
+mpl_toolkits,Python,Mathematics and Numerics
+java.text.SimpleDateFormat,Java,File Handling
+kmipprotocol::client::{Client,Rust,Networking and Messaging
+typing,Python,Code Analysis and Linting
+au.com.bytecode.opencsv.CSVWriter,Java,File Handling
+com.ghgande.j2mod.modbus.net.SerialConnection,Java,Networking and Messaging
+sqluv.h,C++,Database Management
+test/test.dart;,Dart,Testing
+org.bouncycastle.math.ec.ECPoint,Java,Security
+unordered_map,C++,Algorithms and Data Structures
+tensorflow,Python,Mathematics and Numerics
+cstdlib,C++,Algorithms and Data Structures
+socketserver,Python,Networking and Messaging
+bitset,C++,Algorithms and Data Structures
+std::sync::Arc,Rust,Scheduling and Concurrency
+pyodbc,Python,Database Management
+com.ibm.bi.dml.runtime.util.MapReduceTool,Java,Mathematics and Numerics
+watson_testing,Python,Testing
+org.apache.http.conn.ssl.SSLConnectionSocketFactory,Java,Security
+map,C++,Algorithms and Data Structures
+com.fasterxml.jackson.databind.ObjectMapper,Java,Data Serialization
+com.ghgande.j2mod.modbus.io.ModbusSerialTransport,Java,Networking and Messaging
+transformers,Python,Algorithms and Data Structures
+org.testcontainers.junit.jupiter.Testcontainers,Java,Testing
+common,Python,Algorithms and Data Structures
+torch_geometric,Python,Mathematics and Numerics
+java.net.http.HttpClient,Java,Networking and Messaging
+../../../shared/utils/removeStringQuotes,JavaScript,Algorithms and Data Structures
+num_bigint::BigUint,Rust,Mathematics and Numerics
+org.apache.parquet.schema.MessageTypeParser,Java,Data Serialization
+drPacketCapture.def,C++,Security
+Math::BigInt,Perl,Mathematics and Numerics
+dpEventTrace.h,C++,Logging and Monitoring
+org.apache.log4j.Logger,Java,Logging and Monitoring
+apiSecurityOAuthOpenIDConnect.hpp,C++,Security
+System.Linq,C#,Algorithms and Data Structures
+@jest/globals,JavaScript,Testing
+db2infra,Python,Database Management
+org.testng.annotations.DataProvider,Java,Testing
+java.util.Random,Java,Mathematics and Numerics
+kmipprotocol::utils::ByteBuf,Rust,Networking and Messaging
+read_work_unit.h,C++,File Handling
+queue,Python,Algorithms and Data Structures
+java.sql.ResultSet,Java,Database Management
+locale,Python,File Handling
+carbon-components-angular,TypeScript,Graphical User Interface Design
+serde_json::Value,Rust,Data Serialization
+email,Python,Networking and Messaging
+dataclasses,Python,Algorithms and Data Structures
+java.util.Map.Entry,Java,Algorithms and Data Structures
+io,Python,File Handling
+sys/sysconfig.h,C,File Handling
+org.apache.logging.log4j.core.LogEvent,Java,Logging and Monitoring
+org.apache.parquet.schema.MessageType,Java,Data Serialization
+org.testng.annotations.BeforeMethod,Java,Testing
+signal,Python,Scheduling and Concurrency
+oracledb,Python,Database Management
+@react-aria/button,JavaScript,Graphical User Interface Design
+org.apache.thrift.protocol.TBinaryProtocol,Java,Networking and Messaging
+ibm_db_dbi,Python,Database Management
+java.util.Calendar,Java,File Handling
+@hpcc-js/wasm/graphviz,JavaScript,Graphical User Interface Design
+urh-ioctl.h,C,Networking and Messaging
+sys/wait.h,C++,File Handling
+java.security.KeyStore,Java,Security
+warnings,Python,Code Analysis and Linting
+math,Python,Mathematics and Numerics
+java.util.stream.IntStream,Java,Algorithms and Data Structures
+File::Path,Perl,File Handling
+processing.gif.*,Java,Graphical User Interface Design
+java.security.cert.Certificate,Java,Security
+dpFilePaths.h,C++,File Handling
+react-native,JavaScript,Graphical User Interface Design
+sqlsystm.h,C++,Database Management
+iotfunctions,Python,Data Analysis
+com.fasterxml.jackson.core.JsonParser,Java,Data Serialization
+java.util.AbstractMap,Java,Algorithms and Data Structures
+playwright,TypeScript,Testing
+org.springframework.kafka.core.KafkaTemplate,Java,Networking and Messaging
+difflib,Python,Algorithms and Data Structures
+java.time.format.DateTimeFormatter,Java,File Handling
+rocksdb/cloud/cloud_env_options.h,C++,Database Management
+vscode,TypeScript,Graphical User Interface Design
+vars,Perl,Algorithms and Data Structures
+org.openqa.selenium.*,Java,Testing
+java.beans.IntrospectionException,Java,Code Analysis and Linting
+org.openqa.selenium.By,Java,Testing
+tokio::sync::RwLock,Rust,Scheduling and Concurrency
+opentelemetry/trace/link.h,C++,Logging and Monitoring
+com.ibm.bi.dml.utils.Statistics,Java,Mathematics and Numerics
+javax.net.ssl.SSLContext,Java,Security
+com.ghgande.j2mod.modbus.msg.WriteMultipleRegistersRequest,Java,Networking and Messaging
+org.apache.http.impl.client.HttpClients,Java,Networking and Messaging
+enzyme,TypeScript,Testing
+org.testng.annotations.Group,Java,Testing
+stdint.h,C,File Handling
+wget,Python,Networking and Messaging
+re,Python,Algorithms and Data Structures
+org.junit.jupiter.api.Assertions,Java,Testing
+Windows.Foundation,C#,Graphical User Interface Design
+org.testng.annotations.BeforeClass,Java,Testing
+Time::Local,Perl,File Handling
+ibm_db_tools,Python,Database Management
+vector,C++,Algorithms and Data Structures
+deepmerge,Python,Algorithms and Data Structures
+hashlib,Python,Security
+org.apache.poi.ss.usermodel.Workbook,Java,File Handling
+System.Collections.Generic,C#,Algorithms and Data Structures
+java.util.Date,Java,File Handling
+com.ibm.db2.jcc.DB2ConnectionPool,Java,Database Management
+java.util.Comparator,Java,Algorithms and Data Structures
+com.ibm.bi.dml.runtime.instructions.cp.BooleanObject,Java,Mathematics and Numerics
+openssl/sha.h,C,Security
+java.lang.reflect.*,Java,Code Analysis and Linting
+junitparser,Python,Testing
+random,Python,Mathematics and Numerics
+logger_macros.h,C++,Logging and Monitoring
+org.springframework.vault.support.VaultResponse,Java,Security
+java.sql.Statement,Java,Database Management
+openpyxl,Python,File Handling
+java.nio.channels.DatagramChannel,Java,Networking and Messaging
+base64,Python,Data Serialization
+time.h,C,File Handling
+org.apache.thrift.transport.TSocket,Java,Networking and Messaging
+std::io,Rust,File Handling
+pyarrow,Python,Data Serialization
+java.nio.file.StandardOpenOption,Java,File Handling
+com.ibm.bi.dml.runtime.matrix.MatrixCharacteristics,Java,Mathematics and Numerics
+java.sql.PreparedStatement,Java,Database Management
+java.lang.instrument.*,Java,Code Analysis and Linting
+org.apache.http.impl.client.CloseableHttpClient,Java,Networking and Messaging
+java.nio.file.attribute.PosixFileAttributeView,Java,File Handling
+my_module,Python,Algorithms and Data Structures
+com.ibm.zos.net.ftp.FTPClientErrorException,Java,Networking and Messaging
+org.testng.annotations.Factory,Java,Testing
+org.testng.annotations.AfterTest,Java,Testing
+java.time.ZoneId,Java,File Handling
+java.io.FilenameFilter,Java,File Handling
+dpEventLogMacro.h,C++,Logging and Monitoring
+charconv,C++,File Handling
+java.util.LinkedHashSet,Java,Algorithms and Data Structures
+io.quarkus.runtime.annotations.RegisterForReflection,Java,Code Analysis and Linting
+java.nio.ByteBuffer,Java,File Handling
+@carbon/ibm-security,JavaScript,Security
+org.testcontainers.containers.Network,Java,Networking and Messaging
+sqlalchemy,Python,Database Management
+iostream,C++,File Handling
+com.ibm.zos.net.ftp.FTPClientProcessKillException,Java,Networking and Messaging
+System.Collections.Specialized,C#,Algorithms and Data Structures
+math.h,C,Mathematics and Numerics
+multiscanner,Python,Security
+resolv.h,C++,Networking and Messaging
+com.ibm.cloud.objectstorage.services.s3.model.ListObjectsRequest,Scala,Networking and Messaging
+react-bootstrap,JavaScript,Graphical User Interface Design
+io.opentelemetry.api.trace.Span,Java,Logging and Monitoring
+com.ibm.rdm.fronting.server.services.reqif.diagnostics.ReqIFDiagnosticResultParameter.ResultParameterKey,Java,Data Analysis
+tabulate,Python,Data Analysis
+org.eclipse.jdt.core.dom.VariableDeclarationStatement,Java,Code Analysis and Linting
+enum,Python,Algorithms and Data Structures
+cdm_box.H,C++,File Handling
+webdriver_manager,Python,Testing
+org.jdom2.input.SAXBuilder,Java,File Handling
+onepassword,Python,Security
+com.ibm.wcaz.testing.evaluators.exceptions.TopLevelLocalVariablesTypeMismatchException,Java,Code Analysis and Linting
+org.springframework.data.jpa.repository.JpaRepository,Java,Database Management
+com.vmturbo.system.notifications.SystemNotificationsServiceOuterClass.LinkNotificationRequest,Java,Networking and Messaging
+org.mockito.Mock,Java,Testing
+org.apache.iceberg.Schema,Java,Data Serialization
+paramiko,Python,Networking and Messaging
+File::Slurp,Perl,File Handling
+com.google.gson.annotations.SerializedName,Java,Data Serialization
+org.eclipse.jdt.core.dom.VariableDeclarationFragment,Java,Code Analysis and Linting
+javax.xml.stream.XMLStreamReader,Java,File Handling
+dev.galasa.core.manager.Logger,Java,Logging and Monitoring
+users,Python,Database Management
+org.apache.hadoop.fs.Path,Java,File Handling
+textwrap,Python,File Handling
+sqlenv.h,C,Database Management
+com.ibm.services.tools.marketplace.search.model.FilterFactory,Java,Data Analysis
+io.openliberty.jpa.data.tests.models.Reciept,Java,Database Management
+org.mockito.InjectMocks,Java,Testing
+com.ibm.eicore.boi.dto.ItemStructureEngDto,Java,Data Serialization
+dask,Python,Data Analysis
+com.ibm.rdm.fronting.server.common.reqif.SpecObject,Java,Data Serialization
+psdi.security.ProfileService,Java,Security
+MakeApiCall,Python,Networking and Messaging
+com.samsung.sec.dexter.eclipse.ui.view.ContainerPanel,Java,Graphical User Interface Design
+javax.xml.namespace.QName,Java,File Handling
+java.util.regex.Matcher,Java,Algorithms and Data Structures
+org.eclipse.jdt.core.dom.ASTNode,Java,Code Analysis and Linting
+org.apache.arrow.vector.ipc.ArrowFileWriter,Java,Data Serialization
+com.ibm.services.tools.marketplace.model.logic.SavedSearch,Java,Data Analysis
+carbon-components-react,JavaScript,Graphical User Interface Design
+com.ibm.services.tools.marketplace.search.model.Filter,Java,Data Analysis
+com.ibm.grc.resmgr.repository.DataPersistenceManager,Java,Database Management
+bitmath,Python,Mathematics and Numerics
+sys/types.h,C++,File Handling
+java.math.MathContext,Java,Mathematics and Numerics
+org.jdom2.output.XMLOutputter,Java,File Handling
+java.util.stream.Stream,Java,Algorithms and Data Structures
+flutter/material.dart;,Dart,Graphical User Interface Design
+com.informatica.powercenter.SchedulerServiceConstants.OperationType,Java,Scheduling and Concurrency
+callbackCommon.c,C,Algorithms and Data Structures
+com.samsung.sec.dexter.eclipse.ui.view.CodeMetricsView,Java,Graphical User Interface Design
+com.samsung.sec.dexter.eclipse.ui.view.SourceCodeView,Java,Graphical User Interface Design
+synthpop::{Population,Rust,Data Analysis
+org.apache.logging.log4j.Marker,Java,Logging and Monitoring
+com.saa.auth.dao.AuthorityDAO,Java,Security
+java.security.MessageDigest,Java,Security
+com.ibm.services.tools.marketplace.search.model.SearchEngineRequest,Java,Data Analysis
+org.apache.arrow.vector.types.pojo.Field,Java,Data Serialization
+javax.persistence.Entity,Java,Database Management
+com.ibm.eicore.boi.service.ItemEngRevService,Java,Data Serialization
+user,Python,File Handling
+com.ibm.maximo.automation.mobile.api.json.TkSrvAd,Java,Data Serialization
+org.eclipse.jdt.core.dom.VariableDeclaration,Java,Code Analysis and Linting
+react-window,JavaScript,Graphical User Interface Design
+org.apache.hadoop.fs.FileSystem,Java,File Handling
+win32com,Python,Networking and Messaging
+org.apache.axiom.om.OMNamespace,Java,Data Serialization
+org.openqa.selenium.support.ui.ExpectedConditions,Java,Testing
+ibm_boto3,Python,Networking and Messaging
+secrets,Python,Security
+strict,Perl,Code Analysis and Linting
+com.vmturbo.system.notifications.SystemNotificationsServiceOuterClass.ListLinkedNotificationsRequest,Java,Networking and Messaging
+com.ibm.cloud.objectstorage.services.s3.AmazonS3ClientBuilder,Scala,Networking and Messaging
+java.util.stream.Collectors,Java,Algorithms and Data Structures
+com.ibm.cloud.cloudant.v1.Cloudant,Java,Database Management
+ncclient,Python,Networking and Messaging
+psdi.mbo.MboServerInterface,Java,Database Management
+com.ibm.eicore.std.dto.StandardNodeDto,Java,Data Serialization
+gi,Python,Graphical User Interface Design
+java.io.BufferedInputStream,Java,File Handling
+Windows.h,C++,File Handling
+com.ibm.maximo.servicerequest.testcases.TestSuite,Java,Testing
+ldap,Python,Networking and Messaging
+serde::{Deserialize,Rust,Data Serialization
+com.ibm.services.tools.marketplace.model.dao.ManageAssignmentsDAO,Java,Data Analysis
+com.ibm.clearinghouse.data.model.DocType,Java,Database Management
+com.ibm.eicore.boi.dto.ItemEngRevDto,Java,Data Serialization
+ast,Python,Code Analysis and Linting
+com.ibm.json.java.JSONArray,Java,Data Serialization
+datatypes.annotations.dp.DPVersionInfo,Java,Data Analysis
+com.ibm.rdm.monitoring.counter.ICounter.Unit,Java,Data Analysis
+psdi.test.FastUnitTestBase,Java,Testing
+io.openliberty.jpa.data.tests.models.Rating,Java,Data Serialization
+org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest,Java,Testing
+react-dom,JavaScript,Graphical User Interface Design
+datatypes.velox.objects.VeloxCatalog,Java,Data Serialization
+br.com.bb.juridico.api.v1.dto.RegistroParsedDto,Java,Data Serialization
+com.ibm.services.tools.marketplace.model.vo.SavedSearchVO,Java,Data Analysis
+java.net.URL,Java,Networking and Messaging
+org.w3c.dom.NodeList,Java,Data Serialization
+io.openliberty.jpa.data.tests.models.Item,Java,Database Management
+psdi.mbo.MboSet,Java,Database Management
+sqludf.h,C,Database Management
+java.sql.DriverManager,Java,Database Management
+log::{debug,Rust,Logging and Monitoring
+org.apache.commons.lang3.StringUtils,Java,Algorithms and Data Structures
+sqlite3,Python,Database Management
+bdd.common.ScenarioContext,Java,Testing
+tasks.validation.Verify,Java,Testing
+termcolor,Python,Logging and Monitoring
+com.ibm.rdm.fronting.server.services.types.IProjectTypeSystem,Java,Code Analysis and Linting
+./fetchLocalBuildInfo,JavaScript,File Handling
+output,Python,File Handling
+com.ibm.wcaz.higher.kind.Reader,Java,File Handling
+com.ibm.eicore.framework.service.MessageSourceService,Java,Networking and Messaging
+cdm.H,C++,Algorithms and Data Structures
+pyqtgraph,Python,Graphical User Interface Design
+org.mockito.MockitoAnnotations,Java,Testing
+org.apache.poi.xssf.usermodel.XSSFRow,Java,File Handling
+print_it_for_query.h,C++,File Handling
+org.jdom2.Element,Java,Data Serialization
+minio,Python,File Handling
+appium,Python,Testing
+io.openliberty.jpa.data.tests.models.NaturalNumber,Java,Mathematics and Numerics
+com.q1labs.semsources.sources.estreamer.message.errormsg.ErrorMessage,Java,Logging and Monitoring
+System.Data,C#,Database Management
+tasks.validation.AssertEx,Java,Testing
+com.google.common.base.Strings,Java,Algorithms and Data Structures
+java.math.BigDecimal,Java,Mathematics and Numerics
+org.apache.logging.log4j.Level,Java,Logging and Monitoring
+pytest_testrail,Python,Testing
+unistd.h,C,File Handling
+io.openliberty.jpa.data.tests.models.Line.Point,Java,Mathematics and Numerics
+org.eclipse.jdt.core.dom.VariableDeclarationExpression,Java,Code Analysis and Linting
+com.fasterxml.jackson.databind.deser.std.StdDeserializer,Java,Data Serialization
+Metastore.h,C++,File Handling
+std::ffi::{CStr,Rust,Data Serialization
+com.q1labs.semsources.sources.estreamer.message.datamsg.EventDataMessage,Java,Data Serialization
+com.ibm.eicore.boi.dto.ItemMfgRevXmlDto,Java,Data Serialization
+br.com.bb.juridico.api.v1.dto.DocDto,Java,Data Serialization
+com.samsung.sec.dexter.core.config.DexterConfig,Java,Code Analysis and Linting
+javax.xml.soap.SOAPPart,Java,Networking and Messaging
+com.vmturbo.system.notifications.SystemNotificationsServiceOuterClass.LinkNotificationResponse,Java,Networking and Messaging
+org.apache.http.impl.client.HttpClientBuilder,Java,Networking and Messaging
+com.ibm.eicore.common.enums.GeneralItemType,Java,Data Serialization
+com.vmturbo.common.protobuf.workflow.WorkflowDTO.FetchWorkflowResponse,Java,Data Serialization
+kafka,Python,Networking and Messaging
+com.ibm.ecm.extension.PluginLogger,Java,Logging and Monitoring
+org.springframework.boot.test.context.SpringBootTest,Java,Testing
+java.awt.*,Java,Graphical User Interface Design
+org.apache.commons.csv.CSVFormat,Java,File Handling
+img2pdf,Python,File Handling
+org.apache.http.util.EntityUtils,Java,Networking and Messaging
+psdi.util.logging.MXLoggerFactory,Java,Logging and Monitoring
+javax.xml.soap.SOAPFactory,Java,Networking and Messaging
+java.util.Optional,Java,Algorithms and Data Structures
+types.h,C++,File Handling
+turtle,Python,Graphical User Interface Design
+com.ibm.rdm.fronting.server.services.reqif.diagnostics.ReqIFDiagnosticOperation,Java,Code Analysis and Linting
+net.iss.mss.ai.client.qradarRest.arg.QradarUpdateActions,Java,Security
+io.openliberty.jpa.data.tests.models.City,Java,Data Serialization
+org.apache.axiom.om.OMDocument,Java,Data Serialization
+com.yantra.interop.japi.YIFApi,Java,Networking and Messaging
+java.util.HashSet,Java,Algorithms and Data Structures
+java.security.SecureRandom,Java,Security
+@testing-library/react,JavaScript,Testing
+optional,C++,Algorithms and Data Structures
+string,C++,Algorithms and Data Structures
+datatypes.annotations.velox.VeloxDraftProduct,Java,Data Serialization
+application.dto.DeviceTypeDto,Java,Data Serialization
+org.apache.arrow.flight.*,Java,Networking and Messaging
+io.openliberty.jpa.data.tests.models.Business,Java,Data Serialization
+shutil,Python,File Handling
+com.ibm.maximo.servicerequest.framework.ServiceRequestTest,Java,Testing
+http,Python,Networking and Messaging
+io.grpc.Status,Java,Networking and Messaging
+com.google.common.collect.ImmutableSet,Java,Algorithms and Data Structures
+Purger.h,C++,File Handling
+io.openliberty.jpa.data.tests.models.Prime,Java,Mathematics and Numerics
+com.ibm.eicore.common.dto.ApplicationMessageDto,Java,Networking and Messaging
+org.apache.axis2.client.Options,Java,Networking and Messaging
+com.ibm.rdm.fronting.server.common.reqif.Identifiable,Java,Data Serialization
+pickle,Python,Data Serialization
+datatypes.annotations.velox.VeloxInfo,Java,Data Serialization
+com.ibm.rdm.fronting.server.services.vvc.QueryScopeParameters,Java,Networking and Messaging
+react-testing-library,JavaScript,Testing
+datatypes.annotations.velox.VeloxApiInfo,Java,Data Serialization
+com.fasterxml.jackson.core.JsonProcessingException,Java,Data Serialization
+metadata_internal.h,C++,File Handling
+sinon-chai,JavaScript,Testing
+jakarta.persistence.PersistenceException,Java,Database Management
+org.openqa.selenium.chrome.ChromeDriver,Java,Testing
+com.vodafone.cbox.logdigger.entities.FileToProcess,Java,Logging and Monitoring
+org.json.JSONObject,Java,Data Serialization
+cstring,C++,Algorithms and Data Structures
+org.apache.poi.xssf.usermodel.XSSFSheet,Java,File Handling
+com.q1labs.semsources.sources.estreamer.exception.DataMessageRecordTypeNotSupportedException,Java,Logging and Monitoring
+com.yantra.yfc.dom.YFCElement,Java,Data Serialization
+org.apache.velocity.VelocityContext,Java,Data Serialization
+datatypes.annotations.velox.VeloxCMCInfo,Java,Data Serialization
+com.informatica.powercenter.domain.table.TableInfo,Java,Database Management
+chai,JavaScript,Testing
+org.junit.Ignore,Java,Testing
+jakarta.persistence.PersistenceContext,Java,Database Management
+select,Python,File Handling
+com.q1labs.frameworks.logging.ILogger,Java,Logging and Monitoring
+org.testng.annotations.Parameters,Java,Testing
+io.openliberty.jpa.data.tests.models.Product,Java,Data Serialization
+lwgw_manifest::{manifest::Manifest,Rust,Data Serialization
+datatypes.velox.objects.VeloxConsumerOrganization,Java,Data Serialization
+org.apache.http.client.HttpClient,Java,Networking and Messaging
+java.util.Objects,Java,Algorithms and Data Structures
+org.junit.jupiter.api.AfterAll,Java,Testing
+java.sql.SQLException,Java,Database Management
+javax.xml.soap.SOAPMessage,Java,Networking and Messaging
+smtplib,Python,Networking and Messaging
+../data_transfer_objects/exampleDTO.js,JavaScript,Data Serialization
+PyQt5,Python,Graphical User Interface Design
+org.mockito.Mockito,Java,Testing
+com.q1labs.semsources.sources.estreamer.message.extendedrequestmsg.StreamingServiceRequest,Java,Networking and Messaging
+com.fasterxml.jackson.core.JsonParseException,Java,Data Serialization
+stream,TypeScript,Networking and Messaging
+datatypes.annotations.velox.Application,Java,Data Serialization
+com.yantra.shared.ycp.YFSContext,Java,Networking and Messaging
+getpass,Python,Security
+com.ibm.eicore.boi.dto.DerivedItemEngRelationDto,Java,Data Serialization
+com.ibm.wcaz.testing.evaluators.exceptions.TopLevelLocalVariablesMismatchException,Java,Code Analysis and Linting
+hvac,Python,Security
+java.sql.Connection,Java,Database Management
+flask_jwt_extended,Python,Security
+org.springframework.test.web.servlet.MockMvc,Java,Testing
+slack,Python,Networking and Messaging
+com.ibm.rdm.fronting.server.services.uid.AlternateIDService,Java,Networking and Messaging
+java.util.regex.Pattern,Java,Algorithms and Data Structures
+db2ApiDf.h,C,Database Management
+pptx,Python,File Handling
+com.ibm.rdm.fronting.server.services.uid.IAlternateIDImportMapping,Java,Networking and Messaging
+bdd.airlineService.AirlineServicesConstants,Java,Networking and Messaging
+tasks.velox.VeloxOrganizationRestManager,Java,Scheduling and Concurrency
+java.util.stream.Collector,Java,Algorithms and Data Structures
+xml,Python,File Handling
+jni.h,C++,File Handling
+javax.net.ssl.SSLHandshakeException,Java,Security
+fcntl.h,C++,File Handling
+javax.naming.Context,Java,Networking and Messaging
+rocksdb/cloud/cloud_storage_provider.h,C++,Database Management
+com.revature.models.Passenger,Java,Data Serialization
+javax.xml.rpc.handler.soap.SOAPMessageContext,Java,Networking and Messaging
+@material-ui/core,JavaScript,Graphical User Interface Design
+com.udacity.jdnd.course3.critter.entity.Customer,Java,Data Serialization
+pymilvus,Python,Database Management
+org.apache.poi.ss.usermodel.Cell,Java,File Handling
+javax.ws.rs.container.ContainerRequestFilter,Java,Networking and Messaging
+plotly,Python,Graphical User Interface Design
+@vue/test-utils,JavaScript,Testing
+io.openliberty.jpa.data.tests.models.DemographicInfo,Java,Data Serialization
+org.w3c.dom.Document,Java,Data Serialization
+io.openliberty.jpa.data.tests.models.Rebate.Status,Java,Data Serialization
+psycopg2,Python,Database Management
+org.apache.iceberg.types.Types,Java,Data Serialization
+sys/shm.h,C,File Handling
+org.apache.commons.csv.QuoteMode,Java,File Handling
+org.apache.arrow.vector.BigIntVector,Java,Data Serialization
+com.ibm.rdm.monitoring.counter.LongCounter,Java,Logging and Monitoring
+ruamel,Python,Data Serialization
+@ant-design/icons,JavaScript,Graphical User Interface Design
+Data::Dumper,Perl,Data Serialization
+javax.persistence.GenerationType,Java,Database Management
+io.openliberty.jpa.data.tests.models.Account,Java,Data Serialization
+com.vmturbo.system.notifications.SystemNotificationsServiceGrpc.SystemNotificationsServiceImplBase,Java,Networking and Messaging
+lxml,Python,Data Serialization
+java.math.RoundingMode,Java,Mathematics and Numerics
+flask_socketio,Python,Networking and Messaging
+com.ibm.component.MenuItem,Java,Graphical User Interface Design
+com.q1labs.semsources.sources.estreamer.exception.EstreamerEOFException,Java,Logging and Monitoring
+org.apache.iceberg.PartitionField,Java,Data Serialization
+tasks.dp.DPStatusTask,Java,Scheduling and Concurrency
+com.fasterxml.jackson.databind.node.MissingNode,Java,Data Serialization
+com.udacity.jdnd.course3.critter.entity.Employee,Java,Data Serialization
+com.ibm.eicore.std.dto.StandardStructureDto,Java,Data Serialization
+tasks.client.HTTPSClient,Java,Networking and Messaging
+macros::MemberLog,Perl,Logging and Monitoring
+statsmodels,Python,Mathematics and Numerics
+io.grpc.stub.StreamObserver,Java,Networking and Messaging
+org.springframework.test.annotation.DirtiesContext,Java,Testing
+Test::More,Perl,Testing
+javax.xml.stream.XMLInputFactory,Java,File Handling
+io.openliberty.jpa.data.tests.models.Person,Java,Data Serialization
+datatypes.annotations.velox.ConsumerOrg,Java,Data Serialization
+com.ibm.eicore.boi.dto.BomExportFileDto,Java,Data Serialization
+org.apache.axis2.client.ServiceClient,Java,Networking and Messaging
+com.today.entity.User,Java,Data Serialization
+com.yantra.yfc.dom.YFCDocument,Java,Data Serialization
+org.springframework.test.context.junit4.SpringRunner,Java,Testing
+./log-password-scanner.js,JavaScript,Security
+componenttest.app.FATServlet,Java,Testing
+com.ibm.eicore.boi.dto.ItemDto,Java,Data Serialization
+io.openliberty.jpa.data.tests.models.AsciiCharacter,Java,Data Serialization
+codecs,Python,Data Serialization
+supertest,TypeScript,Testing
+org.springframework.boot.test.mock.mockito.MockBean,Java,Testing
+br.com.bb.juridico.util.properties.TabelaDominiosProperties,Java,File Handling
+com.ibm.tivoli.maximo.skd.service.SKDMAPInputParamInfo,Java,Scheduling and Concurrency
+org.springframework.expression.spel.standard.SpelExpressionParser,Java,Code Analysis and Linting
+com.samsung.sec.dexter.eclipse.ui.view.DescriptionPanel,Java,Graphical User Interface Design
+ibm_key_protect_api_v2,Python,Security
+com.ibm.eicore.util.csv.CSVStreamingResponseBody,Java,File Handling
+com.fasterxml.jackson.databind.DeserializationContext,Java,Data Serialization
+std::process,Rust,Scheduling and Concurrency
+chai-as-promised,JavaScript,Testing
+io.openliberty.jpa.data.tests.models.Package,Java,Data Serialization
+panos,Python,Networking and Messaging
+io.openliberty.jpa.data.tests.models.Rebate,Java,Data Serialization
+org.apache.arrow.vector.types.pojo.FieldType,Java,Data Serialization
+xmlManagement.ExportFormat,Java,File Handling
+org.apache.axiom.om.OMFactory,Java,Data Serialization
+@carbon/react,JavaScript,Graphical User Interface Design
+org.testng.ITestResult,Java,Testing
+javax.xml.soap.SOAPHeader,Java,Networking and Messaging
+tasks.client.SSHClient,Java,Networking and Messaging
+posixpath,Python,File Handling
+javax.annotation.Nonnull,Java,Code Analysis and Linting
+DBD::ODBC,Perl,Database Management
+datatypes.velox.objects.VeloxApplication,Java,Data Serialization
+org.powermock.modules.junit4.PowerMockRunner,Java,Testing
+sqlto.h,C++,File Handling
+com.ibm.eicore.common.enums.ApplicationItemType,Java,Data Serialization
+variant,C++,Algorithms and Data Structures
+com.ibm.component.DropDownComponent,Java,Graphical User Interface Design
+org.powermock.core.classloader.annotations.PrepareForTest,Java,Testing
+Components/ModifiedCarbonComps,JavaScript,Graphical User Interface Design
+psdi.util.MXSystemException,Java,Logging and Monitoring
+org.jsoup.nodes.Element,Java,Data Serialization
+dev.galasa.zos3270.IZos3270,Java,Networking and Messaging
+com.example.demo.service.EmployeeService,Java,Data Serialization
+com.vodafone.cbox.logdigger.repositories.FileToProcessRepository,Java,Logging and Monitoring
+com.ibm.rdm.monitoring.counter.ICounterService,Java,Logging and Monitoring
+stack,C++,Algorithms and Data Structures
+monitor,Python,Logging and Monitoring
+DBI,Perl,Database Management
+requests2,Python,Networking and Messaging
+componenttest.annotation.SkipIfSysProp,Java,Testing
+sys/ipc.h,C,File Handling
+com.yantra.interop.japi.YIFClientFactory,Java,Networking and Messaging
+com.ibm.wcaz.orchestrator.model.MappingClassMember,Java,Data Serialization
+javax.xml.rpc.handler.MessageContext,Java,Networking and Messaging
+datatypes.system.RemoteSystem,Java,Networking and Messaging
+com.ibm.rdm.fronting.server.common.reqif.Specification,Java,Data Serialization
+com.ibm.json.java.JSONObject,Java,Data Serialization
+net.iss.mss.core.services.entity.Device,Java,Data Serialization
+pytest_timeout,Python,Testing
+com.ibm.eicore.lsm.dto.LessonItemRelationDto,Java,Data Serialization
+zos/ostypes.h,C,File Handling
+javax.naming.NamingException,Java,Networking and Messaging
+snowflake_connector_python,Python,Database Management
+com.ibm.maximo.automation.mobile.FrameworkFactory,Java,Graphical User Interface Design
+fcntl.h,C,File Handling
+jakarta.persistence.LockModeType,Java,Database Management
+com.ibm.wcaz.testing.evaluators.exceptions.LocalVariablesMismatchException,Java,Code Analysis and Linting
+@/components/Counter.vue,JavaScript,Graphical User Interface Design
+javax.persistence.Id,Java,Database Management
+jakarta.transaction.RollbackException,Java,Database Management
+com.ibm.rdm.fronting.server.common.reqif.SpecHierarchy,Java,Data Serialization
+java.sql.ResultSetMetaData,Java,Database Management
+com.ibm.ecm.extension.aspera.faspex.util.LogUtils,Java,Logging and Monitoring
+java.util.concurrent.atomic.AtomicLong,Java,Algorithms and Data Structures
+com.vmturbo.system.notifications.SystemNotificationsServiceOuterClass.ListLinkedNotificationsResponse,Java,Networking and Messaging
+org.springframework.transaction.annotation.Transactional,Java,Database Management
+org.apache.arrow.memory.RootAllocator,Java,Data Serialization
+io.openliberty.jpa.data.tests.models.Segment,Java,Data Serialization
+datatypes.annotations.apic.APIMVersionInfo,Java,Data Serialization
+datatypes.annotations.velox.VeloxOrganizationInfo,Java,Data Serialization
+ibm_db,Python,Database Management
+datatypes.annotations.velox.VeloxCatalogInfo,Java,Data Serialization
+psdi.security.UserInfo,Java,Security
+com.google.gson.Gson,Java,Data Serialization
+com.vmturbo.system.notifications.SystemNotificationsServiceOuterClass.UnlinkNotificationResponse,Java,Networking and Messaging
+org.junit.jupiter.api.BeforeAll,Java,Testing
+com.yantra.yfc.log.YFCLogCategory,Java,Logging and Monitoring
+sqlca.h,C,Database Management
+onepassword_keyring,Python,Security
+org.apache.axiom.om.OMElement,Java,Data Serialization
+com.vmturbo.system.notifications.SystemNotificationsServiceOuterClass.UnlinkNotificationRequest,Java,Networking and Messaging
+aiohttp,Python,Networking and Messaging
+ObjectIndexWrapper.h,Cpp,Algorithms and Data Structures
+com.ibm.clearinghouse.data.model.LockableDocument,Java,Data Serialization
+java.sql.*,Java,Database Management
+java.applet.*,Java,Graphical User Interface Design
+com.informatica.powercenter.SchedulerServiceConstants,Java,Scheduling and Concurrency
+System.Security.Cryptography,CSharp,Security
+org.openqa.selenium.WebDriver,Java,Testing
+com.fasterxml.jackson.databind.DeserializationFeature,Java,Data Serialization
+std::{fs::File,Rust,File Handling
+javax.xml.rpc.handler.HandlerInfo,Java,Networking and Messaging
+java.util.Optional,Java,Algorithms and Data Structures
+com.q1labs.semsources.sources.estreamer.exception.EstreamerAuthenticationException,Java,Logging and Monitoring
+datatypes.velox.enums.VeloxTestType,Java,Testing
+jsonschema,Python,Data Serialization
+com.ibm.rdm.fronting.server.services.reqif.diagnostics.ReqIFDiagnosticOperationResult.DiagnosticResultType,Java,Data Serialization
+sinon,JavaScript,Testing
+com.ibm.ife.service.logging.IFELogger,Java,Logging and Monitoring
+com.ibm.maximo.automation.mobile.common.AppSwitcher,Java,Graphical User Interface Design
+keyring,Python,Security
+javax.xml.soap.SOAPEnvelope,Java,Networking and Messaging
+assert_macros.h,Cpp,Algorithms and Data Structures
+alive_progress,Python,Graphical User Interface Design
+javax.sql.DataSource,Java,Database Management
+com.samsung.sec.dexter.eclipse.ui.view.OccurenceAndChangingsView,Java,Code Analysis and Linting
+javax.ws.rs.core.MediaType,Java,Networking and Messaging
+psdi.util.MockedUTUtils,Java,Testing
+com.yantra.ycp.core.YCPContext,Java,Data Serialization
+org.jsoup.nodes.Document,Java,Data Serialization
+com.q1labs.semsources.sources.estreamer.message.extendedrequestmsg.StreamingInformationMessage,Java,Networking and Messaging
+org.apache.logging.log4j.core.config.Configurator,Java,Logging and Monitoring
+com.ibm.osr.common.OSRLogger,Java,Logging and Monitoring
+javax.xml.stream.XMLStreamException,Java,File Handling
+com.ibm.eicore.common.enums.PermissionType,Java,Data Serialization
+javax.persistence.GeneratedValue,Java,Database Management
+org.apache.logging.log4j.LogManager,Java,Logging and Monitoring
+pyautogui,Python,Graphical User Interface Design
+std::fs,Rust,File Handling
+com.example.myapp.model.Question,Java,Data Serialization
+com.ibm.eicore.common.util.ApplicationMessageDtoUtil,Java,Data Serialization
+ns1,Python,Networking and Messaging
+org.springframework.test.context.ActiveProfiles,Java,Testing
+resilient,Python,Networking and Messaging
+reactor.util.retry.RetryBackoffSpec,Java,Networking and Messaging
+org.apache.commons.csv.CSVPrinter,Java,File Handling
+./test/AppTestStub,JavaScript,Testing
+wo_archer,Python,Security
+multiprocessing,Python,Scheduling and Concurrency
+com.ibm.eicore.std.dto.SnnLabelDto,Java,Data Serialization
+diagnostics,Perl,Logging and Monitoring
+io.openliberty.jpa.data.tests.models.AccountId,Java,Data Serialization
+com.ibm.cloud.sdk.core.security.Authenticator,Scala,Security
+com.ibm.eicore.accesscontrolcode.dto.AccessControlCodeDto,Java,Security
+psdi.server.MaximoThread,Java,Scheduling and Concurrency
+org.testng.annotations.AfterMethod,Java,Testing
+psdi.util.logging.MXLogger,Java,Logging and Monitoring
+psdi.security.UserInfoMocker,Java,Testing
+com.ibm.maximo.automation.mobile.common.AppSwitcher.App,Java,Graphical User Interface Design
+datatypes.system.Environment,Java,Data Serialization
+com.ibm.rdm.fronting.server.services.RRCConstants,Java,Networking and Messaging
+javax.naming.InitialContext,Java,Networking and Messaging
+com.depfa.core.security.JasyptUtility,Java,Security
+sqlite3,JavaScript,Database Management
+xmltodict,Python,Data Serialization
+tasks.client.HTTPClient,Java,Networking and Messaging
+com.ibm.grc.resmgr.repository.StringHelper,Java,Data Serialization
+org.apache.axis2.addressing.EndpointReference,Java,Networking and Messaging
+com.ibm.rdm.fronting.server.Activator,Java,Networking and Messaging
+datatypes.annotations.velox.VeloxPublishProduct,Java,Data Serialization
+com.informatica.powercenter.domain.sqljob.SQLZ_BIG_SQL_SCHEDULER_SCAN_ID,Java,Scheduling and Concurrency
+fvt_comm.h,C,File Handling
+./test/defectdata,JavaScript,Testing
+aiolib,Python,Networking and Messaging
+com.saa.auth.model.Authority,Java,Security
+concurrent,Python,Scheduling and Concurrency
+com.ibm.grc.resmgr.repository.DataPersistenceOperations,Java,Database Management
+tarfile,Python,File Handling
+java.util.Scanner,Java,File Handling
+io.openliberty.jpa.data.tests.models.PurchaseOrder,Java,Data Serialization
+org.json.JSONArray,Java,Data Serialization
+com.ibm.eicore.boi.dto.ItemXmlDto,Java,Data Serialization
+tasks.dp.SOMAClient,Java,Networking and Messaging
+reactor.util.retry.Retry,Java,Networking and Messaging
+org.jdom2.output.Format,Java,File Handling
+io.openliberty.jpa.data.tests.models.Coordinate,Java,Data Serialization
+org.springframework.expression.spel.support.StandardEvaluationContext,Java,Code Analysis and Linting
+../../../fixtures/test,TypeScript,Testing
+java.io.DataInputStream,Java,File Handling
+amqrriha.h,C,File Handling
+java.math.BigInteger,Java,Mathematics and Numerics
+java.rmi.RemoteException,Java,Networking and Messaging
+net.iss.mss.ai.client.qradarRest.arg.QradarOffenseUpdateArg,Java,Networking and Messaging
+org.apache.http.HttpResponse,Java,Networking and Messaging
+org.w3c.dom.Element,Java,Data Serialization
+com.udacity.jdnd.course3.critter.entity.Schedule,Java,Scheduling and Concurrency
+org.eclipse.jdt.core.dom.SimpleName,Java,Code Analysis and Linting
+com.fasterxml.jackson.module.paramnames.ParameterNamesModule,Java,Data Serialization
+org.apache.axiom.om.OMAbstractFactory,Java,Data Serialization
+binascii,Python,Data Serialization
+org.mockito.ArgumentCaptor,Java,Testing
+database,Python,Database Management
+main_window,Python,Graphical User Interface Design
+unistd.h,Cpp,File Handling
+io.openliberty.jpa.data.tests.models.Box,Java,Data Serialization
+org.apache.poi.xssf.usermodel.XSSFCellStyle,Java,File Handling
+org.apache.http.client.methods.HttpPost,Java,Networking and Messaging
+UnityEngine,CSharp,Graphical User Interface Design
+org.apache.poi.xssf.usermodel.XSSFCell,Java,File Handling
+psdi.server.MXServer,Java,Scheduling and Concurrency
+org.junit.jupiter.api.BeforeEach,Java,Testing
+java.io.FileReader,Java,File Handling
+com.q1labs.semsources.sources.estreamer.message.IEstreamerMessage,Java,Networking and Messaging
+rdma/rdma_verbs.h,C,Networking and Messaging
+io.openliberty.jpa.data.tests.models.Triangle,Java,Data Serialization
+java.util.concurrent.Callable,Java,Scheduling and Concurrency
+io.openliberty.jpa.data.tests.models.Line,Java,Data Serialization
+datatypes.http.HttpBean,Java,Networking and Messaging
+com.ibm.eicore.boi.dto.ItemEngRevXmlDto,Java,Data Serialization
+Config::Simple,Perl,File Handling
+jwt,Python,Security
+Shard_impl.h,Cpp,Algorithms and Data Structures
+org.apache.axiom.om.impl.builder.StAXOMBuilder,Java,File Handling
+com.ibm.eicore.boi.dto.InventorItemDto,Java,Data Serialization
+tasks.tcsupport.velox.VeloxTestBase,Java,Testing
+com.ibm.rdm.fronting.server.services.reqif.diagnostics.ReqIFDiagnosticResultParameter,Java,Testing
+tasks.tcsupport.dp.DPTestBase,Java,Testing
+datatypes.velox.enums.VeloxFormFactor,Java,Data Serialization
+datatypes.velox.objects.VeloxProduct,Java,Data Serialization
+ftplib,Python,Networking and Messaging
+jsonwebtoken::{decode,Rust,Security
+com.ibm.mobilefirstplatform.appid.utils.TestTag,Java,Testing
+gtest/gtest.h,Cpp,Testing
+com.ibm.maximo.automation.mobile.AbstractAutomationFramework,Java,Testing
+com.saa.auth.model.Role,Java,Security
+com.samsung.sec.dexter.eclipse.ui.util.EclipseUtil,Java,Code Analysis and Linting
+RocksdbUtils.h,Cpp,Database Management
+java.io.*,Java,File Handling
+../persistence/instanceDB.js,JavaScript,Database Management
+assertpy,Python,Testing
+jakarta.transaction.UserTransaction,Java,Database Management
+com.ibm.cloud.sdk.core.security.IamAuthenticator,Scala,Security
+org.w3c.dom.Node,Java,Data Serialization
+com.example.demo.model.Employee,Java,Data Serialization
+org.apache.logging.log4j.Logger,Java,Logging and Monitoring
+System.Data.SqlClient,CSharp,Database Management
+org.powermock.api.mockito.PowerMockito,Java,Testing
+org.eclipse.jdt.core.dom.MethodDeclaration,Java,Code Analysis and Linting
+com.samsung.sec.dexter.eclipse.ui.view.FunctionMetricsView,Java,Code Analysis and Linting
+com.ibm.grc.resmgr.dynamo.GrcDynamoDBManager,Java,Database Management
+org.eclipse.jdt.core.dom.ASTVisitor,Java,Code Analysis and Linting
+com.q1labs.semsources.sources.estreamer.message.EstreamerMessageType,Java,Networking and Messaging
+com.ibm.rdm.fronting.server.common.jena.core.RRMReqIF,Java,Data Serialization
+react-virtualized-auto-sizer,JavaScript,Graphical User Interface Design
+xmlManagement.Response.Import,Java,File Handling
+org.apache.arrow.vector.VectorSchemaRoot,Java,Data Serialization
+curses,Python,Graphical User Interface Design
+openssl/hmac.h,C,Security
+acutest.h,C,Testing
+org.apache.arrow.memory.BufferAllocator,Java,Data Serialization
+org.junit.jupiter.api.AfterEach,Java,Testing
+datatypes.velox.objects.VeloxProviderOrganization,Java,Data Serialization
+datatypes.annotations.apic.ValidVersionInfo,Java,Data Serialization
+com.ibm.rdm.fronting.server.common.reqif.ReqIfPackage,Java,File Handling
+org.jdom2.Document,Java,Data Serialization
+com.ibm.eicore.boi.service.EBomCreateService,Java,File Handling
+org.openqa.selenium.JavascriptExecutor,Java,Testing
+org.apache.arrow.vector.types.pojo.Schema,Java,Data Serialization
+org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest,Java,Testing
+com.ibm.eicore.boi.service.BomExportService,Java,File Handling
+com.ibm.eicore.boi.dto.ItemStructureEngXmlDto,Java,Data Serialization
+com.hp.hpl.jena.rdf.model.Resource,Java,Data Serialization
+carbon-addons-iot-react,JavaScript,Graphical User Interface Design
+db2.h,C,Database Management
+datatypes.annotations.velox.VeloxDraftApi,Java,Data Serialization
+io.openliberty.jpa.data.tests.models.CityId,Java,Data Serialization
+com.ibm.rdm.fronting.server.services.uid.MappingValue,Java,Data Serialization
+base64::{Engine,Rust,Data Serialization
+com.yantra.yfs.core.YFSSystem,Java,Database Management
+jakarta.persistence.EntityManager,Java,Database Management
+com.ibm.rdm.fronting.server.services.vvc.IJAFConfigurationManagementService,Java,Networking and Messaging
+java.util.Base64,Java,Data Serialization
+dump_file_support,Python,File Handling
+requests_futures,Python,Networking and Messaging
+org.openqa.selenium.support.ui.WebDriverWait,Java,Testing
+com.saa.auth.dto.UserIdDTO,Java,Data Serialization
+org.apache.axis2.transport.http.impl.httpclient3.HttpTransportPropertiesImpl,Java,Networking and Messaging
+std::io::{Error,Rust,File Handling
+curses.h,C++,Graphical User Interface Design
+org.apache.http.conn.ssl.NoopHostnameVerifier,Java,Security
+com.mendix.systemwideinterfaces.core.IMendixObject,Java,Database Management
+com.google.gson.JsonArray,Java,Data Serialization
+java.net.http.HttpRequest,Java,Networking and Messaging
+importlib,Python,Code Analysis and Linting
+ibm.maximo.optimization.milp.solve.DispatchingInstance,Java,Algorithms and Data Structures
+opentelemetry/trace/tracer.h,C++,Logging and Monitoring
+fcntl,Python,File Handling
+org.apache.thrift.protocol.TProtocol,Java,Networking and Messaging
+com.ghgande.j2mod.modbus.ModbusException,Java,Testing
+org.apache.parquet.hadoop.example.GroupWriteSupport,Java,Data Serialization
+lombok.SneakyThrows,Java,Code Analysis and Linting
+dpsafecast.h,C++,Logging and Monitoring
+java.rmi.*,Java,Networking and Messaging
+org.apache.commons.lang3.exception.ExceptionUtils,Java,Testing
+java.lang.reflect.Field,Java,Code Analysis and Linting
+ldap3,Python,Networking and Messaging
+std::time::Duration,Rust,Scheduling and Concurrency
+constructs,Python,Algorithms and Data Structures
+io.cucumber.java.en.Then,Java,Testing
+thread,C++,Scheduling and Concurrency
+org.apache.commons.io.IOUtils,Java,File Handling
+io.appium.java_client.AppiumDriver,Java,Testing
+sqlite3.h,C,Database Management
+com.mendix.systemwideinterfaces.core.meta.IMetaPrimitive,Java,Database Management
+mutex,C++,Scheduling and Concurrency
+faker,Python,Testing
+com.ibm.db2.jcc.DB2SQLJDBCDriver,Java,Database Management
+pymodbus,Python,Networking and Messaging
+com.ibm.maximo.technician.setupdata.SetupData.WoStatus,Java,Database Management
+Microsoft.UI.Xaml.Controls,C#,Graphical User Interface Design
+org.apache.http.client.methods.HttpGet,Java,Networking and Messaging
+frus,Python,Algorithms and Data Structures
+javax.xml.bind.DatatypeConverter,Java,Data Serialization
+com.fasterxml.jackson.annotation.JsonIgnoreProperties,Java,Data Serialization
+dpEventTraceMacro.h,C++,Logging and Monitoring
+java.lang.reflect.Field,Java,Code Analysis and Linting
+com.ibm.replication.model.ChangeLogFilter,Java,Database Management
+sys/sysinfo.h,C,File Handling
+com.ibm.bi.dml.runtime.matrix.data.InputInfo,Java,Data Serialization
+com.ibm.maximo.technician.setupdata.SetupData.ItemStatus,Java,Database Management
+lombok.Setter,Java,Code Analysis and Linting
+com.ibm.zos.net.ftp.FTPClient,Java,Networking and Messaging
+com.ibm.replication.utils.ConnectionUtil,Java,Database Management
+java.util.concurrent.TimeUnit,Java,Scheduling and Concurrency
+ibm_watson_machine_learning,Python,Algorithms and Data Structures
+org.apache.logging.log4j.core.config.plugins.Plugin,Java,Logging and Monitoring
+ibm.maximo.optimization.milp.solve.Enums.LogLevel,Java,Algorithms and Data Structures
+com.mendix.systemwideinterfaces.core.meta.IMetaPrimitive.PrimitiveType,Java,Database Management
+java.sql.SQLWarning,Java,Database Management
+org.testng.annotations.Guice,Java,Testing
+io.cucumber.java.en.Given,Java,Testing
+prop-types,JavaScript,Code Analysis and Linting
+com.browserstack.local.Local,Java,Testing
+java.awt.event.*,Java,Graphical User Interface Design
+com.ghgande.j2mod.modbus.msg.ReadInputRegistersResponse,Java,Networking and Messaging
+bitcoin,Python,Security
+java.security.GeneralSecurityException,Java,Security
+db2,Python,Database Management
+java.net.ProtocolException,Java,Networking and Messaging
+psdi.util.*,Java,Logging and Monitoring
+pthread.h,C,Scheduling and Concurrency
+drFileStore.hpp,C++,File Handling
+serde_json::{Value,Rust,Data Serialization
+psdi.server.*,Java,Database Management
+uptrace,Python,Logging and Monitoring
+org.apache.cordova.LOG,Java,Logging and Monitoring
+pinecone,Python,Algorithms and Data Structures
+com.google.gson.JsonObject,Java,Data Serialization
+org.testng.annotations.AfterGroups,Java,Testing
+Math::BaseCalc,Perl,Mathematics and Numerics
+com.fasterxml.jackson.core.JsonFactory,Java,Data Serialization
+telnetlib,Python,Networking and Messaging
+drPacketCapture.hpp,C++,File Handling
+org.openqa.selenium.chrome.ChromeOptions,Java,Testing
+pthread.h,C++,Scheduling and Concurrency
+arpa/inet.h,C++,Networking and Messaging
+com.ibm.wfm.utils.mappers.annotations.MappedType,Java,Code Analysis and Linting
+sys/ldr.h,C,File Handling
+org.apache.thrift.transport.TTransport,Java,Networking and Messaging
+org.testng.annotations.BeforeTest,Java,Testing
+io.cucumber.java.en.When,Java,Testing
+ring::signature::{EcdsaKeyPair,Rust,Security
+org.testcontainers.containers.BrowserStackLocalContainer,Java,Testing
+com.ghgande.j2mod.modbus.msg.ReadInputRegistersRequest,Java,Networking and Messaging
+cstdio,C++,File Handling
+oci,Python,Database Management
+../services/shared/data-model/practitioner-model,TypeScript,Data Serialization
+com.ibm.zos.net.ftp.FTPException,Java,Networking and Messaging
+javax.net.ssl.TrustManagerFactory,Java,Security
+sys/device.h,C,File Handling
+dmSchedulerPriority.hpp,C++,Scheduling and Concurrency
+org.apache.logging.log4j.core.pattern.PatternConverter,Java,Logging and Monitoring
+memory_profiler,Python,Logging and Monitoring
+org.apache.http.client.methods.CloseableHttpResponse,Java,Networking and Messaging
+org.testng.annotations.Optional,Java,Testing
+org.testcontainers.containers.BrowserStackRemoteWebDriver,Java,Testing
+pwd,Python,File Handling
+gareport,Python,Logging and Monitoring
+ibm_cloud_sdk_dns_services,Python,Networking and Messaging
+fib,Python,Mathematics and Numerics
+opentelemetry/trace/span_context.h,C++,Logging and Monitoring
+org.apache.iceberg.FileScanTask,Java,Data Serialization
+com.ibm.bi.dml.runtime.matrix.data.OutputInfo,Java,Data Serialization
+org.apache.log4j.LogManager,Java,Logging and Monitoring
+org.springframework.vault.core.VaultTemplate,Java,Security
+TM1py,Python,Data Serialization
+grp,Python,File Handling
+org.springframework.http.client.HttpComponentsClientHttpRequestFactory,Java,Networking and Messaging
+org.openqa.selenium.firefox.FirefoxDriver,Java,Testing
+iterator,C++,Algorithms and Data Structures
+com.ibm.bi.dml.test.integration.TestConfiguration,Java,Testing
+com.ghgande.j2mod.modbus.io.ModbusSerialTransaction,Java,Networking and Messaging
+svc_storage,Python,File Handling
+org.apache.iceberg.StructLike,Java,Data Serialization
+org.apache.thrift.transport.TTransportException,Java,Networking and Messaging
+java.net.http.HttpResponse,Java,Networking and Messaging
+Cwd,Perl,File Handling
+org.testcontainers.junit.jupiter.Container,Java,Testing
+org.bouncycastle.math.ec.custom.sec.SecP256K1Curve,Java,Security
+serde_json::json,Rust,Data Serialization
+ibm.maximo.optimization.model.BaseBusinessModel,Java,Algorithms and Data Structures
+timeit,Python,Testing
+org.openqa.selenium.remote.DesiredCapabilities,Java,Testing
+org.apache.parquet.hadoop.ParquetWriter,Java,File Handling
+org.testng.annotations.DependsOnGroups,Java,Testing
+urllib,Python,Networking and Messaging
+FindBin,Perl,File Handling
+javax.swing.*,Java,Graphical User Interface Design
+qiskit,Python,Mathematics and Numerics
+org.apache.logging.log4j.core.pattern.ConverterKeys,Java,Logging and Monitoring
+org.apache.iceberg.PartitionSpec,Java,Data Serialization
+base64ct::{Base64,Rust,Data Serialization
+io.appium.java_client.android.AndroidDriver,Java,Testing
+org.apache.logging.log4j.core.pattern.LogEventPatternConverter,Java,Logging and Monitoring
+javax.persistence.*,Java,Database Management
+java.beans.PropertyDescriptor,Java,Code Analysis and Linting
+dpStream.h,C++,Logging and Monitoring
+com.ibm.zos.net.ftp.FTPInterfaceErrorException,Java,Networking and Messaging
+kmipprotocol::types::*,Rust,Security
+com.ibm.bi.dml.runtime.controlprogram.context.ExecutionContext,Java,Algorithms and Data Structures
+psdi.mbo.*,Java,Database Management
+spawn.h,C++,Scheduling and Concurrency
+botocore,Python,Networking and Messaging
+com.ibm.zos.net.ftp.FTPLine,Java,Networking and Messaging
+org.testng.annotations.Listeners,Java,Testing
+tweepy,Python,Networking and Messaging
+org.apache.http.entity.mime.MultipartEntityBuilder,Java,Networking and Messaging
+cf.h,C,File Handling
+zipfile,Python,File Handling
+java.util.TreeMap,Java,Algorithms and Data Structures
+react-select,JavaScript,Graphical User Interface Design
+sys/time.h,C,Scheduling and Concurrency
+org.apache.commons.logging.Log,Java,Logging and Monitoring
+cProfile,Python,Logging and Monitoring
+graphitesend,Python,Logging and Monitoring
+org.springframework.web.client.RestTemplate,Java,Networking and Messaging
+condition_variable,C++,Scheduling and Concurrency
+org.apache.commons.logging.LogFactory,Java,Logging and Monitoring
+opentelemetry/trace/span.h,C++,Logging and Monitoring
+cx_Oracle,Python,Database Management
+java.util.LinkedHashMap,Java,Algorithms and Data Structures
+com.ibm.bi.dml.runtime.controlprogram.caching.MatrixObject.UpdateType,Java,Algorithms and Data Structures
+java.nio.charset.StandardCharsets,Java,File Handling
+com.mendix.nativetemplate.community.mtbf.CalculateMTBFScore,Java,Algorithms and Data Structures
+java.nio.file.attribute.PosixFilePermissions,Java,File Handling
+java.nio.file.attribute.PosixFilePermission,Java,File Handling
+org.apache.thrift.TException,Java,Networking and Messaging
+dynamic_vector_compression/dynamic_vector_compression.dart;,Dart,Algorithms and Data Structures
+arpa/nameser.h,C++,Networking and Messaging
+java.security.Provider,Java,Security
+"""$Bin/../lib""",Perl,File Handling
+org.testng.annotations.BeforeGroups,Java,Testing
+io.appium.java_client.Location,Java,Testing
+sstream,C++,File Handling

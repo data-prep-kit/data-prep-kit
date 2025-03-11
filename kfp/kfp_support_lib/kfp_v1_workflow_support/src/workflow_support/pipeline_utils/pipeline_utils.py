@@ -97,7 +97,11 @@ class PipelinesUtils:
         :param params: pipeline parameters
         :return: the id of the run object
         """
-        job_name = pipeline.name + " " + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        name_prefix = params.pop("name", None)
+        if name_prefix is not None and name_prefix.strip() != "":
+            job_name = name_prefix + " " + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        else:
+            job_name = pipeline.name + " " + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
         try:
             run_id = self.kfp_client.run_pipeline(
                 experiment_id=experiment.id, job_name=job_name, pipeline_id=pipeline.id, params=params

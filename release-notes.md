@@ -1,5 +1,35 @@
 # Data Prep Kit Release notes
 
+## Release 1.1.0 - 3/10/2025
+
+## General
+
+1. Updated tutorials and documentations
+1. Added GneissWeb Transforms, GneissWeb recipe and support for XML ingest in Docling 
+1. Bug fixes for Windows Support, KFP workflow pipelines, and CI/CD workflow
+
+### Recipes
+1. Updated RAG Notebooks for PDF and HTML
+1. New GneissWeb Notebook showcasing advanced data prep operations for improved model performance
+1. New Agentic Notebook showcasing integration with Langchain and Llama-index
+
+### Transforms
+1. GneissWeb transforms: extreme tokenize, readability, gneissweb classification, Rep Removal, Tokenization2Arrow, Bloom
+1. Code Profiler: Added Support for CSharp
+1. Header Cleanser: Enhanced with multi-processing support
+1. Fuzzy Dedup: Support for Windows Folder names
+1. PDF to Parquet: Update docling to 2.25 for ingesting XML/JATS
+1. HAP: Assign 0 score for empty content
+
+### data-prep-toolkit libraries (python, ray, spark) 
+
+1. Disabled fcntl on Windows
+
+### KFP Pipelines
+
+1. Updated super pipeline KFPv2
+
+
 ## Release 1.0.0 - 1/24/2025
 
 ## General

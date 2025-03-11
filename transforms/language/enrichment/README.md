@@ -1,11 +1,11 @@
 # Text Enrichment
 
 ## Summary 
-This transform computes a number of features that can be later used to estimate the data quality.
+This transform computes a number of features that can be later used to estimate the data quality. 
 The input table must contain at least two columns: the text content (`text` by default), and the language identifier (`lang`).
 Both these columns can be specified with --enrichment_content_column_name and --enrichment_lang_column_name.
 To facilitate multi-faceted processing the output column names can renamed with a common prefix, specified with --enrichment_output_column_prefix.
-Additionally, each column can be rename using an the option --enrichment_NAME_column_name, where NAME is one of the labels below.
+Additionally, each column can be renamed using an the option --enrichment_NAME_column_name, where NAME is one of the labels below.
 If a column is renamed to the empty string, it will not be set in the output.
 
 The added columns are: 

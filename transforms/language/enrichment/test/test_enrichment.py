@@ -28,7 +28,6 @@ class TestEnrichmentTransform(AbstractTransformLauncherTest):
         basedir = "../test-data"
         basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))
         cli = {
-                "run_locally": True,
                 "enrichment_content_column_name": "text",
                 "enrichment_lang_column_name": "lang",
                 "enrichment_output_column_prefix": "e_",

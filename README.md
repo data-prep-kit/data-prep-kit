@@ -2,7 +2,7 @@
 
 <h1 align="center">Data Prep Kit</h1>
 
-Data Prep Kit is a community-driven project that simplifies unstructured data preparation for LLM application development. It addresses the growing challenge of preparing diverse data (language, code, vision, multimodal) for such LLM applications as: Generative AI Data Preparation, LLM Data Engineering, RAG Pipeline Data Preparation, LLM Pretraining Data Optimization, Explainable AI Data Preparation, Multimodal LLM Data Preparation, Open Source LLM Tooling, Fine-tuning, and Instruction-tuning applications. The modules in the kit have been tested extensively in producing pre-training datasets for the [Granite open source LLM models](https://huggingface.co/ibm-granite) and in creating [IBM GneissWeb](https://research.ibm.com/blog/gneissweb-for-granite-training) dataset. 
+Accelerate your LLM development with Data Prep Kit: a community-powered solution for streamlined unstructured multimodal data preparation. Tackle Generative AI, RAG Pipeline Data Preparation, fine-tuning, and multimodal challenges with our proven modules, validated by the creation of [Granite open source LLM models](https://huggingface.co/ibm-granite) and [GneissWeb](https://research.ibm.com/blog/gneissweb-for-granite-training) dataset. Leverage trending techniques like LLM Data Engineering and Explainable AI, all within an open-source framework.
 
 
 ## Features <a name = "features"></a>

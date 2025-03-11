@@ -1,7 +1,18 @@
 # New Features & Enhancements
 
-- We are working hard with your feedback and DPK 1.0.0 alpha has been released with simplified APIs for language transforms. Check out [this page](https://github.com/IBM/data-prep-kit/blob/725fdf65989432280a59fbfc98ad3c7cab85c23a/transforms/transforms-1.0-lang.ipynb) for example implementation of some of these transforms.
-- [HAP](https://github.com/IBM/data-prep-kit/blob/dev/examples/notebooks/hap/generate_hap_score_csv.ipynb) and [PII](https://github.com/IBM/data-prep-kit/blob/dev/examples/notebooks/PII/Run_your_first_PII_redactor_transform.ipynb) recipe notebooks contributed by our partners in GSI team are now merged.
+
+- DPK 1.1.0 has been released and here is a quick preview for New Features & Enhancements:
+    - Added GneissWeb Transforms - [extreme tokenized](transforms/language/extreme_tokenized/README.md), [readability](transforms/language/readability/README.md), [gneissweb classification](transforms/language/gneissweb_classification/README.md), [Rep Removal](transforms/universal/rep_removal/README.md), [Tokenization2Arrow](transforms/universal/tokenization2arrow/README.md), [Bloom](transforms/universal/bloom/README.md)
+    - Added [GneissWeb Notebook](examples/notebooks/GneissWeb/GneissWeb.ipynb) showcasing advanced data prep operations for improved model performance
+    - [PDF to Parquet](transforms/language/pdf2parquet/README.md): Updated docling to 2.25 for ingesting XML/JATS
+    - New [Agentic Notebooks](examples/agentic/) showcasing integration with Langchain and Llama-index
+    - Updated embedding models for RAG notebooks
+    - [Code Profiler](transforms/code/code_profiler/README.md): Added Support for CSharp
+    - [Header Cleanser](transforms/code/header_cleanser/python/README.md): Enhanced with multi-processing support
+    - [Fuzzy Dedup](transforms/universal/fdedup/README.md): Added Support for Windows Folder names
+    - [HAP](transforms/universal/hap/README.md) update: Model now assigns 0 score for empty content
+    - Disabled fcntl on Windows
+    - Updated super pipeline KFPv2
 
 # Data Prep Kit Resources
 

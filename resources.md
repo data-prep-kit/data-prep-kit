@@ -1,18 +1,7 @@
 # New Features & Enhancements
 
 
-- DPK 1.1.0 has been released and here is a quick preview for New Features & Enhancements:
-    - Added GneissWeb Transforms - [extreme tokenized](transforms/language/extreme_tokenized/README.md), [readability](transforms/language/readability/README.md), [gneissweb classification](transforms/language/gneissweb_classification/README.md), [Rep Removal](transforms/universal/rep_removal/README.md), [Tokenization2Arrow](transforms/universal/tokenization2arrow/README.md), [Bloom](transforms/universal/bloom/README.md)
-    - Added [GneissWeb Notebook](examples/notebooks/GneissWeb/GneissWeb.ipynb) showcasing advanced data prep operations for improved model performance
-    - [PDF to Parquet](transforms/language/pdf2parquet/README.md): Updated docling to 2.25 for ingesting XML/JATS
-    - New [Agentic Notebooks](examples/agentic/) showcasing integration with Langchain and Llama-index
-    - Updated embedding models for RAG notebooks
-    - [Code Profiler](transforms/code/code_profiler/README.md): Added Support for CSharp
-    - [Header Cleanser](transforms/code/header_cleanser/python/README.md): Enhanced with multi-processing support
-    - [Fuzzy Dedup](transforms/universal/fdedup/README.md): Added Support for Windows Folder names
-    - [HAP](transforms/universal/hap/README.md) update: Model now assigns 0 score for empty content
-    - Disabled fcntl on Windows
-    - Updated super pipeline KFPv2
+- DPK 1.1.0 has been released. For details on the new features and enhancements, please see [this](release-notes.md).
 
 # Data Prep Kit Resources
 

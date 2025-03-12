@@ -14,7 +14,7 @@
 1. New Agentic Notebook showcasing integration with Langchain and Llama-index
 
 ### Transforms
-1. GneissWeb transforms: extreme tokenize, readability, gneissweb classification, Rep Removal, Tokenization2Arrow, Bloom
+1. GneissWeb transforms: [extreme tokenized](transforms/language/extreme_tokenized/README.md), [readability](transforms/language/readability/README.md), [gneissweb classification](transforms/language/gneissweb_classification/README.md), [Rep Removal](transforms/universal/rep_removal/README.md), [Tokenization2Arrow](transforms/universal/tokenization2arrow/README.md), [Bloom](transforms/universal/bloom/README.md)
 1. Code Profiler: Added Support for CSharp
 1. Header Cleanser: Enhanced with multi-processing support
 1. Fuzzy Dedup: Support for Windows Folder names

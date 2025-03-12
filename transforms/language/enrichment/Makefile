@@ -20,7 +20,8 @@ TEST_PARAMS?=--enrichment_content_column_name text \
 installed.txt: requirements.txt
 	make venv
 	source venv/bin/activate && \
-		python -m pip list > $@ \
+		python -m pip install jupyterlab notebook pandas && \
+		python -m pip list > $@ && \
 	deactivate
 
 run-cli-sample: installed.txt 

@@ -25,7 +25,6 @@ class EnrichmentRayRuntime(RayTransformRuntimeConfiguration):
     def __init__(self):
         super().__init__(transform_config=EnrichmentConfiguration())
 
-
 if __name__ == "__main__":
     launcher = RayTransformLauncher(EnrichmentRayRuntime())
     logger.info("Launching enrichment transform")

@@ -53,7 +53,6 @@ Current TSC members (in alphabetic order):
 
 - [Shahrokh Daijavad](https://github.com/shahrokhDaijavad)
 - [Aanchal Goyal](https://github.com/agoyal26)
-- [Yousaf Shah](https://github.com/yousafshah)
 - [Maroun Touma](https://github.com/touma-I)
 
 One of the TSC members is the chairperson of the TSC and should ensure the smooth running of the TSC. They do not have more voting power than other TSC members.

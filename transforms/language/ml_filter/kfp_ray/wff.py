@@ -4,18 +4,18 @@ from kubernetes import client as k8s_client
 ops={}
 short_name = "ml_filter"
 description = "filter using a per-language table of conditions"
+task_image = f"{short_name}-ray:latest"
 def compute_exec_params_func(
-    worker_options: str,
-    actor_options: str,
+    worker_options: dict,
+    actor_options: dict,
     data_s3_config: str,
-    data_lh_config: str,
     data_max_files: int,
     data_num_samples: int,
     data_checkpointing: bool,
     data_files_to_use: str,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: str,
+    runtime_code_location: dict,
     ml_filter_column_prefix: str,
     ml_filter_lang_column_name: str,
     ml_filter_config: str,
@@ -26,7 +26,6 @@ def compute_exec_params_func(
         "runtime_num_workers": KFPUtils.default_compute_execution_params(worker_options, actor_options),
         "runtime_worker_options": actor_options,
         "data_s3_config": data_s3_config,
-        "data_lh_config": data_lh_config,
         "data_max_files": data_max_files,
         "data_num_samples": data_num_samples,
         "data_checkpointing": data_checkpointing,
@@ -45,19 +44,18 @@ def compute_exec_params_func(
     )
 def ml_filter(
     ray_name: str = "ml_filter-kfp-ray",
-    ray_head_options: str = "{\"cpu\": 1, \"memory\": 4, \"image_pull_secret\": \"prod-all-icr-io\", \"image\": \"us.icr.io/cil15-shared-registry/preprocessing-pipelines/ml_filter-ray:0.3.1\" }",
-    ray_worker_options: str = "{\"replicas\": 2, \"max_replicas\": 2, \"min_replicas\": 2, \"cpu\": 4, \"memory\": 16, \"image_pull_secret\": \"prod-all-icr-io\", \"image\": \"us.icr.io/cil15-shared-registry/preprocessing-pipelines/ml_filter-ray:0.3.1\"}",
+    ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image },
+    ray_worker_options: dict = {"replicas": 2, "max_replicas": 2, "min_replicas": 2, "cpu": 4, "memory": 16, "image": task_image},
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
-    data_lh_config = "{'lh_environment': 'STAGING', 'input_table': 'ibmdatapile.academic.ieee', 'input_dataset': '', 'input_version': 'main', 'output_table': 'processed.ibmdatapile.academic.ieee.lang_id_kfp_0729_01', 'output_path': 'lh-test/tables/processed/ibmdatapile/academic/ieee/lang_id_kfp_0729_01', 'token': 'YOUR_LAKEHOUSE_TOKEN'}",
     data_s3_config: str = "",
-    data_s3_access_secret: str = "cos-lh-access",
+    data_s3_access_secret: str = "s3-secret",
     data_max_files: int = -1,
     data_num_samples: int = -1,
     data_checkpointing: bool = False,
     data_files_to_use: str = "['.parquet']",
-    runtime_actor_options: str = "{'num_cpus': 0.8}",
+    runtime_actor_options: dict = {'num_cpus': 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: str = "{'github': 'github', 'commit_hash': '12345', 'path': 'path'}",
+    runtime_code_location: dict = {'github': 'github', 'commit_hash': '12345', 'path': 'path'},
     ml_filter_column_prefix: str = "",
     ml_filter_lang_column_name: str = "lang",
     ml_filter_config: str = "cleansing-config.yaml",
@@ -71,7 +69,6 @@ def ml_filter(
             worker_options=ray_worker_options,
                 actor_options=runtime_actor_options,
                 data_s3_config=data_s3_config,
-                data_lh_config=data_lh_config,
                 data_max_files=data_max_files,
                 data_num_samples=data_num_samples,
                 data_checkpointing=data_checkpointing,
@@ -107,4 +104,4 @@ def ml_filter(
         ComponentUtils.add_settings_to_component(execute_job, ONE_WEEK_SEC)
         ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
         execute_job.after(ray_cluster)
-    dsl.get_pipeline_conf().set_image_pull_secrets([k8s_client.V1ObjectReference(name="prod-all-icr-io")])
+    dsl.get_pipeline_conf().set_image_pull_secrets([k8s_client.V1ObjectReference(name="image-pull-secrets")])

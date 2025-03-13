@@ -23,7 +23,7 @@ import wff
 task_image = f"quay.io/dataprep1/data-prep-kit/{wff.short_name}-ray:latest"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:0.2.3"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
 # path to kfp component specifications files
 component_spec_path = "../../../../kfp/kfp_ray_components/"
@@ -72,5 +72,7 @@ wff.run_id = run_id
 TASK_NAME: str = wff.short_name
 
 if __name__ == "__main__":
+    if len(sys.argv) > 2:
+        wff.task_image = sys.argv[2]
     # Compiling the pipeline
     compiler.Compiler().compile(getattr(wff, wff.short_name), sys.argv[1])

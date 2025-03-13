@@ -106,6 +106,18 @@ Contributors are welcome to add new modules to expand to other data modalities a
 
 Please feel free to connect with us using the [discussion](https://github.com/IBM/data-prep-kit/discussions) section.
 
+## MAINTAINERS
+
+For a list of current maintainers, please [see](MAINTAINERS.md).
+
+## License
+
+All source files must include a Copyright and License header. If you would like to see the detailed LICENSE click [here](LICENSE).
+
+## CHANGELOG 
+
+For the history of releases and changes, please [see](release-notes.md).
+
 ## Resources
 
 [Papers, talks, presentations and tutorials](resources.md).

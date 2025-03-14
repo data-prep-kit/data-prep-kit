@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
     data_access = DataAccessLocal()
     table, _ = data_access.get_table(os.path.join(input_folder, "sample_1.parquet"))
-    print(f"input table: {table}\n")
+    print(f"input table: {table}")
     # Transform the table
     table_list, metadata = transform.transform(table)
-    print(f"output table: {table_list}")
+    print(f"\noutput table: {table_list}")

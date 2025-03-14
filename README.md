@@ -1,3 +1,5 @@
+<h1 align="center">Data Prep Kit</h1>
+
 <div align="center">
 
 [![arXiv](https://img.shields.io/badge/arXiv-24009.18164-b31b1b.svg)](https://arxiv.org/abs/2409.18164)
@@ -9,8 +11,6 @@
 
   </div>
 
-
-<h1 align="center">Data Prep Kit</h1>
 
 Data Prep Kit accelerates unstructured data preparation for LLM app developers. Developers can use Data Prep Kit to cleanse, transform, and enrich use case-specific unstructured data to pre-train LLMs, fine-tune LLMs, instruct-tune LLMs, or build retrieval augmented generation (RAG) applications for LLMs. Data Prep Kit can readily scale from a commodity laptop all the way to data center scale.
 

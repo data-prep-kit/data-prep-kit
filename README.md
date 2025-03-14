@@ -2,7 +2,8 @@
 
 <div align="center">
 
-[![arXiv](https://img.shields.io/badge/arXiv-24009.18164-b31b1b.svg)](https://arxiv.org/abs/2409.18164)
+[![arXiv](https://img.shields.io/badge/arXiv-2409.18164-b31b1b.svg)](https://arxiv.org/abs/2409.18164)
+[![Docs](https://img.shields.io/badge/docs-live-brightgreen)](https://data-prep-kit.github.io/data-prep-kit/)
 [![PyPI version](https://img.shields.io/pypi/v/data-prep-toolkit-transforms)](https://pypi.org/project/data-prep-toolkit-transforms/)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Apache 2.0](https://img.shields.io/github/license/data-prep-kit/data-prep-kit)](https://opensource.org/license/apache-2-0)

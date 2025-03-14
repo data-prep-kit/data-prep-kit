@@ -76,7 +76,7 @@ REPLICATE_API_TOKEN=your REPLICATE token goes here
 
 ### 5.2 - Run the query code
 
-Code: [rag_4_query_replicate.ipynb](rag_4_query_replicate.ipynb)
+Code: [rag_4_query_LLM.ipynb](rag_4_query_LLM.ipynb)
 
 
 

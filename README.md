@@ -1,3 +1,13 @@
+<div align="center">
+
+[![arXiv](https://img.shields.io/badge/arXiv-24009.18164-b31b1b.svg)](https://arxiv.org/abs/2409.18164)
+[![PyPI version](https://img.shields.io/pypi/v/data-prep-toolkit-transforms)](https://pypi.org/project/data-prep-toolkit-transforms/)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![Apache 2.0](https://img.shields.io/github/license/data-prep-kit/data-prep-kit)](https://opensource.org/license/apache-2-0)
+[![GitHub Issues](https://img.shields.io/github/issues/kylelobo/The-Documentation-Compendium.svg)](https://github.com/data-prep-kit/data-prep-kit/issues)
+  [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/kylelobo/The-Documentation-Compendium.svg)](https://github.com/data-prep-kit/data-prep-kit/pulls)
+
+  </div>
 
 
 <h1 align="center">Data Prep Kit</h1>

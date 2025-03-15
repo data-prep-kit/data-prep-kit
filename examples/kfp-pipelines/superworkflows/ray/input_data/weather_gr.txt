@@ -1,0 +1,11 @@
+Begriffliche Abgrenzung
+
+Das Wetter charakterisiert den Zustand der Atmosphäre an einem bestimmten Ort und zu einem bestimmten Zeitpunkt. Kennzeichnend sind die meteorologischen Elemente Strahlung, Luftdruck, Lufttemperatur, Luftfeuchtigkeit und Wind, sowie die daraus ableitbaren Elemente Bewölkung, Niederschlag, Sichtweite etc. Das Wetter ist das augenblickliche Bild eines Vorganges (Wettergeschehen), das sich hauptsächlich in der Troposphäre abspielt. Es kann sich – im Gegensatz zur Wetterlage und Witterung – mehrmals täglich ändern.
+
+    Wetterlage: Zustand der Atmosphäre in einem größeren Gebiet und zu einem bestimmten Zeitpunkt. Die Wetterlage ändert sich von Tag zu Tag mehr oder weniger stark.
+    Witterung: Der allgemeine, durchschnittliche oder auch vorherrschende Charakter des Wetters an einem Ort über einen Zeitraum mehrerer Tage oder Wochen betrachtet. Besonders in Betracht gezogen werden dabei die fühlbaren Wetterelemente wie Niederschlag, Temperatur, Wind und Luftfeuchtigkeit.
+    Klima: Der für eine Region (bzw. eine größere Klimazone) typische jährliche Ablauf der Witterung, zum Beispiel mildes, raues oder winterfeuchtes Klima. Detailliert beschreiben das Monatskurven von Temperatur und Niederschlägen, die sich aus Wetterstatistiken vieler Jahre bis Jahrzehnte ergeben. Wichtigste Klimaparameter sind unter anderem die Solarkonstante, Strahlungsbilanz, fühlbare und latente Wärmeströme, Wärmeflüsse der Ozeane, allgemeine Zirkulation der Atmosphäre, sowie große Vulkanausbrüche.
+    Klimaänderung: eine langfristige, tiefgreifende Veränderung in größeren Gebieten oder Klimazonen. So wird sich die globale Erwärmung in Sibirien und in der Sahelzone voraussichtlich stark auswirken (Auftauen von Permafrost-Böden, zunehmende Trockenheit), in Mitteleuropa vermutlich kaum. Gegen diese Annahme sprechen die Hochwasser in West- und Mitteleuropa im Jahr 2021.
+    Ein Wetterumschwung ist eine – verhältnismäßig rasche bzw. plötzliche (innerhalb von Minuten bis Stunden) – Änderung der Wetterlage in einem bestimmten Gebiet.
+
+Das Wetter kann man als ein System betrachten, das vor allem von den Elementen Temperatur, Niederschlag, Bewölkung, Wind und Luftdruck geprägt wird. Zwischen einigen der Elemente bestehen Zusammenhänge (Korrelation oder Kausalität), zwischen anderen nicht.

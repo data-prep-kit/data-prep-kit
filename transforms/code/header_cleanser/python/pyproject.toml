@@ -1,6 +1,6 @@
 [project]
 name = "dpk_header_cleanser_transform_python"
-version = "0.2.4.dev0"
+version = "0.2.5.dev0"
 requires-python = ">=3.10,<3.13"
 description = "License and Copyright Removal Transform for Python"
 license = {text = "Apache-2.0"}

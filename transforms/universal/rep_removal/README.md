@@ -43,7 +43,7 @@ You can install rust following instructions [here](https://www.rust-lang.org/too
 you can find information for installing [here](https://gcc.gnu.org/install/).
 
 ## Running on M1 Mac
-To run the Transform on an M1 mac, there are a few prerequisites you must run to get started. 
+To run the Transform on an M1 mac, two more things must be considered: 
 
 A) Install a compatible **psutils** library in the environment (uninstall if already present):
 ```shell
@@ -71,6 +71,9 @@ pip install --no-binary :all: psutil
 [//]: # (cargo install --path $PACKAGE_LOCATION/dpk_rep_removal/rust)
 
 [//]: # (```)
+
+B) If the rep_removal crashes on your machine with an 'out of memory' issue - we recommend using the [resize](https://github.com/IBM/data-prep-kit/tree/dev/transforms/universal/resize) transform to make the input file(s) smaller.
+ 
 ## Input Parameters
 
 The transform can be initialized with the following parameters:

@@ -38,11 +38,11 @@ component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", "../../../../../kfp/k
 
 run_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
 
-ededup_image = "quay.io/dataprep1/data-prep-kit/ededup-ray:latest"
-lang_id_image = "quay.io/dataprep1/data-prep-kit/lang_id-ray:2.2"
-doc_id_image = "quay.io/dataprep1/data-prep-kit/doc_id-ray:latest"
-filter_image = "quay.io/dataprep1/data-prep-kit/filter-ray:latest"
-doc_quality_image = "quay.io/dataprep1/data-prep-kit/doc_quality-ray:latest"
+ededup_image = "quay.io/dataprep1/data-prep-kit/ededup-ray:0.2.5.kubecon"
+lang_id_image = "quay.io/dataprep1/data-prep-kit/lang_id-ray:0.2.5.kubecon"
+doc_id_image = "quay.io/dataprep1/data-prep-kit/doc_id-ray:0.2.5.kubecon"
+filter_image = "quay.io/dataprep1/data-prep-kit/filter-ray:0.2.5.kubecon"
+doc_quality_image = "quay.io/dataprep1/data-prep-kit/doc_quality-ray:0.2.5.kubecon"
 
 # Pipeline to invoke execution on remote resource
 @dsl.pipeline(
@@ -124,7 +124,7 @@ def sample_ray_orchestrator(
     + json.dumps(envs.to_dict())
     + '"}}',
 
-    # filter_en step parameters
+    # Filter EN step parameters
     p6_name: str = "filter_en",
     p6_filter_criteria_list: str = "['lang=\\\\'en\\\\'', 'score>=0.8', 'contents!=\\\\'\\\\'']",
     p6_filter_logical_operator: str = "AND",
@@ -135,7 +135,7 @@ def sample_ray_orchestrator(
     + filter_image
     + '"}}',
 
-    # document en quality step parameters
+    # Document EN quality step parameters
     p7_name: str = "doc_quality_en",
     p7_docq_text_lang: str = "en",
     # p7_docq_doc_content_column: str = "contents",
@@ -147,7 +147,7 @@ def sample_ray_orchestrator(
     + doc_quality_image
     + '"}}',
 
-    # filter ja step parameters
+    # filter JA step parameters
     p8_name: str = "filter_ja",
     p8_filter_criteria_list: list = "['lang=\\\\'ja\\\\'', 'score>=0.8', 'contents!=\\\\'\\\\'']",
     p8_filter_logical_operator: str = "AND",
@@ -158,7 +158,7 @@ def sample_ray_orchestrator(
     + filter_image
     + '"}}',
 
-    # document ja quality step parameters
+    # document JA quality step parameters
     p9_name: str = "doc_quality_ja",
     p9_docq_text_lang: str = "ja",
     p9_docq_bad_word_filepath: str = "/home/ray/dpk_doc_quality/ldnoobw/ja",
@@ -180,7 +180,7 @@ def sample_ray_orchestrator(
     + filter_image
     + '"}}',
 
-    # document fr quality step parameters
+    # document FR quality step parameters
     p11_name: str = "doc_quality_fr",
     p11_docq_text_lang: str = "fr",
     p11_docq_bad_word_filepath: str = "/home/ray/dpk_doc_quality/ldnoobw/fr",

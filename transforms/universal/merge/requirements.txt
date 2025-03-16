@@ -1,0 +1,3 @@
+# data-prep-toolkit and data-prep-toolkit[ray,spark] need not be listed here
+# since make venv will add that for us.  However, if building the venv
+# without make, you should pre-install data-prep-toolkit and needed flavors.

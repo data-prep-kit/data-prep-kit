@@ -33,7 +33,7 @@ HF_SECRET = "hf-secret"
 # The secret key that holds the HugginFace token
 HF_SECRET_KEY = "hf-token"
 
-task_image = "quay.io/dataprep1/data-prep-kit/lang_id-ray:latest"
+task_image = "quay.io/dataprep1/data-prep-kit/lang_id-ray:2.2"
 
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_lang_id.ray.transform"
@@ -135,14 +135,14 @@ def lang_id(
     data_s3_access_secret: str = "s3-secret",
     data_max_files: int = -1,
     data_num_samples: int = -1,
-    # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
     runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
+
     # lang_id parameters
     lang_id_model_kind: str = "fasttext",
     lang_id_model_url: str = "facebook/fasttext-language-identification",
-    lang_id_content_column_name: str = "text",
+    lang_id_content_column_name: str = "contents",
     lang_id_output_lang_column_name: str = "lang",
     lang_id_output_score_column_name: str = "score",
     # additional parameters

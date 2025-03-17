@@ -11,6 +11,7 @@
 ################################################################################
 
 import time
+import torch
 from argparse import ArgumentParser, Namespace
 from typing import Any
 
@@ -29,7 +30,7 @@ model_name_cli_param = f"{cli_prefix}{model_name_key}"
 content_column_name_cli_param = f"{cli_prefix}{content_column_name_key}"
 output_embeddings_column_name_cli_param = f"{cli_prefix}{output_embeddings_column_name_key}"
 
-default_model_name = "BAAI/bge-small-en-v1.5"
+default_model_name = "ibm-granite/granite-embedding-30m-english"
 default_content_column_name = "contents"
 default_output_embeddings_column_name = "embeddings"
 
@@ -53,8 +54,14 @@ class TextEncoderTransform(AbstractTableTransform):
         self.output_embeddings_column_name = config.get(
             output_embeddings_column_name_key, default_output_embeddings_column_name
         )
-
+        if torch.cuda.is_available():
+            print("GPU is available!")
+            device = torch.device("cuda")  # Use GPU
+        else:
+            print("GPU is not available. Using CPU.")
+            device = torch.device("cpu")   # Use CPU
         self.model = SentenceTransformer(self.model_name)
+        self.model = self.model.to(device)
 
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
         """ """
@@ -65,7 +72,7 @@ class TextEncoderTransform(AbstractTableTransform):
 
         embeddings = list(
             map(
-                lambda x: self.model.encode(x, normalize_embeddings=True),
+                lambda x: self.model.encode(x),
                 table[self.content_column_name].to_pylist(),
             ),
         )

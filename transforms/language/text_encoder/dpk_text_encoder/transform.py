@@ -14,6 +14,7 @@ import time
 import torch
 from argparse import ArgumentParser, Namespace
 from typing import Any
+import numpy as np
 
 import pyarrow as pa
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
@@ -72,11 +73,15 @@ class TextEncoderTransform(AbstractTableTransform):
 
         embeddings = list(
             map(
-                lambda x: self.model.encode(x),
+                lambda x: self.model.encode(x, convert_to_numpy=True, show_progress_bar=False),
                 table[self.content_column_name].to_pylist(),
             ),
         )
-        result = TransformUtils.add_column(table=table, name=self.output_embeddings_column_name, content=embeddings)
+
+        embeddings_float16 =[emb.astype(np.float16) for emb in embeddings]
+        pyarrow_embeddings = pa.array(embeddings_float16)
+
+        result = TransformUtils.add_column(table=table, name=self.output_embeddings_column_name, content=pyarrow_embeddings)
 
         metadata = {"nfiles": 1, "nrows": len(result)}
         return [result], metadata

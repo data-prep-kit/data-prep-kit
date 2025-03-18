@@ -9,15 +9,19 @@ testing and IDE set up.
 Filtering cleans up data by:
  * Removing the rows that do not meet a specific set of criteria.
  * Dropping the columns that are no longer needed (e.g., annotation columns, used for filtering rows).
+ * If the data have been tokenized and the corresponding arrow folder is available, the .arrow and associated meta files, such as .docs and .docs.ids, are also filtered.
 
 ## Configuration and command line Options
 
-The set of dictionary keys holding [FilterTransform](dpk_filter/transform_python.py) 
+The set of dictionary keys holding [FilterTransform](dpk_filter/transform.py) 
 configuration for values are as follows:
 
 * _filter_criteria_list_ - specifies the list of row filter criteria (in SQL WHERE clause format). Each filter criterion is a string. The default value of this parameter is `[]` (an empty list, meaning that all the rows in the input table will be kept). 
 * _filter_logical_operator_ - specifies the logical operator that joins filter criteria (`AND` or `OR`). The default value of this parameter is `AND`.
 * _filter_columns_to_drop_ - the list with the names of the columns to drop after row filtering is complete. The default value of this parameter is `[]` (an empty list, meaning that all the columns in the input table will be kept)
+* _filter_input_arrow_folder_ - specifies the file path to the folder that holds the input .arrow files.
+* _filter_output_arrow_folder_ - specifies the file path to the folder that will hold the filtered .arrow files.
+* _filter_doc_id_column_name_ - specifies the column name for unique document IDs in the parquet file.
 
 ## Example
 Consider a table with eight text documents, where each row has additional info about that document (date acquired, source URL, etc.), and a set of quality signals for that document.  

@@ -23,7 +23,7 @@ from dpk_filter.transform import (
     filter_logical_operator_cli_param,
     filter_logical_operator_default,
 )
-from dpk_filter.transform_python import FilterPythonTransformConfiguration
+from dpk_filter.runtime import FilterPythonTransformConfiguration
 
 
 class AbstractPythonFilterTransformTest(AbstractTransformLauncherTest):

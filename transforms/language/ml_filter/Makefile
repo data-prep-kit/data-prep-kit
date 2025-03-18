@@ -13,6 +13,10 @@ TRANSFORM_NAME=$(shell basename `pwd`)
 
 ################################################################################
 
+TRANSFORM_PYTHON_SRC="-m dpk_$(TRANSFORM_NAME).runtime"
+TRANSFORM_RAY_SRC="-m dpk_$(TRANSFORM_NAME).ray.runtime"
+TRANSFORM_SPARK_SRC="-m dpk_$(TRANSFORM_NAME).spark.runtime"
+
 TEST_PARAMS?=--ml_filter_lang_column_name "lang" \
 		--ml_filter_column_prefix "e_" \
 		--ml_filter_config "test-data/input/cleansing-config.yaml"

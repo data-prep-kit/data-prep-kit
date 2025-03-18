@@ -74,7 +74,7 @@ pip install --no-binary :all: psutil
 
 B) If the rep_removal crashes on your machine with an 'out of memory' issue - we recommend using the [resize](https://github.com/IBM/data-prep-kit/tree/dev/transforms/universal/resize) transform to make the input file(s) smaller.
  
-## Input Parameters
+## Input Parameters <a name = "input-parameters"></a>
 
 The transform can be initialized with the following parameters:
 

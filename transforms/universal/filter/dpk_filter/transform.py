@@ -315,7 +315,7 @@ class FilterTransformConfiguration(TransformConfiguration):
             type=str,
             required=False,
             default=None,
-            help={f"the input path to the .arrow files"}
+            help="the input path to the .arrow files"
         )
         parser.add_argument(
             f"--{filter_output_arrow_folder_cli_param}",

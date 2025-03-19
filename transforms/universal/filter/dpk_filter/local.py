@@ -41,7 +41,6 @@ filter_params = {
     filter_criteria_key: filter_criteria,
     filter_columns_to_drop_key: filter_columns_to_drop,
     filter_logical_operator_key: filter_logical_operator,
-    filter_doc_id_column_name_key: "document_id",
 }
 
 if __name__ == "__main__":

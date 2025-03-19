@@ -84,7 +84,7 @@ class FilterTransform(AbstractTableTransform):
         self.logger = get_logger(__name__)
         self.data_access: DataAccess = config.get("data_access", None)
         if self.data_access is None:
-            self.logger.error(f"data_access is not provided.")
+            self.logger.warning(f"data_access is not provided.")
 
         self.filter_criteria = config.get(filter_criteria_key, filter_criteria_default)
         self.logical_operator = config.get(filter_logical_operator_key, filter_logical_operator_default)
@@ -101,8 +101,11 @@ class FilterTransform(AbstractTableTransform):
         
 
         # Need to extract the parquet input folder names, especially it needs to end with '/'
-        self.parquet_input_folder = self.data_access.get_input_folder()
-        self.parquet_input_folder = self.parquet_input_folder if self.parquet_input_folder.endswith("/") else f"{self.parquet_input_folder}/"
+        self.parquet_input_folder = None
+        if self.data_access is not None:
+            self.parquet_input_folder = self.data_access.get_input_folder()
+        if self.parquet_input_folder is not None:
+            self.parquet_input_folder = self.parquet_input_folder if self.parquet_input_folder.endswith("/") else f"{self.parquet_input_folder}/"
     
     def _construct_arrow_meta_file_path(self, parquet_file_name: str):
         """
@@ -187,9 +190,10 @@ class FilterTransform(AbstractTableTransform):
         """
         if self.input_arrow_folder is not None:
             TransformUtils.validate_columns(table=table, required=[self.doc_id_column_name])
-        if not file_name.endswith(".parquet"):
-            self.logger.error(f"Error: input_file name doesn't end with '.parquet': {parquet_file_name}")
-            return [], {"wrong file tpye": 1}
+        if file_name is not None:
+            if not file_name.endswith(".parquet"):
+                self.logger.error(f"Error: input_file name doesn't end with '.parquet': {file_name}")
+                return [], {"wrong file tpye": 1}
         # move table under a different name, to avoid SQL query parsing error
         input_table = table
         total_docs = input_table.num_rows

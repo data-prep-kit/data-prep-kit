@@ -5,3 +5,4 @@ datatrove
 fasttext
 nltk
 spacy
+pandas

@@ -20,7 +20,7 @@ configuration for values are as follows:
 * _filter_logical_operator_ - specifies the logical operator that joins filter criteria (`AND` or `OR`). The default value of this parameter is `AND`.
 * _filter_columns_to_drop_ - the list with the names of the columns to drop after row filtering is complete. The default value of this parameter is `[]` (an empty list, meaning that all the columns in the input table will be kept)
 * _filter_input_arrow_folder_ - specifies the file path to the folder that holds the input .arrow files. The default value of this parameter is `None` (No input arrow folder path is specified) In that case, only the parquet files in the `input_folder` will be filtered.
-* _filter_output_arrow_folder_ - specifies the file path to the folder that will hold the filtered .arrow files. The default value of this parameter is `None`. Note that if the filter_input_arrow_folder is not None, then the _filter_output_arrow_folder is required.
+* _filter_output_arrow_folder_ - specifies the file path to the folder that will hold the filtered .arrow files. The default value of this parameter is `None`. Note that if the _filter_input_arrow_folder_ is not None, then the _filter_output_arrow_folder_ is required.
 * _filter_doc_id_column_name_ - specifies the column name for unique document IDs in the parquet file. This column name must match what is used in the input parquet.
 
 ## Example

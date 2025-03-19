@@ -75,4 +75,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 2:
         wff.task_image = sys.argv[2]
     # Compiling the pipeline
-    compiler.Compiler().compile(getattr(wff, wff.short_name), sys.argv[1])
+    compiler.Compiler().compile(getattr(wff, wff.short_name), __file__.replace(".py", ".yaml") if len(sys.argv) < 2 else sys.argv[1])

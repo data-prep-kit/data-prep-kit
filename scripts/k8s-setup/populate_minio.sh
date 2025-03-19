@@ -36,6 +36,7 @@ mc cp --recursive ${REPOROOT}/transforms/language/pdf2parquet/test-data/input/22
 mc cp --recursive ${REPOROOT}/transforms/language/text_encoder/test-data/input/ kfp/test/text_encoder/input
 mc cp --recursive ${REPOROOT}/transforms/language/doc_chunk/test-data/input/ kfp/test/doc_chunk/input
 mc cp --recursive ${REPOROOT}/transforms/language/html2parquet/test-data/input/test1.html kfp/test/html2parquet/input
+mc cp --recursive ${REPOROOT}/transforms/language/gneissweb_classification/test-data/input/ kfp/test/gneissweb_classification/input
 # universal
 mc cp --recursive ${REPOROOT}/transforms/universal/doc_id/test-data/input/ kfp/test/doc_id/input
 mc cp --recursive ${REPOROOT}/transforms/universal/ededup/test-data/input/ kfp/test/ededup/input
@@ -46,3 +47,4 @@ mc cp --recursive ${REPOROOT}/transforms/universal/tokenization/test-data/ds01/i
 mc cp --recursive ${REPOROOT}/transforms/universal/profiler/test-data/input/ kfp/test/profiler/input
 mc cp --recursive ${REPOROOT}/transforms/universal/resize/test-data/input/ kfp/test/resize/input
 mc cp --recursive ${REPOROOT}/transforms/universal/hap/test-data/input/ kfp/test/hap/input
+mc cp --recursive ${REPOROOT}/transforms/universal/rep_removal/test-data/input/ kfp/test/rep_removal/input

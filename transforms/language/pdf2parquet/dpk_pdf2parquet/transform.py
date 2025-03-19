@@ -263,6 +263,19 @@ class Pdf2ParquetTransform(AbstractBinaryTransform):
 
         return file_data
 
+    def _detect_mime(self, file_name: str, content_bytes: bytes) -> tuple[str|None, str]:
+        kind = filetype.guess(content_bytes)
+        ext = TransformUtils.get_file_extension(file_name)[1]
+        if kind is not None:
+            mime = kind.mime
+            ext = kind.extension
+        elif ext == ".xml":
+            mime = "application/xml"
+        else:
+            mime = None
+        
+        return mime, ext
+
     def transform_binary(
         self, file_name: str, byte_array: bytes
     ) -> tuple[list[tuple[bytes, str]], dict[str, Any]]:
@@ -282,14 +295,13 @@ class Pdf2ParquetTransform(AbstractBinaryTransform):
         try:
             # TODO: Docling has an inner-function with a stronger type checking.
             # Once it is exposed as public, we can use it here as well.
-            root_kind = filetype.guess(byte_array)
+            root_mime, root_ext = self._detect_mime(file_name, byte_array)
 
             # Process single documents
-            if root_kind is not None and root_kind.mime in MimeTypeToFormat:
-                logger.debug(f"Detected root file {file_name=} as {root_kind.mime}.")
+            if root_mime is not None and root_mime in MimeTypeToFormat:
+                logger.debug(f"Detected root file {file_name=} as {root_mime}.")
 
                 try:
-                    root_ext = root_kind.extension
                     file_data = self._convert_pdf2parquet(
                         doc_filename=file_name, ext=root_ext, content_bytes=byte_array
                     )
@@ -309,7 +321,7 @@ class Pdf2ParquetTransform(AbstractBinaryTransform):
                     )
 
             # Process ZIP archive of documents
-            elif root_kind is not None and root_kind.mime == "application/zip":
+            elif root_mime == "application/zip":
                 logger.debug(
                     f"Detected root file {file_name=} as ZIP. Iterating through the archive content."
                 )
@@ -327,15 +339,14 @@ class Pdf2ParquetTransform(AbstractBinaryTransform):
                                 content_bytes = file.read()
 
                                 # Detect file type
-                                kind = filetype.guess(content_bytes)
-                                if kind is None or kind.mime not in MimeTypeToFormat:
+                                mime, ext = self._detect_mime(archive_doc_filename, content_bytes)
+
+                                if mime is None or mime not in MimeTypeToFormat:
                                     logger.info(
-                                        f"File {archive_doc_filename=} is not detected as valid format {kind=}. Skipping."
+                                        f"File {archive_doc_filename=} is not detected as valid format {mime=}. Skipping."
                                     )
                                     skipped_doc_id.append(archive_doc_filename)
                                     continue
-
-                                ext = kind.extension
 
                                 file_data = self._convert_pdf2parquet(
                                     doc_filename=archive_doc_filename,
@@ -358,7 +369,7 @@ class Pdf2ParquetTransform(AbstractBinaryTransform):
 
             else:
                 logger.warning(
-                    f"File {file_name=} is not detected as a supported type nor as ZIP but {kind=}. Skipping."
+                    f"File {file_name=} is not detected as a supported type nor as ZIP but {root_mime=}. Skipping."
                 )
 
             

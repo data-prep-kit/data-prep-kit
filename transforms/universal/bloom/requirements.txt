@@ -1,0 +1,4 @@
+rbloom>=1.5.2
+pandas>=2.2.2
+pyarrow>=16.1.0
+huggingface_hub>=0.25.2

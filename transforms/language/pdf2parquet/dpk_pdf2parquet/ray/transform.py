@@ -46,10 +46,11 @@ class Pdf2ParquetRayTransform(Pdf2ParquetTransform):
         self.doc_convert_gauge = Gauge("worker_pdf_convert_time", "Time spent converting a single document")
 
     def _update_metrics(self, num_pages: int, elapse_time: float):
-        self.page_convert_gauge.set(elapse_time / num_pages)
+        if num_pages > 0:
+            self.page_convert_gauge.set(elapse_time / num_pages)
+            self.page_counter.inc(num_pages)
         self.doc_convert_gauge.set(elapse_time)
         self.doc_counter.inc(1)
-        self.page_counter.inc(num_pages)
 
 
 class Pdf2ParquetRayTransformConfiguration(RayTransformRuntimeConfiguration):

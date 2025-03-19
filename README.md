@@ -1,9 +1,19 @@
-
-
 <h1 align="center">Data Prep Kit</h1>
 
-Data Prep Kit is a community-driven project that simplifies unstructured data preparation for LLM application development. It addresses the growing challenge of preparing diverse data (language, code, vision, multimodal) for fine-tuning, instruction-tuning, and RAG applications. The modules in the kit have been tested in producing pre-training datasets for the [Granite open source LLM models](https://huggingface.co/ibm-granite).
+<div align="center">
 
+[![arXiv](https://img.shields.io/badge/arXiv-2409.18164-b31b1b.svg)](https://arxiv.org/abs/2409.18164)
+[![Docs](https://img.shields.io/badge/docs-live-brightgreen)](https://data-prep-kit.github.io/data-prep-kit/)
+[![PyPI version](https://img.shields.io/pypi/v/data-prep-toolkit-transforms)](https://pypi.org/project/data-prep-toolkit-transforms/)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![Apache 2.0](https://img.shields.io/github/license/data-prep-kit/data-prep-kit)](https://opensource.org/license/apache-2-0)
+[![GitHub Issues](https://img.shields.io/github/issues/kylelobo/The-Documentation-Compendium.svg)](https://github.com/data-prep-kit/data-prep-kit/issues)
+  [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/kylelobo/The-Documentation-Compendium.svg)](https://github.com/data-prep-kit/data-prep-kit/pulls)
+
+  </div>
+
+
+Data Prep Kit accelerates unstructured data preparation for LLM app developers. Developers can use Data Prep Kit to cleanse, transform, and enrich use case-specific unstructured data to pre-train LLMs, fine-tune LLMs, instruct-tune LLMs, or build retrieval augmented generation (RAG) applications for LLMs. Data Prep Kit can readily scale from a commodity laptop all the way to data center scale.
 
 ## Features <a name = "features"></a>
 
@@ -75,14 +85,20 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 | [Resize](transforms/universal/resize/README.md)                           | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [Hate, Abuse, Profanity (HAP)](transforms/universal/hap/README.md)               | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Tokenizer](transforms/universal/tokenization/README.md)                         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
-| **Language-only**                                                                    |                    |                    |                    |                    |
+| [Tokenization2Arrow](transforms/universal/tokenization2arrow/README.md)                         | :white_check_mark: | :white_check_mark: | 
+| [Repetition removal](transforms/universal/rep_removal/README.md)                         | :white_check_mark: | :white_check_mark: |                   |  |
+| [Bloom filter](transforms/universal/bloom/README.md)                         | :white_check_mark: |  |                    |  |
+**Language-only**                                                                    |                    |                    |                    |                    |
 | [Language identification](transforms/language/lang_id/README.md)              | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Document quality](transforms/language/doc_quality/README.md)                 | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Document chunking for RAG](transforms/language/doc_chunk/README.md)          | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Text encoder](transforms/language/text_encoder/README.md)                    | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [PII Annotator/Redactor](transforms/language/pii_redactor/README.md)          | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
-| [Similarity](transforms/language/similarity/README.md)                        | :white_check_mark: |                    |                    |                    |
-| **Code-only**                                                                         |                    |                     |             |                    |
+| [Similarity](transforms/language/similarity/README.md)                        | :white_check_mark: |                    |                    |                    |  |
+| [GneissWeb classification](transforms/language/gneissweb_classification/README.md)          | :white_check_mark: | :white_check_mark: |                    |  |
+| [Readability scores](transforms/language/readability/README.md)          | :white_check_mark: | :white_check_mark: |                    |  |
+| [Extreme tokenized annotation](transforms/language/extreme_tokenized/README.md)          | :white_check_mark: | :white_check_mark: |                    |  |
+**Code-only**                                                                         |                    |                     |             |                    |
 | [Programming language annotation](transforms/code/proglang_select/python/README.md)  | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Code quality annotation](transforms/code/code_quality/python/README.md)             | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Malware annotation](transforms/code/malware/python/README.md)                       | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
@@ -100,9 +116,25 @@ Contributors are welcome to add new modules to expand to other data modalities a
 
 Please feel free to connect with us using the [discussion](https://github.com/IBM/data-prep-kit/discussions) section.
 
+## MAINTAINERS
+
+For a list of current maintainers, please [see](MAINTAINERS.md).
+
+## License
+
+All source files must include a Copyright and License header. If you would like to see the detailed LICENSE click [here](LICENSE).
+
+## CHANGELOG 
+
+For the history of releases and changes, please [see](release-notes.md).
+
 ## Resources
 
-[Papers, talks, presentations and tutorials](resources.md).
+[Papers, talks, presentations and tutorials](resources.md)
+
+[Granite open source LLM models](https://huggingface.co/ibm-granite) 
+
+[GneissWeb](https://research.ibm.com/blog/gneissweb-for-granite-training) 
 
 ## Citation <a name = "citations"></a>
 

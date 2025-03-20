@@ -81,6 +81,8 @@ ls output
 ```
 To see results of the transform.
 
+**Note:** The Ray scalable version of the transform is included, however, running on a single machine and not a cluster, the Ray version does not get a performance benefit because the transform operates one record at a time on an input file.
+
 ### Code example
 
 [notebook](./enrichment.ipynb)
@@ -91,3 +93,7 @@ Following [the testing strategy of data-processing-lib](../../../data-processing
 
 Currently we have:
 - [Unit test](test/test_enrichment.py)
+
+## Credits
+
+The work on this transform is continuation of the original work by Juergen Bross (jbross@us.ibm.com).

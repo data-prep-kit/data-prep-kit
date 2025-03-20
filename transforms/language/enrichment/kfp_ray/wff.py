@@ -16,7 +16,7 @@ from kubernetes import client as k8s_client
 ops={}
 short_name = "enrichment"
 description = "computes a number of features that can be used to estimate data quality"
-task_image = f"{short_name}-ray:latest"
+task_image = f"quay.io/dataprep1/data-prep-kit/enrichment-ray:latest"
 def compute_exec_params_func(
     worker_options: dict,
     actor_options: dict,

@@ -20,7 +20,7 @@ from workflow_support.compile_utils import ONE_HOUR_SEC, ONE_WEEK_SEC, Component
 
 import wff
 
-wff.task_image = f"quay.io/dataprep1/data-prep-kit/{wff.short_name}-ray:latest"
+task_image = f"quay.io/dataprep1/data-prep-kit/ml_filter-ray:latest"
 
 # components
 base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"

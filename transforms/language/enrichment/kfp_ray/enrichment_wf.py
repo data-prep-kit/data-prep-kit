@@ -1,4 +1,3 @@
-
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -10,23 +9,116 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ################################################################################
-import os, sys, json
+import os
 
 import kfp.compiler as compiler
 import kfp.components as comp
 import kfp.dsl as dsl
-from kubernetes import client as k8s_client
-from workflow_support.compile_utils import ONE_HOUR_SEC, ONE_WEEK_SEC, ComponentUtils
+from workflow_support.compile_utils import (
+    DEFAULT_KFP_COMPONENT_SPEC_PATH,
+    ONE_HOUR_SEC,
+    ONE_WEEK_SEC,
+    ComponentUtils,
+)
 
-import wff
 
-task_image = f"quay.io/dataprep1/data-prep-kit/enrichment-ray:latest"
+task_image = "quay.io/dataprep1/data-prep-kit/enrichment-ray:latest"
+
+# the name of the job script
+EXEC_SCRIPT_NAME: str = "-m dpk_enrichment.ray.runtime"
 
 # components
 base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
 # path to kfp component specifications files
-component_spec_path = "../../../../kfp/kfp_ray_components/"
+component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)
+
+# compute execution parameters. Here different transforms might need different implementations. As
+# a result, instead of creating a component we are creating it in place here.
+def compute_exec_params_func(
+    worker_options: dict,
+    actor_options: dict,
+    data_s3_config: str,
+    data_max_files: int,
+    data_num_samples: int,
+    data_checkpointing: bool,
+    runtime_pipeline_id: str,
+    runtime_job_id: str,
+    runtime_code_location: dict,
+    output_column_prefix: str,
+    content_column_name: str,
+    lang_column_name: str,
+    num_newlines_column_name: str,
+    num_paragraphs_column_name: str,
+    num_words_column_name: str,
+    num_chars_column_name: str,
+    total_non_newline_chars_column_name: str,
+    avg_word_length_column_name: str,
+    avg_paragraph_length_chars_column_name: str,
+    avg_paragraph_length_words_column_name: str,
+    alphanumeric_char_ratio_column_name: str,
+    control_char_ratio_column_name: str,
+    punctuation_char_ratio_column_name: str,
+    other_symbol_char_ratio_column_name: str,
+    tabs_word_ratio_column_name: str,
+    hashes_word_ratio_column_name: str,
+    ellipsis_ratio_column_name: str,
+    bulletpoint_ratio_column_name: str,
+    dup_paragraphs_ratio_column_name: str,
+    dup_paragraphs_char_ratio_column_name: str,
+    top_2_gram_char_ratio_column_name: str,
+    top_3_gram_char_ratio_column_name: str,
+    top_4_gram_char_ratio_column_name: str,
+    dup_5_gram_char_ratio_column_name: str,
+    dup_6_gram_char_ratio_column_name: str,
+    dup_7_gram_char_ratio_column_name: str,
+    dup_8_gram_char_ratio_column_name: str,
+    dup_9_gram_char_ratio_column_name: str,
+    dup_10_gram_char_ratio_column_name: str,
+) -> dict:
+    from runtime_utils import KFPUtils
+
+    return {
+        "data_s3_config": data_s3_config,
+        "data_max_files": data_max_files,
+        "data_num_samples": data_num_samples,
+        "data_checkpointing": data_checkpointing,
+        "runtime_num_workers": KFPUtils.default_compute_execution_params(str(worker_options), str(actor_options)),
+        "runtime_worker_options": str(actor_options),
+        "runtime_pipeline_id": runtime_pipeline_id,
+        "runtime_job_id": runtime_job_id,
+        "runtime_code_location": str(runtime_code_location),
+        "output_column_prefix": output_column_prefix,
+        "content_column_name": content_column_name,
+        "lang_column_name": lang_column_name,
+        "num_newlines_column_name": num_newlines_column_name,
+        "num_paragraphs_column_name": num_paragraphs_column_name,
+        "num_words_column_name": num_words_column_name,
+        "num_chars_column_name": num_chars_column_name,
+        "total_non_newline_chars_column_name": total_non_newline_chars_column_name,
+        "avg_word_length_column_name": avg_word_length_column_name,
+        "avg_paragraph_length_chars_column_name": avg_paragraph_length_chars_column_name,
+        "avg_paragraph_length_words_column_name": avg_paragraph_length_words_column_name,
+        "alphanumeric_char_ratio_column_name": alphanumeric_char_ratio_column_name,
+        "control_char_ratio_column_name": control_char_ratio_column_name,
+        "punctuation_char_ratio_column_name": punctuation_char_ratio_column_name,
+        "other_symbol_char_ratio_column_name": other_symbol_char_ratio_column_name,
+        "tabs_word_ratio_column_name": tabs_word_ratio_column_name,
+        "hashes_word_ratio_column_name": hashes_word_ratio_column_name,
+        "ellipsis_ratio_column_name": ellipsis_ratio_column_name,
+        "bulletpoint_ratio_column_name": bulletpoint_ratio_column_name,
+        "dup_paragraphs_ratio_column_name": dup_paragraphs_ratio_column_name,
+        "dup_paragraphs_char_ratio_column_name": dup_paragraphs_char_ratio_column_name,
+        "top_2_gram_char_ratio_column_name": top_2_gram_char_ratio_column_name,
+        "top_3_gram_char_ratio_column_name": top_3_gram_char_ratio_column_name,
+        "top_4_gram_char_ratio_column_name": top_4_gram_char_ratio_column_name,
+        "dup_5_gram_char_ratio_column_name": dup_5_gram_char_ratio_column_name,
+        "dup_6_gram_char_ratio_column_name": dup_6_gram_char_ratio_column_name,
+        "dup_7_gram_char_ratio_column_name": dup_7_gram_char_ratio_column_name,
+        "dup_8_gram_char_ratio_column_name": dup_8_gram_char_ratio_column_name,
+        "dup_9_gram_char_ratio_column_name": dup_9_gram_char_ratio_column_name,
+        "dup_10_gram_char_ratio_column_name": dup_10_gram_char_ratio_column_name,
+    }
 
 
 # KFPv1 and KFP2 uses different methods to create a component from a function. KFPv1 uses the
@@ -34,25 +126,11 @@ component_spec_path = "../../../../kfp/kfp_ray_components/"
 # KFPv2 recommends using the `@dsl.component` decorator, which doesn't exist in KFPv1. Therefore, here we use
 # this if/else statement and explicitly call the decorator.
 if os.getenv("KFPv2", "0") == "1":
-    # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
-    # a unique string in a component (at runtime) and pass it to the `clean_up_task` of `ExitHandler`, due to
-    # https://github.com/kubeflow/pipelines/issues/10187. Therefore, meantime we use a unique string created at
-    # compilation time.
-    import uuid
-
     compute_exec_params_op = dsl.component_decorator.component(
-        func=wff.compute_exec_params_func, base_image=base_kfp_image
+        func=compute_exec_params_func, base_image=base_kfp_image
     )
-    print(
-        "WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
-        + "same version of the same pipeline !!!"
-    )
-    run_id = uuid.uuid4().hex
 else:
-    compute_exec_params_op = comp.create_component_from_func(
-        func=wff.compute_exec_params_func, base_image=base_kfp_image
-    )
-    run_id = dsl.RUN_ID_PLACEHOLDER
+    compute_exec_params_op = comp.create_component_from_func(func=compute_exec_params_func, base_image=base_kfp_image)
 
 # create Ray cluster
 create_ray_op = comp.load_component_from_file(component_spec_path + "createRayClusterComponent.yaml")
@@ -61,18 +139,228 @@ execute_ray_jobs_op = comp.load_component_from_file(component_spec_path + "execu
 # clean up Ray
 cleanup_ray_op = comp.load_component_from_file(component_spec_path + "deleteRayClusterComponent.yaml")
 
-wff.ops = dict(
-        compute_exec_params=compute_exec_params_op, 
-        create_ray=create_ray_op, 
-        execute_ray_jobs=execute_ray_jobs_op,
-        cleanup_ray=cleanup_ray_op)
-wff.run_id = run_id
-
 # Task name is part of the pipeline name, the ray cluster name and the job name in DMF.
-TASK_NAME: str = wff.short_name
+TASK_NAME: str = "enrichment"
+
+
+@dsl.pipeline(
+    name=TASK_NAME + "-ray-pipeline",
+    description="computes a number of features that can be used estimate data quality",
+)
+def enrichment(
+    # Ray cluster
+    ray_name: str = "enrichment-kfp-ray",  # name of Ray cluster
+    ray_run_id_KFPv2: str = "",  # Ray cluster unique ID used only in KFP v2
+    # Add image_pull_secret and image_pull_policy to ray workers if needed
+    ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
+    ray_worker_options: dict = {
+        "replicas": 2,
+        "max_replicas": 2,
+        "min_replicas": 2,
+        "cpu": 2,
+        "memory": 4,
+        "image": task_image,
+    },
+    server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
+    # data access
+    data_s3_config: str = "{'input_folder': 'test/enrichment/input/', 'output_folder': 'test/enrichment/output/'}",
+    data_s3_access_secret: str = "s3-secret",
+    data_max_files: int = -1,
+    data_num_samples: int = -1,
+    data_checkpointing: bool = False,
+    # orchestrator
+    runtime_actor_options: dict = {"num_cpus": 0.8},
+    runtime_pipeline_id: str = "pipeline_id",
+    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
+    # enrichment parameters
+    output_column_prefix: str = "",
+    content_column_name: str = "text",
+    lang_column_name: str = "lang",
+    num_newlines_column_name: str = "num_newlines",
+    num_paragraphs_column_name: str = "num_paragraphs",
+    num_words_column_name: str = "num_words",
+    num_chars_column_name: str = "num_chars",
+    total_non_newline_chars_column_name: str = "total_non_newline_chars",
+    avg_word_length_column_name: str = "avg_word_length",
+    avg_paragraph_length_chars_column_name: str = "avg_paragraph_length_chars",
+    avg_paragraph_length_words_column_name: str = "avg_paragraph_length_words",
+    alphanumeric_char_ratio_column_name: str = "alphanumeric_char_ratio",
+    control_char_ratio_column_name: str = "control_char_ratio",
+    punctuation_char_ratio_column_name: str = "punctuation_char_ratio",
+    other_symbol_char_ratio_column_name: str = "other_symbol_char_ratio",
+    tabs_word_ratio_column_name: str = "tabs_word_ratio",
+    hashes_word_ratio_column_name: str = "hashes_word_ratio",
+    ellipsis_ratio_column_name: str = "ellipsis_ratio",
+    bulletpoint_ratio_column_name: str = "bulletpoint_ratio",
+    dup_paragraphs_ratio_column_name: str = "dup_paragraphs_ratio",
+    dup_paragraphs_char_ratio_column_name: str = "dup_paragraphs_char_ratio",
+    top_2_gram_char_ratio_column_name: str = "top_2_gram_char_ratio",
+    top_3_gram_char_ratio_column_name: str = "top_3_gram_char_ratio",
+    top_4_gram_char_ratio_column_name: str = "top_4_gram_char_ratio",
+    dup_5_gram_char_ratio_column_name: str = "dup_5_gram_char_ratio",
+    dup_6_gram_char_ratio_column_name: str = "dup_6_gram_char_ratio",
+    dup_7_gram_char_ratio_column_name: str = "dup_7_gram_char_ratio",
+    dup_8_gram_char_ratio_column_name: str = "dup_8_gram_char_ratio",
+    dup_9_gram_char_ratio_column_name: str = "dup_9_gram_char_ratio",
+    dup_10_gram_char_ratio_column_name: str = "dup_10_gram_char_ratio",
+    # additional parameters
+    additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
+):
+    """
+    Pipeline to execute enrichment transform
+    :param ray_name: name of the Ray cluster
+    :param ray_run_id_KFPv2: a unique string id used for the Ray cluster, applicable only in KFP v2.
+    :param ray_head_options: head node options, containing the following:
+        cpu - number of cpus
+        memory - memory
+        image - image to use
+        image_pull_secret - image pull secret
+        tolerations - (optional) tolerations for the ray pods
+    :param ray_worker_options: worker node options (we here are using only 1 worker pool), containing the following:
+        replicas - number of replicas to create
+        max_replicas - max number of replicas
+        min_replicas - min number of replicas
+        cpu - number of cpus
+        memory - memory
+        image - image to use
+        image_pull_secret - image pull secret
+        tolerations - (optional) tolerations for the ray pods
+    :param server_url - server url
+    :param additional_params: additional (support) parameters, containing the following:
+        wait_interval - wait interval for API server, sec
+        wait_cluster_ready_tmout - time to wait for cluster ready, sec
+        wait_cluster_up_tmout - time to wait for cluster up, sec
+        wait_job_ready_tmout - time to wait for job ready, sec
+        wait_print_tmout - time between prints, sec
+        http_retries - http retries for API server calls
+    :param data_s3_access_secret - s3 access secret
+    :param data_s3_config - s3 configuration
+    :param data_max_files - max files to process
+    :param data_num_samples - num samples to process
+    :param runtime_actor_options - actor options
+    :param runtime_pipeline_id - pipeline id
+    :param runtime_code_location - code location
+    :param output_column_prefix - Prefix to add to all output column names that are not explicitly defined
+    :param content_column_name - Name of the content column
+    :param lang_column_name - Name of the column with the language identifier
+    :param num_newlines_column_name - Column name for num_newlines
+    :param num_paragraphs_column_name - Column name for num_paragraphs
+    :param num_words_column_name - Column name for num_words
+    :param num_chars_column_name - Column name for num_chars
+    :param total_non_newline_chars_column_name - Column name for total_non_newline_chars
+    :param avg_word_length_column_name - Column name for avg_word_length
+    :param avg_paragraph_length_chars_column_name - Column name for avg_paragraph_length_chars
+    :param avg_paragraph_length_words_column_name - Column name for avg_paragraph_length_words
+    :param alphanumeric_char_ratio_column_name - Column name for alphanumeric_char_ratio
+    :param control_char_ratio_column_name - Column name for control_char_ratio
+    :param punctuation_char_ratio_column_name - Column name for punctuation_char_ratio
+    :param other_symbol_char_ratio_column_name - Column name for other_symbol_char_ratio
+    :param tabs_word_ratio_column_name - Column name for tabs_word_ratio
+    :param hashes_word_ratio_column_name - Column name for hashes_word_ratio
+    :param ellipsis_ratio_column_name - Column name for ellipsis_ratio
+    :param bulletpoint_ratio_column_name - Column name for bulletpoint_ratio
+    :param dup_paragraphs_ratio_column_name - Column name for dup_paragraphs_ratio
+    :param dup_paragraphs_char_ratio_column_name - Column name for dup_paragraphs_char_ratio
+    :param top_2_gram_char_ratio_column_name - Column name for top_2_gram_char_ratio
+    :param top_3_gram_char_ratio_column_name - Column name for top_3_gram_char_ratio
+    :param top_4_gram_char_ratio_column_name - Column name for top_4_gram_char_ratio
+    :param dup_5_gram_char_ratio_column_name - Column name for dup_5_gram_char_ratio
+    :param dup_6_gram_char_ratio_column_name - Column name for dup_6_gram_char_ratio
+    :param dup_7_gram_char_ratio_column_name - Column name for dup_7_gram_char_ratio
+    :param dup_8_gram_char_ratio_column_name - Column name for dup_8_gram_char_ratio
+    :param dup_9_gram_char_ratio_column_name - Column name for dup_9_gram_char_ratio
+    :param dup_10_gram_char_ratio_column_name - Column name for dup_10_gram_char_ratio
+    :return: None
+    """
+    # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
+    # a unique string in a component (at runtime) and pass it to the `clean_up_task` of `ExitHandler`, due to
+    # https://github.com/kubeflow/pipelines/issues/10187. Therefore, meantime the user is requested to insert
+    # a unique string created at run creation time.
+    if os.getenv("KFPv2", "0") == "1":
+        print(
+            "WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
+            "same version of the same pipeline !!!"
+        )
+        run_id = ray_run_id_KFPv2
+    else:
+        run_id = dsl.RUN_ID_PLACEHOLDER
+    # create clean_up task
+    clean_up_task = cleanup_ray_op(
+        ray_name=ray_name, run_id=run_id, server_url=server_url, additional_params=additional_params
+    )
+    ComponentUtils.add_settings_to_component(clean_up_task, ONE_HOUR_SEC * 2)
+    # pipeline definition
+    with dsl.ExitHandler(clean_up_task):
+        # compute execution params
+        compute_exec_params = compute_exec_params_op(
+            worker_options=ray_worker_options,
+            actor_options=runtime_actor_options,
+            data_s3_config=data_s3_config,
+            data_max_files=data_max_files,
+            data_num_samples=data_num_samples,
+            data_checkpointing=data_checkpointing,
+            runtime_pipeline_id=runtime_pipeline_id,
+            runtime_job_id=run_id,
+            runtime_code_location=runtime_code_location,
+            output_column_prefix=output_column_prefix,
+            content_column_name=content_column_name,
+            lang_column_name=lang_column_name,
+            num_newlines_column_name=num_newlines_column_name,
+            num_paragraphs_column_name=num_paragraphs_column_name,
+            num_words_column_name=num_words_column_name,
+            num_chars_column_name=num_chars_column_name,
+            total_non_newline_chars_column_name=total_non_newline_chars_column_name,
+            avg_word_length_column_name=avg_word_length_column_name,
+            avg_paragraph_length_chars_column_name=avg_paragraph_length_chars_column_name,
+            avg_paragraph_length_words_column_name=avg_paragraph_length_words_column_name,
+            alphanumeric_char_ratio_column_name=alphanumeric_char_ratio_column_name,
+            control_char_ratio_column_name=control_char_ratio_column_name,
+            punctuation_char_ratio_column_name=punctuation_char_ratio_column_name,
+            other_symbol_char_ratio_column_name=other_symbol_char_ratio_column_name,
+            tabs_word_ratio_column_name=tabs_word_ratio_column_name,
+            hashes_word_ratio_column_name=hashes_word_ratio_column_name,
+            ellipsis_ratio_column_name=ellipsis_ratio_column_name,
+            bulletpoint_ratio_column_name=bulletpoint_ratio_column_name,
+            dup_paragraphs_ratio_column_name=dup_paragraphs_ratio_column_name,
+            dup_paragraphs_char_ratio_column_name=dup_paragraphs_char_ratio_column_name,
+            top_2_gram_char_ratio_column_name=top_2_gram_char_ratio_column_name,
+            top_3_gram_char_ratio_column_name=top_3_gram_char_ratio_column_name,
+            top_4_gram_char_ratio_column_name=top_4_gram_char_ratio_column_name,
+            dup_5_gram_char_ratio_column_name=dup_5_gram_char_ratio_column_name,
+            dup_6_gram_char_ratio_column_name=dup_6_gram_char_ratio_column_name,
+            dup_7_gram_char_ratio_column_name=dup_7_gram_char_ratio_column_name,
+            dup_8_gram_char_ratio_column_name=dup_8_gram_char_ratio_column_name,
+            dup_9_gram_char_ratio_column_name=dup_9_gram_char_ratio_column_name,
+            dup_10_gram_char_ratio_column_name=dup_10_gram_char_ratio_column_name,
+        )
+
+        ComponentUtils.add_settings_to_component(compute_exec_params, ONE_HOUR_SEC * 2)
+        # start Ray cluster
+        ray_cluster = create_ray_op(
+            ray_name=ray_name,
+            run_id=run_id,
+            ray_head_options=ray_head_options,
+            ray_worker_options=ray_worker_options,
+            server_url=server_url,
+            additional_params=additional_params,
+        )
+        ComponentUtils.add_settings_to_component(ray_cluster, ONE_HOUR_SEC * 2)
+        ray_cluster.after(compute_exec_params)
+
+        # Execute job
+        execute_job = execute_ray_jobs_op(
+            ray_name=ray_name,
+            run_id=run_id,
+            additional_params=additional_params,
+            exec_params=compute_exec_params.output,
+            exec_script_name=EXEC_SCRIPT_NAME,
+            server_url=server_url,
+        )
+        ComponentUtils.add_settings_to_component(execute_job, ONE_WEEK_SEC)
+        ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
+        execute_job.after(ray_cluster)
+
 
 if __name__ == "__main__":
-    if len(sys.argv) > 2:
-        wff.task_image = sys.argv[2]
     # Compiling the pipeline
-    compiler.Compiler().compile(getattr(wff, wff.short_name), __file__.replace(".py", ".yaml") if len(sys.argv) < 2 else sys.argv[1])
+    compiler.Compiler().compile(enrichment, __file__.replace(".py", ".yaml"))

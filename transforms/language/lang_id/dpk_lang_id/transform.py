@@ -10,6 +10,8 @@
 # limitations under the License.
 ################################################################################
 
+import copy
+import os
 from argparse import ArgumentParser, Namespace
 from typing import Any
 
@@ -38,6 +40,7 @@ output_score_column_name_cli_param = f"{cli_prefix}{output_score_column_name_key
 default_content_column_name = "contents"
 default_output_lang_column_name = "lang"
 default_output_score_column_name = "score"
+model_credential_from_env = os.environ.get("HF_READ_ACCESS_TOKEN", "")
 
 
 class LangIdentificationTransform(AbstractTableTransform):
@@ -99,6 +102,7 @@ class LangIdentificationTransformConfiguration(TransformConfiguration):
         super().__init__(
             name=short_name,
             transform_class=LangIdentificationTransform,
+            remove_from_metadata=[model_credential_key]
         )
         from data_processing.utils import get_logger
 
@@ -113,7 +117,8 @@ class LangIdentificationTransformConfiguration(TransformConfiguration):
         """
         parser.add_argument(
             f"--{model_credential_cli_param}",
-            required=True,
+            required=False,
+            default=model_credential_from_env,
             help="Credential to access model for language detection placed in url",
         )
         parser.add_argument(f"--{model_kind_cli_param}", required=True, help="Kind of model for language detection")
@@ -142,5 +147,11 @@ class LangIdentificationTransformConfiguration(TransformConfiguration):
         """
         captured = CLIArgumentProvider.capture_parameters(args, cli_prefix, False)
         self.params = self.params | captured
-        self.logger.info(f"lang_id parameters are : {self.params}")
+        params_no_creds = copy.deepcopy(self.params)
+        if model_credential_key not in params_no_creds:
+            self.logger.warning(f"{model_credential_key} are missing")
+        else:
+            if params_no_creds[model_credential_key] != "":
+                params_no_creds[model_credential_key] = "****"
+        self.logger.info(f"lang_id parameters are : {params_no_creds}")
         return True

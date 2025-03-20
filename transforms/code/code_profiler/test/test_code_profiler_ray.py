@@ -32,7 +32,7 @@ class TestCodeProfilerTransformRay(AbstractTransformLauncherTest):
         input_dir = os.path.join(src_file_dir, "../test-data/input")
         expected_dir = os.path.join(src_file_dir, "../test-data/expected/python")
         runtime_config = {"run_locally": True}
-        transform_config = {"contents": "contents", "language": "language"}
+        transform_config = {"contents": "contents", "programming_language": "programming_language"}
         fixtures.append(
             (
                 launcher,

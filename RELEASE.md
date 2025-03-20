@@ -1,6 +1,7 @@
 # Release Management
 
 ## Overview 
+
 Releases are created from the main repository branch using the version
 numbers, including an intermediate version suffix, 
 defined in `.make.versions`.
@@ -22,6 +23,7 @@ that version X.Y.Z of a transform is equivalent to the X.Y+1.0 release.  The lat
 the `release-branch.sh` script.
    
 ## Cutting the release
+
 Creating the release involves
 
 1. Editing the `release-notes.md` to list major/minor changes and commit to the main branch.
@@ -32,11 +34,13 @@ Creating the release involves
 Each is discussed below.
 
 ### Editing release-notes.md 
+
 Make a dummy release on github (see below) to get a listing of all commits.
 Use this to come up with the items.
 Commit this to the main branch so it is ready for including in the release branch.
 
 ### Creating release branch 
+
 The `scripts/release-branch.sh` is currently run manually to create the branch and tags as follows:
 
 1. Creates the `releases/vX.Y.Z` from the main branch where `X.Y.Z` are defined in .make.versions
@@ -66,11 +70,13 @@ scripts/release-branch.sh
 ```
 
 After running the script, you should
+
 1. Create a pull request from branch `pending-releases/vX.Y.Z` into the `releases/vX.Y.Z` branch, and merge.
 2. Use the github web UI to create a git release and tag of the `releases/vX.Y.Z` branch
 3. Create a pull request from branch `pending-version-change/vX.Y.Z` into the main branch, and merge. 
 
 ### Creating the Github Release
+
 After running the `release-branch.sh` script, to create tag `vX.Y.Z` and branch `releases/vX.Y.Z`
 and PRing/merging `vX.Y.Z` into `releases/vX.Y.Z`.
 1. Go to the [releases page](https://github.com/IBM/data-prep-kit/releases). 
@@ -83,6 +89,7 @@ and PRing/merging `vX.Y.Z` into `releases/vX.Y.Z`.
 1. Press `Publish release`
 
 ### Building and Publishing Wheels and Images
+
 After creating the release and tag on github: 
 
 1. Switch to a release branch (e.g. releases/v1.2.3). 

@@ -34,7 +34,7 @@ class TestPythonPdf2ParquetTransform(AbstractTransformLauncherTest):
         basedir = "../test-data"
         basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))
         config = {
-            "data_files_to_use": ast.literal_eval("['.pdf','.docx','.pptx','.zip']"),
+            "data_files_to_use": ast.literal_eval("['.pdf','.docx','.pptx','.xml','.zip']"),
             "pdf2parquet_double_precision": 0,
         }
 

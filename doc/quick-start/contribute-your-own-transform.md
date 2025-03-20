@@ -8,11 +8,11 @@
 </div> 
 
 In this tutorial, we take the developer through the steps for contributing a new transform to the DPK. We will cover:
-1. How to clone the repo and setup the file structure for the transform
+1. How to clone the repo and set up the file structure for the transform
 1. Write the code by implementing the transform specific functionality 
 1. Use the framework capabilities to accelerate development, testing and deployment
 
-For this tutorial, we will follow a suggested flow. Developers are welcome to explore on their own to achieve the same results. Except for the transform name and module name, developers have a lot of freedom on how they choose their class name, file names and file structure. That said, following the convention proposed in this document would make it easier for the community to chime-in to help with debugging and maintaining the code base.
+For this tutorial, we will follow a suggested flow. Developers are welcome to explore on their own to achieve the same results. Except for the transform name and module name, developers have a lot of freedom in how they choose their class name, file names and file structure. That said, following the convention proposed in this document would make it easier for the community to chime in to help with debugging and maintaining the code base.
 
 The new transform we will build  as part of this tutorial is meant to annotate each document in the data set with a digest value that is calculated using a SHA256, SHA512 or MD5 hash function. The objective is to show how we can use a user defined function to build a transform and how developers can specify the configuration parameters for the transform and how we integrate the transform with the python and/or ray orchestrators.
 
@@ -28,7 +28,7 @@ The new transform we will build  as part of this tutorial is meant to annotate e
 
 ## List of Steps to follow in this part of the tutorial
 
-1. [Create folder structure](#setup) - clone git repo and create file structure for new transform
+1. [Create a folder structure](#setup) - clone git repo and create file structure for new transform
 1. [Implement AbstractTableTransform](#digesttransform) - core functionality for annotating documents
 1. [Implement TransformConfiguration](#digestconfiguration) - configure and validate transform parameters
 1. [Implement PythonTransformRuntimeConfiguration](#digestruntime) - wire the transform to the runtime so it is correctly invoked
@@ -40,7 +40,7 @@ The new transform we will build  as part of this tutorial is meant to annotate e
 1. (Optional)[Setup for KFP Pipeline](#kfp) - Create artifacts for integrating with KFP Workflow
 
 
-## Step 1: Create folder structure <a name=setup></a>
+## Step 1: Create a folder structure <a name=setup></a>
 
 **fork and clone the repo locally**
 
@@ -57,7 +57,7 @@ ASSUMPTION: We assume that the developer had already installed git cli and setup
 
 
 
-**Create placeholder for new transform**
+**Create a placeholder for the new transform**
 
 The DPK transforms are currently organized in three categories for Code (Transforms that are used specifically for programming languages), 
 Language(Transforms that are used specifically for natural languages) and Universal (Transforms that are used for both language and code). It is safe to assume that our transform can be used for calculating the hash for natural languages text and programming languages alike and we will add it to the universal subfolder. We will also create the python module and a skeleton of the code including a notebook and readme.md file. A typical implementation would have the following file structure.
@@ -117,7 +117,7 @@ touch requirements.txt
 
 This file implements the key logic for the transform. It receives a pyarrow table with a list of documents in the data set and appends a new column with a digest value. We will describe the contents of the file in 2 sections:
 
-- The first portion of the file includes the language for the license used to distribute and use the code and a set of import statements for the library modules that will be needed for invoking this transfrom.
+- The first portion of the file includes the language for the license used to distribute and use the code and a set of import statements for the library modules that will be needed for invoking this transform.
 
 
 ```python
@@ -178,7 +178,7 @@ class DigestTransform(AbstractTableTransform):
         return [table], metadata
 ```
 
-**\__init__()** receives a dictionary that represents the different configuration parameters specified by the user. In our case, the only parameter used is the string value representing the name of digest. If the user does not specify a digest, we will use default value fo "sha256".
+**\__init__()** receives a dictionary that represents the different configuration parameters specified by the user. In our case, the only parameter used is the string value representing the name of digest. If the user does not specify a digest, we will use default value for "sha256".
 
 **transform()** The transform method implements the callback that the runtime uses when it identifies new data to be processed by this transform. It
 receives a pyarrow table, calculates the digest for each row in the table and appends the digest as a new column to the same table.
@@ -205,8 +205,8 @@ from .transform import *
 
 **dpk_digest/runtime.py**  This file implements 3 classes, the first being TransformConfiguration. It defines two user defined methods that must be implemented by the developer for each transform:
 
-* add_input_params() is called by the framework to validate the presence of all required configuration parameters for this transform and specifies guidance to the user if any is missing
-* apply_input_params() is called by the framework to validate the values associated with the configuration parameter.
+* The add_input_params() method is called by the framework to define the set of command line parameters exposed by the runtime to configure the transforms.  The runtime processes the command line parameters and makes them available to the transform instance initializer.
+* The apply_input_params() method is called by the framework to validate the values associated with the configuration parameter.
 
 ```python
 # (C) Copyright IBM Corp. 2024.
@@ -487,20 +487,20 @@ dpk_digest = "universal/digest/dpk_digest"
 
 ## Step 8: Create Notebook <a name="notebook"></a>
 
-The notebook should show how to run the notebook from the current folder. Guidance on how to setup jupyter lab can be found [here](quick-start.md). This is a simple [notebook](https://github.com/mt747/data-prep-kit/blob/block_digest/transforms/universal/digest/digest.ipynb) for our digest transform. 
+The notebook should show how to run the notebook from the current folder. Guidance on how to set up jupyter lab can be found [here](quick-start.md). This is a simple [notebook](https://github.com/mt747/data-prep-kit/blob/block_digest/transforms/universal/digest/digest.ipynb) for our digest transform. 
 
 ## Step 9: Create Readme file <a name="readme"></a>
 
 The README file for the transform should have, at a minimum, the following sections: Summary, Contributors, Configuration and command line options, an Example of how to run from command line and link to a notebook. If applicable, it should have more sections on Troubleshooting, Transforming data using the transform image and sections on Ray and/or Spark versions of the transform. 
 [This](https://github.com/mt747/data-prep-kit/blob/block_digest/transforms/universal/digest/README.md) is a minimal README file for our digest transform. 
 
-## Step 10: Setup KFP Pipeline  <a name="kfp"></a>
+## Step 10: Set up KFP Pipeline  <a name="kfp"></a>
 
-It might be desirable to build a KFP pipeline chaining multiple transforms together. In this section, we will cover the steps that the developer needs to do so the Operation team can create a pipeline that is tailored to their specific use case. We will only conver the artifact that the developer needs to produce to enable the integration of the digest transform in a KFP pipeline
+It might be desirable to build a KubeFlow Pipeline (KFP) chaining multiple transforms together. In this section, we will cover the steps a developer needs to take so that the operation team can create a pipeline tailored to their specific use case. We will only cover the artifact that the developer needs to produce to enable the integration of the digest transform in a KFP pipeline.
 
 **kfP-ray/Makefile**
 
-- Create folder to host KFP related artifacts
+- Create a folder to host KFP related artifacts
 
 ```shell
 cd data-prep-kit/transforms/universal/digest
@@ -510,10 +510,10 @@ cp ../../Makefile.kfp.template kfp_ray/Makefile
 
 **kfP-ray/digest_wf.py**
 
-- Create KFP definition file. This file will be used to produce the kfp workflow yaml definition file. The full content of this file in available [here](https://github.com/mt747/data-prep-kit/blob/13be7f4349e498041afe9834b1961d158728316a/transforms/universal/digest/kfp_ray/digest_wf.py). We only highlight some of the key elements.
+- Create a KFP definition file. This file will be used to produce the kfp workflow yaml definition file. The full content of this file in available [here](https://github.com/mt747/data-prep-kit/blob/13be7f4349e498041afe9834b1961d158728316a/transforms/universal/digest/kfp_ray/digest_wf.py). We only highlight some of the key elements.
 
 
-- this file define the reference to the docker image for the transform and entry point:
+- This file defines the reference to the docker image for the transform and entry point:
 
     * task_image = "quay.io/dataprep1/data-prep-kit/digest-ray:latest"
     * EXEC_SCRIPT_NAME: str = "-m dpk_digest.ray.runtime"
@@ -552,7 +552,7 @@ component_spec_path = "../../../../kfp/kfp_ray_components/"
 ```
 
 
-- It defines the list of configuration parameters that are required by the framework return as a dictionay structure:
+- It defines the list of configuration parameters that are required by the framework return as a dictionary structure:
 
     * "digest_algorithm": digest_algorithm,
 
@@ -578,7 +578,7 @@ def compute_exec_params_func(
 TASK_NAME: str = "digest"
 ```
 
-    * Pipeline definition method and default values:
+- Pipeline definition method and default values:
 
 ```Python    
  @dsl.pipeline(
@@ -592,7 +592,7 @@ def digest(
 ):
 ```
 
-- It defines the __main__ entry point for compiling the yaml file required for running kfp
+- It defines the __main__ entry point for compiling the yaml file required for running kfp.
 
 ```Python
 if __name__ == "__main__":

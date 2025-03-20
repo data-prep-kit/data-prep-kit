@@ -26,7 +26,7 @@ local_conf = {
     "input_folder": input_folder,
     "output_folder": output_folder,
     "contents": "contents",
-    "language": "language",
+    "programming_language": "programming_language",
 }
 params = {
     # Data access. Only required parameters are specified

@@ -394,7 +394,7 @@ class SignatureCalculationTransform(AbstractTableTransform):
         results = []
         for band_index in range(b):
             band_hash, _ = mmh3.hash64(
-                minhashes[band_index * r : (band_index + 1) * r],
+                minhashes[band_index * r : (band_index + 1) * r].tobytes(),
                 seed=seed,
                 signed=False,
             )

@@ -32,17 +32,23 @@ code_location = {"github": "github", "commit_hash": "12345", "path": "path"}
 params = {
     # Data access. Only required parameters are specified
     "data_local_config": ParamsUtils.convert_to_ast(local_conf),
-    "data_files_to_use": ast.literal_eval("['.pdf','.docx','.pptx','.zip']"),
+    "data_files_to_use": ast.literal_eval("['.pdf','.docx','.pptx','.xml','.zip']"),
     # execution info
     "runtime_pipeline_id": "pipeline_id",
     "runtime_job_id": "job_id",
     "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
     # pdf2parquet params
     "pdf2parquet_double_precision": 0,
+
+    # for extected_batch
     # "pdf2parquet_batch_size": 10,
+
+    # for expected_md_no_table_no_ocr
     # "pdf2parquet_do_table_structure": False,
     # "pdf2parquet_do_ocr": False,
     # "pdf2parquet_contents_type": "text/markdown",
+
+    # for expected_json
     # "pdf2parquet_contents_type": "application/json",
 }
 if __name__ == "__main__":

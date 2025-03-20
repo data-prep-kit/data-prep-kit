@@ -30,7 +30,7 @@ class TestCodeProfilerTransformPython(AbstractTransformLauncherTest):
         launcher = PythonTransformLauncher(CodeProfilerPythonTransformConfiguration())
         input_dir = os.path.join(src_file_dir, "../test-data/input")
         expected_dir = os.path.join(src_file_dir, "../test-data/expected/python")
-        transform_config = {"contents": "contents", "language": "language"}
+        transform_config = {"contents": "contents", "programming_language": "programming_language"}
 
         fixtures.append(
             (

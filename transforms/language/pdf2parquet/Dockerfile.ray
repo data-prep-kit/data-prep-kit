@@ -32,15 +32,12 @@ COPY --chmod=775 --chown=ray:root dpk_pdf2parquet/ dpk_pdf2parquet/
 COPY --chmod=775 --chown=ray:root requirements.txt requirements.txt
 RUN pip install ${PIP_INSTALL_EXTRA_ARGS} -r requirements.txt
 
-
-
-# Download models
-RUN python -c 'from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models; load_pretrained_nlp_models(verbose=True);'
-# RUN python -c 'from docling.document_converter import DocumentConverter; from pathlib import Path; DocumentConverter.download_models_hf(local_dir=Path("./artifacts/"));'
-RUN python -c 'from docling.pipeline.standard_pdf_pipeline import StandardPdfPipeline; s=StandardPdfPipeline.download_models_hf(); print(f"Models cached in {s}")'
-
 # Set environment
 ENV PYTHONPATH /home/ray
+ENV PATH="/home/ray/.local/bin:${PATH}" 
+
+# Download models
+RUN docling-tools models download layout tableformer picture_classifier easyocr
 
 # Parallelism
 ENV OMP_NUM_THREADS=2

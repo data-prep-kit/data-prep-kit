@@ -9,7 +9,13 @@ The detail pipeline is presented in the [Simplest Transform pipeline tutorial](.
 
 ## Compilation
 
-In order to compile pipeline definitions run
+In order to compile pipeline definitions first export
+your HugginFact token as follows:
+```shell
+export HF_READ_ACCESS_TOKEN=<token>
+```
+
+Then run:
 ```shell
 make workflow-build
 ```

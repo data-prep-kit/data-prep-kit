@@ -1,0 +1,6 @@
+nltk>=3.9.1
+requests
+transformers
+pandas
+psutil
+GPUtil

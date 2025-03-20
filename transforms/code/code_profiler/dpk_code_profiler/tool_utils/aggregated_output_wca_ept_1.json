@@ -4,7 +4,7 @@
     "description": "This report presents aggregated profiling data across multiple JSON files.",
     "metrics": [
         {
-            "name": "UAST_Package_List",
+            "name": "uast_package_list",
             "value_counts": {
                 "null": 174174,
                 "java.io.IOException": 12606,
@@ -47013,7 +47013,7 @@
             }
         },
         {
-            "name": "language",
+            "name": "programming_language",
             "value_counts": {
                 "unknown": 13505,
                 "YAML": 742,
@@ -47086,7 +47086,7 @@
             }
         },
         {
-            "name": "Concepts",
+            "name": "concepts",
             "value_counts": {
                 "": 234260,
                 "Algorithms and Data Structures": 32012,
@@ -47103,7 +47103,7 @@
             }
         },
         {
-            "name": "CCR",
+            "name": "ccr",
             "value_counts": {
                 "0.0": 177054,
                 "0.9348659003831418": 1,

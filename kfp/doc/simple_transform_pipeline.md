@@ -11,6 +11,9 @@ In this tutorial, we will show the following:
 
 Note: the project and the explanation below are based on [KFPv1](https://www.kubeflow.org/docs/components/pipelines/v1/)
 
+Note: For details on using the HugginFace token in a pipeline for relevant transforms, 
+please refer to the [HugginFace token](#hf) section.
+
 ## 📝 Table of Contents
 - [Implementing pipeline](#implementing)
   - [Imports definition](#imports) 
@@ -300,3 +303,60 @@ Additionally, the log is saved to S3 (location is denoted but the last line in t
 
 The cluster clean up is described at [Clean up the cluster](./setup#cleanup)
 
+## Using HugginFace token <a name = "hf"></a>
+
+This section explains how to use the HugginFace token for transforms that require it.
+To prevent exposing the token in the pipeline, it is assumed that the token is stored as a kubernetes secret in the namespace where the pipeline runs.
+To support that, the transform pipeline should include the following code after the [Components definition](#components) section:
+
+```bash
+from python_apiserver_client.params import (
+    EnvVarFrom,
+    EnvironmentVariables,
+    EnvVarSource,
+)
+
+# The name of the secret that holds the HugginFace token
+HF_SECRET = "hf-secret"
+# The secret key that holds the HugginFace token
+HF_SECRET_KEY = "hf-token"
+# HuggingFace token is exported as environment variables in Ray node pods.
+env_v = EnvVarFrom(source=EnvVarSource.SECRET, name=HF_SECRET, key=HF_SECRET_KEY)
+envs = EnvironmentVariables(from_ref={"HF_READ_ACCESS_TOKEN": env_v})
+```
+
+In addition, `"environment": envs.to_dict()` should be added to `ray_head_options`
+and `ray_worker_options` in [Input parameters definition](#inputs) section. For
+example, for `ray_head_options`:
+```bash
+ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image, "environment": envs.to_dict()},
+```
+
+and for `ray_worker_options`:
+```bash
+ray_worker_options: dict = {
+        "replicas": 2,
+        "max_replicas": 2,
+        "min_replicas": 2,
+        "cpu": 2,
+        "memory": 4,
+        "image": task_image,
+        "environment": envs.to_dict(),
+    },
+```
+
+Before running the pipeline, create a secret named `hf-secret` as shown below, ensuring that the `HF_READ_ACCESS_TOKEN` environment variable is defined first, holding the HugginFace token.
+
+```bash
+export HF_READ_ACCESS_TOKEN=<HugginFace token>
+```
+```bash
+apiVersion: v1
+kind: Secret
+metadata:
+  name: hf-secret
+  namespace: kubeflow
+type: Opaque
+stringData:
+      hf-token: "${HF_READ_ACCESS_TOKEN}"
+``` 

@@ -19,7 +19,7 @@ run-cli-sample:
 	source venv/bin/activate && \
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).transform_python \
              --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
-			 --language "language" \
+			 --programming_language "programming_language" \
 			 --contents "contents"
 
 run-ray-cli-sample:
@@ -28,5 +28,5 @@ run-ray-cli-sample:
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.transform \
 		--data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
         --run_locally True \
-		--language "language" \
+		--programming_language "programming_language" \
 		--contents "contents"

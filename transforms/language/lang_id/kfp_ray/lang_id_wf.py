@@ -9,11 +9,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ################################################################################
+import json
 import os
 
 import kfp.compiler as compiler
 import kfp.components as comp
 import kfp.dsl as dsl
+from python_apiserver_client.params import (
+    EnvironmentVariables,
+    EnvVarFrom,
+    EnvVarSource,
+)
 from workflow_support.compile_utils import (
     DEFAULT_KFP_COMPONENT_SPEC_PATH,
     ONE_HOUR_SEC,
@@ -22,17 +28,21 @@ from workflow_support.compile_utils import (
 )
 
 
+# The name of the secret that holds the HugginFace token
+HF_SECRET = "hf-secret"
+# The secret key that holds the HugginFace token
+HF_SECRET_KEY = "hf-token"
+
 task_image = "quay.io/dataprep1/data-prep-kit/lang_id-ray:latest"
 
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_lang_id.ray.transform"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:0.2.3"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)
-
 
 
 # compute execution parameters. Here different tranforms might need different implementations. As
@@ -46,7 +56,6 @@ def compute_exec_params_func(
     runtime_pipeline_id: str,
     runtime_job_id: str,
     runtime_code_location: dict,
-    lang_id_model_credential: str,
     lang_id_model_kind: str,
     lang_id_model_url: str,
     lang_id_content_column_name: str,
@@ -64,7 +73,6 @@ def compute_exec_params_func(
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
         "runtime_code_location": str(runtime_code_location),
-        "lang_id_model_credential": lang_id_model_credential,
         "lang_id_model_kind": lang_id_model_kind,
         "lang_id_model_url": lang_id_model_url,
         "lang_id_content_column_name": lang_id_content_column_name,
@@ -93,6 +101,14 @@ cleanup_ray_op = comp.load_component_from_file(component_spec_path + "deleteRayC
 # Task name is part of the pipeline name, the ray cluster name and the job name in DMF.
 TASK_NAME: str = "lang_id"
 
+# HuggingFace token is exported as environment variables in Ray node pods.
+# Alternatively, the secret name can be passed to the KFP component,
+# which will set it as an environment variable in the Ray nodes.
+# In this option the secret name can be set at runtime
+# but is dependent on the KFP version.
+env_v = EnvVarFrom(source=EnvVarSource.SECRET, name=HF_SECRET, key=HF_SECRET_KEY)
+envs = EnvironmentVariables(from_ref={"HF_READ_ACCESS_TOKEN": env_v})
+
 
 @dsl.pipeline(
     name=TASK_NAME + "-ray-pipeline",
@@ -101,9 +117,9 @@ TASK_NAME: str = "lang_id"
 def lang_id(
     # Ray cluster
     ray_name: str = "lang_id-kfp-ray",  # name of Ray cluster
-    ray_run_id_KFPv2: str = "",   # Ray cluster unique ID used only in KFP v2
+    ray_run_id_KFPv2: str = "",  # Ray cluster unique ID used only in KFP v2
     # Add image_pull_secret and image_pull_policy to ray workers if needed
-    ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
+    ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image, "environment": envs.to_dict()},
     ray_worker_options: dict = {
         "replicas": 2,
         "max_replicas": 2,
@@ -111,6 +127,7 @@ def lang_id(
         "cpu": 2,
         "memory": 4,
         "image": task_image,
+        "environment": envs.to_dict(),
     },
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
@@ -123,7 +140,6 @@ def lang_id(
     runtime_pipeline_id: str = "pipeline_id",
     runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # lang_id parameters
-    lang_id_model_credential: str = "PUT YOUR OWN HUGGINGFACE CREDENTIAL",
     lang_id_model_kind: str = "fasttext",
     lang_id_model_url: str = "facebook/fasttext-language-identification",
     lang_id_content_column_name: str = "text",
@@ -166,7 +182,6 @@ def lang_id(
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
     :param runtime_code_location - code location
-    :param lang_id_model_credential - credential you use to get model
     :param lang_id_model_kind - what kind of model you want to use for language identification
     :param lang_id_model_url - url that model locates
     :param lang_id_content_column_name - name of the column containing documents
@@ -179,8 +194,10 @@ def lang_id(
     # https://github.com/kubeflow/pipelines/issues/10187. Therefore, meantime the user is requested to insert
     # a unique string created at run creation time.
     if os.getenv("KFPv2", "0") == "1":
-        print("WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
-              "same version of the same pipeline !!!")
+        print(
+            "WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
+            "same version of the same pipeline !!!"
+        )
         run_id = ray_run_id_KFPv2
     else:
         run_id = dsl.RUN_ID_PLACEHOLDER
@@ -201,7 +218,6 @@ def lang_id(
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
             runtime_code_location=runtime_code_location,
-            lang_id_model_credential=lang_id_model_credential,
             lang_id_model_kind=lang_id_model_kind,
             lang_id_model_url=lang_id_model_url,
             lang_id_content_column_name=lang_id_content_column_name,

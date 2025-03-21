@@ -45,10 +45,10 @@ def compute_exec_params_func(
     runtime_pipeline_id: str,
     runtime_job_id: str,
     runtime_code_location: dict,
-    column_prefix: str,
-    lang_column_name: str,
-    config: str,
-    ignore_missing_columns: bool,
+    ml_filter_column_prefix: str,
+    ml_filter_lang_column_name: str,
+    ml_filter_config: str,
+    ml_filter_ignore_missing_columns: bool,
 ) -> dict:
     from runtime_utils import KFPUtils
 
@@ -62,10 +62,10 @@ def compute_exec_params_func(
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
         "runtime_code_location": str(runtime_code_location),
-        "column_prefix": column_prefix,
-        "lang_column_name": lang_column_name,
-        "config": config,
-        "ignore_missing_columns": ignore_missing_columns,
+        "ml_filter_column_prefix": ml_filter_column_prefix,
+        "ml_filter_lang_column_name": ml_filter_lang_column_name,
+        "ml_filter_config": ml_filter_config,
+        "ml_filter_ignore_missing_columns": ml_filter_ignore_missing_columns,
     }
 
 
@@ -121,10 +121,10 @@ def ml_filter(
     runtime_pipeline_id: str = "pipeline_id",
     runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # ml_filter parameters
-    column_prefix: str = "",
-    lang_column_name: str = "lang",
-    config: str = "cleansing-config.yaml",
-    ignore_missing_columns: bool = "False",
+    ml_filter_column_prefix: str = "",
+    ml_filter_lang_column_name: str = "lang",
+    ml_filter_config: str = "cleansing-config.yaml",
+    ml_filter_ignore_missing_columns: bool = "False",
     # additional parameters
     additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
 ):
@@ -162,10 +162,10 @@ def ml_filter(
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
     :param runtime_code_location - code location
-    :param column_prefix - Prefix for to all columns referenced in the conditions table
-    :param lang_column_name - Name of the column with the language identifier
-    :param config - File name for the condition table (yaml)
-    :param ignore_missing_columns - Ignore conditions that reference fields not present in the data
+    :param ml_filter_column_prefix - Prefix for to all columns referenced in the conditions table
+    :param ml_filter_lang_column_name - Name of the column with the language identifier
+    :param ml_filter_config - File name for the condition table (yaml)
+    :param ml_filter_ignore_missing_columns - Ignore conditions that reference fields not present in the data
     :return: None
     """
     # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
@@ -198,10 +198,10 @@ def ml_filter(
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
             runtime_code_location=runtime_code_location,
-            column_prefix=column_prefix,
-            lang_column_name=lang_column_name,
-            config=config,
-            ignore_missing_columns=ignore_missing_columns,
+            ml_filter_column_prefix=ml_filter_column_prefix,
+            ml_filter_lang_column_name=ml_filter_lang_column_name,
+            ml_filter_config=ml_filter_config,
+            ml_filter_ignore_missing_columns=ml_filter_ignore_missing_columns,
         )
 
         ComponentUtils.add_settings_to_component(compute_exec_params, ONE_HOUR_SEC * 2)

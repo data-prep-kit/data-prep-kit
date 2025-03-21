@@ -45,36 +45,36 @@ def compute_exec_params_func(
     runtime_pipeline_id: str,
     runtime_job_id: str,
     runtime_code_location: dict,
-    output_column_prefix: str,
-    content_column_name: str,
-    lang_column_name: str,
-    num_newlines_column_name: str,
-    num_paragraphs_column_name: str,
-    num_words_column_name: str,
-    num_chars_column_name: str,
-    total_non_newline_chars_column_name: str,
-    avg_word_length_column_name: str,
-    avg_paragraph_length_chars_column_name: str,
-    avg_paragraph_length_words_column_name: str,
-    alphanumeric_char_ratio_column_name: str,
-    control_char_ratio_column_name: str,
-    punctuation_char_ratio_column_name: str,
-    other_symbol_char_ratio_column_name: str,
-    tabs_word_ratio_column_name: str,
-    hashes_word_ratio_column_name: str,
-    ellipsis_ratio_column_name: str,
-    bulletpoint_ratio_column_name: str,
-    dup_paragraphs_ratio_column_name: str,
-    dup_paragraphs_char_ratio_column_name: str,
-    top_2_gram_char_ratio_column_name: str,
-    top_3_gram_char_ratio_column_name: str,
-    top_4_gram_char_ratio_column_name: str,
-    dup_5_gram_char_ratio_column_name: str,
-    dup_6_gram_char_ratio_column_name: str,
-    dup_7_gram_char_ratio_column_name: str,
-    dup_8_gram_char_ratio_column_name: str,
-    dup_9_gram_char_ratio_column_name: str,
-    dup_10_gram_char_ratio_column_name: str,
+    enrichment_output_column_prefix: str,
+    enrichment_content_column_name: str,
+    enrichment_lang_column_name: str,
+    enrichment_num_newlines_column_name: str,
+    enrichment_num_paragraphs_column_name: str,
+    enrichment_num_words_column_name: str,
+    enrichment_num_chars_column_name: str,
+    enrichment_total_non_newline_chars_column_name: str,
+    enrichment_avg_word_length_column_name: str,
+    enrichment_avg_paragraph_length_chars_column_name: str,
+    enrichment_avg_paragraph_length_words_column_name: str,
+    enrichment_alphanumeric_char_ratio_column_name: str,
+    enrichment_control_char_ratio_column_name: str,
+    enrichment_punctuation_char_ratio_column_name: str,
+    enrichment_other_symbol_char_ratio_column_name: str,
+    enrichment_tabs_word_ratio_column_name: str,
+    enrichment_hashes_word_ratio_column_name: str,
+    enrichment_ellipsis_ratio_column_name: str,
+    enrichment_bulletpoint_ratio_column_name: str,
+    enrichment_dup_paragraphs_ratio_column_name: str,
+    enrichment_dup_paragraphs_char_ratio_column_name: str,
+    enrichment_top_2_gram_char_ratio_column_name: str,
+    enrichment_top_3_gram_char_ratio_column_name: str,
+    enrichment_top_4_gram_char_ratio_column_name: str,
+    enrichment_dup_5_gram_char_ratio_column_name: str,
+    enrichment_dup_6_gram_char_ratio_column_name: str,
+    enrichment_dup_7_gram_char_ratio_column_name: str,
+    enrichment_dup_8_gram_char_ratio_column_name: str,
+    enrichment_dup_9_gram_char_ratio_column_name: str,
+    enrichment_dup_10_gram_char_ratio_column_name: str,
 ) -> dict:
     from runtime_utils import KFPUtils
 
@@ -88,36 +88,36 @@ def compute_exec_params_func(
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
         "runtime_code_location": str(runtime_code_location),
-        "output_column_prefix": output_column_prefix,
-        "content_column_name": content_column_name,
-        "lang_column_name": lang_column_name,
-        "num_newlines_column_name": num_newlines_column_name,
-        "num_paragraphs_column_name": num_paragraphs_column_name,
-        "num_words_column_name": num_words_column_name,
-        "num_chars_column_name": num_chars_column_name,
-        "total_non_newline_chars_column_name": total_non_newline_chars_column_name,
-        "avg_word_length_column_name": avg_word_length_column_name,
-        "avg_paragraph_length_chars_column_name": avg_paragraph_length_chars_column_name,
-        "avg_paragraph_length_words_column_name": avg_paragraph_length_words_column_name,
-        "alphanumeric_char_ratio_column_name": alphanumeric_char_ratio_column_name,
-        "control_char_ratio_column_name": control_char_ratio_column_name,
-        "punctuation_char_ratio_column_name": punctuation_char_ratio_column_name,
-        "other_symbol_char_ratio_column_name": other_symbol_char_ratio_column_name,
-        "tabs_word_ratio_column_name": tabs_word_ratio_column_name,
-        "hashes_word_ratio_column_name": hashes_word_ratio_column_name,
-        "ellipsis_ratio_column_name": ellipsis_ratio_column_name,
-        "bulletpoint_ratio_column_name": bulletpoint_ratio_column_name,
-        "dup_paragraphs_ratio_column_name": dup_paragraphs_ratio_column_name,
-        "dup_paragraphs_char_ratio_column_name": dup_paragraphs_char_ratio_column_name,
-        "top_2_gram_char_ratio_column_name": top_2_gram_char_ratio_column_name,
-        "top_3_gram_char_ratio_column_name": top_3_gram_char_ratio_column_name,
-        "top_4_gram_char_ratio_column_name": top_4_gram_char_ratio_column_name,
-        "dup_5_gram_char_ratio_column_name": dup_5_gram_char_ratio_column_name,
-        "dup_6_gram_char_ratio_column_name": dup_6_gram_char_ratio_column_name,
-        "dup_7_gram_char_ratio_column_name": dup_7_gram_char_ratio_column_name,
-        "dup_8_gram_char_ratio_column_name": dup_8_gram_char_ratio_column_name,
-        "dup_9_gram_char_ratio_column_name": dup_9_gram_char_ratio_column_name,
-        "dup_10_gram_char_ratio_column_name": dup_10_gram_char_ratio_column_name,
+        "enrichment_output_column_prefix": enrichment_output_column_prefix,
+        "enrichment_content_column_name": enrichment_content_column_name,
+        "enrichment_lang_column_name": enrichment_lang_column_name,
+        "enrichment_num_newlines_column_name": enrichment_num_newlines_column_name,
+        "enrichment_num_paragraphs_column_name": enrichment_num_paragraphs_column_name,
+        "enrichment_num_words_column_name": enrichment_num_words_column_name,
+        "enrichment_num_chars_column_name": enrichment_num_chars_column_name,
+        "enrichment_total_non_newline_chars_column_name": enrichment_total_non_newline_chars_column_name,
+        "enrichment_avg_word_length_column_name": enrichment_avg_word_length_column_name,
+        "enrichment_avg_paragraph_length_chars_column_name": enrichment_avg_paragraph_length_chars_column_name,
+        "enrichment_avg_paragraph_length_words_column_name": enrichment_avg_paragraph_length_words_column_name,
+        "enrichment_alphanumeric_char_ratio_column_name": enrichment_alphanumeric_char_ratio_column_name,
+        "enrichment_control_char_ratio_column_name": enrichment_control_char_ratio_column_name,
+        "enrichment_punctuation_char_ratio_column_name": enrichment_punctuation_char_ratio_column_name,
+        "enrichment_other_symbol_char_ratio_column_name": enrichment_other_symbol_char_ratio_column_name,
+        "enrichment_tabs_word_ratio_column_name": enrichment_tabs_word_ratio_column_name,
+        "enrichment_hashes_word_ratio_column_name": enrichment_hashes_word_ratio_column_name,
+        "enrichment_ellipsis_ratio_column_name": enrichment_ellipsis_ratio_column_name,
+        "enrichment_bulletpoint_ratio_column_name": enrichment_bulletpoint_ratio_column_name,
+        "enrichment_dup_paragraphs_ratio_column_name": enrichment_dup_paragraphs_ratio_column_name,
+        "enrichment_dup_paragraphs_char_ratio_column_name": enrichment_dup_paragraphs_char_ratio_column_name,
+        "enrichment_top_2_gram_char_ratio_column_name": enrichment_top_2_gram_char_ratio_column_name,
+        "enrichment_top_3_gram_char_ratio_column_name": enrichment_top_3_gram_char_ratio_column_name,
+        "enrichment_top_4_gram_char_ratio_column_name": enrichment_top_4_gram_char_ratio_column_name,
+        "enrichment_dup_5_gram_char_ratio_column_name": enrichment_dup_5_gram_char_ratio_column_name,
+        "enrichment_dup_6_gram_char_ratio_column_name": enrichment_dup_6_gram_char_ratio_column_name,
+        "enrichment_dup_7_gram_char_ratio_column_name": enrichment_dup_7_gram_char_ratio_column_name,
+        "enrichment_dup_8_gram_char_ratio_column_name": enrichment_dup_8_gram_char_ratio_column_name,
+        "enrichment_dup_9_gram_char_ratio_column_name": enrichment_dup_9_gram_char_ratio_column_name,
+        "enrichment_dup_10_gram_char_ratio_column_name": enrichment_dup_10_gram_char_ratio_column_name,
     }
 
 
@@ -173,36 +173,36 @@ def enrichment(
     runtime_pipeline_id: str = "pipeline_id",
     runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # enrichment parameters
-    output_column_prefix: str = "",
-    content_column_name: str = "text",
-    lang_column_name: str = "lang",
-    num_newlines_column_name: str = "num_newlines",
-    num_paragraphs_column_name: str = "num_paragraphs",
-    num_words_column_name: str = "num_words",
-    num_chars_column_name: str = "num_chars",
-    total_non_newline_chars_column_name: str = "total_non_newline_chars",
-    avg_word_length_column_name: str = "avg_word_length",
-    avg_paragraph_length_chars_column_name: str = "avg_paragraph_length_chars",
-    avg_paragraph_length_words_column_name: str = "avg_paragraph_length_words",
-    alphanumeric_char_ratio_column_name: str = "alphanumeric_char_ratio",
-    control_char_ratio_column_name: str = "control_char_ratio",
-    punctuation_char_ratio_column_name: str = "punctuation_char_ratio",
-    other_symbol_char_ratio_column_name: str = "other_symbol_char_ratio",
-    tabs_word_ratio_column_name: str = "tabs_word_ratio",
-    hashes_word_ratio_column_name: str = "hashes_word_ratio",
-    ellipsis_ratio_column_name: str = "ellipsis_ratio",
-    bulletpoint_ratio_column_name: str = "bulletpoint_ratio",
-    dup_paragraphs_ratio_column_name: str = "dup_paragraphs_ratio",
-    dup_paragraphs_char_ratio_column_name: str = "dup_paragraphs_char_ratio",
-    top_2_gram_char_ratio_column_name: str = "top_2_gram_char_ratio",
-    top_3_gram_char_ratio_column_name: str = "top_3_gram_char_ratio",
-    top_4_gram_char_ratio_column_name: str = "top_4_gram_char_ratio",
-    dup_5_gram_char_ratio_column_name: str = "dup_5_gram_char_ratio",
-    dup_6_gram_char_ratio_column_name: str = "dup_6_gram_char_ratio",
-    dup_7_gram_char_ratio_column_name: str = "dup_7_gram_char_ratio",
-    dup_8_gram_char_ratio_column_name: str = "dup_8_gram_char_ratio",
-    dup_9_gram_char_ratio_column_name: str = "dup_9_gram_char_ratio",
-    dup_10_gram_char_ratio_column_name: str = "dup_10_gram_char_ratio",
+    enrichment_output_column_prefix: str = "",
+    enrichment_content_column_name: str = "text",
+    enrichment_lang_column_name: str = "lang",
+    enrichment_num_newlines_column_name: str = "num_newlines",
+    enrichment_num_paragraphs_column_name: str = "num_paragraphs",
+    enrichment_num_words_column_name: str = "num_words",
+    enrichment_num_chars_column_name: str = "num_chars",
+    enrichment_total_non_newline_chars_column_name: str = "total_non_newline_chars",
+    enrichment_avg_word_length_column_name: str = "avg_word_length",
+    enrichment_avg_paragraph_length_chars_column_name: str = "avg_paragraph_length_chars",
+    enrichment_avg_paragraph_length_words_column_name: str = "avg_paragraph_length_words",
+    enrichment_alphanumeric_char_ratio_column_name: str = "alphanumeric_char_ratio",
+    enrichment_control_char_ratio_column_name: str = "control_char_ratio",
+    enrichment_punctuation_char_ratio_column_name: str = "punctuation_char_ratio",
+    enrichment_other_symbol_char_ratio_column_name: str = "other_symbol_char_ratio",
+    enrichment_tabs_word_ratio_column_name: str = "tabs_word_ratio",
+    enrichment_hashes_word_ratio_column_name: str = "hashes_word_ratio",
+    enrichment_ellipsis_ratio_column_name: str = "ellipsis_ratio",
+    enrichment_bulletpoint_ratio_column_name: str = "bulletpoint_ratio",
+    enrichment_dup_paragraphs_ratio_column_name: str = "dup_paragraphs_ratio",
+    enrichment_dup_paragraphs_char_ratio_column_name: str = "dup_paragraphs_char_ratio",
+    enrichment_top_2_gram_char_ratio_column_name: str = "top_2_gram_char_ratio",
+    enrichment_top_3_gram_char_ratio_column_name: str = "top_3_gram_char_ratio",
+    enrichment_top_4_gram_char_ratio_column_name: str = "top_4_gram_char_ratio",
+    enrichment_dup_5_gram_char_ratio_column_name: str = "dup_5_gram_char_ratio",
+    enrichment_dup_6_gram_char_ratio_column_name: str = "dup_6_gram_char_ratio",
+    enrichment_dup_7_gram_char_ratio_column_name: str = "dup_7_gram_char_ratio",
+    enrichment_dup_8_gram_char_ratio_column_name: str = "dup_8_gram_char_ratio",
+    enrichment_dup_9_gram_char_ratio_column_name: str = "dup_9_gram_char_ratio",
+    enrichment_dup_10_gram_char_ratio_column_name: str = "dup_10_gram_char_ratio",
     # additional parameters
     additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
 ):
@@ -240,36 +240,36 @@ def enrichment(
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
     :param runtime_code_location - code location
-    :param output_column_prefix - Prefix to add to all output column names that are not explicitly defined
-    :param content_column_name - Name of the content column
-    :param lang_column_name - Name of the column with the language identifier
-    :param num_newlines_column_name - Column name for num_newlines
-    :param num_paragraphs_column_name - Column name for num_paragraphs
-    :param num_words_column_name - Column name for num_words
-    :param num_chars_column_name - Column name for num_chars
-    :param total_non_newline_chars_column_name - Column name for total_non_newline_chars
-    :param avg_word_length_column_name - Column name for avg_word_length
-    :param avg_paragraph_length_chars_column_name - Column name for avg_paragraph_length_chars
-    :param avg_paragraph_length_words_column_name - Column name for avg_paragraph_length_words
-    :param alphanumeric_char_ratio_column_name - Column name for alphanumeric_char_ratio
-    :param control_char_ratio_column_name - Column name for control_char_ratio
-    :param punctuation_char_ratio_column_name - Column name for punctuation_char_ratio
-    :param other_symbol_char_ratio_column_name - Column name for other_symbol_char_ratio
-    :param tabs_word_ratio_column_name - Column name for tabs_word_ratio
-    :param hashes_word_ratio_column_name - Column name for hashes_word_ratio
-    :param ellipsis_ratio_column_name - Column name for ellipsis_ratio
-    :param bulletpoint_ratio_column_name - Column name for bulletpoint_ratio
-    :param dup_paragraphs_ratio_column_name - Column name for dup_paragraphs_ratio
-    :param dup_paragraphs_char_ratio_column_name - Column name for dup_paragraphs_char_ratio
-    :param top_2_gram_char_ratio_column_name - Column name for top_2_gram_char_ratio
-    :param top_3_gram_char_ratio_column_name - Column name for top_3_gram_char_ratio
-    :param top_4_gram_char_ratio_column_name - Column name for top_4_gram_char_ratio
-    :param dup_5_gram_char_ratio_column_name - Column name for dup_5_gram_char_ratio
-    :param dup_6_gram_char_ratio_column_name - Column name for dup_6_gram_char_ratio
-    :param dup_7_gram_char_ratio_column_name - Column name for dup_7_gram_char_ratio
-    :param dup_8_gram_char_ratio_column_name - Column name for dup_8_gram_char_ratio
-    :param dup_9_gram_char_ratio_column_name - Column name for dup_9_gram_char_ratio
-    :param dup_10_gram_char_ratio_column_name - Column name for dup_10_gram_char_ratio
+    :param enrichment_output_column_prefix - Prefix to add to all output column names that are not explicitly defined
+    :param enrichment_content_column_name - Name of the content column
+    :param enrichment_lang_column_name - Name of the column with the language identifier
+    :param enrichment_num_newlines_column_name - Column name for num_newlines
+    :param enrichment_num_paragraphs_column_name - Column name for num_paragraphs
+    :param enrichment_num_words_column_name - Column name for num_words
+    :param enrichment_num_chars_column_name - Column name for num_chars
+    :param enrichment_total_non_newline_chars_column_name - Column name for total_non_newline_chars
+    :param enrichment_avg_word_length_column_name - Column name for avg_word_length
+    :param enrichment_avg_paragraph_length_chars_column_name - Column name for avg_paragraph_length_chars
+    :param enrichment_avg_paragraph_length_words_column_name - Column name for avg_paragraph_length_words
+    :param enrichment_alphanumeric_char_ratio_column_name - Column name for alphanumeric_char_ratio
+    :param enrichment_control_char_ratio_column_name - Column name for control_char_ratio
+    :param enrichment_punctuation_char_ratio_column_name - Column name for punctuation_char_ratio
+    :param enrichment_other_symbol_char_ratio_column_name - Column name for other_symbol_char_ratio
+    :param enrichment_tabs_word_ratio_column_name - Column name for tabs_word_ratio
+    :param enrichment_hashes_word_ratio_column_name - Column name for hashes_word_ratio
+    :param enrichment_ellipsis_ratio_column_name - Column name for ellipsis_ratio
+    :param enrichment_bulletpoint_ratio_column_name - Column name for bulletpoint_ratio
+    :param enrichment_dup_paragraphs_ratio_column_name - Column name for dup_paragraphs_ratio
+    :param enrichment_dup_paragraphs_char_ratio_column_name - Column name for dup_paragraphs_char_ratio
+    :param enrichment_top_2_gram_char_ratio_column_name - Column name for top_2_gram_char_ratio
+    :param enrichment_top_3_gram_char_ratio_column_name - Column name for top_3_gram_char_ratio
+    :param enrichment_top_4_gram_char_ratio_column_name - Column name for top_4_gram_char_ratio
+    :param enrichment_dup_5_gram_char_ratio_column_name - Column name for dup_5_gram_char_ratio
+    :param enrichment_dup_6_gram_char_ratio_column_name - Column name for dup_6_gram_char_ratio
+    :param enrichment_dup_7_gram_char_ratio_column_name - Column name for dup_7_gram_char_ratio
+    :param enrichment_dup_8_gram_char_ratio_column_name - Column name for dup_8_gram_char_ratio
+    :param enrichment_dup_9_gram_char_ratio_column_name - Column name for dup_9_gram_char_ratio
+    :param enrichment_dup_10_gram_char_ratio_column_name - Column name for dup_10_gram_char_ratio
     :return: None
     """
     # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
@@ -302,36 +302,36 @@ def enrichment(
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
             runtime_code_location=runtime_code_location,
-            output_column_prefix=output_column_prefix,
-            content_column_name=content_column_name,
-            lang_column_name=lang_column_name,
-            num_newlines_column_name=num_newlines_column_name,
-            num_paragraphs_column_name=num_paragraphs_column_name,
-            num_words_column_name=num_words_column_name,
-            num_chars_column_name=num_chars_column_name,
-            total_non_newline_chars_column_name=total_non_newline_chars_column_name,
-            avg_word_length_column_name=avg_word_length_column_name,
-            avg_paragraph_length_chars_column_name=avg_paragraph_length_chars_column_name,
-            avg_paragraph_length_words_column_name=avg_paragraph_length_words_column_name,
-            alphanumeric_char_ratio_column_name=alphanumeric_char_ratio_column_name,
-            control_char_ratio_column_name=control_char_ratio_column_name,
-            punctuation_char_ratio_column_name=punctuation_char_ratio_column_name,
-            other_symbol_char_ratio_column_name=other_symbol_char_ratio_column_name,
-            tabs_word_ratio_column_name=tabs_word_ratio_column_name,
-            hashes_word_ratio_column_name=hashes_word_ratio_column_name,
-            ellipsis_ratio_column_name=ellipsis_ratio_column_name,
-            bulletpoint_ratio_column_name=bulletpoint_ratio_column_name,
-            dup_paragraphs_ratio_column_name=dup_paragraphs_ratio_column_name,
-            dup_paragraphs_char_ratio_column_name=dup_paragraphs_char_ratio_column_name,
-            top_2_gram_char_ratio_column_name=top_2_gram_char_ratio_column_name,
-            top_3_gram_char_ratio_column_name=top_3_gram_char_ratio_column_name,
-            top_4_gram_char_ratio_column_name=top_4_gram_char_ratio_column_name,
-            dup_5_gram_char_ratio_column_name=dup_5_gram_char_ratio_column_name,
-            dup_6_gram_char_ratio_column_name=dup_6_gram_char_ratio_column_name,
-            dup_7_gram_char_ratio_column_name=dup_7_gram_char_ratio_column_name,
-            dup_8_gram_char_ratio_column_name=dup_8_gram_char_ratio_column_name,
-            dup_9_gram_char_ratio_column_name=dup_9_gram_char_ratio_column_name,
-            dup_10_gram_char_ratio_column_name=dup_10_gram_char_ratio_column_name,
+            enrichment_output_column_prefix=enrichment_output_column_prefix,
+            enrichment_content_column_name=enrichment_content_column_name,
+            enrichment_lang_column_name=enrichment_lang_column_name,
+            enrichment_num_newlines_column_name=enrichment_num_newlines_column_name,
+            enrichment_num_paragraphs_column_name=enrichment_num_paragraphs_column_name,
+            enrichment_num_words_column_name=enrichment_num_words_column_name,
+            enrichment_num_chars_column_name=enrichment_num_chars_column_name,
+            enrichment_total_non_newline_chars_column_name=enrichment_total_non_newline_chars_column_name,
+            enrichment_avg_word_length_column_name=enrichment_avg_word_length_column_name,
+            enrichment_avg_paragraph_length_chars_column_name=enrichment_avg_paragraph_length_chars_column_name,
+            enrichment_avg_paragraph_length_words_column_name=enrichment_avg_paragraph_length_words_column_name,
+            enrichment_alphanumeric_char_ratio_column_name=enrichment_alphanumeric_char_ratio_column_name,
+            enrichment_control_char_ratio_column_name=enrichment_control_char_ratio_column_name,
+            enrichment_punctuation_char_ratio_column_name=enrichment_punctuation_char_ratio_column_name,
+            enrichment_other_symbol_char_ratio_column_name=enrichment_other_symbol_char_ratio_column_name,
+            enrichment_tabs_word_ratio_column_name=enrichment_tabs_word_ratio_column_name,
+            enrichment_hashes_word_ratio_column_name=enrichment_hashes_word_ratio_column_name,
+            enrichment_ellipsis_ratio_column_name=enrichment_ellipsis_ratio_column_name,
+            enrichment_bulletpoint_ratio_column_name=enrichment_bulletpoint_ratio_column_name,
+            enrichment_dup_paragraphs_ratio_column_name=enrichment_dup_paragraphs_ratio_column_name,
+            enrichment_dup_paragraphs_char_ratio_column_name=enrichment_dup_paragraphs_char_ratio_column_name,
+            enrichment_top_2_gram_char_ratio_column_name=enrichment_top_2_gram_char_ratio_column_name,
+            enrichment_top_3_gram_char_ratio_column_name=enrichment_top_3_gram_char_ratio_column_name,
+            enrichment_top_4_gram_char_ratio_column_name=enrichment_top_4_gram_char_ratio_column_name,
+            enrichment_dup_5_gram_char_ratio_column_name=enrichment_dup_5_gram_char_ratio_column_name,
+            enrichment_dup_6_gram_char_ratio_column_name=enrichment_dup_6_gram_char_ratio_column_name,
+            enrichment_dup_7_gram_char_ratio_column_name=enrichment_dup_7_gram_char_ratio_column_name,
+            enrichment_dup_8_gram_char_ratio_column_name=enrichment_dup_8_gram_char_ratio_column_name,
+            enrichment_dup_9_gram_char_ratio_column_name=enrichment_dup_9_gram_char_ratio_column_name,
+            enrichment_dup_10_gram_char_ratio_column_name=enrichment_dup_10_gram_char_ratio_column_name,
         )
 
         ComponentUtils.add_settings_to_component(compute_exec_params, ONE_HOUR_SEC * 2)

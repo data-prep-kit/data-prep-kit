@@ -1,32 +1,23 @@
 ## Contributing In General
 
-Our project welcomes external contributions. If you have an itch, please feel
-free to scratch it.
+Our project welcomes external contributions. If you have an itch, please feel free to scratch it.
 
-To contribute code or documentation, please submit a pull request. You can get started with open issues with the label - good first issue. 
-Before embarking on a more ambitious contribution, please quickly get in touch with us via raising an issue.
-
-**Note: We appreciate your effort, and want to avoid a situation where a contribution
-requires extensive rework (by you or by us), sits in backlog for a long time, or
-cannot be accepted at all!**
+To contribute code or documentation, please create an [issue](https://github.com/data-prep-kit/data-prep-kit/issues) and engage with the maintainers and the open source community on the proposed enhancements, what problem it solves, and the use cases it covers. Alternatively, you can scan the existing issues and engage with the authors/commentators. Once the issue is assigned, the assignee is encouraged to submit a [PR](https://github.com/data-prep-kit/data-prep-kit/pulls).  
+Before embarking on a more ambitious contribution, please quickly get in touch with [us](https://github.com/data-prep-kit/data-prep-kit/blob/dev/MAINTAINERS.md).
 
 ### Proposing new features
 
-If you would like to implement a new feature, please raise an issue, 
-before sending a pull request so the feature can be discussed. This is to avoid
-you wasting your valuable time working on a feature that the project developers
-are not interested in accepting into the code base.
-
 ### Fixing bugs
 
-If you would like to fix a bug, please raise an issue, before sending a
+If you discover a bug or would like to fix a bug, please raise an issue, before sending a
 pull request so it can be tracked.
+
+### PR review
 
 ### Merge approval
 
 The project maintainers use LGTM (Looks Good To Me) in comments on the code
-review to indicate acceptance. A change requires LGTMs from two of the
-maintainers of each component affected.
+review to indicate acceptance. A change requires an approval from at least one reviewer, before it is merged by the maintainer. 
 
 For a list of the maintainers, see the [MAINTAINERS.md](MAINTAINERS.md) page.
 

@@ -1,7 +1,7 @@
 # New Features & Enhancements
 
-- We are working hard with your feedback and DPK 1.0.0 alpha has been released with simplified APIs for language transforms. Check out [this page](https://github.com/IBM/data-prep-kit/blob/725fdf65989432280a59fbfc98ad3c7cab85c23a/transforms/transforms-1.0-lang.ipynb) for example implementation of some of these transforms.
-- [HAP](https://github.com/IBM/data-prep-kit/blob/dev/examples/notebooks/hap/generate_hap_score_csv.ipynb) and [PII](https://github.com/IBM/data-prep-kit/blob/dev/examples/notebooks/PII/Run_your_first_PII_redactor_transform.ipynb) recipe notebooks contributed by our partners in GSI team are now merged.
+
+- DPK 1.1.0 has been released. For details on the new features and enhancements, please see [this](release-notes.md).
 
 # Data Prep Kit Resources
 
@@ -14,6 +14,7 @@
 
 ## 🎤 External Events and Showcase
 
+1. [**The AI Alliance Office Hours: “Introducing GneissWeb - a state-of-the-art LLM pre-training dataset”**](https://the-ai-alliance.github.io/office-hours/events/2025-03-06__gneissweb.html) - Mar 6, 2025 - [Slides](https://the-ai-alliance.github.io/office-hours/events/2025-03-06__gneissweb-dpk.pdf)
 1. [**Workshop at the AI for Connectivity Hackathon: “Preparing Data for LLM Applications with Docling & Data Prep Kit”**](https://www.linkedin.com/posts/sujeemaniyam_special-workshop-alert-were-excited-activity-7288285557149908992-0TH1?utm_source=share&utm_medium=member_desktop) - Jan 25, 2025
 
 2. **Talk on DPK** at [**IBM TechXchange**](https://ibmtechxchange-virtual-agents.bemyapp.com/) Agents day - Jan 23, 2025 - [Slides](https://docs.google.com/presentation/d/1u90TTW3GnvPnYX0BFrbdK_SG91jGaaDhCki3S6cLL94/edit?usp=sharing)
@@ -63,6 +64,7 @@ Find example code in readme section of each tranform and some sample jupyter not
 
 ## Blogs / Tutorials
 
+- [**IBM Developer Learning Path: Get started with Data Prep Kit (DPK)**](https://developer.ibm.com/learningpaths/get-started-data-prep-kit/)
 - Blog on Ziliz [**"Introducing IBM Data Prep Kit for Streamlined LLM Workflows"**](https://zilliz.com/blog/ibm-data-prep-kit-for-streamlined-llm-workflows) by Yesha Shastri, Freelance Technical Writer in AI/ML
 - [**IBM Developer Blog**](https://developer.ibm.com/blogs/awb-unleash-potential-llms-data-prep-kit/) 
 - [**Introductory Blog on DPK**](https://www.linkedin.com/pulse/unleashing-potential-large-language-models-through-data-aanchal-goyal-fgtff)

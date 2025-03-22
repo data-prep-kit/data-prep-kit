@@ -20,19 +20,28 @@ from workflow_support.compile_utils import (
     ONE_WEEK_SEC,
     ComponentUtils,
 )
+from python_apiserver_client.params import (
+        EnvironmentVariables,
+        EnvVarFrom,
+        EnvVarSource,
+)
+
+# The name of the secret that holds the HugginFace token
+HF_SECRET = "hf-secret"
+# The secret key that holds the HugginFace token
+HF_SECRET_KEY = "hf-token"
 
 
-task_image = "quay.io/dataprep1/data-prep-kit/html2parquet-ray:latest"
+task_image = "quay.io/dataprep1/data-prep-kit/gneissweb_classification-ray:latest"
 
 # the name of the job script
-EXEC_SCRIPT_NAME: str = "-m dpk_html2parquet.ray.transform"
+EXEC_SCRIPT_NAME: str = "-m dpk_gneissweb_classification.ray.transform"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing_v2:latest"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)
-
 
 # compute execution parameters. Here different transforms might need different implementations. As
 # a result, instead of creating a component we are creating it in place here.
@@ -46,8 +55,11 @@ def compute_exec_params_func(
     runtime_pipeline_id: str,
     runtime_job_id: str,
     runtime_code_location: dict,
-    data_files_to_use: str,
-    html2parquet_output_format: str,
+    gcls_model_file_name: str,
+    gcls_model_url: str,
+    gcls_content_column_name: str,
+    gcls_output_label_column_name: str,
+    gcls_output_score_column_name: str,
 ) -> dict:
     from runtime_utils import KFPUtils
 
@@ -61,8 +73,11 @@ def compute_exec_params_func(
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
         "runtime_code_location": str(runtime_code_location),
-        "data_files_to_use": data_files_to_use,
-        "html2parquet_output_format": html2parquet_output_format,
+        "gcls_model_file_name": gcls_model_file_name,
+        "gcls_model_url": gcls_model_url,
+        "gcls_content_column_name": gcls_content_column_name,
+        "gcls_output_label_column_name": gcls_output_label_column_name,
+        "gcls_output_score_column_name": gcls_output_score_column_name,
     }
 
 
@@ -85,30 +100,40 @@ execute_ray_jobs_op = comp.load_component_from_file(component_spec_path + "execu
 cleanup_ray_op = comp.load_component_from_file(component_spec_path + "deleteRayClusterComponent.yaml")
 
 # Task name is part of the pipeline name, the ray cluster name and the job name in DMF.
-TASK_NAME: str = "html2parquet"
+TASK_NAME: str = "gneissweb_classification"
+
+
+# HuggingFace token is exported as environment variables in Ray node pods.
+# Alternatively, the secret name can be passed to the KFP component,
+# which will set it as an environment variable in the Ray nodes.
+# In this option the secret name can be set at runtime
+# but is dependent on the KFP version.
+env_v = EnvVarFrom(source=EnvVarSource.SECRET, name=HF_SECRET, key=HF_SECRET_KEY)
+envs = EnvironmentVariables(from_ref={"HF_READ_ACCESS_TOKEN": env_v})
 
 
 @dsl.pipeline(
     name=TASK_NAME + "-ray-pipeline",
-    description="Pipeline for html2parquet task",
+    description="Pipeline for Gneissweb Classification task",
 )
-def html2parquet(
+def gneissweb_classification(
     # Ray cluster
-    ray_name: str = "html2parquet-kfp-ray",  # name of Ray cluster
-    ray_run_id_KFPv2: str = "",   # Ray cluster unique ID used only in KFP v2
+    ray_name: str = "gneissweb_classification-kfp-ray",  # name of Ray cluster
+    ray_run_id_KFPv2: str = "",  # Ray cluster unique ID used only in KFP v2
     # Add image_pull_secret and image_pull_policy to ray workers if needed
-    ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
+    ray_head_options: dict = {"cpu": 16, "memory": 16, "image": task_image, "environment": envs.to_dict()},
     ray_worker_options: dict = {
-        "replicas": 2,
-        "max_replicas": 2,
-        "min_replicas": 2,
-        "cpu": 2,
-        "memory": 4,
+        "replicas": 1,
+        "max_replicas": 1,
+        "min_replicas": 1,
+        "cpu": 16,
+        "memory": 16,
         "image": task_image,
+        "environment": envs.to_dict()
     },
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
-    data_s3_config: str = "{'input_folder': 'test/html2parquet/input/', 'output_folder': 'test/html2parquet/output/'}",
+    data_s3_config: str = "{'input_folder': 'test/gneissweb_classification/input', 'output_folder': 'test/gneissweb_classification/output/'}",
     data_s3_access_secret: str = "s3-secret",
     data_max_files: int = -1,
     data_num_samples: int = -1,
@@ -117,14 +142,17 @@ def html2parquet(
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
     runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
-    # html2parquet parameters
-    data_files_to_use: str = "['.html', '.zip']",
-    html2parquet_output_format: str = "markdown",
+    # gneissweb_classification parameters
+    gcls_model_url: str = "ibm-granite/GneissWeb.Quality_annotator",
+    gcls_model_file_name: str = "fasttext_gneissweb_quality_annotator.bin",
+    gcls_content_column_name: str = "text",
+    gcls_output_label_column_name: str = "cosmo_fastText_label",
+    gcls_output_score_column_name: str = "cosmo_fastText_score",
     # additional parameters
     additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
 ):
     """
-    Pipeline to execute html2parquet transform
+    Pipeline to execute gneissweb_classification transform
     :param ray_name: name of the Ray cluster
     :param ray_run_id_KFPv2: a unique string id used for the Ray cluster, applicable only in KFP v2.
     :param ray_head_options: head node options, containing the following:
@@ -157,8 +185,11 @@ def html2parquet(
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
     :param runtime_code_location - code location
-    :param data_files_to_use - # file extensions to use for processing
-    :param html2parquet_output_format - # Output format for the contents column.
+    :param gcls_model_file_name - filename of model
+    :param gcls_model_url - url that model locates. For fasttext, this will be repo name of the model
+    :param gcls_content_column_name - Column name to get content
+    :param gcls_output_label_column_name - Column name to store label
+    :param gcls_output_score_column_name - Column name to store the score
     :return: None
     """
     # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
@@ -166,8 +197,10 @@ def html2parquet(
     # https://github.com/kubeflow/pipelines/issues/10187. Therefore, meantime the user is requested to insert
     # a unique string created at run creation time.
     if os.getenv("KFPv2", "0") == "1":
-        print("WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
-              "same version of the same pipeline !!!")
+        print(
+            "WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
+            "same version of the same pipeline !!!"
+        )
         run_id = ray_run_id_KFPv2
     else:
         run_id = dsl.RUN_ID_PLACEHOLDER
@@ -189,8 +222,11 @@ def html2parquet(
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
             runtime_code_location=runtime_code_location,
-            data_files_to_use=data_files_to_use,
-            html2parquet_output_format=html2parquet_output_format,
+            gcls_model_file_name=gcls_model_file_name,
+            gcls_model_url=gcls_model_url,
+            gcls_content_column_name=gcls_content_column_name,
+            gcls_output_label_column_name=gcls_output_label_column_name,
+            gcls_output_score_column_name=gcls_output_score_column_name,
         )
 
         ComponentUtils.add_settings_to_component(compute_exec_params, ONE_HOUR_SEC * 2)
@@ -222,4 +258,4 @@ def html2parquet(
 
 if __name__ == "__main__":
     # Compiling the pipeline
-    compiler.Compiler().compile(html2parquet, __file__.replace(".py", ".yaml"))
+    compiler.Compiler().compile(gneissweb_classification, __file__.replace(".py", ".yaml"))

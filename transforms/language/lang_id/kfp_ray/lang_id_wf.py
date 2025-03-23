@@ -33,13 +33,13 @@ HF_SECRET = "hf-secret"
 # The secret key that holds the HugginFace token
 HF_SECRET_KEY = "hf-token"
 
-task_image = "quay.io/dataprep1/data-prep-kit/lang_id-ray:2.2"
+task_image = "quay.io/dataprep1/data-prep-kit/lang_id-ray:0.2.5.kubecon"
 
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_lang_id.ray.transform"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:0.2.5.kubecon"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)

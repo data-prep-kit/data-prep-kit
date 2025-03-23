@@ -39,7 +39,7 @@ task_image = "quay.io/dataprep1/data-prep-kit/lang_id-ray:latest"
 EXEC_SCRIPT_NAME: str = "-m dpk_lang_id.ray.transform"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:0.2.5.kubecon"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)

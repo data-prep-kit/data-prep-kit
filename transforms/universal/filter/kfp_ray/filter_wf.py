@@ -27,10 +27,10 @@ import kfp.dsl as dsl
 EXEC_SCRIPT_NAME: str = "-m dpk_filter.ray.transform"
 PREFIX: str = ""
 
-task_image = "quay.io/dataprep1/data-prep-kit/filter-ray:latest"
+task_image = "quay.io/dataprep1/data-prep-kit/filter-ray:0.2.5.kubecon"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:0.2.5.kubecon"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)

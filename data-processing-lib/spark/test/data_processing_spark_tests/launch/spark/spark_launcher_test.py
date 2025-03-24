@@ -73,12 +73,13 @@ def test_launcher():
     sys.argv = ParamsUtils.dict_to_req(d=params)
     res = TestLauncherSpark().launch()
     assert 1 == res
+    # S3 cred no longer suported as a command line parameter
     # Add S3 credentials
-    params["data_s3_cred"] = ParamsUtils.convert_to_ast(s3_cred)
-    sys.argv = ParamsUtils.dict_to_req(d=params)
-    res = TestLauncherSpark().launch()
+#    params["data_s3_cred"] = ParamsUtils.convert_to_ast(s3_cred)
+#    sys.argv = ParamsUtils.dict_to_req(d=params)
+#    res = TestLauncherSpark().launch()
+#    assert 0 == res
 
-    assert 0 == res
     # Add local config, should fail because now three different configs exist
     params["data_local_config"] = ParamsUtils.convert_to_ast(local_conf)
     sys.argv = ParamsUtils.dict_to_req(d=params)
@@ -143,7 +144,7 @@ def test_s3_config_validate():
     params = {
         "data_max_files": -1,
         "data_checkpointing": False,
-        "data_s3_cred": ParamsUtils.convert_to_ast(s3_cred),
+#        "data_s3_cred": ParamsUtils.convert_to_ast(s3_cred),
         "runtime_pipeline_id": "pipeline_id",
         "runtime_job_id": "job_id",
         "runtime_code_location": ParamsUtils.convert_to_ast(code_location),

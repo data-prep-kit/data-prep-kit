@@ -55,7 +55,6 @@ def test_multi_launcher():
     params = {
         "data_max_files": -1,
         "data_checkpointing": False,
-#        "data_s3_cred": ParamsUtils.convert_to_ast(s3_cred),
         "data_s3_config": [ParamsUtils.convert_to_ast(s3_conf)],
         "runtime_pipeline_id": "pipeline_id",
         "runtime_job_id": "job_id",

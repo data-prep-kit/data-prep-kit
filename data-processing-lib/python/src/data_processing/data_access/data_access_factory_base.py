@@ -87,40 +87,11 @@ class DataAccessFactoryBase(CLIArgumentProvider):
         """
         pass
 
-    ######
-    ## MT: Move the _validate_xxx to the Each class constructor
-    ######
     """
     Some commonly useful validation methods
     """
-    def _validate_lh_config(self, lh_config: dict[str, str]) -> bool:
-        """
-        Validate that
-        :param lh_config: dictionary of local config
-        :return: True if s3l config is valid, False otherwise
-        """
-        if not self.enable_data_navigation:
-            return True
-        valid_config = True
-        if lh_config.get("input_table", "") == "":
-            valid_config = False
-            self.logger.error(f"prefix '{self.cli_arg_prefix}': Could not find input table in lh config")
-        if lh_config.get("input_dataset", None) is None:
-            # Note data set can be an empty string
-            valid_config = False
-            self.logger.error(f"prefix '{self.cli_arg_prefix}': Could not find input_dataset in lh config")
-        if lh_config.get("input_version", "") == "":
-            valid_config = False
-            self.logger.error(f"prefix '{self.cli_arg_prefix}': Could not find input_version in lh config")
-        if lh_config.get("output_table", "") == "":
-            valid_config = False
-            self.logger.error(f"prefix '{self.cli_arg_prefix}': Could not find output_table in lh config")
-        if lh_config.get("output_path", "") == "":
-            valid_config = False
-            self.logger.error(f"prefix '{self.cli_arg_prefix}': Could not find output_path in lh config")
-        if lh_config.get("lh_environment", "") == "":
-            valid_config = False
-            self.logger.error(f"prefix '{self.cli_arg_prefix}': Could not find lh_environment in lh config")
-        return valid_config
+    ######
+    ## MT: Move the _validate_xxx to be done by corresponding class
+    ######
 
 

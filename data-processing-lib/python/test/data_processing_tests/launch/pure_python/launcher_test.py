@@ -79,10 +79,7 @@ def test_launcher():
     assert 1 == res
 #    # Add S3 credentials
     for k,v in s3_cred.items():
-         logger.info(f"###########{k} set to {v}")
          DPKConfig.set_env_var(k, v)
-    for k,v in s3_cred.items():
-         logger.info(f"###########{k} was set to {DPKConfig._get_first_env_var([k])}")
     sys.argv = ParamsUtils.dict_to_req(d=params)
     res = TestLauncherPython().launch()
     assert 0 == res
@@ -150,7 +147,6 @@ def test_s3_config_validate():
     params = {
         "data_max_files": -1,
         "data_checkpointing": False,
-#        "data_s3_cred": ParamsUtils.convert_to_ast(s3_cred),
         "runtime_pipeline_id": "pipeline_id",
         "runtime_job_id": "job_id",
         "runtime_code_location": ParamsUtils.convert_to_ast(code_location),

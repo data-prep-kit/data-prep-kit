@@ -86,15 +86,14 @@ class DataAccessLocal(DataAccess):
                          files_to_use=files_to_use, files_to_checkpoint=files_to_checkpoint)
 
         ######
-        ## Calling DataAccessLocal.validate_config should have caught this
+        ## Calling DataAccessLocal.validate_config should have caught this in a production setting
+        ## but we still allow the class to be created with no configuration defined. Why ?
         if config is None:
             self.input_folder = None
             self.output_folder = None
         else:
             self.input_folder = os.path.abspath(config["input_folder"])
             self.output_folder = os.path.abspath(config["output_folder"])
-            assert self.input_folder is not None, "Local Input Folder is not defined"
-            assert self.output_folder is not None, "Local Output Folder is not defined"
         ######
 
         logger.debug(f"Local input folder: {self.input_folder}")

@@ -66,20 +66,6 @@ class DataAccessFactory(DataAccessFactoryBase):
         :return: None
         """
 
-#        help_example_dict = {
-#            "access_key": ["access", "access key help text"],
-#            "secret_key": ["secret", "secret key help text"],
-#            "url": ["https://s3.us-east.cloud-object-storage.appdomain.cloud", "optional s3 url"],
-#            "region": ["us-east-1", "optional s3 region"],
-#        }
-#        parser.add_argument(
-#            f"--{self.cli_arg_prefix}s3_cred",
-#            type=ast.literal_eval,
-#            default=None,
-#            help="AST string of options for s3 credentials. Only required for S3 data access.\n"
-#            + ParamsUtils.get_ast_help_text(help_example_dict),
-#        )
-
         if self.enable_data_navigation:
             self.__add_data_navigation_params(parser)
             
@@ -186,8 +172,6 @@ class DataAccessFactory(DataAccessFactoryBase):
             arg_dict = args
         else:
             raise ValueError("args must be Namespace or dictionary")
-
-        ####self.logger.debug(f"######### {arg_dict}")
 
         checkpointing = arg_dict.get(f"{self.cli_arg_prefix}checkpointing", False)
         max_files = arg_dict.get(f"{self.cli_arg_prefix}max_files", -1)

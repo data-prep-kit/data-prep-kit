@@ -1,32 +1,28 @@
 ## Contributing In General
 
-Our project welcomes external contributions. If you have an itch, please feel
-free to scratch it.
+Our project welcomes external contributions. If you have an itch, please feel free to scratch it.
 
-To contribute code or documentation, please submit a pull request. You can get started with open issues with the label - good first issue. 
-Before embarking on a more ambitious contribution, please quickly get in touch with us via raising an issue.
-
-**Note: We appreciate your effort, and want to avoid a situation where a contribution
-requires extensive rework (by you or by us), sits in backlog for a long time, or
-cannot be accepted at all!**
+To contribute code or documentation, please create an [issue](https://github.com/data-prep-kit/data-prep-kit/issues) to engage with the maintainers and the open source community on the proposed enhancements, describe what problem it solves, and the use cases it covers. Alternatively, you can scan the existing issues and engage with the authors/commentators. Once the issue is assigned, the assignee is encouraged to submit a [PR](https://github.com/data-prep-kit/data-prep-kit/pulls).  
+Before embarking on a more ambitious contribution, please quickly get in touch with [us](MAINTAINERS.md).
 
 ### Proposing new features
 
-If you would like to implement a new feature, please raise an issue, 
-before sending a pull request so the feature can be discussed. This is to avoid
-you wasting your valuable time working on a feature that the project developers
-are not interested in accepting into the code base.
+When proposing a new feature, please select the **Feature request** template in creating a new issue and fill all the sections of the template, including the choice of what component of DPK (e.g., documentation, transforms, pipelines, or other) it is related to and most importantly, a succinct description of the new feature, before submitting. 
 
 ### Fixing bugs
 
-If you would like to fix a bug, please raise an issue, before sending a
-pull request so it can be tracked.
+If you discover a bug or would like to fix a bug, please raise an issue, before sending a
+pull request so it can be tracked. Select the **Bug Report** template in creating a new issue and fill all the mandatory sections of the template, including **What happend ...** , **Reprodcution script**, **OS** , and **Python version**. 
+
+### PR review
+
+If you decide to submit a PR that addresses a new feature and/or a bug, for which a corresponding issue has already been submitted, work on your forked version of the repo and after additions/modifications of code in your fork, submit a PR, mentioning what issue it addresses and other optional information that facilitates the review process. At this point, the maintainers of the repo will assign one or more reviwers to your PR. 
+
 
 ### Merge approval
 
-The project maintainers use LGTM (Looks Good To Me) in comments on the code
-review to indicate acceptance. A change requires LGTMs from two of the
-maintainers of each component affected.
+The PR reviewers use LGTM (Looks Good To Me) in comments on the code
+review to indicate acceptance, or ask for changes to the specific sections of the code. A PR requires an approval from at least one reviewer, before it is merged by the maintainer. 
 
 For a list of the maintainers, see the [MAINTAINERS.md](MAINTAINERS.md) page.
 

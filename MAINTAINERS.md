@@ -2,7 +2,8 @@
 
 Maroun Touma - touma@us.ibm.com
 
-Shivdeep Singh - shivdeep.singh@ibm.com
+Santosh Borse - ssborse@us.ibm.com
 
-Revital Eres - eres@il.ibm.com
+Shalisha Witherspoon - Shalisha.Witherspoon@ibm.com
+
 

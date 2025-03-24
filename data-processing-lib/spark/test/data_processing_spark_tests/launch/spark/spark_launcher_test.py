@@ -68,7 +68,9 @@ def test_launcher():
     sys.argv = ParamsUtils.dict_to_req(d=params)
     res = TestLauncherSpark().launch()
     assert 0 == res
-    # Add S3 configuration
+    # Add S3 configuration without credentials, should fail
+    params['data_da_class']='DataAccessS3'
+    params['data_da_module']='data_processing.data_access.data_access_s3'
     params["data_s3_config"] = ParamsUtils.convert_to_ast(s3_conf)
     sys.argv = ParamsUtils.dict_to_req(d=params)
     res = TestLauncherSpark().launch()

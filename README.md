@@ -165,3 +165,5 @@ Data Prep Kit is hosted as a project in the [LF AI & Data Foundation](https://lf
 ### IBM ❤️ Open Source AI
 
 The project was started by the Data for AI Models team at IBM Research. 
+
+Copyright © Data Prep Kit Framework - a Series of LF Projects, LLC.

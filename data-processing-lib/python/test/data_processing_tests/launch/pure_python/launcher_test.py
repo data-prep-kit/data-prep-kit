@@ -16,16 +16,19 @@ import sys
 from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.test_support.transform import NOOPPythonTransformConfiguration
 from data_processing.utils import ParamsUtils
+from data_processing.utils import DPKConfig
 
+from data_processing.utils import get_logger
+logger = get_logger(__name__)
 
 """
  see: https://stackoverflow.com/questions/55259371/pytest-testing-parser-error-unrecognised-arguments
  to run test using argparse we can simply overwrite sys.argv to supply required arguments
 """
 s3_cred = {
-    "access_key": "access",
-    "secret_key": "secret",
-    "url": "https://s3.us-east.cloud-object-storage.appdomain.cloud",
+    "S3_ACCESS_KEY": "access",
+    "S3_SECRET_KEY": "secret",
+    "S3_URL": "https://s3.us-east.cloud-object-storage.appdomain.cloud",
 }
 s3_conf = {
     "input_folder": "input_folder",
@@ -63,17 +66,23 @@ def test_launcher():
         "runtime_job_id": "job_id",
         "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
     }
-    # s3 not defined
+    # s3 not defined, should still pass
     sys.argv = ParamsUtils.dict_to_req(d=params)
     res = TestLauncherPython().launch()
     assert 0 == res
-    # Add S3 configuration
+    # Add S3 configuration, should fail since missing S3 cred
+    params['data_da_class']='DataAccessS3'
+    params['data_da_module']='data_processing.data_access.data_access_s3'
     params["data_s3_config"] = ParamsUtils.convert_to_ast(s3_conf)
     sys.argv = ParamsUtils.dict_to_req(d=params)
     res = TestLauncherPython().launch()
     assert 1 == res
-    # Add S3 credentials
-    params["data_s3_cred"] = ParamsUtils.convert_to_ast(s3_cred)
+#    # Add S3 credentials
+    for k,v in s3_cred.items():
+         logger.info(f"###########{k} set to {v}")
+         DPKConfig.set_env_var(k, v)
+    for k,v in s3_cred.items():
+         logger.info(f"###########{k} was set to {DPKConfig._get_first_env_var([k])}")
     sys.argv = ParamsUtils.dict_to_req(d=params)
     res = TestLauncherPython().launch()
     assert 0 == res
@@ -141,7 +150,7 @@ def test_s3_config_validate():
     params = {
         "data_max_files": -1,
         "data_checkpointing": False,
-        "data_s3_cred": ParamsUtils.convert_to_ast(s3_cred),
+#        "data_s3_cred": ParamsUtils.convert_to_ast(s3_cred),
         "runtime_pipeline_id": "pipeline_id",
         "runtime_job_id": "job_id",
         "runtime_code_location": ParamsUtils.convert_to_ast(code_location),

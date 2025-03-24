@@ -30,6 +30,9 @@ class DataAccessFactory(DataAccessFactoryBase):
     Data Access class based on these parameters.
     This class has to be serializable, so that we can pass it to the actors
     """
+    default_class = 'DataAccessLocal'
+    default_module = 'data_processing.data_access.data_access_local'
+
 
     def __init__(self, cli_arg_prefix: str = "data_", enable_data_navigation: bool = True):
         """
@@ -45,10 +48,11 @@ class DataAccessFactory(DataAccessFactoryBase):
         keys is not effected by the prefix.
         """
         super().__init__(cli_arg_prefix=cli_arg_prefix)
-        self.s3_config = None
-        self.local_config = None
+        self.config= None
         self.enable_data_navigation = enable_data_navigation
         self.data_access=None
+        self.data_access_class=self.default_class
+        self.data_access_module=self.default_module
         
 
     def add_input_params(self, parser: argparse.ArgumentParser) -> None:
@@ -62,19 +66,19 @@ class DataAccessFactory(DataAccessFactoryBase):
         :return: None
         """
 
-        help_example_dict = {
-            "access_key": ["access", "access key help text"],
-            "secret_key": ["secret", "secret key help text"],
-            "url": ["https://s3.us-east.cloud-object-storage.appdomain.cloud", "optional s3 url"],
-            "region": ["us-east-1", "optional s3 region"],
-        }
-        parser.add_argument(
-            f"--{self.cli_arg_prefix}s3_cred",
-            type=ast.literal_eval,
-            default=None,
-            help="AST string of options for s3 credentials. Only required for S3 data access.\n"
-            + ParamsUtils.get_ast_help_text(help_example_dict),
-        )
+#        help_example_dict = {
+#            "access_key": ["access", "access key help text"],
+#            "secret_key": ["secret", "secret key help text"],
+#            "url": ["https://s3.us-east.cloud-object-storage.appdomain.cloud", "optional s3 url"],
+#            "region": ["us-east-1", "optional s3 region"],
+#        }
+#        parser.add_argument(
+#            f"--{self.cli_arg_prefix}s3_cred",
+#            type=ast.literal_eval,
+#            default=None,
+#            help="AST string of options for s3 credentials. Only required for S3 data access.\n"
+#            + ParamsUtils.get_ast_help_text(help_example_dict),
+#        )
 
         if self.enable_data_navigation:
             self.__add_data_navigation_params(parser)
@@ -156,13 +160,13 @@ class DataAccessFactory(DataAccessFactoryBase):
             f"--{self.cli_arg_prefix}num_samples", type=int, default=-1, help="number of random input files to process"
         )
         parser.add_argument(
-            f"--{self.cli_arg_prefix}access_class",
+            f"--{self.cli_arg_prefix}da_class",
             type=str,
             required=False,
             help="ClassName that implements DataAccess API",
         )
         parser.add_argument(
-            f"--{self.cli_arg_prefix}access_module", 
+            f"--{self.cli_arg_prefix}da_module",
             type=str, 
             required=False,
             help="Module that implements DataAccess Class",
@@ -182,6 +186,9 @@ class DataAccessFactory(DataAccessFactoryBase):
             arg_dict = args
         else:
             raise ValueError("args must be Namespace or dictionary")
+
+        ####self.logger.debug(f"######### {arg_dict}")
+
         checkpointing = arg_dict.get(f"{self.cli_arg_prefix}checkpointing", False)
         max_files = arg_dict.get(f"{self.cli_arg_prefix}max_files", -1)
         data_sets = arg_dict.get(f"{self.cli_arg_prefix}data_sets", None)
@@ -192,10 +199,11 @@ class DataAccessFactory(DataAccessFactoryBase):
         # check which configuration (S3 or Local) is specified
         # For backward compatibility, we are allowing s3_config, local_config, lh_config, 
         # In the next release, only data_config will be allowed
-        provided_configs=[x for x in arg_dict.keys() if x in [f"{self.cli_arg_prefix}s3_config",
-                                                         f"{self.cli_arg_prefix}local_config",
-                                                         f"{self.cli_arg_prefix}lh_config",
-                                                         f"{self.cli_arg_prefix}data_config"]]
+        defined_args=[x for x in arg_dict.keys() if arg_dict.get(x, None) is not None]
+        config_args=[f"{self.cli_arg_prefix}s3_config", f"{self.cli_arg_prefix}local_config",
+                        f"{self.cli_arg_prefix}lh_config",f"{self.cli_arg_prefix}data_config"]
+        provided_configs=[x for x in defined_args if x in config_args]
+
         
         ## For now, cannot have more than one configuration
         if len(provided_configs) > 1:
@@ -206,7 +214,7 @@ class DataAccessFactory(DataAccessFactoryBase):
             return False
         elif len(provided_configs) == 0:
             self.logger.info(
-                f"data factory {self.cli_arg_prefix} " f"is using local configuration without input/output path"
+                f"data factory {self.cli_arg_prefix} " f"Missing local configuration"
             )
         else:
             self.config = arg_dict.get(provided_configs[0])
@@ -238,25 +246,29 @@ class DataAccessFactory(DataAccessFactoryBase):
                 f"random samples {n_samples}, files to use {files_to_use}, files to checkpoint {files_to_checkpoint}"
             )
 
-        self.data_access_class=arg_dict.get(f"{self.cli_arg_prefix}acccess_class", 'DataAccessLocal')
-        self.data_access_module=arg_dict.get(f"{self.cli_arg_prefix}acccess_module", 
-                                             'data_processing.data_access.data_access_local')
-
+        self.data_access_class=arg_dict.get(f"{self.cli_arg_prefix}da_class")
+        self.data_access_module=arg_dict.get(f"{self.cli_arg_prefix}da_module")
+        if self.data_access_class is None or self.data_access_class == '':
+            self.data_access_class=self.default_class
+            self.data_access_module=self.default_module
         try:
-            if self.data_access_module:
+            if self.data_access_module and self.data_access_module != '':
                 ## For now, this is always the case where we set a default
                 self.data_access=getattr(importlib.import_module(self.data_access_module), self.data_access_class)
             else:
                 ## In the future, we may want to allow global scope modules
                 self.data_access=globals().get(self.data_access_class)
-                # At this point, we could call the class validation method if we want to retain the same logic as before
-                if not self.data_access.validate_config(self.config, self.cli_arg_prefix):
-                    return False
         except ImportError:
             self.logger.error(f"Failed to import module {self.data_access_module}")
             return False
         except AttributeError:
             self.logger.error(f"Class {self.data_access_class}  Not found")
+            return False
+            # At this point, we could call the class validation method if we want to retain the same logic as before
+        if not self.data_access:
+            self.logger.error(f"Failed to import module {self.data_access_module}.{self.data_access_class}")
+            return False
+        if not self.data_access.validate_config(self.config, self.cli_arg_prefix):
             return False
         return True
 
@@ -266,8 +278,6 @@ class DataAccessFactory(DataAccessFactoryBase):
         :return: corresponding data access class
         """
         try:
-            if not self.data_access:
-                self.data_access=getattr(importlib.import_module(self.data_access_module), self.data_access_class)
             return self.data_access(
                 config=self.config,
                 d_sets=self.dsets,

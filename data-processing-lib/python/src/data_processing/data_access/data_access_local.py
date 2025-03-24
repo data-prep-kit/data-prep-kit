@@ -37,14 +37,26 @@ class DataAccessLocal(DataAccess):
         :return: True if local config is valid, False otherwise
         """
         valid_config = True
+        # If config is undefined, let is pass
+        if config is None:
+#            valid_config = False
+            logger.info(f"data access factory {cli_arg_prefix}: Could not find a valid configuration")
+            return valid_config
+
+        # If config is empty, fail
+        if not (config):
+            valid_config = False
+            logger.error(f"data access factory {cli_arg_prefix}: Could not find a valid configuration")
+            return valid_config
+
         if config.get("input_folder", "") == "":
             valid_config = False
-            self.logger.error(
+            logger.error(
                 f"data access factory {cli_arg_prefix}: " "Could not find input folder in local config"
             )
         if config.get("output_folder", "") == "":
             valid_config = False
-            self.logger.error(
+            logger.error(
                 f"data access factory {cli_arg_prefix}: " "Could not find output folder in local config"
             )
         return valid_config
@@ -52,7 +64,7 @@ class DataAccessLocal(DataAccess):
 
     def __init__(
         self,
-        config: dict[str, str] = {},
+        config: dict[str, str] = None,
         d_sets: list[str] = None,
         checkpoint: bool = False,
         m_files: int = -1,
@@ -75,14 +87,15 @@ class DataAccessLocal(DataAccess):
 
         ######
         ## Calling DataAccessLocal.validate_config should have caught this
-        input_folder=config.get("input_folder", None)
-        output_folder=config.get("output_folder", None)
-        assert input_folder is not None, "Local Input Folder is not defined"
-        assert output_folder is not None, "Local Output Folder is not defined"
+        if config is None:
+            self.input_folder = None
+            self.output_folder = None
+        else:
+            self.input_folder = os.path.abspath(config["input_folder"])
+            self.output_folder = os.path.abspath(config["output_folder"])
+            assert self.input_folder is not None, "Local Input Folder is not defined"
+            assert self.output_folder is not None, "Local Output Folder is not defined"
         ######
-
-        self.input_folder = os.path.abspath(config["input_folder"])
-        self.output_folder = os.path.abspath(config["output_folder"])
 
         logger.debug(f"Local input folder: {self.input_folder}")
         logger.debug(f"Local output folder: {self.output_folder}")

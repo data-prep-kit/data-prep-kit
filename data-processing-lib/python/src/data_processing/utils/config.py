@@ -31,6 +31,14 @@ class DPKConfig:
     """ Set from DPK_LOG_LEVEL env var(s) """
 
 
+    @staticmethod
+    def set_env_var(var: str, value: str, force: bool=True) -> str:
+        prev = os.environ.get(var, None)
+        if (prev is None) or force:
+            os.environ[var]=value
+            return value
+        return prev
+
 def add_if_missing(config: dict[str, Any], key: str, dflt: Any):
     """
     Add the given default key value if there no value for the key in the dictionary.

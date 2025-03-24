@@ -16,14 +16,14 @@ from typing import Any, Union
 
 class DPKConfig:
     @staticmethod
-    def _get_first_env_var(env_var_list: list[str]) -> Union[str, None]:
+    def _get_first_env_var(env_var_list: list[str], default_value: str=None) -> Union[str, None]:
         for var in env_var_list:
             value = os.environ.get(var, None)
             if value is not None:
                 # print(f"Found env var {var}", flush=True)
                 return value
         # print(f"Did not find any of the following env vars {env_var_list}")
-        return None
+        return default_value
 
     HUGGING_FACE_TOKEN = _get_first_env_var(["DPK_HUGGING_FACE_TOKEN"])
     """ Set from DPK_HUGGING_FACE_TOKEN env var(s) """

@@ -17,17 +17,45 @@ from typing import Any
 import pyarrow
 from data_processing.data_access import ArrowS3, DataAccess
 from data_processing.utils import TransformUtils
+from data_processing.utils import DPKConfig
+
+
+class DPKConfigS3(DPKConfig):
+    S3_ACCESS_KEY = DPKConfig._get_first_env_var(["AWS_ACCESS_KEY_ID", "COS_ACCESS_KEY"])
+    """ Set from AWS_ACCESS_KEY_ID or COS_ACCESS_KEY env vars """
+    S3_SECRET_KEY = DPKConfig._get_first_env_var(["AWS_SECRET_ACCESS_KEY", "COS_SECRET_KEY"])
+    """ Set from AWS_SECRET_ACCESS_KEY or COS_SECRET_KEY env vars """
+    S3_ENDPOINT = DPKConfig._get_first_env_var(["S3_ENDPOINT","S3_URL"])
+    """ Set from COS URL """
+    S3_REGION = DPKConfig._get_first_env_var(["S3_REGION"], "us-east")
+    """ Set from East-region by default """
 
 
 class DataAccessS3(DataAccess):
     """
     Implementation of the Base Data access class for folder-based data access.
     """
+    @classmethod
+    def validate_config(cls, config: dict[str, str], cli_arg_prefix: str='') -> bool:
+        """
+        Validate that
+        :param s3_config: dictionary of local config
+        :return: True if s3l config is valid, False otherwise
+        """
+        valid_config = True
+        if config.get("input_folder", "") == "":
+            valid_config = False
+            self.logger.error(f"data access factory {cli_arg_prefix}: Could not find input folder in s3 config")
+        if config.get("output_folder", "") == "":
+            valid_config = False
+            self.logger.error(f"data access factory {cli_arg_prefix}: Could not find output folder in s3 config")
+        return valid_config
+
+
 
     def __init__(
         self,
-        s3_credentials: dict[str, str],
-        s3_config: dict[str, str] = None,
+        config: dict[str, str] = {},
         d_sets: list[str] = None,
         checkpoint: bool = False,
         m_files: int = -1,
@@ -48,24 +76,26 @@ class DataAccessS3(DataAccess):
         """
         super().__init__(d_sets=d_sets, checkpoint=checkpoint, m_files=m_files, n_samples=n_samples,
                          files_to_use=files_to_use, files_to_checkpoint=files_to_checkpoint)
-        if (
-            s3_credentials is None
-            or s3_credentials.get("access_key", None) is None
-            or s3_credentials.get("secret_key", None) is None
-        ):
-            raise "S3 credentials is not defined"
-        self.s3_credentials = s3_credentials
-        if s3_config is None:
-            self.input_folder = None
-            self.output_folder = None
-        else:
-            self.input_folder = TransformUtils.clean_path(s3_config["input_folder"])
-            self.output_folder = TransformUtils.clean_path(s3_config["output_folder"])
+        
+        access_key=config.get("access_key", DPKConfigS3.S3_ACCESS_KEY)
+        secret_key=config.get("secret_key", DPKConfigS3.S3_SECRET_KEY)
+        region = config.get("region", DPKConfigS3.S3_REGION)
+        endpoint=config.get("url", DPKConfigS3.S3_ENDPOINT)
+        input_folder=config.get("input_folder", None)
+        output_folder=config.get("output_folder", None)
+
+        assert access_key is not None, "S3 Access Key is not defined"
+        assert secret_key is not None, "S3 Secret Key is not defined"
+
+        #Input_folder and output_folder can be None for Unit Testing
+        self.input_folder = TransformUtils.clean_path(input_folder) if input_folder else None
+        self.output_folder = TransformUtils.clean_path(output_folder) if output_folder else None
+        
         self.arrS3 = ArrowS3(
-            access_key=s3_credentials.get("access_key"),
-            secret_key=s3_credentials.get("secret_key"),
-            endpoint=s3_credentials.get("url", None),
-            region=s3_credentials.get("region", None),
+            access_key=access_key,
+            secret_key=secret_key,
+            endpoint=endpoint,
+            region=region,
         )
 
     def get_output_folder(self) -> str:

@@ -124,7 +124,7 @@ def ml_filter(
     ml_filter_column_prefix: str = "",
     ml_filter_lang_column_name: str = "lang",
     ml_filter_config: str = "cleansing-config.yaml",
-    ml_filter_ignore_missing_columns: bool = "False",
+    ml_filter_ignore_missing_columns: bool = False,
     # additional parameters
     additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
 ):

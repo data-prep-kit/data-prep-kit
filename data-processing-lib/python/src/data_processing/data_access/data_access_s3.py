@@ -26,11 +26,11 @@ logger = get_logger(__name__)
 
 
 class DPKConfigS3(DPKConfig):
-    S3_ACCESS_KEY_LIST = ["AWS_ACCESS_KEY_ID", "COS_ACCESS_KEY",'S3_ACCESS_KEY']
+    S3_ACCESS_KEY_LIST = ["AWS_ACCESS_KEY_ID", "COS_ACCESS_KEY",'S3_ACCESS_KEY','S3_KEY']
     """ Set from AWS_ACCESS_KEY_ID or COS_ACCESS_KEY env vars """
-    S3_SECRET_KEY_LIST = ["AWS_SECRET_ACCESS_KEY", "COS_SECRET_KEY", 'S3_SECRET_KEY']
+    S3_SECRET_KEY_LIST = ["AWS_SECRET_ACCESS_KEY", "COS_SECRET_KEY", 'S3_SECRET_KEY','S3_SECRET']
     """ Set from AWS_SECRET_ACCESS_KEY or COS_SECRET_KEY env vars """
-    S3_ENDPOINT_LIST = ["S3_ENDPOINT","S3_URL"]
+    S3_ENDPOINT_LIST = ["S3_ENDPOINT","S3_URL","ENDPOINT"]
     """ Set from COS URL """
     S3_REGION_LIST = ["S3_REGION"]
     """ Set from East-region by default """

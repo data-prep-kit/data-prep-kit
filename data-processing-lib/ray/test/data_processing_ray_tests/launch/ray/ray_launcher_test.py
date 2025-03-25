@@ -161,7 +161,6 @@ def test_s3_config_validate():
         "run_locally": True,
         "data_max_files": -1,
         "data_checkpointing": False,
-#        "data_s3_cred": ParamsUtils.convert_to_ast(s3_cred),
         "runtime_worker_options": ParamsUtils.convert_to_ast(worker_options),
         "runtime_num_workers": 5,
         "runtime_pipeline_id": "pipeline_id",

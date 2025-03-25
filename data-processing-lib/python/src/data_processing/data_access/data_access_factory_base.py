@@ -32,7 +32,6 @@ class DataAccessFactoryBase(CLIArgumentProvider):
         :param cli_arg_prefix:  if provided, this will be prepended to all the CLI arguments names.
                Make sure it ends with _
         """
-        self.s3_cred = None
         self.checkpointing = False
         self.dsets = None
         self.max_files = -1

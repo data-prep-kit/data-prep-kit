@@ -146,7 +146,6 @@ def test_s3_config_validate():
     params = {
         "data_max_files": -1,
         "data_checkpointing": False,
-#        "data_s3_cred": ParamsUtils.convert_to_ast(s3_cred),
         "runtime_pipeline_id": "pipeline_id",
         "runtime_job_id": "job_id",
         "runtime_code_location": ParamsUtils.convert_to_ast(code_location),

@@ -40,26 +40,20 @@ if __name__ == "__main__":
     )
     # convert exec params to dictionary
     exec_params = KFPUtils.load_from_json(args.exec_params)
-    # get and build S3 credentials
-    access_key, secret_key, url = KFPUtils.credentials()
-    # add s3 credentials to exec params
-    exec_params["data_s3_cred"] = (
-        "{'access_key': '" + access_key + "', 'secret_key': '" + secret_key + "', 'url': '" + url + "'}"
-    )
     # extra credentials
-    prefix = args.prefix
-    extra_access_key, extra_secret_key, extra_url = KFPUtils.credentials(
-        access_key=f"{prefix}_S3_KEY", secret_key=f"{prefix}_S3_SECRET", endpoint=f"{prefix}_ENDPOINT"
-    )
-    exec_params[f"{prefix}_s3_cred"] = (
-        "{'access_key': '"
-        + extra_access_key
-        + "', 'secret_key': '"
-        + extra_secret_key
-        + "', 'url': '"
-        + extra_url
-        + "'}"
-    )
+    #prefix = args.prefix
+    #extra_access_key, extra_secret_key, extra_url = KFPUtils.credentials(
+    #    access_key=f"{prefix}_S3_KEY", secret_key=f"{prefix}_S3_SECRET", endpoint=f"{prefix}_ENDPOINT"
+    #)
+    #exec_params[f"{prefix}_s3_cred"] = (
+    #    "{'access_key': '"
+    #    + extra_access_key
+    #    + "', 'secret_key': '"
+    #    + extra_secret_key
+    #    + "', 'url': '"
+    #    + extra_url
+    #    + "'}"
+    #)
     # Execute Ray jobs
     execute_ray_jobs(
         name=cluster_name,

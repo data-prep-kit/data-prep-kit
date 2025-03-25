@@ -79,7 +79,7 @@ After running the script, you should
 
 After running the `release-branch.sh` script, to create tag `vX.Y.Z` and branch `releases/vX.Y.Z`
 and PRing/merging `vX.Y.Z` into `releases/vX.Y.Z`.
-1. Go to the [releases page](https://github.com/IBM/data-prep-kit/releases). 
+1. Go to the [releases page](https://github.com/data-prep-kit/data-prep-kit/releases). 
 1. Select `Draft a new release`
 1. Select target branch `releases/vX.Y.Z`
 1. Select `Choose a tag`, type in vX.Y.Z, click `Create tag`

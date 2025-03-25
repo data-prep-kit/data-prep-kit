@@ -2,15 +2,17 @@
 
 ## Description
 
-This code2parquet transform is designed to convert raw particularly ZIP files contain programming files (.py, .c, .java, etc) , 
+The code2parquet transform is designed to convert raw files, in particular ZIP files, containing programming files (.py, .c, .java, etc), 
 into Parquet format. 
-As a transform It is built to handle concurrent processing of Ray-based
+As a transform, it is built to handle concurrent processing of Ray-based
 multiple files using multiprocessing for efficient execution.
 Each file contained within the ZIP is transformed into a distinct row within the Parquet dataset, adhering to the below schema.
 
-### Input
+## Contributor
 
-### Output Columns annotated by this transform
+- Saptha Surendra (Saptha.Surendran@ibm.com)
+
+## Output Columns annotated by this transform
 
 | output column name | data type | description |
 |:---|:---|:---|
@@ -29,8 +31,8 @@ Each file contained within the ZIP is transformed into a distinct row within the
 
 ## Configuration
 
-The set of dictionary keys holding [code2parquet](src/code2parquet_transform.py) 
-configuration for values are as follows:
+The set of dictionary keys holding [code2parquet](dpk_code2parquet/transform.py) 
+configuration values are as follows:
 
 The transform can be configured with the following key/value pairs
 from the configuration dictionary.
@@ -48,25 +50,21 @@ the file specified in `supported_langs_file`.
 * `domain` - optional value assigned to the imported data in the 'domain' column.
 * `snapshot` -  optional value assigned to the imported data in the 'snapshot' column.
 
-
 ## Usage
 
-The following command line arguments are available.
-
-When running the transform with the Ray launcher (i.e. TransformLauncher),
-the following command line arguments are available in addition to
-[the options provided by the launcher](../../../../data-processing-lib/doc/ray-launcher-options.md).
+The following command line arguments are available:
 
 * `--code2parquet_supported_langs_file` - set the `supported_langs_file` configuration key. 
 * `--code2parquet_detect_programming_lang` - set the `detect_programming_lang` configuration key. 
 * `--code2parquet_domain` - set the `domain` configuration key. 
 * `--code2parquet_snapshot` -  set the `snapshot` configuration key.
 
+
 ### Running the samples
 
 To run the samples, use the following `make` target
 
-* `run-cli-sample` - runs dpk_license-select/transform.py using command line args
+* `run-cli-sample` - runs dpk_code2parquet/transform.py using command line args
 
 This target will activate the virtual environment and sets up any configuration needed.
 Use the `-n` option of `make` to see the detail of what is done to run the sample.
@@ -82,22 +80,19 @@ ls output
 ```
 To see results of the transform.
 
-
 ### Code example
 
 [notebook](./code2parquet.ipynb)
-
 
 ## Testing
 
 Following [the testing strategy of data-processing-lib](../../../data-processing-lib/doc/transform-testing.md)
 
-Currently we have:
+Currently, we have:
 
 - [Unit test](test/test_code2parquet_python.py)
 - [Integration test](test/test_code2parquet.py)
 
-## Consideration
 
 ##  code2parquet Ray Transform 
 
@@ -105,7 +100,6 @@ Please see the set of
 [transform project conventions](../../README.md#transform-project-conventions)
 for details on general project conventions, transform configuration,
 testing and IDE set up.
-
 
 ### Configuration and command line Options
 
@@ -115,16 +109,14 @@ code2parquet configuration and command line options are the same as for the base
 
 #### Launched Command Line Options 
 
-When running the transform with the Ray launcher (i.e., TransformLauncher),
-In addition to those available to the transform as defined here,
-the set of 
-[launcher options](../../../data-processing-lib/doc/launcher-options.md) are available.
+When running the transform with the Ray launcher (i.e., TransformLauncher), the following additional command line arguments are available:
+[the options provided by the launcher](../../../data-processing-lib/doc/launcher-options.md).
 
 #### Running the samples
 
 To run the samples, use the following `make` target
 
-* `run-ray-cli-sample` - runs dpk_license_select/ray/transform.py using command line args
+* `run-ray-cli-sample` - runs dpk_code2parquet/ray/transform.py using command line args
 
 This target will activate the virtual environment and sets up any configuration needed.
 Use the `-n` option of `make` to see the detail of what is done to run the sample.

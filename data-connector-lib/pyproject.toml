@@ -24,8 +24,8 @@ dependencies = [
 ]
 
 [project_urls]
-Repository = "https://github.com/IBM/data-prep-kit"
-Issues = "https://github.com/IBM/data-prep-kit/issues"
+Repository = "https://github.com/data-prep-kit/data-prep-kit"
+Issues = "https://github.com/data-prep-kit/data-prep-kit/issues"
 Documentation = "https://ibm.github.io/data-prep-kit/"
 
 [build-system]

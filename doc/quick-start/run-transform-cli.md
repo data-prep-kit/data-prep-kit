@@ -22,7 +22,7 @@ pip install  'data-prep-toolkit-transforms[ray,all]'
 The above installs all available transforms and both the python and Ray runtimes. 
 
 NOTE: As of this writing, on linux systems there is an 
-[issue](https://github.com/IBM/data-prep-kit/issues/873) 
+[issue](https://github.com/data-prep-kit/data-prep-kit/issues/873) 
 installing `fasttext` for the `lang_id` transform. 
 A workaround is to
 [install using conda](quick-start.md#conda).

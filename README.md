@@ -114,7 +114,7 @@ Contributors are welcome to add new modules to expand to other data modalities a
 
 ## Get help and support
 
-Please feel free to connect with us using the [discussion](https://github.com/IBM/data-prep-kit/discussions) section.
+Please feel free to connect with us using the [discussion](https://github.com/data-prep-kit/data-prep-kit/discussions) section.
 
 ## MAINTAINERS
 

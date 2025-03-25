@@ -154,10 +154,10 @@ def enrichment(
     # Add image_pull_secret and image_pull_policy to ray workers if needed
     ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
     ray_worker_options: dict = {
-        "replicas": 2,
-        "max_replicas": 2,
-        "min_replicas": 2,
-        "cpu": 2,
+        "replicas": 1,
+        "max_replicas": 1,
+        "min_replicas": 1,
+        "cpu": 1,
         "memory": 4,
         "image": task_image,
     },

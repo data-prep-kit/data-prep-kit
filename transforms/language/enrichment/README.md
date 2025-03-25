@@ -96,4 +96,4 @@ Currently we have:
 
 ## Credits
 
-The work on this transform is continuation of the original work by Juergen Bross (jbross@us.ibm.com).
+The work on this transform is a continuation of the original work by Juergen Bross (jbross@us.ibm.com).

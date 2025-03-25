@@ -31,8 +31,9 @@ class DataAccessFactory(DataAccessFactoryBase):
     This class has to be serializable, so that we can pass it to the actors
     """
     default_class = 'DataAccessLocal'
-    default_module = 'data_processing.data_access.data_access_local'
+    default_module = 'data_processing.data_access'
 
+    s3_class = 'DataAccessS3'
 
     def __init__(self, cli_arg_prefix: str = "data_", enable_data_navigation: bool = True):
         """
@@ -233,7 +234,11 @@ class DataAccessFactory(DataAccessFactoryBase):
         self.data_access_class=arg_dict.get(f"{self.cli_arg_prefix}da_class")
         self.data_access_module=arg_dict.get(f"{self.cli_arg_prefix}da_module")
         if self.data_access_class is None or self.data_access_class == '':
-            self.data_access_class=self.default_class
+            ## The use of s3_config will be depricated over time
+            if (arg_dict.get(f"{self.cli_arg_prefix}s3_config")):
+                self.data_access_class='DataAccessS3'
+            else:
+                self.data_access_class=self.default_class
             self.data_access_module=self.default_module
         try:
             if self.data_access_module and self.data_access_module != '':
@@ -246,7 +251,7 @@ class DataAccessFactory(DataAccessFactoryBase):
             self.logger.error(f"Failed to import module {self.data_access_module}")
             return False
         except AttributeError:
-            self.logger.error(f"Class {self.data_access_class}  Not found")
+            self.logger.error(f"Class {self.data_access_class} {self.data_access_module}  Not found")
             return False
             # At this point, we could call the class validation method if we want to retain the same logic as before
         if not self.data_access:
@@ -262,6 +267,11 @@ class DataAccessFactory(DataAccessFactoryBase):
         :return: corresponding data access class
         """
         try:
+            if self.data_access is None:
+                ##### MT
+                ## A number of transform assumes they can call this method directly without
+                ## any pre-configration to get a local data access class without any validation
+                self.data_access=getattr(importlib.import_module(self.data_access_module), self.data_access_class)
             return self.data_access(
                 config=self.config,
                 d_sets=self.dsets,
@@ -271,6 +281,12 @@ class DataAccessFactory(DataAccessFactoryBase):
                 files_to_use=self.files_to_use,
                 files_to_checkpoint=self.files_to_checkpoint
             )
+        except ImportError:
+            self.logger.error(f"Failed to import module {self.data_access_module}")
+            raise
+        except AttributeError:
+            self.logger.error(f"Class {self.data_access_class}  Not found")
+            raise
         except Exception:
             self.logger.error(f"Failed to create data access instance {self.data_access_module}.{self.data_access_class}")
             raise

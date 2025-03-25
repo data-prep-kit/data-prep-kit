@@ -203,6 +203,10 @@ class DataAccessFactory(DataAccessFactoryBase):
             )
         else:
             self.config = arg_dict.get(provided_configs[0])
+            self.logger.info(
+            f"data factory {self.cli_arg_prefix} "
+            f"data configuration used: {self.config}"
+            )
 
         # Check whether both max_files and number samples are defined
         self.logger.info(f"data factory {self.cli_arg_prefix} max_files {max_files}, n_sample {n_samples}")
@@ -257,6 +261,10 @@ class DataAccessFactory(DataAccessFactoryBase):
         if not self.data_access:
             self.logger.error(f"Failed to import module {self.data_access_module}.{self.data_access_class}")
             return False
+        self.logger.info(
+                f"data factory {self.cli_arg_prefix} "
+                f"Data Access:  {self.data_access_class}"
+            )
         if not self.data_access.validate_config(self.config, self.cli_arg_prefix):
             return False
         return True

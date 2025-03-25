@@ -212,7 +212,8 @@ class RepoLevelOrderRuntime(DefaultRayTransformRuntime):
         store_params = self.params[store_params_key]
 
         # update s3_creds, needed for store_type_s3
-        store_params = store_params | {"s3_creds": self.s3_cred}
+ #       store_params = store_params | {"s3_creds": self.s3_cred}
+        store_params = store_params
         self.params[store_params_key] = self.params[store_params_key] | init_store_params(store_params, self.logger)
         self.store_backend_dir = None
 
@@ -238,7 +239,7 @@ class RepoLevelOrderRuntime(DefaultRayTransformRuntime):
         self.output_folder = data_access.output_folder
         # Keep s3_creds
         self.daf = data_access_factory
-        self.s3_cred = data_access_factory.s3_cred
+#        self.s3_cred = data_access_factory.s3_cred
         self.data_access = data_access
         self._initialize_store_params()
         self.store_params = self.params[store_params_key]

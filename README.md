@@ -9,6 +9,7 @@
 [![Apache 2.0](https://img.shields.io/github/license/data-prep-kit/data-prep-kit)](https://opensource.org/license/apache-2-0)
 [![GitHub Issues](https://img.shields.io/github/issues/kylelobo/The-Documentation-Compendium.svg)](https://github.com/data-prep-kit/data-prep-kit/issues)
   [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/kylelobo/The-Documentation-Compendium.svg)](https://github.com/data-prep-kit/data-prep-kit/pulls)
+  [![LF AI & Data](https://img.shields.io/badge/LF%20AI%20%26%20Data-003778?logo=linuxfoundation&logoColor=fff&color=0094ff&labelColor=003778)](https://lfaidata.foundation/projects/)
 
   </div>
 
@@ -120,10 +121,6 @@ Please feel free to connect with us using the [discussion](https://github.com/da
 
 For a list of current maintainers, please [see](MAINTAINERS.md).
 
-## License
-
-All source files must include a Copyright and License header. If you would like to see the detailed LICENSE click [here](LICENSE).
-
 ## CHANGELOG 
 
 For the history of releases and changes, please [see](release-notes.md).
@@ -156,3 +153,14 @@ If you use Data Prep Kit in your research, please cite our paper:
       url={https://arxiv.org/abs/2409.18164}, 
 }
 ```
+## License
+
+All source files must include a Copyright and License header. If you would like to see the detailed LICENSE click [here](LICENSE).
+
+## LF AI & Data
+
+Data Prep Kit is hosted as a project in the [LF AI & Data Foundation](https://lfaidata.foundation/projects/).
+
+### IBM ❤️ Open Source AI
+
+The project was started by the Data for AI Models team at IBM Research. 

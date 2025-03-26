@@ -23,7 +23,7 @@ from workflow_support.compile_utils import (
 
 
 # the name of the job script
-EXEC_SCRIPT_NAME: str = "-m dpk_filter.ray.transform"
+EXEC_SCRIPT_NAME: str = "-m dpk_filter.ray.runtime"
 PREFIX: str = ""
 
 task_image = "quay.io/dataprep1/data-prep-kit/filter-ray:latest"
@@ -49,6 +49,9 @@ def compute_exec_params_func(
     filter_criteria_list: str,
     filter_logical_operator: str,
     filter_columns_to_drop: str,
+    filter_input_arrow_folder: str,
+    filter_output_arrow_folder: str,
+    filter_doc_id_column_name: str,
 ) -> dict:
     from runtime_utils import KFPUtils
 
@@ -64,6 +67,9 @@ def compute_exec_params_func(
         "filter_criteria_list": filter_criteria_list,
         "filter_logical_operator": filter_logical_operator,
         "filter_columns_to_drop": filter_columns_to_drop,
+        "filter_input_arrow_folder": filter_input_arrow_folder,
+        "filter_output_arrow_folder": filter_output_arrow_folder,
+        "filter_doc_id_column_name": filter_doc_id_column_name,
     }
 
 
@@ -113,6 +119,9 @@ def filtering(
     filter_criteria_list: str = "['docq_total_words > 100 AND docq_total_words < 200', 'ibmkenlm_docq_perplex_score < 230']",
     filter_logical_operator: str = "AND",
     filter_columns_to_drop: str = "['extra', 'cluster']",
+    filter_input_arrow_folder: str = "",
+    filter_output_arrow_folder: str = "",
+    filter_doc_id_column_name: str = "document_id",
     # additional parameters
     additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
 ):
@@ -153,6 +162,9 @@ def filtering(
     :param filter_criteria_list - list of filter criteria (in SQL WHERE clause format)
     :param filter_logical_operator - logical operator (AND or OR) that joins filter criteria
     :param filter_columns_to_drop - list of columns to drop after filtering
+    :param filter_input_arrow_folder - input arrow folder path
+    :param filter_output_arrow_folder - output arrow folder path
+    :param filter_doc_id_column_name - name of the document id column
     :return: None
     """
     # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
@@ -183,6 +195,9 @@ def filtering(
             filter_criteria_list=filter_criteria_list,
             filter_logical_operator=filter_logical_operator,
             filter_columns_to_drop=filter_columns_to_drop,
+            filter_input_arrow_folder=filter_input_arrow_folder,
+            filter_output_arrow_folder=filter_output_arrow_folder,
+            filter_doc_id_column_name=filter_doc_id_column_name,
         )
 
         ComponentUtils.add_settings_to_component(compute_exec_params, ONE_HOUR_SEC * 2)

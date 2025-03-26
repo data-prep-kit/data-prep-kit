@@ -21,7 +21,7 @@ import mkdocs.plugins
 
 log = logging.getLogger("mkdocs")
 
-GITHUB_REPO = os.getenv("REPO_URL", "https://github.com/data-prep-kit/data-prep-lab")
+GITHUB_REPO = os.getenv("REPO_URL", "https://github.com/data-prep-kit/data-prep-kit")
 GITHUB_BRANCH = os.getenv("REPO_BRANCH", "dev")
 GITHUB_VIEW_FILE = "blob"
 GITHUB_VIEW_TREE = "tree"

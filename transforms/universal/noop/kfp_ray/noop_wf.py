@@ -21,7 +21,18 @@ from workflow_support.compile_utils import (
     ONE_WEEK_SEC,
     ComponentUtils,
 )
+from python_apiserver_client.params import (
+        EnvironmentVariables,
+        EnvVarFrom,
+        EnvVarSource,
+)
 
+# The names of the opaque secrets that holds the S3 Secret, S3 access key and URL
+# Default values match scripts/k8s-setup/s3_secret.yaml
+S3_ACCESS_SECRET = "s3-secret"
+S3_SECRET = "s3-secret"
+S3_ACCESS_KEY = "s3-key"
+S3_ENDPOINT = "s3-endpoint"
 
 task_image = "quay.io/dataprep1/data-prep-kit/noop-ray:latest"
 
@@ -85,6 +96,20 @@ cleanup_ray_op = comp.load_component_from_file(component_spec_path + "deleteRayC
 # Task name is part of the pipeline name, the ray cluster name and the job name in DMF.
 TASK_NAME: str = "noop"
 
+# S3 credentials are exported as environment variables in Ray node pods.
+# Alternatively, the secret name can be passed to the KFP component,
+# which will set it as an environment variable in the Ray nodes.
+# In this option the secret name can be set at runtime
+# but is dependent on the KFP version.
+env_s3_secret = EnvVarFrom(source=EnvVarSource.SECRET, name=S3_ACCESS_SECRET, key=S3_SECRET)
+env_s3_key = EnvVarFrom(source=EnvVarSource.SECRET, name=S3_ACCESS_SECRET, key=S3_ACCESS_KEY)
+env_s3_url = EnvVarFrom(source=EnvVarSource.SECRET, name=S3_ACCESS_SECRET, key=S3_ENDPOINT)
+
+envs = EnvironmentVariables(from_ref={"S3_SECRET": env_s3_secret,
+                                      "S3_ACCESS_KEY": env_s3_key,
+                                      "S3_ENDPOINT": env_s3_url })
+
+
 
 @dsl.pipeline(
     name=TASK_NAME + "-ray-pipeline",
@@ -95,8 +120,16 @@ def noop(
     ray_name: str = "noop-kfp-ray",  # name of Ray cluster
     ray_run_id_KFPv2: str = "",
     # Add image_pull_secret, image_pull_policy and tolerations to ray options if needed
-    ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
-    ray_worker_options: dict = {"replicas": 2, "max_replicas": 2, "min_replicas": 2, "cpu": 2, "memory": 4, "image": task_image},
+    ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image, "environment": envs.to_dict()},
+    ray_worker_options: dict = {"replicas": 2,
+                                "max_replicas": 2,
+                                "min_replicas": 2,
+                                "cpu": 2,
+                                "memory": 4,
+                                "image": task_image,
+                                "environment": envs.to_dict(),
+},
+
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
     data_s3_config: str = "{'input_folder': 'test/noop/input/', 'output_folder': 'test/noop/output/'}",

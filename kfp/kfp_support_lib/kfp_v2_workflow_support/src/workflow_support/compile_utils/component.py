@@ -123,7 +123,7 @@ class ComponentUtils:
         :param prefix: prefix to add to env name
         """
         if env2key is None:
-            env2key = {"s3-key": "S3_KEY", "s3-secret": "S3_SECRET", "s3-endpoint": "ENDPOINT"}
+            env2key = {"s3-key": "S3_KEY", "s3-secret": "S3_SECRET", "s3-endpoint": "S3_ENDPOINT"}
 
         if prefix is not None:
             for secret_key, _ in env2key.items():

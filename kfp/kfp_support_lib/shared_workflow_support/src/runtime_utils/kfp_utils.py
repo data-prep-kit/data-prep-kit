@@ -29,7 +29,7 @@ class KFPUtils:
 
     @staticmethod
     def credentials(
-        access_key: str = "S3_KEY", secret_key: str = "S3_SECRET", endpoint: str = "ENDPOINT"
+        access_key: str = "S3_KEY", secret_key: str = "S3_SECRET", endpoint: str = "S3_ENDPOINT"
     ) -> tuple[str, str, str]:
         """
         Get credentials from the environment

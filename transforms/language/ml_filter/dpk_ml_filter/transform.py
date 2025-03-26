@@ -10,7 +10,7 @@
 # limitations under the License.
 ################################################################################
 
-import json, argparse, pyarrow, yaml
+import json, argparse, pyarrow, yaml, os
 import pyarrow.compute as pc
 from typing import Any
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
@@ -23,7 +23,7 @@ description = "filter using a per-language table of conditions"
 param_table = [
         ("column_prefix", str, "", "Prefix for to all columns referenced in the conditions table"),
         ("lang_column_name", str, "lang", "Name of the column with the language identifier"),
-        ("config", str, "cleansing-config.yaml", "File name for the condition table (yaml)"),
+        ("config", str, os.path.expanduser("~/cleansing-config.yaml"), "File name for the condition table (yaml)"),
         ("ignore_missing_columns", bool, False, "Ignore conditions that reference fields not present in the data"),
     ]
 

@@ -23,6 +23,7 @@ COPY --chown=dpk:users dpk_${TRANSFORM_NAME}/ dpk_${TRANSFORM_NAME}/
 COPY --chown=dpk:users requirements.txt requirements.txt 
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir -U 'ray[serve]'
+RUN python -c 'import nltk; nltk.download("punkt_tab")'
 
 # Set environment
 ENV PYTHONPATH /home/dpk

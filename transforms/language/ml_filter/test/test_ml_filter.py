@@ -25,13 +25,12 @@ class TestMLFilterTransform(AbstractTransformLauncherTest):
     """
 
     def get_test_transform_fixtures(self) -> list[tuple]:
-        basedir = "../test-data"
-        basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))
+        basedir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
         cli = {
                 "ml_filter_lang_column_name": "lang",
-                "ml_filter_config": os.path.join(basedir, "input/cleansing-config.yaml"),
+                "ml_filter_config": os.path.join(basedir, "cleansing-config.yaml"),
                 "ml_filter_column_prefix": "e_",
         }
         launcher = PythonTransformLauncher(MLFilterRuntime())
-        fixtures = [(launcher, cli, basedir + "/input", basedir + "/expected")]
+        fixtures = [(launcher, cli, os.path.join(basedir, "test-data/input"), os.path.join(basedir, "test-data/expected"))]
         return fixtures

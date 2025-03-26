@@ -23,6 +23,8 @@ COPY --chown=dpk:users dpk_${TRANSFORM_NAME}/ dpk_${TRANSFORM_NAME}/
 COPY --chown=dpk:users requirements.txt requirements.txt 
 RUN pip install --no-cache-dir -r requirements.txt
 
+COPY --chown=dpk:users cleansing-config.yaml cleansing-config.yaml
+
 # Set environment
 ENV PYTHONPATH /home/dpk
 

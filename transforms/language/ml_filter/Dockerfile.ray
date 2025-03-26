@@ -17,10 +17,11 @@ ARG TRANSFORM_NAME
 COPY --chmod=775 --chown=ray:root data-processing-dist data-processing-dist
 RUN  pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}[ray]
 
-
 COPY --chmod=775 --chown=ray:root dpk_${TRANSFORM_NAME}/ dpk_${TRANSFORM_NAME}/
-COPY --chmod=775 --chown=ray:root requirements.txt requirements.txt 
+COPY --chown=ray:root requirements.txt requirements.txt 
 RUN pip install --no-cache-dir -r requirements.txt
+
+COPY --chown=ray:root cleansing-config.yaml cleansing-config.yaml
 
 # Set environment
 ENV PYTHONPATH /home/ray

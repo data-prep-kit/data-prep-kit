@@ -106,6 +106,10 @@ class FilterTransform(AbstractTableTransform):
             self.parquet_input_folder = self.data_access.get_input_folder()
         if self.parquet_input_folder is not None:
             self.parquet_input_folder = self.parquet_input_folder if self.parquet_input_folder.endswith("/") else f"{self.parquet_input_folder}/"
+
+        # ref: https://duckdb.org/docs/stable/guides/python/multiple_threads.html
+        duckdb_con = duckdb.connect()
+        self.local_con = duckdb_con.cursor()
     
     def _construct_arrow_meta_file_path(self, parquet_file_name: str):
         """
@@ -213,7 +217,7 @@ class FilterTransform(AbstractTableTransform):
             # populate metadata with filtering stats for each filter criterion
             for filter_criterion in self.filter_criteria:
                 criterion_sql = f"{sql_statement} WHERE {filter_criterion}"
-                filter_table = duckdb.execute(criterion_sql).arrow()
+                filter_table = self.local_con.execute(criterion_sql).arrow()
                 docs_filtered = total_docs - filter_table.num_rows
                 bytes_filtered = total_bytes - filter_table.nbytes
                 metadata[f"docs_filtered_out_by '{filter_criterion}'"] = docs_filtered
@@ -226,7 +230,7 @@ class FilterTransform(AbstractTableTransform):
 
             # filter using SQL statement
             try:
-                filtered_table = duckdb.execute(sql_statement).arrow()
+                filtered_table = self.local_con.execute(sql_statement).arrow()
             except Exception as ex:
                 self.logger.error(f"FilterTransform::transform failed: {ex}")
                 raise ex

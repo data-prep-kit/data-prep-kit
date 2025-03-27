@@ -26,14 +26,20 @@ logger = get_logger(__name__)
 
 
 class DPKConfigS3(DPKConfig):
-    S3_ACCESS_KEY_LIST = ["AWS_ACCESS_KEY_ID", "COS_ACCESS_KEY",'S3_ACCESS_KEY','S3_KEY']
-    """ Set from AWS_ACCESS_KEY_ID or COS_ACCESS_KEY env vars """
-    S3_SECRET_KEY_LIST = ["AWS_SECRET_ACCESS_KEY", "COS_SECRET_KEY", 'S3_SECRET_KEY','S3_SECRET']
-    """ Set from AWS_SECRET_ACCESS_KEY or COS_SECRET_KEY env vars """
-    S3_ENDPOINT_LIST = ["S3_ENDPOINT","S3_URL","ENDPOINT"]
-    """ Set from COS URL """
-    S3_REGION_LIST = ["S3_REGION"]
-    """ Set from East-region by default """
+
+    ## Loaded at startup
+    S3_KEY=DPKConfig._get_first_env_var(['S3_ACCESS_KEY','S3_KEY'])
+    S3_SECRET=DPKConfig._get_first_env_var(['S3_SECRET_KEY','S3_SECRET'])
+    S3_ENDPOINT=DPKConfig._get_first_env_var(['S3_ENDPOINT','S3_URL'])
+    S3_REGION=DPKConfig._get_first_env_var(['S3_REGION'], 'us-east')
+
+    ## Can be reconfigured at runtime and for specific prefixes
+    ## Allows multiple S3 buckets used simultaneously by the same application each having its own credentia
+    def __init__(self, prefix: str='data_'):
+        self.S3_KEY= DPKConfig._get_first_env_var([f"{prefix}S3_ACCESS_KEY", f"{prefix}S3_KEY", 'S3_ACCESS_KEY','S3_KEY'])
+        self.S3_SECRET= DPKConfig._get_first_env_var([f"{prefix}S3_SECRET_KEY", f"{prefix}S3_SECRET", "S3_SECRET_KEY", "S3_SECRET"])
+        self.S3_ENDPOINT = DPKConfig._get_first_env_var([f"{prefix}S3_ENDPOINT", f"{prefix}S3_URL", "S3_ENDPOINT","S3_URL"])
+        self.S3_REGION = DPKConfig._get_first_env_var([f"{prefix}S3_REGION", "S3_REGION"], 'us-east')
 
 
 class DataAccessS3(DataAccess):
@@ -41,7 +47,7 @@ class DataAccessS3(DataAccess):
     Implementation of the Base Data access class for folder-based data access.
     """
     @classmethod
-    def validate_config(cls, config: dict[str, str], cli_arg_prefix: str='') -> bool:
+    def validate_config(cls, config: dict[str, str], prefix: str='data_') -> bool:
         """
         Validate that
         :param s3_config: dictionary of local config
@@ -49,25 +55,25 @@ class DataAccessS3(DataAccess):
         """
         valid_config = True
         if config is None:
-            logger.info(f"data access factory {cli_arg_prefix}: Could not find a valid configuration")
-            access_key= DPKConfigS3._get_first_env_var(DPKConfigS3.S3_ACCESS_KEY_LIST)
-            secret_key=DPKConfigS3._get_first_env_var(DPKConfigS3.S3_SECRET_KEY_LIST)
-            endpoint=DPKConfigS3._get_first_env_var(DPKConfigS3.S3_ENDPOINT_LIST)
+            logger.info(f"data access factory {prefix}: Could not find a valid configuration")
+            access_key= DPKConfigS3(prefix).S3_KEY
+            secret_key=DPKConfigS3(prefix).S3_SECRET
+            endpoint=DPKConfigS3(prefix).S3_ENDPOINT
         else:
             if config.get("input_folder", "") == "":
                 valid_config = False
-                logger.error(f"data access factory {cli_arg_prefix}: Could not find input folder in s3 config")
+                logger.error(f"data access factory {prefix}: Could not find input folder in s3 config")
             if config.get("output_folder", "") == "":
                 valid_config = False
-                logger.error(f"data access factory {cli_arg_prefix}: Could not find output folder in s3 config")
+                logger.error(f"data access factory {prefix}: Could not find output folder in s3 config")
 
-            access_key=config.get("access_key", DPKConfigS3._get_first_env_var(DPKConfigS3.S3_ACCESS_KEY_LIST))
-            secret_key=config.get("secret_key", DPKConfigS3._get_first_env_var(DPKConfigS3.S3_SECRET_KEY_LIST))
-            endpoint=config.get("url", DPKConfigS3._get_first_env_var(DPKConfigS3.S3_ENDPOINT_LIST))
+            access_key=config.get("access_key", DPKConfigS3(prefix).S3_KEY)
+            secret_key=config.get("secret_key", DPKConfigS3(prefix).S3_SECRET)
+            endpoint=config.get("url", DPKConfigS3(prefix).S3_ENDPOINT)
 
         if access_key is None or secret_key is None or endpoint is None:
             valid_config = False
-            logger.error(f"data access factory {cli_arg_prefix}: Missing Credentials {access_key} {secret_key} {endpoint} ")
+            logger.error(f"data access factory {prefix}: Missing Credentials {access_key} {secret_key} {endpoint} ")
 
 
         return valid_config
@@ -99,17 +105,18 @@ class DataAccessS3(DataAccess):
                          files_to_use=files_to_use, files_to_checkpoint=files_to_checkpoint)
         
         if config is not None:
-            access_key=config.get("access_key", DPKConfigS3._get_first_env_var(DPKConfigS3.S3_ACCESS_KEY_LIST))
-            secret_key=config.get("secret_key", DPKConfigS3._get_first_env_var(DPKConfigS3.S3_SECRET_KEY_LIST))
-            endpoint=config.get("url", DPKConfigS3._get_first_env_var(DPKConfigS3.S3_ENDPOINT_LIST))
-            region = config.get("region", DPKConfigS3._get_first_env_var(DPKConfigS3.S3_REGION_LIST, "us-east"))
+            prefix = config.get('prefix',"data_")
+            access_key=config.get("access_key", DPKConfigS3(prefix).S3_KEY)
+            secret_key=config.get("secret_key", DPKConfigS3(prefix).S3_SECRET)
+            endpoint=config.get("url", DPKConfigS3(prefix).S3_ENDPOINT)
+            region = config.get("region", DPKConfigS3(prefix).S3_REGION)
             input_folder=config.get("input_folder", None)
             output_folder=config.get("output_folder", None)
         else:
-            access_key= DPKConfigS3._get_first_env_var(DPKConfigS3.S3_ACCESS_KEY_LIST)
-            secret_key= DPKConfigS3._get_first_env_var(DPKConfigS3.S3_SECRET_KEY_LIST)
-            endpoint=DPKConfigS3._get_first_env_var(DPKConfigS3.S3_ENDPOINT_LIST)
-            region = DPKConfigS3._get_first_env_var(DPKConfigS3.S3_REGION_LIST, "us=east")
+            access_key=DPKConfigS3().S3_KEY
+            secret_key=DPKConfigS3().S3_SECRET
+            endpoint=DPKConfigS3().S3_ENDPOINT
+            region = DPKConfigS3().S3_REGION
             input_folder=None
             output_folder=None
 

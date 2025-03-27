@@ -203,6 +203,7 @@ class DataAccessFactory(DataAccessFactoryBase):
             )
         else:
             self.config = arg_dict.get(provided_configs[0])
+            self.config['prefix']=self.cli_arg_prefix
             self.logger.info(
             f"data factory {self.cli_arg_prefix} "
             f"data configuration used: {self.config}"

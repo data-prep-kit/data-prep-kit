@@ -68,8 +68,10 @@ All the transforms in the kit include small sample data files for testing, but a
 
 ## Current list of transforms <a name="table"></a>
 
-The matrix below shows the the combination of modules and supported runtimes. All the modules can be accessed [here](transforms) and can be combined to form data processing pipelines, as shown in the [examples](examples) folder. 
+<details>
+      <summary>Please click to expand</summary>
 
+The matrix below shows the the combination of modules and supported runtimes. All the modules can be accessed [here](transforms) and can be combined to form data processing pipelines, as shown in the [examples](examples) folder. 
 
 | Modules                                                                              |    Python-only     |        Ray         |       Spark        |     KFP on Ray     |
 |:-------------------------------------------------------------------------------------|:------------------:|:------------------:|:------------------:|:------------------:|
@@ -109,6 +111,7 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 | [License Select Annotation](transforms/code/license_select/python/README.md)         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Code profiler](transforms/code/code_profiler/README.md)                             | :white_check_mark: | :white_check_mark: |                    |  |
 
+</details>
 
 ## Contributing
 

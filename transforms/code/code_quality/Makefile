@@ -1,79 +1,64 @@
-REPOROOT=../../..
-# Use make help, to see the available rules
-include $(REPOROOT)/.make.defaults
+# Define the root of the local git clone for the common rules to be able 
+# know where they are running from.
+REPOROOT=../../../..
 
-setup::
-	@# Help: Recursively make $@ all subdirs 
-	$(MAKE) RULE=$@ .recurse
+# Set this, before including .make.defaults, to 
+#   1 if requirements reference the latest code in the data processing library 
+#     in this repo (that is not yet published to pypi).	 This is the default setting.
+#   0 if the transforms DPK dependencies are on wheels published to 
+#     pypi (e.g. data-prep-toolkit=0.2.1)
+#USE_REPO_LIB_SRC=1
 
-clean::
-	@# Help: Recursively make $@ all subdirs 
-	$(MAKE) RULE=$@ .recurse
+# Include a library of common .transform.* targets which most
+# transforms should be able to reuse.  However, feel free
+# to override/redefine the rules below. 
+include $(REPOROOT)/transforms/.make.transforms
 
-build::
-	@# Help: Recursively make $@ in subdirs 
-	$(MAKE) RULE=$@ .recurse
-venv::
-	@# Help: Recursively make $@ in subdirs 
-	$(MAKE) RULE=$@ .recurse
+# Include the common configuration for this transform
+include ../transform.config
 
-image:: 
-	@# Help: Recursively make $@ in all subdirs 
-	@$(MAKE) RULE=$@ .recurse
+# Use default rule inherited from makefile.common
+clean:: .transforms.clean
 
-set-versions:  
-	@# Help: Recursively $@ in all subdirs 
-	@$(MAKE) RULE=$@ .recurse
+# Use default rule inherited from makefile.common
+test:: .transforms.python-test
 
-publish:: 
-	@# Help: Recursively make $@ in all subdirs 
-	@$(MAKE) RULE=$@ .recurse
+# Use default rule inherited from makefile.common
+image:: .transforms.python-image
 
-test-image:: 
-	@# Help: Recursively make $@ in all subdirs 
-	@$(MAKE) RULE=$@ .recurse
+# Use default rule inherited from makefile.common
+venv:: .transforms.python-venv
 
-test:: 
-	@# Help: Recursively make $@ in all subdirs 
-	@$(MAKE) RULE=$@ .recurse
+test-src:: .transforms.test-src
 
-test-src::
-	@# Help: Recursively make $@ in all subdirs 
-	$(MAKE) RULE=$@ .recurse
+test-image:: .transforms.python-test-image
 
-kind-load-image::
-	@# Help: Recursively make $@ in all subdirs 
-	$(MAKE) RULE=$@ .recurse
+build:: build-dist image
 
-docker-load-image::
-	@# Help: Recursively make $@ in all subdirs
-	$(MAKE) RULE=$@ .recurse
+publish: publish-image
 
-docker-save-image::
-	@# Help: Recursively make $@ in all subdirs 
-	$(MAKE) RULE=$@ .recurse
+publish-image:: .transforms.publish-image-python
 
-.PHONY: workflow-venv
-workflow-venv:
-	if [ -e kfp_ray ]; then                 \
-	    $(MAKE) -C kfp_ray workflow-venv;   \
-	fi
+setup:: .transforms.setup
 
-.PHONY: workflow-test
-workflow-test:
-	if [ -e kfp_ray ]; then                 \
-	    $(MAKE) -C kfp_ray workflow-test;   \
-	fi
-	
-.PHONY: workflow-upload
-workflow-upload:
-	if [ -e kfp_ray ]; then                 \
-	    $(MAKE) -C kfp_ray workflow-upload; \
-	fi
+# distribution versions is the same as image version.
+set-versions:
+	$(MAKE) TRANSFORM_PYTHON_VERSION=$(CODE_QUALITY_PYTHON_VERSION) TOML_VERSION=$(CODE_QUALITY_PYTHON_VERSION) .transforms.set-versions 
+        
+build-dist:: .defaults.build-dist 
 
-.PHONY: workflow-build
-workflow-build:
-	if [ -e kfp_ray ]; then                 \
-	    $(MAKE) -C  kfp_ray workflow-build; \
-	fi
+publish-dist:: .defaults.publish-dist
 
+setup:: .transforms.setup
+
+run-cli-sample: .transforms.run-cli-python-sample
+
+run-local-sample: .transforms.run-local-sample
+
+run-local-python-sample: .transforms.run-local-python-sample
+
+kind-load-image:: .transforms.kind-load-image
+
+docker-load-image: .defaults.docker-load-image
+
+docker-save-image: .defaults.docker-save-image

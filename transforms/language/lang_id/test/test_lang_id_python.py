@@ -28,7 +28,7 @@ class TestPythonLangIdentificationTransform(AbstractTransformLauncherTest):
 
     def get_test_transform_fixtures(self) -> list[tuple]:
         cli_params = {
-            "lang_id_model_credential": "PUT YOUR OWN HUGGINGFACE CREDENTIAL",
+            "lang_id_model_credential": os.environ.get('HF_READ_ACCESS_TOKEN', "PUT YOUR OWN HUGGINGFACE CREDENTIAL"),
             "lang_id_model_kind": KIND_FASTTEXT,
             "lang_id_model_url": "facebook/fasttext-language-identification",
             "lang_id_content_column_name": "text",

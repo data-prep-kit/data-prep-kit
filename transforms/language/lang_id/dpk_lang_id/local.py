@@ -27,7 +27,7 @@ from lang_models import KIND_FASTTEXT
 input_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "test-data", "input"))
 
 lang_id_params = {
-    model_credential_key: "PUT YOUR OWN HUGGINGFACE CREDENTIAL",
+    model_credential_key: os.environ.get('HF_READ_ACCESS_TOKEN', "PUT YOUR OWN HUGGINGFACE CREDENTIAL"),
     model_kind_key: KIND_FASTTEXT,
     model_url_key: "facebook/fasttext-language-identification",
     content_column_name_key: "text",

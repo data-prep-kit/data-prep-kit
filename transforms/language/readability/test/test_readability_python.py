@@ -15,7 +15,13 @@ from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
-from dpk_readability.common import contents_column_name_cli_param
+from dpk_readability.common import (
+    contents_column_name_cli_param,
+    reading_time_textstat,
+    score_list_cli_param,
+    spache_readability_textstat,
+    text_standard_textstat,
+)
 from dpk_readability.runtime import ReadabilityPythonTransformConfiguration
 
 
@@ -32,7 +38,7 @@ class TestPythonReadabilityTransform(AbstractTransformLauncherTest):
 
         cli_params = {
             contents_column_name_cli_param: "contents",
-            #            curriculum_cli_param: False
+            score_list_cli_param: f"['{reading_time_textstat}','{spache_readability_textstat}','{text_standard_textstat}']",
         }
 
         fixtures = []

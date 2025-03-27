@@ -63,12 +63,10 @@ mcalpine_eflaw_textstat = "mcalpine_eflaw_textstat"
 """Key holds the mcalpine_eflaw_textstat R score threshold parameter"""
 reading_time_textstat = "reading_time_textstat"
 """Key holds the reading_time_textstat R score threshold parameter"""
-avg_grade_level = "avg_grade_level"
-"""Key holds the avg_grade_level R score threshold parameter"""
 contents_column_name = "contents_column_name"
 """Contents column name for the input parquet table to the transform"""
-curriculum = "curriculum"
-"""curriculum parameter for transform; either True or False"""
+score_list = "score_list"
+"""list of readability scores to be computed by the transform"""
 
 
 ########################################################################################
@@ -76,12 +74,12 @@ curriculum = "curriculum"
 """avg_grade_level R score threshold parameter"""
 contents_column_name_cli_param = f"{cli_prefix}{contents_column_name}"
 """Content column name for parquet input table to transform"""
-curriculum_cli_param = f"{cli_prefix}{curriculum}"
-"""curriculum parameter for transform; either True or False"""
+score_list_cli_param = f"{cli_prefix}{score_list}"
+"""list of readability scores or a single readability scores to be computed by the transform"""
 
 
 # The set of default value that can be overwritten from the CLI """
 contents_column_name_default = "contents"
 """The default value for contents_column_name"""
-curriculum_default = False
-"""curriculum parameter for transform; either True or False"""
+score_list_default = mcalpine_eflaw_textstat
+"""readability score that is computed by default"""

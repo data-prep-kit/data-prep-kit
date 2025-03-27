@@ -24,7 +24,6 @@ class TestRepRemovalPython:
         RepRemoval(input_folder=basedir + "/input",
                    output_folder=basedir + "/output",
                    rep_removal_contents_column_name='text',
-                   rep_removal_num_threads='1',
                    ).transform()
 
         table1 = pq.read_table(os.path.join(basedir, 'expected', 'test1.parquet'))
@@ -36,7 +35,6 @@ class TestRepRemovalPython:
         RepRemoval(input_folder=basedir + "/input",
                    output_folder=basedir + "/output",
                    rep_removal_contents_column_name='contents',
-                   rep_removal_num_threads='1',
                    ).transform()
 
         with open(os.path.join(basedir, 'output', 'metadata.json'), 'r') as f:
@@ -47,7 +45,6 @@ class TestRepRemovalPython:
         RepRemoval(input_folder=basedir + "/input",
                    output_folder=basedir + "/output",
                    rep_removal_contents_column_name='text',
-                   rep_removal_num_threads='1',
                    rep_removal_retain_first_copy=False,
                    ).transform()
 

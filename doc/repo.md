@@ -78,6 +78,47 @@ This might include things published to pypi or the docker registry.
 Sub-directories are free to define these as empty/no-op targets, but generally are required
 to define them unless a parent directory does not recurse into the directory.
 
+### Build and deploy a dev release for integration testing (Recommended step for all transforms prior to merging the corresponding PR)
+
+1. Create your fork from the main repo or sync an existing fork with main repo
+1. Clone the fork
+    ```shell
+    git clone git@github.com:<USER>/data-prep-kit.git data-prep-kit-dev
+    cd data-prep-kit-dev
+    ```
+1. Create a new local branch from dev
+    ```shell
+    git checkout dev
+    git checkout -b "testing-$(date '+%Y-%m-%d')"
+    ```
+1. Merge changes from remote branch (if more than one PR, repeat below for each PR). In the example below, replace '<fork_url>' and '<branch_name>' with the git url and branch from each PR (e.g, PR1, PR2, ...)
+    ```shell
+     git remote add <remote_name_PR1> <fork_url> 
+     git fetch <remote_name_PR1> <branch_name>
+     git merge <remote_name_PR1>/<branch_name>
+     ```
+1. Change to the transforms folder, clean any previous build, build a new wheel and publish the wheel as a dev branch to pypi. Follow [instructions](https://packaging.python.org/en/latest/specifications/pypirc/#using-another-package-index) to setup your environment to be able to publish:
+    ```shell
+    cd transforms
+    rm -fr build dist data_prep_toolkit_transforms.egg-info
+    make build-pkg-dist
+    pip install twine
+    make publish-dist
+    ```
+1. **Note**- 'make publish-dist' will fail if a previous build with the same tag is already present on pypi. In this case, add a 'build tag' and publish again. The 'build tag' is a number that immediately follows the distribution package version seperated by a dash `({distribution}-{version}(-{build tag})?-{python tag}-{abi tag}-{platform tag}.whl)`
+
+    ```shell
+    mv dist/data_prep_toolkit_transforms-1.0.1.dev1-py3-none-any.whl dist/data_prep_toolkit_transforms-1.0.1.dev1-1-py3-none-any.whl
+    ```
+    ```shell
+    make publish-dist
+    ```
+   **Note**-  'make publish-dist' will fail if the choosen 'build tag' already exists. In this case, consult the pypi site to identify the latest build tag previously used and increment by 1
+   
+1. When testing the new wheel in a notebook or a venv, make sure to use the --no-cache option: `pip install --no-cache data-prep-toolkit-transforms-1.0.1.dev1`
+    
+    
+
 ## Developers
 Generally, developers will be working in a python project directory
 (e.g., data-processing-lib/python, transforms/universal/filter, etc.) 

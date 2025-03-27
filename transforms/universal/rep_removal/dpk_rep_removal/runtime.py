@@ -55,16 +55,16 @@ class RepRemovalTransformConfiguration(TransformConfiguration):
         )
         parser.add_argument(
             "--rep_removal_length_thresh",
-            type=str,
+            type=int,
             required=False,
-            default="50",
+            default=50,
             help="Length threshold for processing",
         )
         parser.add_argument(
             "--rep_removal_frequency_threshold",
-            type=str,
+            type=int,
             required=False,
-            default="1",
+            default=1,
             help="Frequency threshold for processing.",
         )
         parser.add_argument(
@@ -83,14 +83,14 @@ class RepRemovalTransformConfiguration(TransformConfiguration):
         )
         parser.add_argument(
             "--rep_removal_num_threads",
-            type=str,
+            type=int,
             required=False,
-            default="4",
+            default=cpu_count(logical=False),
             help="Value for number of threads to use for processing",
         )
         parser.add_argument(
             "--rep_removal_num_cpus",
-            type=str,
+            type=int,
             required=False,
             default=cpu_count(logical=False),
             help="Value for number of cpus allocated for processing",

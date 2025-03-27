@@ -10,6 +10,7 @@
 # limitations under the License.
 ################################################################################
 
+import os
 import pyarrow as pa
 from data_processing.test_support.transform.table_transform_test import (
     AbstractTableTransformTest,
@@ -25,14 +26,13 @@ class TestLangIdentificationTransform(AbstractTableTransformTest):
 
     def get_test_transform_fixtures(self) -> list[tuple]:
         config = {
-            "gcls_model_credential": "PUT YOUR OWN HUGGINGFACE CREDENTIAL",
-            "gcls_model_file_name": "model.bin",
-            "gcls_model_url": "facebook/fasttext-language-identification",
+            "gcls_model_credential": os.environ.get('HF_READ_ACCESS_TOKEN', "PUT YOUR OWN HUGGINGFACE CREDENTIAL"),
+            "gcls_model_file_name": ["['fasttext_medical.bin']"],
+            "gcls_model_url": ["['ibm-granite/GneissWeb.Med_classifier']"],
             "gcls_content_column_name": "contents",
-            "gcls_output_label_column_name": "l",
-            "gcls_output_score_column_name": "s",
+            "gcls_output_label_column_name": ["['l']"],
+            "gcls_output_score_column_name": ["['s']"],
         }
-
 
         table = pa.Table.from_arrays(
             [
@@ -69,14 +69,14 @@ class TestLangIdentificationTransform(AbstractTableTransformTest):
                         "hija de Forbante y nieta de Lápites. ",
                     ]
                 ),
-                pa.array(["de", "pt", "ja", "fr", "es"]),
+                pa.array(["cc", "cc", "cc", "cc", "cc"]),
                 pa.array(
                     [
-                        0.998,
-                        1.000,
-                        0.930,
-                        0.998,
-                        0.998,
+                        0.966,
+                        0.988,
+                        1,
+                        0.996,
+                        0.892,
                     ]
                 ),
             ],
@@ -102,7 +102,7 @@ class TestLangIdentificationTransform(AbstractTableTransformTest):
                 ),
                 pa.array(
                     [
-                        "en",
+                        "cc",
                     ]
                 ),
                 pa.array([1.000]),
@@ -118,7 +118,7 @@ class TestLangIdentificationTransform(AbstractTableTransformTest):
                 ),
                 pa.array(
                     [
-                        "en",
+                        "cc",
                     ]
                 ),
                 pa.array([1.000]),
@@ -136,7 +136,7 @@ class TestLangIdentificationTransform(AbstractTableTransformTest):
                     invalid_output_score_column_name_table,
                 ],
                 [expected_table],
-                [{"de": 1, "es": 1, "fr": 1, "ja": 1, "pt": 1}, {}],
+                [{"cc": 5}, {}],
             )
         ]
         

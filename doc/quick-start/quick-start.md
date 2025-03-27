@@ -42,13 +42,13 @@ the command above install the complete library with all the tansforms. In certai
 To install the lang_id transform, use the following command:
 
 ```shell
-pip3 install 'data-prep-toolit-tranforms[lang_id]' 
+pip3 install 'data-prep-toolkit-transforms[lang_id]' 
 ```
 
 to install the lang_id transform with the ray runtime, use the following command:
 
 ```shell
-pip3 install 'data-prep-toolit-tranforms[ray,lang_id]' 
+pip3 install 'data-prep-toolkit-transforms[ray,lang_id]' 
 ```
 
 
@@ -59,12 +59,9 @@ pip3 install 'data-prep-toolit-tranforms[ray,lang_id]'
 pip install jupyterlab ipykernel ipywidgets
 python -m ipykernel install --user --name=data-prep-kit --display-name "dataprepkit"
 ```
-
-
-
 ## Running transforms 
 
-* Notebooks
+### Notebooks
     * There is a [simple notebook](../../examples/notebooks/Run_your_first_transform_colab.ipynb) for running a single transform that can be run from either Google Colab or the local environment by downloading the file.  
     * In most indidividual transform folders, we have included one (Python), two (Python and Ray), or three (Python, Ray and Spark) notebooks for running that transform. In order to run all these notebooks in the local environment, we clone the repo as: 
     ```bash
@@ -82,9 +79,10 @@ python -m ipykernel install --user --name=data-prep-kit --display-name "dataprep
     You can now run the [Python version](../../transforms/universal/fdedup/fdedup_python.ipynb), [Ray version](../../transforms/universal/fdedup/fdedup_ray.ipynb) or [Spark version](../../transforms/universal/fdedup/fdedup_spark.ipynb) of the three notebooks for this transform. 
 
 
-* Command line  
-    * [Using a docker image](run-transform-image.md) - runs a transform in a docker transform image 
-    * [Using a virtual environment](run-transform-venv.md) - runs a transform on the local host 
+### Command line  
+  * [Using the CLI](run-transform-cli.md) - install and run a transform from the command line.
+  * [Using a docker image](run-transform-image.md) - runs a transform in a docker transform image 
+  * [Using a project's virtual environment](run-transform-venv.md) - runs a transform on from its project directory
 
 ## Running transforms on Windows
 

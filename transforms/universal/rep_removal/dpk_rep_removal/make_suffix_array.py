@@ -31,146 +31,147 @@ Modifications has been made to make_suffix_array.py to avoid resource conflict h
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
 import os
 import time
 import subprocess
 import numpy as np
+import multiprocessing as mp
 from dpk_rep_removal.utils import calculate_timeout
+from data_processing.utils import get_logger
+logger = get_logger(__name__, level="INFO")
 
-logging.basicConfig(level=logging.DEBUG)
+pwd = os.path.dirname(__file__)
+dedup_program = f"{pwd}/rust/target/release/dedup_dataset"
+
+
+# Determine the number of jobs based on the data size (total jobs, and jobs at once)
+def determine_job_parameters(data_size):
+    if data_size > 10e9:
+        return 100, 20
+    elif data_size > 1e9:
+        return 96, 96
+    elif data_size > 10e6:
+        return 4, 4
+    else:
+        return 1, 1
+
+
+# Run a subprocess command and return the output
+def run_subprocess(cmd, timeout=None):
+    try:
+        if timeout is None:
+            process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
+            stdout, stderr = process.communicate()
+        else:
+            process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True, timeout=timeout)
+            stderr = process.stderr
+            stdout = process.stdout
+
+        if process.returncode != 0:
+            raise Exception(f"Error in subprocess: {stderr}")
+        return stdout
+    except Exception as e:
+        logger.error(f"Error running command '{cmd}': {e}")
+        return None
+
+
+# Create parts of the dataset
+def create_part(data_file, start_byte, end_byte):
+    cmd = f"{dedup_program} make-part --data-file {data_file} --start-byte {start_byte} --end-byte {end_byte}"
+    logger.info(f"Creating part: {start_byte}-{end_byte}")
+    return run_subprocess(cmd)
+
+
+# Calculate expected size using FACT
+def get_expected_size(file_path):
+    size_data = os.path.getsize(file_path)
+    FACT = np.ceil(np.log(size_data) / np.log(2) / 8)
+    return size_data * FACT
+
+
+# Check the integrity of the files
+def check_file_integrity(data_file, started):
+    logger.info("Checking file integrity...")
+    while True:
+        files = [f"{data_file}.part.{s}-{e}" for s, e in started]
+        wait = []
+
+        for file, (s, e) in zip(files, started):
+            if not os.path.exists(file) or not os.path.exists(f"{file}.table.bin") or os.path.getsize(
+                    f"{file}.table.bin") == 0 or get_expected_size(file) != os.path.getsize(file + ".table.bin"):
+                logger.warning(f"File missing or invalid: {file}, rerunning.")
+                wait.append((s, e))
+
+        if not wait:
+            break
+
+        logger.info(f"Re-running {len(wait)} jobs due to failed integrity checks.")
+        with mp.Pool(len(wait)) as pool:
+            pool.starmap(create_part, [(data_file, s, e) for s, e in wait])
+
+        time.sleep(1)
+
+
+# Merge the suffix trees
+def merge_suffix_trees(files, suffix_array_path, threads, timeout=None):
+    cmd = f"{dedup_program} merge --output-file {suffix_array_path} --suffix-path {' --suffix-path '.join(files)} --num-threads {threads}"
+    logger.info("Merging suffix trees...")
+    result = run_subprocess(cmd, timeout)
+    if result:
+        logger.info("Merge successful.")
+    else:
+        logger.error("Merge failed.")
+        raise RuntimeError("Merge failed.")
+
+
+# Cleanup and verification of the final table file
+
+def cleanup_and_verify_final_table(input_file, suffix_array_path, tmp_dir_sub):
+    logger.info("Final cleanup and verification...")
+    subprocess.run("cat %s.table.bin.* > %s/out.table.bin" % (suffix_array_path, tmp_dir_sub), shell=True)
+    subprocess.run("mv %s/out.table.bin %s.table.bin" % (tmp_dir_sub, input_file), shell=True)
+    # Verify file integrity
+    if os.path.exists(f"{input_file}.table.bin"):
+        if os.path.getsize(f"{input_file}.table.bin") % os.path.getsize(input_file) != 0:
+            logger.error("File size is incorrect.")
+            raise RuntimeError("File size is incorrect.")
+    else:
+        logger.error("Failed to create the table file.")
+        raise RuntimeError("Failed to create the table file.")
 
 
 def make_suffix_array(input, tmp_dir_sub, dedup_level, num_threads, num_cpus):
-    # data_size = os.path.getsize(sys.argv[1])
-    data_size = os.path.getsize(input)
-
     HACK = 100000
-
+    data_size = os.path.getsize(input)
+    total_jobs, jobs_at_once = determine_job_parameters(data_size)
+    chunk_size = data_size // total_jobs
     started = []
+    logger.info(f"Starting the deduplication process for file: {input}")
 
-    if data_size > 10e9:
-        total_jobs = 100
-        jobs_at_once = 20
-    elif data_size > 1e9:
-        total_jobs = 96
-        jobs_at_once = 96
-    elif data_size > 10e6:
-        total_jobs = 4
-        jobs_at_once = 4
-    else:
-        total_jobs = 1
-        jobs_at_once = 1
-
-    S = data_size // total_jobs
     timeout = calculate_timeout(data_size, cpu_cores=num_cpus)
-    logging.info(f"timeout is: {timeout}")
+    logger.info(f"timeout is: {timeout}")
 
-    pwd = os.path.dirname(__file__)
-    dedup_program = f"{pwd}/rust/target/release/dedup_dataset"
+    # Create dataset parts in parallel
+    for jobstart in range(0, total_jobs, jobs_at_once):
+        wait = []
+        for i in range(jobstart, jobstart + jobs_at_once):
+            start_byte, end_byte = i * chunk_size, min((i + 1) * chunk_size + HACK, data_size)
+            started.append((start_byte, end_byte))
+            wait.append((start_byte, end_byte))
 
-    try:
-        for jobstart in range(0, total_jobs, jobs_at_once):
-            wait = []
-            for i in range(jobstart, jobstart + jobs_at_once):
-                s, e = i * S, min((i + 1) * S + HACK, data_size)
-                # cmd = "./target/debug/dedup_dataset make-part --data-file %s --start-byte %d --end-byte %d"%(sys.argv[1], s, e)
+        logger.info(f"Scheduling {jobs_at_once} jobs to create dataset parts.")
+        with mp.Pool(jobs_at_once) as pool:
+            pool.starmap(create_part, [(input, s, e) for s, e in wait])
 
-                ###########################################################################################################################################
-                # cmd = "./target/debug/dedup_dataset make-part --data-file %s --start-byte %d --end-byte %d"%(input, s, e)
-                cmd = f"{dedup_program}" + " make-part --data-file %s --start-byte %d --end-byte %d" % (input, s, e)
-                ###########################################################################################################################################
+    # Check the integrity of all created parts
+    check_file_integrity(input, started)
 
-                started.append((s, e))
-                #run the command with subprocess and capture the output
-                result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-                wait.append(result)
+    # Merging the parts into the final dataset
+    suffix_array_path = os.path.join(tmp_dir_sub, dedup_level)
+    files = [f"{input}.part.{s}-{e}" for s, e in started]
+    merge_suffix_trees(files, suffix_array_path, num_threads, timeout)
 
-                if e == data_size:
-                    break
+    # Final cleanup and verification
+    cleanup_and_verify_final_table(input, suffix_array_path, tmp_dir_sub)
 
-            #Ensure all commands have finished
-            for result in wait:
-                if result.returncode != 0:
-                    raise RuntimeError(f"Error occurred: {result.stderr}")
-
-        # check the output of part files and rerun if necessary
-        while True:
-            # files = ["%s.part.%d-%d"%(sys.argv[1],s, e) for s,e in started]
-            files = ["%s.part.%d-%d" % (input, s, e) for s, e in started]
-
-            wait = []
-            for x, (s, e) in zip(files, started):
-                go = False
-                if not os.path.exists(x):
-                    go = True
-                else:
-                    size_data = os.path.getsize(x)
-                    FACT = np.ceil(np.log(size_data) / np.log(2) / 8)
-                    if not os.path.exists(x) or not os.path.exists(x + ".table.bin") or os.path.getsize(
-                            x + ".table.bin") == 0 or size_data * FACT != os.path.getsize(x + ".table.bin"):
-                        go = True
-                if go:
-                    # cmd = "./target/debug/dedup_dataset make-part --data-file %s --start-byte %d --end-byte %d"%(sys.argv[1], s, e)
-                    ###########################################################################################################################################
-                    # cmd = "./target/debug/dedup_dataset make-part --data-file %s --start-byte %d --end-byte %d"%(input, s, e)
-                    cmd = f"{dedup_program}" + " make-part --data-file %s --start-byte %d --end-byte %d" % (input, s, e)
-                    ###########################################################################################################################################
-
-                    # run the command to recreate the missing or failed parts
-                    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-                    wait.append(result)
-                    if len(wait) >= jobs_at_once:
-                        break
-
-            # Ensure all commands have finished
-            for result in wait:
-                if result.returncode != 0:
-                    raise RuntimeError(f"Error occurred: {result.stderr}")
-
-            time.sleep(1)
-            # break the loop when no jobs are left
-            if len(wait) == 0:
-                break
-
-        #os.popen("rm tmp/out.table.bin.*").read()
-
-        torun = " --suffix-path ".join(files)
-        # pipe = os.popen("./target/debug/dedup_dataset merge --output-file %s --suffix-path %s --num-threads %d"%("tmp/out.table.bin", torun, num_threads))
-
-        #### Saving suffix arrays in a sub folder (part of the input file name is used for sub folder name)
-        #### to avoid conflicts in parallel processes on the same node
-        suffix_array_path = os.path.join(tmp_dir_sub, dedup_level)
-
-        ###########################################################################################################################################
-        # pipe = os.popen("./target/debug/dedup_dataset merge --output-file %s --suffix-path %s --num-threads %d"%(suffix_array_path, torun,num_threads ))
-        cmd = f"{dedup_program}" + " merge --output-file %s --suffix-path %s --num-threads %d" % (
-        suffix_array_path, torun, num_threads)
-        ###########################################################################################################################################
-
-        # run the merge command:
-        logging.info("running the merge")
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=timeout)
-        if result.returncode != 0:
-            raise RuntimeError("Something went wrong with merging.")
-
-        #### Saving suffix arrays in a sub folder (part of the input file name is used for sub folder name)
-        #### to avoid conflicts in parallel processes on the same node
-        subprocess.run("cat %s.table.bin.* > %s/out.table.bin" % (suffix_array_path, tmp_dir_sub), shell=True)
-
-        subprocess.run("mv %s/out.table.bin %s.table.bin" % (tmp_dir_sub, input), shell=True)
-
-        logging.info('merging complete')
-        # if os.path.exists(sys.argv[1]+".table.bin"):
-        if os.path.exists(input + ".table.bin"):
-            if os.path.getsize(input + ".table.bin") % os.path.getsize(input) != 0:
-                raise RuntimeError("File size is wrong")
-
-        else:
-            raise RuntimeError("Failed to create table")
-
-    except subprocess.TimeoutExpired:
-        raise RuntimeError("subprocess timed out. skipping file")
-
-    except subprocess.CalledProcessError:
-        raise RuntimeError("error during subprocess call. skipping file")
+    logger.info("Deduplication process completed successfully.")

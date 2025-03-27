@@ -17,7 +17,8 @@ from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
 from data_processing_ray.runtime.ray import RayTransformLauncher
-from dpk_readability.common import contents_column_name_cli_param, curriculum_cli_param
+
+# from dpk_readability.common import contents_column_name_cli_param, curriculum_cli_param
 from dpk_readability.ray.runtime import ReadabilityRayTransformConfiguration
 
 
@@ -32,7 +33,8 @@ class TestRayReadabilityTransform(AbstractTransformLauncherTest):
     def get_test_transform_fixtures(self) -> list[tuple]:
         basedir = os.path.abspath(os.path.join(os.getcwd(), "..", "test-data"))
 
-        cli_params = {"run_locally": True, contents_column_name_cli_param: "contents", curriculum_cli_param: True}
+        cli_params = {"run_locally": True}
+        # cli_params = {"run_locally": True, contents_column_name_cli_param: "contents", curriculum_cli_param: True}
 
         fixtures = []
         launcher = RayTransformLauncher(ReadabilityRayTransformConfiguration())

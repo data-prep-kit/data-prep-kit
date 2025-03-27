@@ -43,7 +43,7 @@ You can install rust following instructions [here](https://www.rust-lang.org/too
 you can find information for installing [here](https://gcc.gnu.org/install/).
 
 ## Running on M1 Mac
-To run the Transform on an M1 mac, there are a few prerequisites you must run to get started. 
+To run the Transform on an M1 mac, two more things must be considered: 
 
 A) Install a compatible **psutils** library in the environment (uninstall if already present):
 ```shell
@@ -52,29 +52,41 @@ pip install --no-binary :all: psutil
 
 ```
 
-B) Compile the dedup_dataset binary from the **dpk_rep_removal** package dir:
-- Install from git clone repo:
-```shell
-cargo install --path dpk_rep_removal/rust
-```
-- Install from pip install (Note: Activate venv before running next commands):
-```shell
-PACKAGE_LOCATION=$(pip show data_prep_toolkit_transforms | grep Location | awk '{print $2}')
-cargo install --path $PACKAGE_LOCATION/dpk_rep_removal/rust
-```
-## Input Parameters
+[//]: # (B&#41; Compile the dedup_dataset binary from the **dpk_rep_removal** package dir:)
+
+[//]: # (- Install from git clone repo:)
+
+[//]: # (```shell)
+
+[//]: # (cargo install --path dpk_rep_removal/rust)
+
+[//]: # (```)
+
+[//]: # (- Install from pip install &#40;Note: Activate venv before running next commands&#41;:)
+
+[//]: # (```shell)
+
+[//]: # (PACKAGE_LOCATION=$&#40;pip show data_prep_toolkit_transforms | grep Location | awk '{print $2}'&#41;)
+
+[//]: # (cargo install --path $PACKAGE_LOCATION/dpk_rep_removal/rust)
+
+[//]: # (```)
+
+B) If the rep_removal crashes on your machine with an 'out of memory' issue - we recommend using the [resize](https://github.com/data-prep-kit/data-prep-kit/tree/dev/transforms/universal/resize) transform to make the input file(s) smaller.
+ 
+## Input Parameters <a name = "input-parameters"></a>
 
 The transform can be initialized with the following parameters:
 
-| Parameter                          | Default    | Description                                       |
-|------------------------------------|------------|---------------------------------------------------|
-| `rep_removal_contents_column_name` | `contents` | Name of the column holding the document contents  |
-| `rep_removal_dedup_level_name`     | `parquet`  | Name of the type of file to process               |
-| `rep_remova_length_thresh`         | `50`       | Length threshold for processing                   |
-| `rep_removal_frequency_threshold`  | `1`        | Frequency threshold for processing                |
-| `rep_removal_retain_first_copy`    | `True`     | Boolean value for whether to retain first copy    |
-| `rep_removal_tokenize`             | `True`     | Boolean value for whether to tokenize             |
-| `rep_removal_num_threads`          | `4`        | Value for number of threads to use for processing |
+| Parameter                          | Default                            | Description                                       |
+|------------------------------------|------------------------------------|---------------------------------------------------|
+| `rep_removal_contents_column_name` | `contents`                         | Name of the column holding the document contents  |
+| `rep_removal_dedup_level_name`     | `parquet`                          | Name of the type of file to process               |
+| `rep_remova_length_thresh`         | `50`                               | Length threshold for processing                   |
+| `rep_removal_frequency_threshold`  | `1`                                | Frequency threshold for processing                |
+| `rep_removal_retain_first_copy`    | `True`                             | Boolean value for whether to retain first copy    |
+| `rep_removal_tokenize`             | `True`                             | Boolean value for whether to tokenize             |
+| `rep_removal_num_threads`          | `psutils.cpu_count(logical=False)` | Value for number of threads to use for processing |
 
 
 ## Output Format
@@ -116,8 +128,7 @@ You can invoke the transform via command line, as shown in sample make command `
 ```commandline
 python -m dpk_rep_removal.runtime \
                 --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}" \
-                --rep_removal_contents_column_name 'text' \
-                --rep_removal_num_threads '1'
+                --rep_removal_contents_column_name 'text' 
 
 ```
 

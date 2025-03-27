@@ -17,7 +17,8 @@ from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
-from dpk_readability.common import contents_column_name_cli_param, curriculum_cli_param
+
+# from dpk_readability.common import contents_column_name_cli_param, score_list_cli_param, mcalpine_eflaw_textstat
 from dpk_readability.runtime import ReadabilityPythonTransformConfiguration
 
 
@@ -32,7 +33,7 @@ class TestPythonReadabilityTransform(AbstractTransformLauncherTest):
     def get_test_transform_fixtures(self) -> list[tuple]:
         basedir = os.path.abspath(os.path.join(os.getcwd(), "..", "test-data"))
 
-        cli_params = {contents_column_name_cli_param: "contents", curriculum_cli_param: True}
+        cli_params = {}
 
         fixtures = []
         launcher = PythonTransformLauncher(ReadabilityPythonTransformConfiguration())

@@ -20,5 +20,4 @@ run-cli-sample:
 	source venv/bin/activate && \
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
                 --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}" \
-                --rep_removal_contents_column_name 'text' \
-                --rep_removal_num_threads '1'
+                --rep_removal_contents_column_name 'text'

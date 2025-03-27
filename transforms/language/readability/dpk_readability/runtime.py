@@ -10,6 +10,8 @@
 # limitations under the License.
 ################################################################################
 
+import argparse
+import ast
 import sys
 from argparse import ArgumentParser, Namespace
 
@@ -21,12 +23,25 @@ from data_processing.runtime.pure_python.runtime_configuration import (
 from data_processing.transform import TransformConfiguration
 from data_processing.utils import CLIArgumentProvider, ParamsUtils, get_logger, str2bool
 from dpk_readability.common import (
+    automated_readability_index_textstat,
     cli_prefix,
+    coleman_liau_index_textstat,
     contents_column_name_cli_param,
     contents_column_name_default,
-    curriculum_cli_param,
-    curriculum_default,
+    dale_chall_readability_score_textstat,
+    difficult_words_textstat,
+    flesch_ease_textstat,
+    flesch_kincaid_textstat,
+    gunning_fog_textstat,
+    linsear_write_formula_textstat,
+    mcalpine_eflaw_textstat,
+    reading_time_textstat,
+    score_list_cli_param,
+    score_list_default,
     short_name,
+    smog_index_textstat,
+    spache_readability_textstat,
+    text_standard_textstat,
 )
 from dpk_readability.transform import ReadabilityTransform
 
@@ -54,6 +69,33 @@ class ReadabilityTransformConfiguration(TransformConfiguration):
         By convention a common prefix should be used for all transform-specific CLI args
         (e.g, noop_, pii_, etc.)
         """
+        valid_values = {
+            flesch_ease_textstat,
+            flesch_kincaid_textstat,
+            gunning_fog_textstat,
+            smog_index_textstat,
+            coleman_liau_index_textstat,
+            automated_readability_index_textstat,
+            dale_chall_readability_score_textstat,
+            difficult_words_textstat,
+            linsear_write_formula_textstat,
+            text_standard_textstat,
+            spache_readability_textstat,
+            mcalpine_eflaw_textstat,
+            reading_time_textstat,
+        }
+
+        def validate_scores(x):
+            if x.startswith("[") and x.endswith("]"):
+                scores = ast.literal_eval(x)
+                if not all(score in valid_values for score in scores):
+                    raise argparse.ArgumentTypeError(f"Invalid scores in list. Allowed scores: {valid_values}")
+                return scores
+            elif x in valid_values:
+                return x
+            else:
+                raise argparse.ArgumentTypeError(f"Invalid score: {x}. Allowed scores: {valid_values}")
+
         parser.add_argument(
             f"--{contents_column_name_cli_param}",
             type=str,
@@ -61,12 +103,13 @@ class ReadabilityTransformConfiguration(TransformConfiguration):
             default=contents_column_name_default,
             help="contents column name for input parquet table to transform",
         )
+
         parser.add_argument(
-            f"--{curriculum_cli_param}",
-            type=lambda x: bool(str2bool(x)),
+            f"--{score_list_cli_param}",
+            type=validate_scores,
             required=False,
-            default=curriculum_default,
-            help="curriculum parameter for transform; select True for curriculum learning",
+            default=score_list_default,
+            help=f"list of readability scores to be computed by the transform; valid values: {valid_values}",
         )
 
     def apply_input_params(self, args: Namespace) -> bool:

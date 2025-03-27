@@ -28,7 +28,6 @@ class TestRayRepRemovalTransform(AbstractTransformLauncherTest):
         transform_config = {
             "run_locally": True,
             "rep_removal_contents_column_name": 'text',
-            "rep_removal_num_threads":  '1',
 
         }
         launcher = RayTransformLauncher(RepRemovalRayTransformConfiguration())

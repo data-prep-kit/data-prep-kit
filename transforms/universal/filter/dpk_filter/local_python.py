@@ -20,7 +20,7 @@ from transforms.universal.filter.dpk_filter.transform import (
     filter_criteria_cli_param,
     filter_logical_operator_cli_param,
 )
-from dpk_filter.transform_python import FilterPythonTransformConfiguration
+from dpk_filter.runtime import FilterPythonTransformConfiguration
 
 
 # create parameters

@@ -38,7 +38,7 @@ class HAPTransform(AbstractTableTransform):
         self.max_length = config.get("max_length", 512)
         self.batch_size = config.get("batch_size", 128)
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name_or_path)
-        self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name_or_path)
+        self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name_or_path).to(device)
 
     def _apply_model(self, data: list, batch_size: int) -> list[float]:
         num_batches = len(data) // batch_size
@@ -68,8 +68,9 @@ class HAPTransform(AbstractTableTransform):
     def _apply_aggregate(self, nb_doc: int, sent_scores: list[float], sent_ids: list[int]) -> list[float]:
         doc_scores = []
         for i in range(nb_doc):
+           # Compile a list of hap score for each sentence in the document. IF the document is empty then zero out the    final score.
             temp = [score for idx, score in zip(sent_ids, sent_scores) if i == idx]
-            doc_scores.append(max(temp))
+            doc_scores.append(max(temp, default=0)) #If the document is empty, the HAP score will be set to 0 since no HAP content is detected.
         return doc_scores
 
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:

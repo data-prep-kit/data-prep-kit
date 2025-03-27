@@ -72,13 +72,19 @@ or English, focusing on the number of miniwords and length of sentences.
 The set of dictionary keys holding [ReadabilityTransform](dpk_readability/runtime.py) configuration for values are as follows:
 
 * _readability_contents_column_name_ - specifies the name of the column holding the document text. The default is `text`.
-* _readability_curriculum_ - set to True when the data is prepared for curriculum learning and is annotated with the `flesch_kincaid`, `gunning_fog`, `automated_readability_index` readability scores, and the average of these 3 grade-level scores to speed up the annotation process.
+* _readability_score_list_ - list of readability scores to be computed by the transform;
+  valid values: `coleman_liau_index_textstat`, `flesch_kincaid_textstat`,
+  `difficult_words_textstat`, `spache_readability_textstat`, `smog_index_textstat`,
+  `reading_time_textstat`, `dale_chall_readability_score_textstat`, `text_standard_textstat`,
+  `automated_readability_index_textstat`, `gunning_fog_textstat`, `flesch_ease_textstat`,
+  `mcalpine_eflaw_textstat`, `linsear_write_formula_textstat`.
+
 
 Additionally, a set of data access-specific arguments are provided that enable
 the specification of the location of domain list files, so that these
 files could be stored in the local file system or in S3 storage, for example.
 The arguments are as follows (and generally match the TransformLauncher's 
-data access arguments but with the `extreme_tokenized_' prefix).
+data access arguments but with the `readability_' prefix).
 
 * _readability_local_config_ - specifies the input and output folders.
 * _readability_s3_config_ - specifies the input and output paths in s3.
@@ -94,20 +100,20 @@ annotated `readability-test.parquet` file and the `metadata.json` file.
 <pre>
 cma:readability$ make venv PYTHON=python3.11
 cma:readability$ source venv/bin/activate
-(venv) cma:readability$ python -m dpk_readability.runtime --data_local_config "{ 'input_folder': 'test-data/input', 'output_folder': 'output' }"
-12:07:23 INFO - Launching Readability transform
-12:07:23 INFO - Readability parameters are : {'readability_contents_column_name': 'contents', 'readability_curriculum': False}
-12:07:23 INFO - pipeline id pipeline_id
-12:07:23 INFO - code location None
-12:07:23 INFO - data factory data_ is using local data access: input_folder - test-data/input output_folder - output
-12:07:23 INFO - data factory data_ max_files -1, n_sample -1
-12:07:23 INFO - data factory data_ Not using data sets, checkpointing False, max files -1, random samples -1, files to use ['.parquet'], files to checkpoint ['.parquet']
-12:07:23 INFO - orchestrator readability started at 2025-01-28 12:07:23
-12:07:23 INFO - Number of files is 1, source profile {'max_file_size': 0.014194488525390625, 'min_file_size': 0.014194488525390625, 'total_file_size': 0.014194488525390625}
-12:07:23 INFO - Completed 1 files (100.0%) in 0.002 min
-12:07:23 INFO - Done processing 1 files, waiting for flush() completion.
-12:07:23 INFO - done flushing in 0.0 sec
-12:07:23 INFO - Completed execution in 0.003 min, execution result 0
+(venv) cma:readability$ python -m dpk_readability.runtime --data_local_config "{ 'input_folder': 'test-data/input', 'output_folder': 'output' }" --readability_score_list "['reading_time_textstat','spache_readability_textstat','text_standard_textstat']"
+13:07:23 INFO - Launching Readability transform
+13:07:23 INFO - Readability parameters are : {'readability_contents_column_name': 'contents', 'readability_score_list': ['reading_time_textstat', 'spache_readability_textstat', 'text_standard_textstat']}
+13:07:23 INFO - pipeline id pipeline_id
+13:07:23 INFO - code location None
+13:07:23 INFO - data factory data_ is using local data access: input_folder - test-data/input output_folder - output
+13:07:23 INFO - data factory data_ max_files -1, n_sample -1
+13:07:23 INFO - data factory data_ Not using data sets, checkpointing False, max files -1, random samples -1, files to use ['.parquet'], files to checkpoint ['.parquet']
+13:07:23 INFO - orchestrator readability started at 2025-02-07 13:07:23
+13:07:23 INFO - Number of files is 1, source profile {'max_file_size': 0.014194488525390625, 'min_file_size': 0.014194488525390625, 'total_file_size': 0.014194488525390625}
+13:07:24 INFO - Completed 1 files (100.0%) in 0.002 min
+13:07:24 INFO - Done processing 1 files, waiting for flush() completion.
+13:07:24 INFO - done flushing in 0.0 sec
+13:07:24 INFO - Completed execution in 0.002 min, execution result 0
 (venv) cma:readability$ deactivate
 </pre>
 
@@ -134,8 +140,8 @@ options:
   -h, --help            show this help message and exit
   --readability_contents_column_name READABILITY_CONTENTS_COLUMN_NAME
                         contents column name for input parquet table to transform
-  --readability_curriculum READABILITY_CURRICULUM
-                        curriculum parameter for transform; select True for curriculum learning
+  --readability_score_list READABILITY_SCORE_LIST
+                        list of readability scores to be computed by the transform; valid values: {'flesch_ease_textstat', 'reading_time_textstat', 'flesch_kincaid_textstat', 'automated_readability_index_textstat', 'linsear_write_formula_textstat', 'text_standard_textstat', 'smog_index_textstat', 'difficult_words_textstat', 'spache_readability_textstat', 'dale_chall_readability_score_textstat', 'mcalpine_eflaw_textstat', 'gunning_fog_textstat', 'coleman_liau_index_textstat'}
   --data_s3_cred DATA_S3_CRED
                         AST string of options for s3 credentials. Only required for S3 data access.
                         access_key: access key help text
@@ -181,3 +187,4 @@ options:
                         path: Path within the repository
                         Example: { 'github': 'https://github.com/somerepo', 'commit_hash': '1324', 
                         'path': 'transforms/universal/code' }
+

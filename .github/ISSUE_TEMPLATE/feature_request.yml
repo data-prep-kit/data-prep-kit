@@ -12,11 +12,11 @@ body:
       attributes:
           label: Search before asking
           description: >
-              Please make sure to search in the [issues](https://github.com/IBM/data-prep-lab/issues) first to see
+              Please make sure to search in the [issues](https://github.com/data-prep-kit/data-prep-lab/issues) first to see
               whether the same request was reported already.
           options:
               - label: >
-                    I searched the [issues](https://github.com/IBM/data-prep-lab/issues) and found no similar issues.
+                    I searched the [issues](https://github.com/data-prep-kit/data-prep-lab/issues) and found no similar issues.
                 required: true
 
     - type: dropdown
@@ -26,20 +26,45 @@ body:
               What component would implement this new feature.
           multiple: true
           options:
-              - KFP workflows
-              - Library/core
-              - Library/kfp
-              - Tools/ingest2parquet
-              - Transforms/code/code_quality
-              - Transforms/code/proglang_select
-              - Transforms/code/malware
-              - Transforms/universal/doc_id
-              - Transforms/universal/ededup
-              - Transforms/universal/fdedup
-              - Transforms/universal/noop
-              - Transforms/universal/tokenization
-              - Transforms/Other
-              - Other
+            - Documentation
+            - KFP workflows
+            - Data Connector
+            - Ray Runtime
+            - Spark Runtime
+            - Python Runtime
+            - Notebooks and Recipe
+            - Makefiles and CI/CD
+            - transforms/code_profiler
+            - transforms/code_quality
+            - transforms/code2parquet
+            - transforms/doc_chunk
+            - transforms/doc_id
+            - transforms/doc_quality
+            - transforms/ededup
+            - transforms/extreme_tokenized
+            - transforms/fdedup
+            - transforms/filter
+            - transforms/GneissWeb bloom
+            - transforms/gneissweb_classification
+            - transforms/hap
+            - transforms/header_cleanser
+            - transforms/html2parquet
+            - transforms/lang_id
+            - transforms/license_select
+            - transforms/pdf2parquet
+            - transforms/pii_redactor
+            - transforms/profiler
+            - transforms/proglang_select
+            - transforms/readability
+            - transforms/rep_removal
+            - transforms/resize
+            - transforms/similarity
+            - transforms/text_encoder
+            - transforms/tokenization
+            - transforms/tokenization2arrow
+            - transforms/web2parquet
+            - transdforms/Other
+            - Other
       validations:
           required: true
 

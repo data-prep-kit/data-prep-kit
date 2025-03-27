@@ -94,3 +94,4 @@ uuid
 wcwidth==0.2.13
 wrapt==1.16.0
 plotly==5.15.0
+sentence_transformers

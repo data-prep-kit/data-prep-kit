@@ -18,6 +18,9 @@ import subprocess
 import uuid
 from argparse import ArgumentParser, Namespace
 from typing import Any
+from sentence_transformers import SentenceTransformer, util
+import numpy as np
+import pandas as pd
 
 import pyarrow as pa
 from data_processing.transform import (
@@ -84,6 +87,8 @@ class CodeProfilerTransform(AbstractTableTransform):
 
         # Use the correct architecture for runtime
         RUNTIME_HOST_ARCH = os.environ.get("RUNTIME_HOST_ARCH", "x86_64")
+        self.extract_comments = os.environ.get("EXTRACT_COMMENTS", "false").lower() == "true"
+
         bindings_path = self.bindings_dir + "/" + RUNTIME_HOST_ARCH  # for MAC: mach-arm64
         print(f"Bindings bindings_dir: {self.bindings_dir}")
         print(f"Bindings path: {bindings_path}")
@@ -176,6 +181,7 @@ class CodeProfilerTransform(AbstractTableTransform):
         # Semantic profiling related inits
         self.ikb_file = config.get("ikb_file", "semantic-ruleset/ikb_model.csv")
         self.null_libs_file = config.get("null_libs_file", "semantic-ruleset/null_libs.csv")
+        self.comments_concepts_file = config.get("comments_concepts_file", "semantic-ruleset/comments_concepts.csv")
 
         src_file_dir = os.path.abspath(os.path.dirname(__file__))
         # Check if the file exists; if not, update the default path
@@ -193,6 +199,14 @@ class CodeProfilerTransform(AbstractTableTransform):
         # Raise an error if the file still doesn't exist
         if not os.path.exists(self.null_libs_file):
             raise FileNotFoundError(f"File not found: {self.null_libs_file}")
+
+        # Check if the file exists; if not, update the default path
+        if not os.path.exists(self.comments_concepts_file):
+            print(f"File not found at {self.comments_concepts_file}. Updating to '../semantic-ruleset/comments_concepts.csv'")
+            self.comments_concepts_file = os.path.join(src_file_dir, "semantic-ruleset/comments_concepts.csv")
+        # Raise an error if the file still doesn't exist
+        if not os.path.exists(self.comments_concepts_file):
+            raise FileNotFoundError(f"File not found: {self.comments_concepts_file}")
 
         # Higher order semantic features
         self.metrics_list = config.get("metrics_list", ["ccr", "code_snippet_len", "avg_fn_len_in_snippet"])
@@ -221,9 +235,10 @@ class CodeProfilerTransform(AbstractTableTransform):
                 return uast.get_json()
             return None
 
-        def extract_packages_from_uast(uast_json):
+        def extract_syntactic_constructs_from_uast(uast_json):
             """Extract package names from the UAST JSON where node_type is 'uast_package'."""
             package_list = []
+            comments_list = []
 
             try:
                 uast_data = json.loads(uast_json)
@@ -232,18 +247,61 @@ class CodeProfilerTransform(AbstractTableTransform):
                 else:
                     nodes = {}
                     print("Warning: uast_data is None. Check the data source or initialization process.")
-                    return
+                    return "", ""
                 # Iterate through nodes to find nodes with type 'uast_package'
                 for node_id, node_data in nodes.items():
                     if node_data.get("node_type") == "uast_package":
                         # Extract the package name from the 'code_snippet' (after 'uast_package ')
                         package_name = node_data["code_snippet"].split(" ")[1]
-                        package_list.append(package_name)
+                        package_list.append(package_name)                
+                    if node_data.get("node_type") == "uast_comment":
+                        # Extract the package name from the 'code_snippet' (after 'uast_package ')
+                        comment_content = node_data["code_snippet"].split("uast_comment ")[1]
+                        comments_list.append(comment_content)
 
             except json.JSONDecodeError as e:
                 print(f"Failed to parse UAST JSON: {e}")
+                return "", ""
 
-            return ",".join(package_list)  # Return as a comma-separated string
+            return ",".join(package_list), ",".join(comments_list)  # Return as a comma-separated string
+
+        def assign_concept_comments(comments_lists):
+            # Extract comments from the UAST column
+            import pandas as pd
+            comment_rows = []
+            for idx, comment_str in enumerate(comments_lists):
+                if comment_str:  # non-empty string
+                    for comment in comment_str.split(","):
+                        clean_comment = comment.strip()
+                        # print(f"Comment: {clean_comment}")
+                        if len(clean_comment.split()) >= 3:
+                            comment_rows.append((idx, clean_comment))
+                            # print(f"Comment: {clean_comment}")
+            # Create the exploded comment dataframe
+            comments_df = pd.DataFrame(comment_rows, columns=["index", "comment"])
+
+            # Embed concept summaries once and save
+            concepts_df = pd.read_csv(self.comments_concepts_file)
+            model = SentenceTransformer('all-MiniLM-L6-v2')
+            concept_embeddings = model.encode(concepts_df['Concept Summary'].tolist(), convert_to_tensor=True)
+
+            # Embed comments and map to concept labels
+            def map_comments_to_concepts(comments, concept_embeddings, concepts_df):
+                comment_embeddings = model.encode(comments, convert_to_tensor=True)
+                cosine_scores = util.cos_sim(comment_embeddings, concept_embeddings)
+                top_matches = np.argmax(cosine_scores.cpu().numpy(), axis=1)
+                labels = concepts_df['Concept Label'].iloc[top_matches].tolist()
+                return labels
+
+            # Assuming you have comments_df ready from earlier step:
+            comments = comments_df['comment'].tolist()
+            comments_df['comment_concepts'] = map_comments_to_concepts(comments, concept_embeddings, concepts_df)
+
+            # Print each comment and its assigned concept
+            for comment, label in zip(comments_df['comment'], comments_df['comment_concepts']):
+                print(f"{comment:<60} --> {label}")
+            
+            return comments_df
 
         def get_uast_parquet(tmp_table):
             # df = pd.read_parquet(f'{db_path}/{filename}', 'pyarrow')
@@ -262,7 +320,9 @@ class CodeProfilerTransform(AbstractTableTransform):
                 for i in range(len(content_array))
             ]
             # Extract package lists from the UAST column
-            package_lists = [extract_packages_from_uast(uast) for uast in uasts]
+            results = [extract_syntactic_constructs_from_uast(uast) for uast in uasts]
+            package_lists, comments_lists = zip(*results)
+            print("###### pankaj: ", self.extract_comments)
 
             # Add the UAST array as a new column in the PyArrow table
             uast_column = pa.array(uasts)
@@ -271,6 +331,20 @@ class CodeProfilerTransform(AbstractTableTransform):
             tmp_table_with_uast = tmp_table.append_column("uast", uast_column)
             # Add the uast_package column
             table_with_package_list = tmp_table_with_uast.append_column("uast_package_list", package_list_column)
+        
+            comment_concepts_df = assign_concept_comments(comments_lists)
+            # Group by snippet index, get all unique concept labels as a comma-separated string
+            multi_concepts = (
+                comment_concepts_df
+                .groupby("index")["comment_concepts"]
+                .apply(lambda x: ", ".join(sorted(set(x))))
+                .reindex(range(len(comments_lists)), fill_value="Unknown")
+                .tolist()
+            )
+
+            # Convert to PyArrow array and append
+            comments_semantic_column = pa.array([str(x) for x in multi_concepts])
+            table_with_package_list = table_with_package_list.append_column("comments_semantic_concept", comments_semantic_column)            
             return table_with_package_list
 
         table_with_uast = get_uast_parquet(table)

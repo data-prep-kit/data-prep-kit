@@ -484,7 +484,7 @@ def execute_ray_jobs(
         exit(1)
     # get config value
     config_value = KFPUtils.load_from_json(e_params[config].replace("'", '"'))
-    s3_creds = KFPUtils.load_from_json(e_params["data_s3_cred"].replace("'", '"'))
+    #s3_creds = KFPUtils.load_from_json(e_params["data_s3_cred"].replace("'", '"'))
     if type(config_value) is not list:
         # single request
         return _execute_remote_job(

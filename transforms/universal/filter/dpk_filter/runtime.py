@@ -10,8 +10,9 @@
 # limitations under the License.
 ################################################################################
 import sys
-from data_processing.runtime.pure_python import PythonTransformLauncher
-from data_processing.runtime.pure_python.runtime_configuration import (
+
+from data_processing.runtime.pure_python import (
+    PythonTransformLauncher,
     PythonTransformRuntimeConfiguration,
 )
 from data_processing.utils import get_logger, ParamsUtils

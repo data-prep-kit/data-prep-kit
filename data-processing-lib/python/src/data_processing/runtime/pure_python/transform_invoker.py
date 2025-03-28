@@ -24,7 +24,7 @@ from data_processing.utils import (
 )
 
 
-project = "https://github.com/IBM/data-prep-kit.git"
+project = "https://github.com/data-prep-kit/data-prep-kit.git"
 logger = get_logger(__name__)
 
 

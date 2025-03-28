@@ -6,7 +6,7 @@ This folder has examples of RAG applications with data prep kit (DPK).
 
 ```bash
 ## Clone this repo
-git  clone   https://github.com/IBM/data-prep-kit
+git  clone   https://github.com/data-prep-kit/data-prep-kit
 
 cd data-prep-kit
 ## All commands from here on out, assume you are in project root directory

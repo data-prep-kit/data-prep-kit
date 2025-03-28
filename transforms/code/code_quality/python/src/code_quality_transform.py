@@ -31,6 +31,7 @@ from transformers import AutoTokenizer
 
 CODE_QUALITY_PARAMS = "code_quality_params"
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
+model_credential_from_env = os.environ.get("HF_READ_ACCESS_TOKEN")
 
 
 def is_xml(data, lang):
@@ -293,7 +294,7 @@ class CodeQualityTransformConfiguration(TransformConfiguration):
             required=False,
             type=str,
             dest="hf_token",
-            default=None,
+            default=model_credential_from_env,
             help="Huggingface auth token to download and use the tokenizer.",
         )
 

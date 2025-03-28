@@ -541,6 +541,9 @@ from workflow_support.compile_utils import ONE_HOUR_SEC, ONE_WEEK_SEC, Component
 
 task_image = "quay.io/dataprep1/data-prep-kit/digest-ray:latest"
 
+# The secret name containing the s3 credentials.
+S3_SECRET = "s3-secret"
+
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_digest.ray.runtime"
 # components

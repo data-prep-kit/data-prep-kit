@@ -66,7 +66,7 @@ Please click [here](doc/quick-start/quick-start.md#running-transforms-on-windows
 All the transforms in the kit include small sample data files for testing, but advanced users who want to download real data files from HuggingFace and use them in testing, can refer to [this](ADVANCED.md#using-data-from-huggingface). 
 
 
-## Current list of transforms <a name="table"></a>
+## Supported data transforms <a name="table"></a>
 
 <details>
       <summary>Click to expand for detailed list of transforms.</summary>

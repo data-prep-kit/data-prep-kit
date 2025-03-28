@@ -39,9 +39,9 @@ PDF files are located in [examples/data-files/pdf-processing-1](../../data-files
 
 ## Running the code
 
-[python version](pdf_processing_1_python.ipynb)  &nbsp;    [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IBM/data-prep-kit/blob/dev/examples/pdf-processing-1/pdf_processing_1_python.ipynb)
+[python version](pdf_processing_1_python.ipynb)  &nbsp;    [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/data-prep-kit/data-prep-kit/blob/dev/examples/pdf-processing-1/pdf_processing_1_python.ipynb)
 
-[ray version](pdf_processing_1_ray.ipynb)  &nbsp;   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IBM/data-prep-kit/blob/dev/examples/pdf-processing-1/pdf_processing_1_ray.ipynb)
+[ray version](pdf_processing_1_ray.ipynb)  &nbsp;   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/data-prep-kit/data-prep-kit/blob/dev/examples/pdf-processing-1/pdf_processing_1_ray.ipynb)
 
 ## Troubleshooting
 

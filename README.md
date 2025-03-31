@@ -75,7 +75,7 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 |:-------------------------------------------------------------------------------------|:------------------:|:------------------:|:------------------:|:------------------:|
 | **Data Ingestion**                                                                   |                    |                    |                    |                    |
 | [Code (from zip) to Parquet](transforms/code/code2parquet/python/README.md) | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
-| [PDF to Parquet](transforms/language/pdf2parquet/README.md)                 | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| [PDF to Parquet](transforms/language/docling2parquet/README.md)                 | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [HTML to Parquet](transforms/language/html2parquet/README.md)               | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Web to Parquet](transforms/universal/web2parquet/README.md)                | :white_check_mark: |                    |                    |                |         
 | **Universal (Code & Language)**                                                      |                    |                    |                    |                    | 

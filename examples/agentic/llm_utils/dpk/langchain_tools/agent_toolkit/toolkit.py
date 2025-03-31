@@ -23,7 +23,7 @@ from llm_utils.dpk.langchain_tools.tools.code.proglang_select import ProgLangSel
 from llm_utils.dpk.langchain_tools.tools.language.doc_chunk import DocChunkTransform
 from llm_utils.dpk.langchain_tools.tools.language.doc_quality import DocQualityTransform
 from llm_utils.dpk.langchain_tools.tools.language.lang_id import LangIdentificationTransform
-from llm_utils.dpk.langchain_tools.tools.language.pdf2parquet import Pdf2parquetTransform
+from llm_utils.dpk.langchain_tools.tools.language.docling2parquet import docling2parquetTransform
 from llm_utils.dpk.langchain_tools.tools.language.text_encoder import TextEncoderTransform
 from llm_utils.dpk.langchain_tools.tools.language.pii_redactor import PIIRedactorTransform
 
@@ -35,7 +35,7 @@ _FILE_TOOLS: List[Type[BaseTool]] = [
     ResizeTransform,
     TokenizationTransform,
     DocIDTransform,
-    Pdf2parquetTransform,
+    docling2parquetTransform,
     CodeQualityTransform,
     ProgLangSelectTransform,
     DocChunkTransform,

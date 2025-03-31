@@ -17,7 +17,7 @@ if [ ! -d transforms ]; then
     echo Please run this script from the top of the repository
     exit 1
 fi
-KFP_BLACK_LIST="doc_chunk pdf2parquet pii_redactor text_encoder license_select repo_level_ordering header_cleanser fdedup hap rep_removal gneissweb_classification"
+KFP_BLACK_LIST="doc_chunk docling2parquet pii_redactor text_encoder license_select repo_level_ordering header_cleanser fdedup hap rep_removal gneissweb_classification"
 while [ $# -ne 0 ]; do
    case $1 in
         -show-kfp-black-list)    echo $KFP_BLACK_LIST; exit 0;

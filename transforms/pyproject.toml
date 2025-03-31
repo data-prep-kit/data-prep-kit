@@ -38,7 +38,7 @@ all = { file = [
 
 "language/lang_id/requirements.txt",
 "language/doc_quality/requirements.txt",
-"language/pdf2parquet/requirements.txt",
+"language/docling2parquet/requirements.txt",
 "language/doc_chunk/requirements.txt",
 "language/text_encoder/requirements.txt",
 "language/similarity/requirements.txt",
@@ -68,7 +68,7 @@ language = { file = [
 
 "language/lang_id/requirements.txt",
 "language/doc_quality/requirements.txt",
-"language/pdf2parquet/requirements.txt",
+"language/docling2parquet/requirements.txt",
 "language/doc_chunk/requirements.txt",
 "language/text_encoder/requirements.txt",
 "language/similarity/requirements.txt",
@@ -124,7 +124,7 @@ doc_chunk = { file = ["language/doc_chunk/requirements.txt"]}
 doc_quality = { file = ["language/doc_quality/requirements.txt"]}
 html2parquet = { file = ["language/html2parquet/requirements.txt"]}
 lang_id = { file = ["language/lang_id/requirements.txt"]}
-pdf2parquet = { file = ["language/pdf2parquet/requirements.txt"]}
+docling2parquet = { file = ["language/docling2parquet/requirements.txt"]}
 text_encoder = { file = ["language/text_encoder/requirements.txt"]}
 pii_redactor = { file = ["language/pii_redactor/requirements.txt"]} 
 
@@ -161,7 +161,7 @@ dpk_doc_chunk = "language/doc_chunk/dpk_doc_chunk"
 dpk_doc_quality = "language/doc_quality/dpk_doc_quality"
 dpk_html2parquet = "language/html2parquet/dpk_html2parquet"
 dpk_lang_id = "language/lang_id/dpk_lang_id"
-dpk_pdf2parquet = "language/pdf2parquet/dpk_pdf2parquet"
+dpk_docling2parquet = "language/docling2parquet/dpk_docling2parquet"
 dpk_text_encoder = "language/text_encoder/dpk_text_encoder"
 dpk_pii_redactor = "language/pii_redactor/dpk_pii_redactor"
 dpk_doc_id = "universal/doc_id/dpk_doc_id"

@@ -42,7 +42,7 @@ params = {
     "runtime_job_id": "job_id",
     "runtime_creation_delay": 0,
     "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
-    # pdf2parquet params
+    # html2parquet params
 }
 
 html2parquet_params = {}

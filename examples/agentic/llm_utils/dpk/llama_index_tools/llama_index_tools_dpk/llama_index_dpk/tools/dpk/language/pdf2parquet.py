@@ -16,42 +16,42 @@ from llm_utils.dpk.dpk_common import (
 from data_processing.utils import ParamsUtils
 
 
-class Pdf2parquetInput(BaseModel, DPKDataAccessInput, DPKRuntimeInput):
-    """Input for Pdf2parquetTransform."""
+class docling2parquetInput(BaseModel, DPKDataAccessInput, DPKRuntimeInput):
+    """Input for docling2parquetTransform."""
 
-    pdf2parquet_batch_size: Optional[int] = Field(
+    docling2parquet_batch_size: Optional[int] = Field(
         None,
         description="Number of documents to be saved in the same result table. A value of -1 will generate one result file for each input file.",
     )
-    pdf2parquet_artifacts_path: Optional[str] = Field(
+    docling2parquet_artifacts_path: Optional[str] = Field(
         None,
         description="Path where to Docling models artifacts are located, if unset they will be downloaded and fetched from the [HF_HUB_CACHE](https://huggingface.co/docs/huggingface_hub/en/guides/manage-cache) folder.",
     )
-    pdf2parquet_contents_type: Optional[str] = Field(
+    docling2parquet_contents_type: Optional[str] = Field(
         None,
         description="The output type for the `contents` column. Valid types are `text/markdown`, `text/plain` and `application/json`.",
     )
-    pdf2parquet_do_table_structure: Optional[str] = Field(
+    docling2parquet_do_table_structure: Optional[str] = Field(
         None,
         description="If true, detected tables will be processed with the table structure model.",
     )
-    pdf2parquet_do_ocr: Optional[str] = Field(
+    docling2parquet_do_ocr: Optional[str] = Field(
         None,
         description="If true, optical character recognition (OCR) will be used to read the content of bitmap parts of the document.",
     )
-    pdf2parquet_ocr_engine: Optional[str] = Field(
+    docling2parquet_ocr_engine: Optional[str] = Field(
         None,
         description=" The OCR engine to use. Valid values are `easyocr`, `tesseract`, `tesseract_cli`.",
     )
-    pdf2parquet_bitmap_area_threshold: Optional[float] = Field(
+    docling2parquet_bitmap_area_threshold: Optional[float] = Field(
         None,
         description="Threshold for running OCR on bitmap figures embedded in document. The threshold is computed as the fraction of the area covered by the bitmap, compared to the whole page area.",
     )
-    pdf2parquet_pdf_backend: Optional[str] = Field(
+    docling2parquet_pdf_backend: Optional[str] = Field(
         None,
         description="The PDF backend to use. Valid values are `dlparse_v2`, `dlparse_v1`, `pypdfium2`",
     )
-    pdf2parquet_double_precision: Optional[int] = Field(
+    docling2parquet_double_precision: Optional[int] = Field(
         None,
         description="If set, all floating points (e.g. bounding boxes) are rounded to this precision. For tests it is advised to use 0.",
     )
@@ -59,14 +59,14 @@ class Pdf2parquetInput(BaseModel, DPKDataAccessInput, DPKRuntimeInput):
 
 def add_transform_params(transform_params: dict, kwargs):
     """Add transform specific params"""
-    fields = list(Pdf2parquetInput.__annotations__.keys())
+    fields = list(docling2parquetInput.__annotations__.keys())
     for field in fields:
         if field in kwargs and kwargs[field] is not None:
             transform_params[field] = kwargs[field]
 
 
-def pdf2parquet(**kwargs: Any) -> str:
-    """Tool that apples pdf2parquet transform."""
+def docling2parquet(**kwargs: Any) -> str:
+    """Tool that apples docling2parquet transform."""
 
     kwargs = kwargs.get("kwargs", None)
 
@@ -88,26 +88,26 @@ def pdf2parquet(**kwargs: Any) -> str:
 
         if runtime_type.strip().lower() == "ray":
             from data_processing_ray.runtime.ray import RayTransformLauncher
-            from dpk_pdf2parquet.ray.transform import Pdf2ParquetRayTransformConfiguration
+            from dpk_docling2parquet.ray.transform import docling2parquetRayTransformConfiguration
 
             sys.argv = ParamsUtils.dict_to_req(d=transform_params)
-            launcher = RayTransformLauncher(Pdf2ParquetRayTransformConfiguration())
+            launcher = RayTransformLauncher(docling2parquetRayTransformConfiguration())
 
         elif runtime_type.strip().lower() == "python":
-            from dpk_pdf2parquet.transform_python import Pdf2ParquetPythonTransformConfiguration
+            from dpk_docling2parquet.transform_python import docling2parquetPythonTransformConfiguration
             from data_processing.runtime.pure_python import PythonTransformLauncher
 
             sys.argv = ParamsUtils.dict_to_req(d=transform_params)
             launcher = PythonTransformLauncher(
-                Pdf2ParquetPythonTransformConfiguration()
+                docling2parquetPythonTransformConfiguration()
             )
 
         else:
-            return f"Error: Unrecognizable type of TransformRuntimeConfiguration  in pdf2parquet transform - {runtime_type}."
+            return f"Error: Unrecognizable type of TransformRuntimeConfiguration  in docling2parquet transform - {runtime_type}."
         return_code = launcher.launch()
         if return_code != 0:
-            return "Error pdf2parquet Job Failed"
+            return "Error docling2parquet Job Failed"
 
-        return f"pdf2parquet transform successfully applied with input_folder {input_folder} output_folder {output_folder}."
+        return f"docling2parquet transform successfully applied with input_folder {input_folder} output_folder {output_folder}."
     except Exception as e:
         return "Error: " + str(e)

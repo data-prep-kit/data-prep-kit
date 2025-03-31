@@ -88,7 +88,7 @@ python -m ipykernel install --user --name=data-prep-kit --display-name "dataprep
 
 The following transforms have been shown to work on Windows with the patched release described below:
 
-    pdf2parquet
+    docling2parquet
     doc_chunk
     doc_quality
     html2parqet
@@ -124,10 +124,10 @@ pip install data-prep-toolkit-transforms[all]
 pip install fasttext-wheel
 ```
 
-To install a single transform, for example pdf2parquet, use the following commands:
+To install a single transform, for example docling2parquet, use the following commands:
 ```bash
 pip intall data-prep-toolkit==0.2.3.post1
-pip install --user data-prep-toolkit-transforms[pdf2parquet]
+pip install --user data-prep-toolkit-transforms[docling2parquet]
 ```
 
 If you want to try Notebooks that run many of the transforms in sequence, use the Anaconda Navigator to install and launch an instance of Jupyter Notebook and use the following sample [Notebook](../../transforms/transforms-1.0-lang-Windows.ipynb) for the python runtime and another sample [Notebook for the ray](../../transforms/transforms-1.0-lang-ray-Windows.ipynb) runtime. 

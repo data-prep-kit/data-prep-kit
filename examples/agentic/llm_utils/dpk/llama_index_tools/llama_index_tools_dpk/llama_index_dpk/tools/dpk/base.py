@@ -21,8 +21,8 @@ class DPKTransformsToolSpec(BaseToolSpec):
            Applies doc_quality transform. Returns a string with the result.
         lang_id(self, **kwargs) -> str:
            Applies lang_id transform. Returns a string with the result.
-        pdf2parquet(self, **kwargs) -> str:
-           Applies pdf2parquet transform. Returns a string with the result.
+        docling2parquet(self, **kwargs) -> str:
+           Applies docling2parquet transform. Returns a string with the result.
         pii_redactor(self, **kwargs) -> str:
            Applies pii_redactor transform. Returns a string with the result.
         text_encoder(self, **kwargs) -> str:
@@ -45,7 +45,7 @@ class DPKTransformsToolSpec(BaseToolSpec):
     """
 
     spec_functions = ["code2parquet", "code_quality", "prolang_select", "doc_chunk", "doc_quality", "lang_id",
-                      "pdf2parquet", "pii_redactor", "text_encoder", "doc_id", "ededup", "fdedup", "filter",
+                      "docling2parquet", "pii_redactor", "text_encoder", "doc_id", "ededup", "fdedup", "filter",
                       "resize", "tokenization"]
 
     def code2parquet(self, **kwargs) -> str:
@@ -78,10 +78,10 @@ class DPKTransformsToolSpec(BaseToolSpec):
 
         return lang_id.lang_id(kwargs=kwargs)
 
-    def pdf2parquet(self, **kwargs) -> str:
-        from .language import pdf2parquet
+    def docling2parquet(self, **kwargs) -> str:
+        from .language import docling2parquet
 
-        return pdf2parquet.pdf2parquet(kwargs=kwargs)
+        return docling2parquet.docling2parquet(kwargs=kwargs)
 
     def pii_redactor(self, **kwargs) -> str:
         from .language import pii_redactor

@@ -27,12 +27,13 @@ logger = get_logger(__name__)
 
 class DPKConfigS3(DPKConfig):
 
-    ## Loaded at startup
+    ## Loaded at startup. Not very useful but here in case
     S3_KEY=DPKConfig._get_first_env_var(['S3_ACCESS_KEY','S3_KEY'])
     S3_SECRET=DPKConfig._get_first_env_var(['S3_SECRET_KEY','S3_SECRET'])
     S3_ENDPOINT=DPKConfig._get_first_env_var(['S3_ENDPOINT','S3_URL'])
     S3_REGION=DPKConfig._get_first_env_var(['S3_REGION'], 'us-east')
 
+    ## use DPKCOnfigS3().S3_KEY or DPKCOnfigS3().S3_SECRET , etc
     ## Can be reconfigured at runtime and for specific prefixes
     ## Allows multiple S3 buckets used simultaneously by the same application each having its own credentia
     def __init__(self, prefix: str='data_'):
@@ -67,6 +68,7 @@ class DataAccessS3(DataAccess):
                 valid_config = False
                 logger.error(f"data access factory {prefix}: Could not find output folder in s3 config")
 
+            # Maitain support for legacy code
             access_key=config.get("access_key", DPKConfigS3(prefix).S3_KEY)
             secret_key=config.get("secret_key", DPKConfigS3(prefix).S3_SECRET)
             endpoint=config.get("url", DPKConfigS3(prefix).S3_ENDPOINT)

@@ -28,8 +28,23 @@ from lakehouse import (
 from lakehouse.utils import convert_pyarrow_to_iceberg
 from pyiceberg.io.pyarrow import schema_to_pyarrow
 
+from data_processing.utils import DPKConfig
 
 logger = get_logger(__name__)
+
+
+
+class DPKConfigLH(DPKConfig):
+
+    S3_ACCESS_KEY = DPKConfig._get_first_env_var(["DPL_S3_ACCESS_KEY", "AWS_ACCESS_KEY_ID", "COS_ACCESS_KEY"])
+    """ Set from DPL_S3_ACCESS_KEY, AWS_ACCESS_KEY_ID or COS_ACCESS_KEY env vars """
+    S3_SECRET = DPKConfig._get_first_env_var(["DPL_S3_SECRET_KEY", "AWS_SECRET_ACCESS_KEY", "COS_SECRET_KEY"])
+    """ Set from DPL_S3_SECRET_KEY, AWS_SECRET_ACCESS_KEY or COS_SECRET_KEY env vars """
+    S3_ENDPOINT = DPKConfig._get_first_env_var(["DPL_S3_ENDPOINT", "S3_ENDPOINT"])
+    """ Set from DPL_LAKEHOUSE_TOKEN or LAKEHOUSE_TOKEN env vars """
+    LAKEHOUSE_TOKEN = DPKConfig._get_first_env_var(["DPL_LAKEHOUSE_TOKEN"])
+    """ Set from DPL_LAKEHOUSE_TOKEN or LAKEHOUSE_TOKEN env vars """
+
 
 
 class DataAccessLakeHouse(DataAccess):
@@ -37,10 +52,44 @@ class DataAccessLakeHouse(DataAccess):
     Implementation of the Base Data access class for lakehouse-based data access
     """
 
+    @classmethod
+    def validate_config(cls, config: dict[str, str], prefix: str='data_') -> bool:
+        """
+        Validate that
+        :param lh_config: dictionary of local config
+        :return: True if s3l config is valid, False otherwise
+        """
+        if not self.enable_data_navigation:
+            return True
+        valid_config = True
+        if lh_config.get("input_table", "") == "":
+            valid_config = False
+            self.logger.error(f"prefix '{prefix}': Could not find input table in lh config")
+        if lh_config.get("input_dataset", None) is None:
+            # Note data set can be an empty string
+            valid_config = False
+            self.logger.error(f"prefix '{prefix}': Could not find input_dataset in lh config")
+        if lh_config.get("input_version", "") == "":
+            valid_config = False
+            self.logger.error(f"prefix '{prefix}': Could not find input_version in lh config")
+        if lh_config.get("output_table", "") == "":
+            valid_config = False
+            self.logger.error(f"prefix '{prefix}': Could not find output_table in lh config")
+        if lh_config.get("output_path", "") == "":
+            valid_config = False
+            self.logger.error(f"prefix '{prefix}': Could not find output_path in lh config")
+        if lh_config.get("lh_environment", "") == "":
+            valid_config = False
+            self.logger.error(f"prefix '{prefix}': Could not find lh_environment in lh config")
+        if lh_config.get("token", "") == "":
+            valid_config = False
+            self.logger.error(f"prefix '{prefix}': Could not find lh token in lh config")
+        return valid_config
+
+
     def __init__(
         self,
-        s3_credentials: dict[str, str],
-        lakehouse_config: dict[str, str] = None,
+        config: dict[str, str] = None,
         d_sets: list[str] = None,
         checkpoint: bool = False,
         m_files: int = -1,
@@ -57,50 +106,52 @@ class DataAccessLakeHouse(DataAccess):
         :param n_samples: amount of files to randomly sample
         :param files_to_use: files extensions of files to include
         """
-        if lakehouse_config is None:
+        if config is None:
             self.output_folder = None
         else:
             cos_cred = CosCredentials(
-                key=s3_credentials["access_key"],
-                secret=s3_credentials["secret_key"],
+                key=DPKConfigLH.S3_ACCESS_KEY,
+                secret=DPKConfigLH.S3_SECRET,
                 region="us-east",
-                endpoint=s3_credentials["url"],
+                endpoint=DPKConfigLH.S3_ENDPOINT,
             )
             # API reference
             # https://pages.github.ibm.com/arc/dmf-library/code_reference/pythonic_access/usage/lakehouse_support_for_ray_processing_jobs/#lakehouse-for-pre-processing-tasks
             self.lh = LakehouseForProcessingTask(
-                input_table_name=lakehouse_config["input_table"],
-                version=lakehouse_config["input_version"],
-                output_table_name=lakehouse_config["output_table"],
-                output_path=lakehouse_config["output_path"],
-                token=lakehouse_config["token"],
-                environment=lakehouse_config["lh_environment"],
+                input_table_name=config["input_table"],
+                version=config["input_version"],
+                output_table_name=config["output_table"],
+                output_path=config["output_path"],
+                token=config["token"],
+                environment=config["lh_environment"],
                 cos_credentials=cos_cred,
             )
             self.partition_filter = []
-            if len(lakehouse_config["input_dataset"]) > 2:
+            if len(config["input_dataset"]) > 2:
                 # input_dataset is not empty, split the text string for partition_filter
-                for pair in lakehouse_config["input_dataset"].split(","):
+                for pair in config["input_dataset"].split(","):
                     partition_name = pair.split(":")[0]
                     partition_value = pair.split(":")[1]
                     self.partition_filter.append(ColumnFilter(name=partition_name, value=partition_value))
                 self.lh = LakehouseForProcessingTask(
-                    input_table_name=lakehouse_config["input_table"],
+                    input_table_name=config["input_table"],
                     partition_filter=self.partition_filter,
                     # dataset=lakehouse_config["input_dataset"],
-                    version=lakehouse_config["input_version"],
-                    output_table_name=lakehouse_config["output_table"],
-                    output_path=lakehouse_config["output_path"],
-                    token=lakehouse_config["token"],
-                    environment=lakehouse_config["lh_environment"],
+                    version=config["input_version"],
+                    output_table_name=config["output_table"],
+                    output_path=config["output_path"],
+                    token=config["token"],
+                    environment=config["lh_environment"],
                     cos_credentials=cos_cred,
                 )
             self.output_folder = self.lh.get_output_data_path()
         self.S3 = DataAccessS3(
-            s3_credentials=s3_credentials,
-            s3_config={
+            config={
                 "input_folder": self.lh.get_input_data_path(),
                 "output_folder": self.output_folder,
+                "access_key": DPKConfigLH.S3_ACCESS_KEY,
+                "secret_key": DPKConfigLH.S3_SECRET,
+                "url": DPKConfigLH.S3_ENDPOINT,
             },
             d_sets=d_sets,
             checkpoint=checkpoint,
@@ -126,7 +177,7 @@ class DataAccessLakeHouse(DataAccess):
         """
         return self.output_folder
 
-    def get_files_to_process_internal(self) -> tuple[list[str], dict[str, float], int]:
+    def _get_files_to_process_internal(self) -> tuple[list[str], dict[str, float], int]:
         """
         Get files to process
         :return: list of files and a dictionary of the files profile:

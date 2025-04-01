@@ -173,7 +173,7 @@ def enrichment(
     runtime_pipeline_id: str = "pipeline_id",
     runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # enrichment parameters
-    enrichment_output_column_prefix: str = "",
+    enrichment_output_column_prefix: str = "e_",
     enrichment_content_column_name: str = "text",
     enrichment_lang_column_name: str = "lang",
     enrichment_num_newlines_column_name: str = "num_newlines",

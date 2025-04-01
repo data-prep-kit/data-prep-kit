@@ -5,11 +5,11 @@ tools_json = '''
             {"name": "out_folder", "description": "destination directory to store the transformed files.", "type": "str"}],
         "import": "from llm_utils.dpk.langchain_tools.tools.universal.ededup import EdedupTransform"},
 
-    {"name": "docling2parquet", "description": "The docling2parquet transform generates parquet files containing the converted document.",
+    {"name": "Pdf2Parquet", "description": "The Pdf2Parquet transform generates parquet files containing the converted document.",
         "input": [{"name": "in_folder", "description": "input directory to transform files from.", "type": "str"},
             {"name": "out_folder", "description": "destination directory to store the transformed files.", "type": "str"},
             {"name": "data_files_to_use", "description": "files extentions to transform.", "type": "list"}],
-        "import": "from llm_utils.dpk.langchain_tools.tools.language.docling2parquet import docling2parquetTransform"},
+        "import": "from llm_utils.dpk.langchain_tools.tools.language.pdf2parquet import Pdf2parquetTransform"},
 
     {"name": "doc_quality", "description": "The doc_quality transform will calculate and annotate several metrics which are useful to assess the quality of the document.",
         "input": [{"name": "in_folder", "description": "input directory to transform files from.", "type": "str"},

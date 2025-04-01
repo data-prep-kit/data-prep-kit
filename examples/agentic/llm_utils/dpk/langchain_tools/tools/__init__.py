@@ -15,7 +15,7 @@ __all__ = [
     "DocChunkTransform",
     "DocQualityTransform",
     "LangIdentificationTransform",
-    "docling2parquetTransform",
+    "Pdf2parquetTransform",
     "TextEncoderTransform",
     "PIIRedactorTransform",
 ]

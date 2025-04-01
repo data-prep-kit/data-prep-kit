@@ -57,7 +57,7 @@ class CodeQualityConfiguration(TransformConfiguration):
             required=False,
             type=str,
             dest="hf_token",
-            default=model_credential_from_env,
+            default=None,
             help="Huggingface auth token to download and use the tokenizer.",
         )
 

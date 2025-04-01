@@ -194,7 +194,7 @@ class CodeQualityTransform(AbstractTableTransform):
     def __init__(self, config: dict):
         super().__init__(config)
 
-        self.code_quality = config.get(CODE_QUALITY_PARAMS)
+        self.code_quality = config.get(CODE_QUALITY_PARAMS, os.getenv("HF_READ_ACCESS_TOKEN")) 
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.code_quality["tokenizer"], use_auth_token=self.code_quality["hf_token"]
         )

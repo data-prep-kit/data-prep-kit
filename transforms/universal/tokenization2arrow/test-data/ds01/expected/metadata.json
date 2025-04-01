@@ -51,11 +51,11 @@
         "result_doc_count": 0
     },
     "source": {
-        "name": "/Users/santoshborse/development/IBM/data-prep-kit/transforms/universal/tokenization2arrow/test-data/ds01/input",
+        "name": "/Users/santoshborse/development/data-prep-kit/data-prep-kit/transforms/universal/tokenization2arrow/test-data/ds01/input",
         "type": "path"
     },
     "target": {
-        "name": "/Users/santoshborse/development/IBM/data-prep-kit/transforms/universal/tokenization2arrow/output/ds01",
+        "name": "/Users/santoshborse/development/data-prep-kit/data-prep-kit/transforms/universal/tokenization2arrow/output/ds01",
         "type": "path"
     }
 }

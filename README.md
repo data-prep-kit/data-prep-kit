@@ -9,6 +9,8 @@
 [![Apache 2.0](https://img.shields.io/github/license/data-prep-kit/data-prep-kit)](https://opensource.org/license/apache-2-0)
 [![GitHub Issues](https://img.shields.io/github/issues/kylelobo/The-Documentation-Compendium.svg)](https://github.com/data-prep-kit/data-prep-kit/issues)
   [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/kylelobo/The-Documentation-Compendium.svg)](https://github.com/data-prep-kit/data-prep-kit/pulls)
+  [![LF AI & Data](https://img.shields.io/badge/LF%20AI%20%26%20Data-003778?logo=linuxfoundation&logoColor=fff&color=0094ff&labelColor=003778)](https://lfaidata.foundation/projects/)
+  [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/10250/badge)](https://www.bestpractices.dev/projects/10250)
 
   </div>
 
@@ -40,7 +42,7 @@ For guidance on creating the virtual environment for installing the data prep ki
 
 ### Fastest way to experience Data Prep Kit
 
-With no setup necessary, let's use a Google Colab friendly notebook to try Data Prep Kit. This is a simple transform to extract content from PDF files: [examples/notebooks/Run_your_first_transform_colab.ipynb](examples/notebooks/Run_your_first_transform_colab.ipynb)  | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IBM/data-prep-kit/blob/dev/examples/notebooks/Run_your_first_transform_colab.ipynb). ([Here](doc/google-colab.md) are some tips for running Data Prep Kit transforms on Google Colab. For this simple example, these tips are either already taken care of, or are not needed.)  The same notebook can be downloaded and run on the local machine, without cloning the repo or any other setup. 
+With no setup necessary, let's use a Google Colab friendly notebook to try Data Prep Kit. This is a simple transform to extract content from PDF files: [examples/notebooks/Run_your_first_transform_colab.ipynb](examples/notebooks/Run_your_first_transform_colab.ipynb)  | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/data-prep-kit/data-prep-kit/blob/dev/examples/notebooks/Run_your_first_transform_colab.ipynb). ([Here](doc/google-colab.md) are some tips for running Data Prep Kit transforms on Google Colab. For this simple example, these tips are either already taken care of, or are not needed.)  The same notebook can be downloaded and run on the local machine, without cloning the repo or any other setup. 
 
 ### Examples
 
@@ -114,15 +116,11 @@ Contributors are welcome to add new modules to expand to other data modalities a
 
 ## Get help and support
 
-Please feel free to connect with us using the [discussion](https://github.com/IBM/data-prep-kit/discussions) section.
+Please feel free to connect with us using the [discussion](https://github.com/data-prep-kit/data-prep-kit/discussions) section.
 
 ## MAINTAINERS
 
 For a list of current maintainers, please [see](MAINTAINERS.md).
-
-## License
-
-All source files must include a Copyright and License header. If you would like to see the detailed LICENSE click [here](LICENSE).
 
 ## CHANGELOG 
 
@@ -156,3 +154,16 @@ If you use Data Prep Kit in your research, please cite our paper:
       url={https://arxiv.org/abs/2409.18164}, 
 }
 ```
+## License
+
+All source files must include a Copyright and License header. If you would like to see the detailed LICENSE click [here](LICENSE).
+
+## LF AI & Data
+
+Data Prep Kit is hosted as a project in the [LF AI & Data Foundation](https://lfaidata.foundation/projects/).
+
+### IBM ❤️ Open Source AI
+
+The project was started by the Data for AI Models team at IBM Research. 
+
+Copyright © Data Prep Kit Framework - a Series of LF Projects, LLC.

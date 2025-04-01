@@ -322,7 +322,7 @@ class CodeProfilerTransform(AbstractTableTransform):
             # Extract package lists from the UAST column
             results = [extract_syntactic_constructs_from_uast(uast) for uast in uasts]
             package_lists, comments_lists = zip(*results)
-            print("###### pankaj: ", self.extract_comments)
+            # print("###### pankaj: ", self.extract_comments)
 
             # Add the UAST array as a new column in the PyArrow table
             uast_column = pa.array(uasts)

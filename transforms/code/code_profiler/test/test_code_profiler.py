@@ -33,7 +33,7 @@ class TestCodeProfilerTransform(AbstractTableTransformTest):
         expected_dir = os.path.join(src_file_dir, "../test-data/expected/local")
         input_tables = get_tables_in_folder(input_dir)
         expected_tables = get_tables_in_folder(expected_dir)
-        expected_metadata_list = [{"result_documents": 11, "source_documents": 5}, {}]
+        expected_metadata_list = [{"result_documents": 12, "source_documents": 5}, {}]
         config = {"contents": "contents", "programming_language": "programming_language"}
 
         fixtures = [

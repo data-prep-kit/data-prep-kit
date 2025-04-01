@@ -28,7 +28,7 @@ Data Prep Kit accelerates unstructured data preparation for LLM app developers. 
 
 ## Installation
 
-The latest version of the Data Prep Kit is available on PyPi for Python 3.10, 3.11 or 3.12. It can be installed using: 
+The latest version of the Data Prep Kit is available on PyPi for Python 3.10, 3.11 and 3.12. It can be installed using:
 
 ```bash
 pip install  'data-prep-toolkit-transforms[all]'
@@ -167,3 +167,4 @@ Data Prep Kit is hosted as a project in the [LF AI & Data Foundation](https://lf
 The project was started by the Data for AI Models team at IBM Research. 
 
 Copyright © Data Prep Kit Framework - a Series of LF Projects, LLC.
+

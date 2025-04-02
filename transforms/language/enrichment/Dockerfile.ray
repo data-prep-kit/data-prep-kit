@@ -1,32 +1,39 @@
-FROM docker.io/python:3.11-bookworm
+FROM docker.io/rayproject/ray:2.36.1-py311
+
+USER root
+RUN chown ray:root /home/ray && chmod g=u /home/ray
+# update c++ for fasttext
+RUN apt update && sudo apt install gcc g++ -y
+USER ray
+RUN mkdir -p /home/ray/.cache/huggingface/hub 
 
 RUN pip install --upgrade --no-cache-dir pip 
 
 # install pytest
 RUN pip install --no-cache-dir pytest
-
-# Create a user and use it to run the transform
-RUN useradd -ms /bin/bash dpk
-USER dpk
-WORKDIR /home/dpk
 ARG DPK_WHEEL_FILE_NAME
 ARG TRANSFORM_NAME
 
 # Copy and install data processing libraries 
 # These are expected to be placed in the docker context before this is run (see the make image).
-COPY --chown=dpk:users data-processing-dist data-processing-dist
-RUN  pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}
+COPY --chmod=775 --chown=ray:root data-processing-dist data-processing-dist
+RUN  pip install --no-cache-dir data-processing-dist/${DPK_WHEEL_FILE_NAME}[ray]
 
-# END OF STEPS destined for a data-prep-kit base image 
-
-COPY --chown=dpk:users dpk_${TRANSFORM_NAME}/ dpk_${TRANSFORM_NAME}/
-COPY --chown=dpk:users requirements.txt requirements.txt 
+COPY --chmod=775 --chown=ray:root dpk_${TRANSFORM_NAME}/ dpk_${TRANSFORM_NAME}/
+COPY --chown=ray:root requirements.txt requirements.txt 
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir -U 'ray[serve]'
+# remove the pre-installed scpiy that conflicts with the instlled numpy (scipy is not needed anyway) 
+RUN python -m pip uninstall -y scipy && python -m pip cache purge
+
 RUN python -c 'import nltk; nltk.download("punkt_tab")'
 
+# clean up apt
+USER root 
+RUN apt remove gcc g++ -y && apt clean && rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
+USER ray
+
 # Set environment
-ENV PYTHONPATH /home/dpk
+ENV PYTHONPATH /home/ray
 
 # Put these at the end since they seem to upset the docker cache.
 ARG BUILD_DATE

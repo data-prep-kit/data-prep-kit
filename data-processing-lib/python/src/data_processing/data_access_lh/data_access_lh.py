@@ -16,21 +16,28 @@ from typing import Any
 import pyarrow
 from data_processing.data_access import DataAccess, DataAccessS3
 from data_processing.utils import TransformUtils, get_logger
-from lakehouse import (
-    ColumnFilter,
-    CosCredentials,
-    Datasource,
-    JobDetails,
-    JobStats,
-    LakehouseForProcessingTask,
-    SourceCodeDetails,
-)
+logger = get_logger(__name__)
+
+try:
+    from lakehouse import (
+        ColumnFilter,
+        CosCredentials,
+        Datasource,
+        JobDetails,
+        JobStats,
+        LakehouseForProcessingTask,
+        SourceCodeDetails,
+    )
+except ModuleNotFoundError:
+    logger.error("When building the environment with a dependency on an exteral library, the EXTRA_INDEX_URL must be defined.")
+    logger.error("example: export EXTRA_INDEX_URL=https://${ARTIFACTORY_USER}:${ARTIFACTORY_API_KEY}@na.artifactory.swg-devops.com/artifactory/api/pypi/res-data-engineering-team-pypi-local/simple")
+    raise
+    
 from lakehouse.utils import convert_pyarrow_to_iceberg
 from pyiceberg.io.pyarrow import schema_to_pyarrow
 
 from data_processing.utils import DPKConfig
 
-logger = get_logger(__name__)
 
 
 
@@ -59,43 +66,40 @@ class DataAccessLakeHouse(DataAccess):
         :param lh_config: dictionary of local config
         :return: True if s3l config is valid, False otherwise
         """
-        if not self.enable_data_navigation:
-            return True
         valid_config = True
-        if lh_config.get("input_table", "") == "":
+        if config.get("input_table", "") == "":
             valid_config = False
-            self.logger.error(f"prefix '{prefix}': Could not find input table in lh config")
-        if lh_config.get("input_dataset", None) is None:
+            logger.error(f"prefix '{prefix}': Could not find input table in lh config")
+        if config.get("input_dataset", None) is None:
             # Note data set can be an empty string
             valid_config = False
-            self.logger.error(f"prefix '{prefix}': Could not find input_dataset in lh config")
-        if lh_config.get("input_version", "") == "":
+            logger.error(f"prefix '{prefix}': Could not find input_dataset in lh config")
+        if config.get("input_version", "") == "":
             valid_config = False
-            self.logger.error(f"prefix '{prefix}': Could not find input_version in lh config")
-        if lh_config.get("output_table", "") == "":
+            logger.error(f"prefix '{prefix}': Could not find input_version in lh config")
+        if config.get("output_table", "") == "":
             valid_config = False
-            self.logger.error(f"prefix '{prefix}': Could not find output_table in lh config")
-        if lh_config.get("output_path", "") == "":
+            logger.error(f"prefix '{prefix}': Could not find output_table in lh config")
+        if config.get("output_path", "") == "":
             valid_config = False
-            self.logger.error(f"prefix '{prefix}': Could not find output_path in lh config")
-        if lh_config.get("lh_environment", "") == "":
+            logger.error(f"prefix '{prefix}': Could not find output_path in lh config")
+        if config.get("lh_environment", "") == "":
             valid_config = False
-            self.logger.error(f"prefix '{prefix}': Could not find lh_environment in lh config")
-        if lh_config.get("token", "") == "":
-            valid_config = False
-            self.logger.error(f"prefix '{prefix}': Could not find lh token in lh config")
+            logger.error(f"prefix '{prefix}': Could not find lh_environment in lh config")
         return valid_config
 
 
-    def __init__(
-        self,
-        config: dict[str, str] = None,
-        d_sets: list[str] = None,
-        checkpoint: bool = False,
-        m_files: int = -1,
-        n_samples: int = 1,
-        files_to_use: list[str] = [".parquet"],
-    ):
+#    def __init__(
+#        self,
+#        config: dict[str, str] = None,
+#        d_sets: list[str] = None,
+#        checkpoint: bool = False,
+#        m_files: int = -1,
+#        n_samples: int = 1,
+#        files_to_use: list[str] = [".parquet"],
+#    ):
+
+    def __init__(self, **kwargs):
         """
         Create data access class for lake house based configuration
         :param s3_credentials: dictionary of cos credentials
@@ -106,6 +110,14 @@ class DataAccessLakeHouse(DataAccess):
         :param n_samples: amount of files to randomly sample
         :param files_to_use: files extensions of files to include
         """
+        config=kwargs.get('config', None)
+        d_sets=kwargs.get('d_sets', None)
+        checkpoint=kwargs.get('checkpoint', False)
+        m_files=kwargs.get('m_files', -1)
+        n_samples=kwargs.get('n_samples', 1)
+        files_to_use=kwargs.get('files_to_use', [".parquet"])
+
+        self.logger = get_logger(__name__)
         if config is None:
             self.output_folder = None
         else:
@@ -122,7 +134,7 @@ class DataAccessLakeHouse(DataAccess):
                 version=config["input_version"],
                 output_table_name=config["output_table"],
                 output_path=config["output_path"],
-                token=config["token"],
+                token=config.get("token", DPKConfigLH.LAKEHOUSE_TOKEN),
                 environment=config["lh_environment"],
                 cos_credentials=cos_cred,
             )
@@ -140,7 +152,7 @@ class DataAccessLakeHouse(DataAccess):
                     version=config["input_version"],
                     output_table_name=config["output_table"],
                     output_path=config["output_path"],
-                    token=config["token"],
+                    token=config.get("token", DPKConfigLH.LAKEHOUSE_TOKEN),
                     environment=config["lh_environment"],
                     cos_credentials=cos_cred,
                 )
@@ -207,7 +219,7 @@ class DataAccessLakeHouse(DataAccess):
         else:
             return self.S3.get_files_to_process()
 
-    def get_table(self, path: str) -> pyarrow.table:
+    def get_table(self, path: str) -> tuple[pyarrow.table, int]:
         """
         Get pyArrow table for a given path
         :param path - file path

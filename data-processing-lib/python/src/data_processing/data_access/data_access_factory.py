@@ -17,9 +17,7 @@ import importlib
 
 from data_processing.data_access import (
     DataAccess,
-    DataAccessFactoryBase,
-    DataAccessLocal,
-    DataAccessS3,
+    DataAccessFactoryBase
 )
 from data_processing.utils import ParamsUtils, str2bool
 
@@ -266,8 +264,9 @@ class DataAccessFactory(DataAccessFactoryBase):
                 f"data factory {self.cli_arg_prefix} "
                 f"Data Access:  {self.data_access_class}"
             )
-        if not self.data_access.validate_config(self.config, self.cli_arg_prefix):
-            return False
+        if self.enable_data_navigation:
+            if not self.data_access.validate_config(self.config, self.cli_arg_prefix):
+                return False
         return True
 
     def create_data_access(self) -> DataAccess:

@@ -24,7 +24,7 @@ from kubernetes.client import (
     V1NodeSelectorTerm,
     V1Toleration,
 )
-
+from runtime_utils import KFPUtils
 
 logger = get_logger(__name__)
 
@@ -109,7 +109,7 @@ class ComponentUtils:
     def set_s3_env_vars_to_component(
         component: dsl.ContainerOp,
         secret: str,
-        env2key: dict[str, str] = {"S3_KEY": "s3-key", "S3_SECRET": "s3-secret", "S3_ENDPOINT": "s3-endpoint"},
+        env2key: dict[str, str] = KFPUtils.get_s3_env_2_key(),
         prefix: str = None,
     ) -> None:
         """

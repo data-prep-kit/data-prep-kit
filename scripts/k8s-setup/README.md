@@ -14,7 +14,7 @@ Run the following command to create the cluster:
 
 ```shell
 cd /tmp
-git clone https://github.com/IBM/data-prep-kit.git
+git clone https://github.com/data-prep-kit/data-prep-kit.git
 cd data-prep-kit
 export REPOROOT=$PWD
 kind create cluster --name dataprep --config ${REPOROOT}/scripts/k8s-setup/kind-cluster-config.yaml

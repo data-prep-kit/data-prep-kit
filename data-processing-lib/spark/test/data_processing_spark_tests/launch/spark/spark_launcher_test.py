@@ -23,9 +23,9 @@ from data_processing_spark.test_support.transform import NOOPSparkTransformConfi
  to run test using argparse we can simply overwrite sys.argv to supply required arguments
 """
 s3_cred = {
-    "access_key": "access",
-    "secret_key": "secret",
-    "url": "https://s3.us-east.cloud-object-storage.appdomain.cloud",
+    "S3_ACCESS_KEY": "access",
+    "S3_SECRET_KEY": "secret",
+    "S3_URL": "https://s3.us-east.cloud-object-storage.appdomain.cloud",
 }
 s3_conf = {
     "input_folder": "input_folder",
@@ -68,17 +68,20 @@ def test_launcher():
     sys.argv = ParamsUtils.dict_to_req(d=params)
     res = TestLauncherSpark().launch()
     assert 0 == res
-    # Add S3 configuration
+    # Add S3 configuration without credentials, should fail
     params["data_s3_config"] = ParamsUtils.convert_to_ast(s3_conf)
     sys.argv = ParamsUtils.dict_to_req(d=params)
     res = TestLauncherSpark().launch()
     assert 1 == res
     # Add S3 credentials
-    params["data_s3_cred"] = ParamsUtils.convert_to_ast(s3_cred)
+    # S3 cred no longer suported as a command line parameter
+    from data_processing.utils import DPKConfig
+    for k,v in s3_cred.items():
+         DPKConfig.set_env_var(k, v)
     sys.argv = ParamsUtils.dict_to_req(d=params)
     res = TestLauncherSpark().launch()
-
     assert 0 == res
+
     # Add local config, should fail because now three different configs exist
     params["data_local_config"] = ParamsUtils.convert_to_ast(local_conf)
     sys.argv = ParamsUtils.dict_to_req(d=params)
@@ -143,7 +146,6 @@ def test_s3_config_validate():
     params = {
         "data_max_files": -1,
         "data_checkpointing": False,
-        "data_s3_cred": ParamsUtils.convert_to_ast(s3_cred),
         "runtime_pipeline_id": "pipeline_id",
         "runtime_job_id": "job_id",
         "runtime_code_location": ParamsUtils.convert_to_ast(code_location),

@@ -19,9 +19,9 @@ from data_processing.utils import ParamsUtils
 
 
 s3_cred = {
-    "access_key": "access",
-    "secret_key": "secret",
-    "url": "https://s3.us-east.cloud-object-storage.appdomain.cloud",
+    "S3_ACCESS_KEY": "access",
+    "S3_SECRET_KEY": "secret",
+    "S3_URL": "https://s3.us-east.cloud-object-storage.appdomain.cloud",
 }
 s3_conf = {
     "input_folder": "input_folder",
@@ -55,13 +55,15 @@ def test_multi_launcher():
     params = {
         "data_max_files": -1,
         "data_checkpointing": False,
-        "data_s3_cred": ParamsUtils.convert_to_ast(s3_cred),
         "data_s3_config": [ParamsUtils.convert_to_ast(s3_conf)],
         "runtime_pipeline_id": "pipeline_id",
         "runtime_job_id": "job_id",
         "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
     }
     # s3 configuration
+    from data_processing.utils import DPKConfig
+    for k,v in s3_cred.items():
+        DPKConfig.set_env_var(k, v)
     res = multi_launcher(params=params, launcher=TestLauncherPython())
     assert 1 == res
     params = {

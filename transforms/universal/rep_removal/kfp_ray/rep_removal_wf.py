@@ -28,7 +28,7 @@ task_image = "quay.io/dataprep1/data-prep-kit/rep_removal-ray:latest"
 EXEC_SCRIPT_NAME: str = "-m dpk_rep_removal.ray.runtime"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing_v2:latest"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)

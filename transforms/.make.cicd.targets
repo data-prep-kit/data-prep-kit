@@ -28,8 +28,10 @@ test:: .transforms.test-src test-image
 
 clean:: .transforms.clean
 
-## We need to think how we want to do this going forward
-set-versions::
+### Needed to propagate changes to kfp_ray makefiles
+set-versions:
+	@# Help: Recursively $@ in all subdirs
+	@$(MAKE) RULE=$@ .recurse
 
 ## We need to think how we want to do this going forward
 

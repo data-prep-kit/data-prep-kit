@@ -108,7 +108,7 @@ Summary of changes:
    3. Pushed temporary $next_version_branch_pr branch to hold updated version $next_version of the repository on the main branch. 
    No modifications were made to the $DEFAULT_BRANCH branch.
 
-To complete this process, please go to https://github.com/IBM/data-prep-kit and ...
+To complete this process, please go to https://github.com/data-prep-kit/data-prep-kit and ...
    1. Create a new pull request from the $next_version_branch_pr branch back into $DEFAULT_BRANCH branch. 
    2. Create a pull request from $release_branch_pr branch into $release_branch branch.
    3. After the PR into $release_branch is merged, create a new tag $tag on $release_branch branch.

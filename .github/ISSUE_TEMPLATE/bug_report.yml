@@ -13,11 +13,11 @@ body:
       attributes:
           label: Search before asking
           description: >
-              Please make sure to search in the [issues](https://github.com/IBM/data-prep-lab/issues) first to see
+              Please make sure to search in the [issues](https://github.com/data-prep-kit/data-prep-lab/issues) first to see
               whether the same issue was reported already.
           options:
               - label: >
-                    I searched the [issues](https://github.com/IBM/data-prep-lab/issues) and found no similar
+                    I searched the [issues](https://github.com/data-prep-kit/data-prep-lab/issues) and found no similar
                     issues.
                 required: true
 

@@ -80,6 +80,6 @@ Find example code in readme section of each tranform and some sample jupyter not
 
 ## We Want Your Feedback!
 
- Feel free to contribute to discussions or create a new one to share your [feedback](https://github.com/IBM/data-prep-kit/discussions)
+ Feel free to contribute to discussions or create a new one to share your [feedback](https://github.com/data-prep-kit/data-prep-kit/discussions)
 
 

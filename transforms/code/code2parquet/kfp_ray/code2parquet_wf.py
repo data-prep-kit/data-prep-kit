@@ -23,6 +23,9 @@ from workflow_support.compile_utils import (
 )
 
 
+# The secret name containing the s3 credentials.
+S3_SECRET = "s3-secret"
+
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_code2parquet.ray.transform"
 
@@ -115,7 +118,7 @@ def code2parquet(
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
     data_s3_config: str = "{'input_folder': 'test/code2parquet/input', 'output_folder': 'test/code2parquet/output/'}",
-    data_s3_access_secret: str = "s3-secret",
+    data_s3_access_secret: str = S3_SECRET,
     data_max_files: int = -1,
     data_num_samples: int = -1,
     data_files_to_use: str = "['.zip']",
@@ -128,7 +131,7 @@ def code2parquet(
     code2parquet_detect_programming_lang: bool = True,
     code2parquet_domain: str = "code",
     code2parquet_snapshot: str = "github",
-    code2parquet_s3_access_secret: str = "s3-secret",
+    code2parquet_s3_access_secret: str = S3_SECRET,
     # additional parameters
     additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
 ) -> None:
@@ -234,8 +237,20 @@ def code2parquet(
             prefix=PREFIX,
         )
         ComponentUtils.add_settings_to_component(execute_job, ONE_WEEK_SEC)
-        ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
-        ComponentUtils.set_s3_env_vars_to_component(execute_job, code2parquet_s3_access_secret, prefix=PREFIX)
+        if os.getenv("KFPv2", "0") == "1":
+            from kfp import kubernetes
+            
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env(prefix=PREFIX)
+            kubernetes.use_secret_as_env(task=execute_job, secret_name=S3_SECRET, secret_key_to_env=env2key)
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=execute_job, secret_name=S3_SECRET, secret_key_to_env=env2key)
+
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
+            ComponentUtils.set_s3_env_vars_to_component(execute_job, code2parquet_s3_access_secret, prefix=PREFIX)
+
         execute_job.after(ray_cluster)
 
 

@@ -54,7 +54,7 @@ Current TSC members (in alphabetic order):
 - [Shahrokh Daijavad](https://github.com/shahrokhDaijavad)
 - [Nirmit Desai](https://github.com/nirmit-desai)
 - [Sophie Jin](https://github.com/sophie-jin)
-- Jean-Claude Mamou
+- [Jean-Claude Mamou](https://github.com/jcmamou)
 - [Maroun Touma](https://github.com/touma-I/)
 
 One of the TSC members is the chairperson of the TSC and should ensure the smooth running of the TSC. They do not have more voting power than other TSC members.

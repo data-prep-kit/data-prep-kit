@@ -10,6 +10,7 @@
 [![GitHub Issues](https://img.shields.io/github/issues/kylelobo/The-Documentation-Compendium.svg)](https://github.com/data-prep-kit/data-prep-kit/issues)
   [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/kylelobo/The-Documentation-Compendium.svg)](https://github.com/data-prep-kit/data-prep-kit/pulls)
   [![LF AI & Data](https://img.shields.io/badge/LF%20AI%20%26%20Data-003778?logo=linuxfoundation&logoColor=fff&color=0094ff&labelColor=003778)](https://lfaidata.foundation/projects/)
+  [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/10250/badge)](https://www.bestpractices.dev/projects/10250)
 
   </div>
 
@@ -27,7 +28,7 @@ Data Prep Kit accelerates unstructured data preparation for LLM app developers. 
 
 ## Installation
 
-The latest version of the Data Prep Kit is available on PyPi for Python 3.10, 3.11 or 3.12. It can be installed using: 
+The latest version of the Data Prep Kit is available on PyPi for Python 3.10, 3.11 and 3.12. It can be installed using: 
 
 ```bash
 pip install  'data-prep-toolkit-transforms[all]'
@@ -65,10 +66,12 @@ Please click [here](doc/quick-start/quick-start.md#running-transforms-on-windows
 All the transforms in the kit include small sample data files for testing, but advanced users who want to download real data files from HuggingFace and use them in testing, can refer to [this](ADVANCED.md#using-data-from-huggingface). 
 
 
-## Current list of transforms <a name="table"></a>
+## Supported data transforms <a name="table"></a>
+
+<details>
+      <summary>Click to expand for detailed list of transforms.</summary>
 
 The matrix below shows the the combination of modules and supported runtimes. All the modules can be accessed [here](transforms) and can be combined to form data processing pipelines, as shown in the [examples](examples) folder. 
-
 
 | Modules                                                                              |    Python-only     |        Ray         |       Spark        |     KFP on Ray     |
 |:-------------------------------------------------------------------------------------|:------------------:|:------------------:|:------------------:|:------------------:|
@@ -108,6 +111,7 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 | [License Select Annotation](transforms/code/license_select/python/README.md)         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Code profiler](transforms/code/code_profiler/README.md)                             | :white_check_mark: | :white_check_mark: |                    |  |
 
+</details>
 
 ## Contributing
 
@@ -164,3 +168,5 @@ Data Prep Kit is hosted as a project in the [LF AI & Data Foundation](https://lf
 ### IBM ❤️ Open Source AI
 
 The project was started by the Data for AI Models team at IBM Research. 
+
+Copyright © Data Prep Kit Framework - a Series of LF Projects, LLC.

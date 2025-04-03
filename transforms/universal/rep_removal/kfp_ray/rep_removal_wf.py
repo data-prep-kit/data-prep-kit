@@ -24,6 +24,9 @@ from workflow_support.compile_utils import (
 
 task_image = "quay.io/dataprep1/data-prep-kit/rep_removal-ray:latest"
 
+# The secret name containing the s3 credentials.
+S3_SECRET = "s3-secret"
+
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_rep_removal.ray.runtime"
 

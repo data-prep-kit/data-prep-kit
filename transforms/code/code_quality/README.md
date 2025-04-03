@@ -29,4 +29,4 @@ python -m dpk_code_quality.runtime \\
   --cq_language_column_name language \\
   --cq_tokenizer codeparrot/codeparrot \\
   --cq_hf_token <your_hf_token> \\
-  --data_local_config "{ 'input_folder': 'test-data/input', 'output_folder': 'test-data/expected' }"
+  --data_local_config "{'input_folder': 'test-data/input', 'output_folder': 'output'}"

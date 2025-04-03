@@ -37,7 +37,7 @@ GET_DUPLICATE_LIST_EXEC_SCRIPT_NAME: str = "-m dpk_fdedup.get_duplicate_list.ray
 DATA_CLEANING_EXEC_SCRIPT_NAME: str = "-m dpk_fdedup.data_cleaning.ray.transform"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:1.1.1.dev0"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)

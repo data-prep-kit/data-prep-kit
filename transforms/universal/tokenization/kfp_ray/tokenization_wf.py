@@ -31,7 +31,7 @@ EXEC_SCRIPT_NAME: str = "-m dpk_tokenization.ray.transform"
 task_image = "quay.io/dataprep1/data-prep-kit/tokenization-ray:latest"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:1.1.1.dev0"
 # path to kfp component specifications files
 
 # path to kfp component specifications files

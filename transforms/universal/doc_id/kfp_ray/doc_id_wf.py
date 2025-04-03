@@ -30,7 +30,7 @@ S3_SECRET = "s3-secret"
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_doc_id.ray.transform"
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:1.1.1.dev0"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv(

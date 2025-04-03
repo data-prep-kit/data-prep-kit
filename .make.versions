@@ -23,13 +23,6 @@ DPK_VERSION_SUFFIX=.dev0
 
 DPK_VERSION=$(DPK_MAJOR_VERSION).$(DPK_MINOR_VERSION).$(DPK_MICRO_VERSION)$(DPK_VERSION_SUFFIX)
 
-# publish docker images with latest tag
-ifeq ($(DPK_VERSION_SUFFIX), )
-	DOCKER_IMAGE_VERSION?=$(DPK_VERSION)
-else
-	DOCKER_IMAGE_VERSION?=latest
-endif
-
 # Data prep lab wheel version
 DPK_LIB_VERSION=$(DPK_VERSION)
 DPK_LIB_KFP_VERSION=$(DPK_VERSION)
@@ -63,4 +56,17 @@ endif
 #
 # If you change the versions numbers, be sure to run "make set-versions" to 
 # update version numbers across the transform (e.g., pyproject.toml).
-TRANSFORMS_PKG_VERSION=1.1.1.dev0
+
+TRANSFORM_NEXT_MAJOR_RELEASE=1.1.1
+## Clear out TRANSFORM_VERSION_SUFFIX=  for major releases and use devX for dev releases
+TRANSFORM_VERSION_SUFFIX=.dev0
+TRANSFORMS_PKG_VERSION=$(TRANSFORM_NEXT_MAJOR_RELEASE)$(TRANSFORM_VERSION_SUFFIX)
+
+# publish docker images with latest tag
+ifeq ($(TRANSFORM_VERSION_SUFFIX), )
+	DOCKER_IMAGE_VERSION?=$(TRANSFORM_NEXT_MAJOR_RELEASE)
+else
+#	DOCKER_IMAGE_VERSION?=latest
+	DOCKER_IMAGE_VERSION?=$(TRANSFORMS_PKG_VERSION)
+endif
+

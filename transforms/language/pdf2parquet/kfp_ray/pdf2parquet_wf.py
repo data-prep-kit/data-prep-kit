@@ -31,7 +31,7 @@ S3_SECRET = "s3-secret"
 EXEC_SCRIPT_NAME: str = "-m dpk_pdf2parquet.ray.transform"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:1.1.1.dev0"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)

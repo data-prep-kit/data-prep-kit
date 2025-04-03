@@ -28,7 +28,7 @@ Data Prep Kit accelerates unstructured data preparation for LLM app developers. 
 
 ## Installation
 
-The latest version of the Data Prep Kit is available on PyPi for Python 3.10, 3.11 or 3.12. It can be installed using: 
+The latest version of the Data Prep Kit is available on PyPi for Python 3.10, 3.11 and 3.12. It can be installed using: 
 
 ```bash
 pip install  'data-prep-toolkit-transforms[all]'
@@ -66,10 +66,12 @@ Please click [here](doc/quick-start/quick-start.md#running-transforms-on-windows
 All the transforms in the kit include small sample data files for testing, but advanced users who want to download real data files from HuggingFace and use them in testing, can refer to [this](ADVANCED.md#using-data-from-huggingface). 
 
 
-## Current list of transforms <a name="table"></a>
+## Supported data transforms <a name="table"></a>
+
+<details>
+      <summary>Click to expand for detailed list of transforms.</summary>
 
 The matrix below shows the the combination of modules and supported runtimes. All the modules can be accessed [here](transforms) and can be combined to form data processing pipelines, as shown in the [examples](examples) folder. 
-
 
 | Modules                                                                              |    Python-only     |        Ray         |       Spark        |     KFP on Ray     |
 |:-------------------------------------------------------------------------------------|:------------------:|:------------------:|:------------------:|:------------------:|
@@ -109,6 +111,7 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 | [License Select Annotation](transforms/code/license_select/python/README.md)         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Code profiler](transforms/code/code_profiler/README.md)                             | :white_check_mark: | :white_check_mark: |                    |  |
 
+</details>
 
 ## Contributing
 

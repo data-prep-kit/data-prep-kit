@@ -108,6 +108,7 @@ def pii_redactor(
     # data access
     data_s3_config: str = "{'input_folder': 'test/pii_redactor/input/', 'output_folder': 'test/pii_redactor/output/'}",
     data_s3_access_secret: str = S3_SECRET,
+    other_secrets: dict = {},
     data_max_files: int = -1,
     data_num_samples: int = -1,
     # orchestrator
@@ -193,9 +194,11 @@ def pii_redactor(
             ray_head_options=ray_head_options,
             ray_worker_options=ray_worker_options,
             server_url=server_url,
+            other_secrets=other_secrets,
             additional_params=additional_params,
         )
         ComponentUtils.add_settings_to_component(ray_cluster, ONE_HOUR_SEC * 2)
+        ComponentUtils.set_s3_env_vars_to_component(ray_cluster, data_s3_access_secret)
         ray_cluster.after(compute_exec_params)
         # Execute job
         execute_job = execute_ray_jobs_op(

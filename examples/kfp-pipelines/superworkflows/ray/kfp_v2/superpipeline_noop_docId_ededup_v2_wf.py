@@ -21,6 +21,8 @@ from universal.noop.kfp_ray.noop_wf import noop
 
 from kfp import dsl
 
+# The secret name containing the s3 credentials.
+S3_SECRET = "s3-secret"
 
 noop_image = "quay.io/dataprep1/data-prep-kit/noop-ray:latest"
 doc_id_image = "quay.io/dataprep1/data-prep-kit/doc_id-ray:latest"
@@ -77,7 +79,7 @@ def super_pipeline(
     p1_pipeline_output_path: str = "test/super/output/",
     p1_pipeline_intermediate_path: str = "test/super/output/tmp",
     p1_pipeline_additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
-    p1_pipeline_data_s3_access_secret: str = "s3-secret",
+    p1_pipeline_data_s3_access_secret: str = S3_SECRET,
     p1_pipeline_runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     p1_pipeline_runtime_actor_options: dict = {"num_cpus": 0.8},
     # data access

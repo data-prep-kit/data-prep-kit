@@ -115,6 +115,7 @@ class ServiceOrchestrator:
             "output_folder": output_folder,
         }
         if in_args.use_s3:
+            '''
             if in_args.s3_cred is not None:
                 s3_cred_ast = ParamsUtils.convert_to_ast(in_args.s3_cred)
                 sys_argv.append("--data_s3_cred")
@@ -139,6 +140,7 @@ class ServiceOrchestrator:
                 if service_name == "fdclean":
                     sys_argv.append("--dcdata_s3_cred")
                     sys_argv.append(ast_s3_cred)
+            '''
             sys_argv.append("--data_s3_config")
         else:
             sys_argv.append("--data_local_config")

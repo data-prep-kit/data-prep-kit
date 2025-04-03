@@ -484,14 +484,15 @@ def execute_ray_jobs(
         exit(1)
     # get config value
     config_value = KFPUtils.load_from_json(e_params[config].replace("'", '"'))
-    s3_creds = KFPUtils.load_from_json(e_params["data_s3_cred"].replace("'", '"'))
+    #s3_creds = KFPUtils.load_from_json(e_params["data_s3_cred"].replace("'", '"'))
     if type(config_value) is not list:
         # single request
         return _execute_remote_job(
             name=name,
             ns=ns,
             script=exec_script_name,
-            data_access_params={f"{cli_prefix}s3_config": config_value, f"{cli_prefix}s3_cred": s3_creds},
+#            data_access_params={f"{cli_prefix}s3_config": config_value, f"{cli_prefix}s3_cred": s3_creds},
+            data_access_params={f"{cli_prefix}s3_config": config_value},
             params=e_params,
             additional_params=additional_params,
             remote_jobs=remote_jobs,
@@ -509,7 +510,8 @@ def execute_ray_jobs(
                 name=name,
                 ns=ns,
                 script=exec_script_name,
-                data_access_params={f"{cli_prefix}s3_config": conf, f"{cli_prefix}s3_cred": s3_creds},
+#                data_access_params={f"{cli_prefix}s3_config": conf, f"{cli_prefix}s3_cred": s3_creds},
+                data_access_params={f"{cli_prefix}s3_config": conf},
                 params=launch_params,
                 additional_params=additional_params,
                 remote_jobs=remote_jobs,

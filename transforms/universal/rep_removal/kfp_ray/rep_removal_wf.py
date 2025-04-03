@@ -28,7 +28,7 @@ task_image = "quay.io/dataprep1/data-prep-kit/rep_removal-ray:latest"
 EXEC_SCRIPT_NAME: str = "-m dpk_rep_removal.ray.runtime"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing_v2:latest"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)
@@ -119,6 +119,7 @@ def rep_removal(
     # data access
     data_s3_config: str = "{'input_folder': 'test/rep_removal/input/', 'output_folder': 'test/rep_removal/output/'}",
     data_s3_access_secret: str = "s3-secret",
+    other_secrets: dict = {},
     data_max_files: int = -1,
     data_num_samples: int = 1,
     data_checkpointing: bool = False,
@@ -227,9 +228,11 @@ def rep_removal(
             ray_head_options=ray_head_options,
             ray_worker_options=ray_worker_options,
             server_url=server_url,
+            other_secrets=other_secrets,
             additional_params=additional_params,
         )
         ComponentUtils.add_settings_to_component(ray_cluster, ONE_HOUR_SEC * 2)
+        ComponentUtils.set_s3_env_vars_to_component(ray_cluster, data_s3_access_secret)
         ray_cluster.after(compute_exec_params)
 
         # Execute job

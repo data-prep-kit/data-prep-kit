@@ -73,7 +73,7 @@ def ededup_compute_execution_params(
         # S3 config is list. take the first element
         s3_config = s3_config[0]
     # because S3 is the only viable version for kfp-based implementation, we are here creating DataAccess S3 directly
-    data_access = DataAccessS3(s3_credentials=s3_creds, s3_config=s3_config, d_sets=None, checkpoint=False, m_files=-1)
+    data_access = DataAccessS3(config=s3_config | s3_creds, d_sets=None, checkpoint=False, m_files=-1)
     # sample input data
     sampling, _ = data_access.sample_input_data(n_samples=ededup_n_samples)
     avg_doc_size = sampling.get("average doc size KB")

@@ -24,12 +24,10 @@ class TestCodeQualityTransform(AbstractTransformLauncherTest):
         fixtures = []
         transform_config = {
             "run_locally": True,
-            "code_quality_params": {
-                "contents_column_name": "contents",
-                "language_column_name": "language",
-                "tokenizer": "codeparrot/codeparrot",
-                "hf_token": os.getenv("HF_TOKEN"),
-            }
+            "cq_contents_column_name": "contents",
+            "cq_language_column_name": "language",
+            "cq_tokenizer": "codeparrot/codeparrot",
+            "cq_hf_token": os.getenv("HF_TOKEN"),
         }
         launcher = PythonTransformLauncher(CodeQualityRuntime())
         fixtures.append((launcher, transform_config, 

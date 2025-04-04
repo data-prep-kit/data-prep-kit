@@ -23,7 +23,6 @@ class TestCodeQualityTransform(AbstractTransformLauncherTest):
         basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../transforms/universal/code_quality/test-data"))
         fixtures = []
         transform_config = {
-            "run_locally": True,
             "cq_contents_column_name": "contents",
             "cq_language_column_name": "language",
             "cq_tokenizer": "codeparrot/codeparrot",

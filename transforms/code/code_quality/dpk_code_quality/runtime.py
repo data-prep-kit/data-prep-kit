@@ -65,7 +65,7 @@ class CodeQualityConfiguration(TransformConfiguration):
             required=False,
             type=str,
             dest="hf_token",
-            default=None,
+            default="",
             help="Huggingface auth token to download and use the tokenizer.",
         )
 

@@ -194,7 +194,9 @@ class CodeQualityTransform(AbstractTableTransform):
     def __init__(self, config: dict):
         super().__init__(config)
 
-        self.code_quality = config.get(CODE_QUALITY_PARAMS, os.getenv("HF_READ_ACCESS_TOKEN")) 
+        self.code_quality = config.get(CODE_QUALITY_PARAMS) 
+        if not self.code_quality["hf_token"]:
+            self.code_quality["hf_token"]=os.getenv("HF_READ_ACCESS_TOKEN")
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.code_quality["tokenizer"], use_auth_token=self.code_quality["hf_token"]
         )
@@ -293,7 +295,7 @@ class CodeQualityTransformConfiguration(TransformConfiguration):
             required=False,
             type=str,
             dest="hf_token",
-            default=None,
+            default="",
             help="Huggingface auth token to download and use the tokenizer.",
         )
 

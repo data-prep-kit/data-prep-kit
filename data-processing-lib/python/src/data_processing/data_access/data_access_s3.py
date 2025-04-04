@@ -73,7 +73,7 @@ class DataAccessS3(DataAccess):
             secret_key=config.get("secret_key", DPKConfigS3(prefix).S3_SECRET)
             endpoint=config.get("url", DPKConfigS3(prefix).S3_ENDPOINT)
 
-        if access_key is None or secret_key is None or endpoint is None:
+        if access_key is None or secret_key is None:
             valid_config = False
             logger.error(f"data access factory {prefix}: Missing Credentials {access_key} {secret_key} {endpoint} ")
 

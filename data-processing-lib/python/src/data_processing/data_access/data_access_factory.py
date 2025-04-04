@@ -179,16 +179,32 @@ class DataAccessFactory(DataAccessFactoryBase):
         files_to_use = arg_dict.get(f"{self.cli_arg_prefix}files_to_use", [".parquet"])
         files_to_checkpoint = arg_dict.get(f"{self.cli_arg_prefix}files_to_checkpoint", [".parquet"])
 
+        ################################################################
+        # Set Data Access Class to used baed on provided cli parameters
+        self.data_access_class=arg_dict.get(f"{self.cli_arg_prefix}da_class")
+        self.data_access_module=arg_dict.get(f"{self.cli_arg_prefix}da_module")
+        if self.data_access_class is None or self.data_access_class == '':
+            ## The use of s3_config will be depricated over time
+            if (arg_dict.get(f"{self.cli_arg_prefix}s3_config")):
+                self.data_access_class='DataAccessS3'
+            else:
+                self.data_access_class=self.default_class
+            self.data_access_module=self.default_module
+
+
+        ################################################################
         # check which configuration (S3 or Local) is specified
         # For backward compatibility, we are allowing s3_config, local_config, lh_config, 
         # In the next release, only data_config will be allowed
         defined_args=[x for x in arg_dict.keys() if arg_dict.get(x, None) is not None]
         config_args=[f"{self.cli_arg_prefix}s3_config", f"{self.cli_arg_prefix}local_config",
-                        f"{self.cli_arg_prefix}lh_config",f"{self.cli_arg_prefix}data_config"]
+                        f"{self.cli_arg_prefix}lh_config",f"{self.cli_arg_prefix}config"]
         provided_configs=[x for x in defined_args if x in config_args]
 
         
+        #####################################################################
         ## For now, cannot have more than one configuration
+        ## Configuration can also specify a class name to use for data access
         if len(provided_configs) > 1:
             self.logger.error(
                 f"data factory {self.cli_arg_prefix} cannnot specify more than one data configuration"
@@ -206,6 +222,19 @@ class DataAccessFactory(DataAccessFactoryBase):
             f"data factory {self.cli_arg_prefix} "
             f"data configuration used: {self.config}"
             )
+            ## Data Access Class can be specified as par of the data configuration dictionary
+            ## expects config = {'da': modulename.classname, 'input_folder': ..,  }
+            if 'da' in self.config:
+                dotNdx=self.config['da'].rfind(".")
+                if dotNdx <= 0:
+                    self.logger.error(
+                        f"data factory {self.cli_arg_prefix} configuration must specify the data access class and its module name"
+                        f"{self.config['da']} must have the following format: modulename.classname"
+                    )
+                    return False
+                self.data_access_class=self.config['da'][dotNdx+1:]
+                self.data_access_module=self.config['da'][:dotNdx]
+
 
         # Check whether both max_files and number samples are defined
         self.logger.info(f"data factory {self.cli_arg_prefix} max_files {max_files}, n_sample {n_samples}")
@@ -234,15 +263,7 @@ class DataAccessFactory(DataAccessFactoryBase):
                 f"random samples {n_samples}, files to use {files_to_use}, files to checkpoint {files_to_checkpoint}"
             )
 
-        self.data_access_class=arg_dict.get(f"{self.cli_arg_prefix}da_class")
-        self.data_access_module=arg_dict.get(f"{self.cli_arg_prefix}da_module")
-        if self.data_access_class is None or self.data_access_class == '':
-            ## The use of s3_config will be depricated over time
-            if (arg_dict.get(f"{self.cli_arg_prefix}s3_config")):
-                self.data_access_class='DataAccessS3'
-            else:
-                self.data_access_class=self.default_class
-            self.data_access_module=self.default_module
+
         try:
             if self.data_access_module and self.data_access_module != '':
                 ## For now, this is always the case where we set a default

@@ -67,6 +67,12 @@ and include flag `-s | --sign-off` when you commit a change to your local git re
 git commit -s -m "your commit message"
 ```
 
+We now have an additional requirement that all signed commits must have a github "verified" signature, before a corresponding PR can be merged. 
+
+Here we provide links to the instructions for creating a "signing" SSH key and adding it to your github profile settings. 
+
+Follow the instructions [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account) for adding a new SSH key to your github account. Please make sure to pick a "sigining" key and not an "authentication" key. Then follow the instructions [here](https://docs.github.com/en/authentication/managing-commit-signature-verification/telling-git-about-your-signing-key#telling-git-about-your-ssh-key) for telling github about your new SSH key. 
+
 ## Transform Setup and Testing
 
 Please note the many useful options of the make command, as shown by using `make help`, that will take care of manual steps that would have been needed for tasks such as building, publishing, setting up or testing transforms in most directories.

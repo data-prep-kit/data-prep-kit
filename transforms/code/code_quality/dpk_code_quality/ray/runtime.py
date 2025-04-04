@@ -12,7 +12,7 @@
 
 import os
 
-from code_quality_transform import CodeQualityTransformConfiguration
+from dpk_code_quality.transform import CodeQualityTransformConfiguration
 from data_processing_ray.runtime.ray import RayTransformLauncher
 from data_processing_ray.runtime.ray.runtime_configuration import (
     RayTransformRuntimeConfiguration,

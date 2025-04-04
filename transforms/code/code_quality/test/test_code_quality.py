@@ -11,6 +11,7 @@
 ################################################################################
 
 import os
+os.environ["HF_TOKEN"] = "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"
 from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )

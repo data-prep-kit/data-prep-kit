@@ -22,9 +22,18 @@ MY_CONFIG.OUTPUT_DIR_MARKDOWN = os.path.join(MY_CONFIG.OUTPUT_DIR , "2-markdown"
 ### -------------------------------
 
 
+## Embedding model
+# https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
 # MY_CONFIG.EMBEDDING_MODEL = 'sentence-transformers/all-MiniLM-L6-v2'
-MY_CONFIG.EMBEDDING_MODEL = 'BAAI/bge-small-en-v1.5'
+# MY_CONFIG.EMBEDDING_LENGTH = 384
+
+# https://huggingface.co/ibm-granite/granite-embedding-30m-english
+MY_CONFIG.EMBEDDING_MODEL = 'ibm-granite/granite-embedding-30m-english'
 MY_CONFIG.EMBEDDING_LENGTH = 384
+
+## Chunking
+MY_CONFIG.CHUNK_SIZE = 512
+MY_CONFIG.CHUNK_OVERLAP = 20
 
 
 ### Milvus config
@@ -33,7 +42,6 @@ MY_CONFIG.COLLECTION_NAME = 'docs'
 
 
 ## LLM Model
-# MY_CONFIG.LLM_MODEL = "meta/meta-llama-3-8b-instruct"
+MY_CONFIG.LLM_MODEL = "meta/meta-llama-3-8b-instruct"
 # MY_CONFIG.LLM_MODEL = "meta/meta-llama-3-70b-instruct"
-# MY_CONFIG.LLM_MODEL = "ibm-granite/granite-3.0-2b-instruct"
-MY_CONFIG.LLM_MODEL = "ibm-granite/granite-3.0-8b-instruct"
+# MY_CONFIG.LLM_MODEL = "ibm-granite/granite-3.2-8b-instruct"

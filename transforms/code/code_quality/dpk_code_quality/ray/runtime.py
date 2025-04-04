@@ -48,6 +48,6 @@ class CodeQuality:
 
     def transform(self):
         sys.argv = ParamsUtils.dict_to_req(d=(self.params))
-        launcher = RayTransformLauncher(DigestRayRuntime())
+        launcher = RayTransformLauncher(CodeQualityRayTransformConfiguration())
         return_code = launcher.launch()
         return return_code

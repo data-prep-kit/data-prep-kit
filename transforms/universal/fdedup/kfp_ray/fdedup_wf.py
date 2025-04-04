@@ -24,7 +24,7 @@ from src.fdedup_compute_execution_params import (
 from workflow_support.compile_utils import ONE_HOUR_SEC, ONE_WEEK_SEC, DEFAULT_KFP_COMPONENT_SPEC_PATH, ComponentUtils
 
 
-task_image = os.getenv("FDEDUP_IMAGE_LOCATION", "quay.io/dataprep1/data-prep-kit/fdedup-ray:latest")
+task_image = os.getenv("FDEDUP_IMAGE_LOCATION", "quay.io/dataprep1/data-prep-kit/fdedup-ray:1.1.1.dev0"
 image_pull_secret = os.getenv("FDEDUP_IMAGE_PULL_SECRET", "my_secret")
 
 # The secret name containing the s3 credentials.

@@ -34,7 +34,7 @@ S3_SECRET = "s3-secret"
 EXEC_SCRIPT_NAME: str = "code_quality_transform_ray.py"
 PREFIX: str = ""
 
-task_image = "quay.io/dataprep1/data-prep-kit/code_quality-ray:latest"
+task_image = "quay.io/dataprep1/data-prep-kit/code_quality-ray:1.1.1.dev0"
 
 # The name of the secret that holds the HugginFace token
 HF_SECRET = "hf-secret"

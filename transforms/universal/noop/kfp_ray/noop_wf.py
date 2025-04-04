@@ -27,7 +27,7 @@ from python_apiserver_client.params import (
         EnvVarSource,
 )
 
-task_image = "quay.io/dataprep1/data-prep-kit/noop-ray:latest"
+task_image = "quay.io/dataprep1/data-prep-kit/noop-ray:1.1.1.dev0"
 
 # The secret name containing the s3 credentials.
 S3_SECRET = "s3-secret"

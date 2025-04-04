@@ -29,7 +29,7 @@ S3_SECRET = "s3-secret"
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "proglang_select_transform_ray.py"
 
-task_image = "quay.io/dataprep1/data-prep-kit/proglang_select-ray:latest"
+task_image = "quay.io/dataprep1/data-prep-kit/proglang_select-ray:1.1.1.dev0"
 
 # components
 base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:1.1.1.dev0"

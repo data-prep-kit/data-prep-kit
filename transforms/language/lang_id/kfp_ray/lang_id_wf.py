@@ -37,7 +37,7 @@ HF_SECRET_KEY = "hf-token"
 HF_READ_ACCESS_TOKEN = "HF_READ_ACCESS_TOKEN"
 
 
-task_image = "quay.io/dataprep1/data-prep-kit/lang_id-ray:latest"
+task_image = "quay.io/dataprep1/data-prep-kit/lang_id-ray:1.1.1.dev0"
 
 # The secret name containing the s3 credentials.
 S3_SECRET = "s3-secret"

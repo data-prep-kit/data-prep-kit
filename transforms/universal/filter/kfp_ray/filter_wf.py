@@ -29,7 +29,7 @@ S3_SECRET = "s3-secret"
 EXEC_SCRIPT_NAME: str = "-m dpk_filter.ray.runtime"
 PREFIX: str = ""
 
-task_image = "quay.io/dataprep1/data-prep-kit/filter-ray:latest"
+task_image = "quay.io/dataprep1/data-prep-kit/filter-ray:1.1.1.dev0"
 
 # components
 base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:1.1.1.dev0"

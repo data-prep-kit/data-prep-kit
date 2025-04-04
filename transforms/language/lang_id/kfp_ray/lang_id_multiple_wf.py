@@ -33,7 +33,7 @@ HF_SECRET = "hf-secret"
 # The secret key that holds the HugginFace credentials
 HF_SECRET_KEY = "hf-token"
 
-task_image = "quay.io/dataprep1/data-prep-kit/lang_id-ray:latest"
+task_image = "quay.io/dataprep1/data-prep-kit/lang_id-ray:1.1.1.dev0"
 
 # The secret name containing the s3 credentials.
 S3_SECRET = "s3-secret"

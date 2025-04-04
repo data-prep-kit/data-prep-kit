@@ -17,6 +17,7 @@ set-versions:
 	@for file in $(PYTHON_WF); do \
 		cd ${REPOROOT}/kfp/kfp_ray_components && $(MAKE) .reconcile-requirements FILE=${CURDIR}/$$file; \
 		${REPOROOT}/scripts/transforms/update_workflow_tags.sh ${REPOROOT}/.make.versions ${CURDIR}/$$file ${DOCKER_IMAGE_VERSION}; \
+		cat ${CURDIR}/$$file | sed -E 's/task_image.*=(.*):.*/task_image =\1:${DOCKER_IMAGE_VERSION}"/' > tmp && mv tmp ${CURDIR}/$$file ; \
 	done
 
 .PHONY: .workflows.compile-pipeline

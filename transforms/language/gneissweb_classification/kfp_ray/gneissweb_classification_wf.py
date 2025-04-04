@@ -33,7 +33,7 @@ HF_SECRET_KEY = "hf-token"
 
 S3_SECRET="s3-secret"
 
-task_image = "quay.io/dataprep1/data-prep-kit/gneissweb_classification-ray:latest"
+task_image = "quay.io/dataprep1/data-prep-kit/gneissweb_classification-ray:1.1.1.dev0"
 
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_gneissweb_classification.ray.transform"

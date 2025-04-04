@@ -11,7 +11,6 @@
 ################################################################################
 
 import os
-os.environ["HF_TOKEN"] = "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"
 from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
@@ -26,8 +25,7 @@ class TestCodeQualityTransform(AbstractTransformLauncherTest):
         transform_config = {
             "cq_contents_column_name": "contents",
             "cq_language_column_name": "language",
-            "cq_tokenizer": "codeparrot/codeparrot",
-            "cq_hf_token": os.getenv("HF_TOKEN"),
+            "cq_tokenizer": "codeparrot/codeparrot"
         }
         launcher = PythonTransformLauncher(CodeQualityRuntime())
         fixtures.append((launcher, transform_config, 

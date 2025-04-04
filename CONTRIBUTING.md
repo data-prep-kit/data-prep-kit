@@ -2,35 +2,11 @@
 
 Our project welcomes external contributions. If you have an itch, please feel free to scratch it.
 
-To contribute code or documentation, please create an [issue](https://github.com/data-prep-kit/data-prep-kit/issues) to engage with the maintainers and the open source community on the proposed enhancements, describe what problem it solves, and the use cases it covers. Alternatively, you can scan the existing issues and engage with the authors/commentators. Once the issue is assigned, the assignee is encouraged to submit a [PR](https://github.com/data-prep-kit/data-prep-kit/pulls).  
-Before embarking on a more ambitious contribution, please quickly get in touch with [us](MAINTAINERS.md).
-
-### Proposing new features
-
-When proposing a new feature, please select the **Feature request** template in creating a new issue and fill all the sections of the template, including the choice of what component of DPK (e.g., documentation, transforms, pipelines, or other) it is related to and most importantly, a succinct description of the new feature, before submitting. 
-
-### Fixing bugs
-
-If you discover a bug or would like to fix a bug, please raise an issue, before sending a
-pull request so it can be tracked. Select the **Bug Report** template in creating a new issue and fill all the mandatory sections of the template, including **What happend ...** , **Reprodcution script**, **OS** , and **Python version**. 
-
-### PR review
-
-If you decide to submit a PR that addresses a new feature and/or a bug, for which a corresponding issue has already been submitted, work on your forked version of the repo and after additions/modifications of code in your fork, submit a PR, mentioning what issue it addresses and other optional information that facilitates the review process. At this point, the maintainers of the repo will assign one or more reviwers to your PR. 
-
-
-### Merge approval
-
-The PR reviewers use LGTM (Looks Good To Me) in comments on the code
-review to indicate acceptance, or ask for changes to the specific sections of the code. A PR requires an approval from at least one reviewer, before it is merged by the maintainer. 
-
-For a list of the maintainers, see the [MAINTAINERS.md](MAINTAINERS.md) page.
-
-## Legal
+### Legal and "Signing" prerequisites for your contributions 
 
 Each source file must include a license header for the Apache
 Software License 2.0. Using the SPDX format is the simplest approach.
-e.g.
+e.g.,
 
 ```
 /*
@@ -45,7 +21,7 @@ applies to how we handle the legal aspects of contribution. We use the
 same approach - the [Developer's Certificate of Origin 1.1 (DCO)](https://github.com/hyperledger/fabric/blob/master/docs/source/DCO1.1.txt) - that the Linux® Kernel [community](https://elinux.org/Developer_Certificate_Of_Origin)
 uses to manage code contributions.
 
-We simply ask that when submitting a patch for review, the developer
+We simply ask that when submitting a Pull Request(PR) for review, the developer
 must include a sign-off statement in the commit message.
 
 Here is an example Signed-off-by line, which indicates that the
@@ -67,11 +43,42 @@ and include flag `-s | --sign-off` when you commit a change to your local git re
 git commit -s -m "your commit message"
 ```
 
-We now have an additional requirement that all signed commits must have a github "verified" signature, before a corresponding PR can be merged. 
+We have an additional requirement that all signed commits must have a github "verified" signature, before a corresponding PR can be merged. 
+Follow the instructions [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account) for creating and adding a new SSH key to your github profile settings. Please make sure to select a "sigining" key and not the default "authentication" key. Then you need to tell github about your new SSH key by using the commands: 
 
-Here we provide links to the instructions for creating a "signing" SSH key and adding it to your github profile settings. 
+```
+git config --global gpg.format ssh
 
-Follow the instructions [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account) for adding a new SSH key to your github account. Please make sure to pick a "sigining" key and not an "authentication" key. Then follow the instructions [here](https://docs.github.com/en/authentication/managing-commit-signature-verification/telling-git-about-your-signing-key#telling-git-about-your-ssh-key) for telling github about your new SSH key. 
+git config --global user.signingkey /PATH/TO/.SSH/KEY.PUB
+```
+where you substitue /PATH/TO/.SSH/KEY.PUB with the path to your new public SSH key. 
+
+### Creating issues
+
+To contribute code or documentation, please create an [issue](https://github.com/data-prep-kit/data-prep-kit/issues) to engage with the maintainers and the open source community on the proposed enhancements, describe what problem it solves, and the use cases it covers. Alternatively, you can scan the existing issues and engage with the authors/commentators. Once the issue is assigned, the assignee is encouraged to submit a [PR](https://github.com/data-prep-kit/data-prep-kit/pulls).  
+Before embarking on a more ambitious contribution, please quickly get in touch with [us](MAINTAINERS.md).
+
+#### Proposing new features
+
+When proposing a new feature, please select the **Feature request** template in creating a new issue and fill all the sections of the template, including the choice of what component of DPK (e.g., documentation, transforms, pipelines, or other) it is related to and most importantly, a succinct description of the new feature, before submitting. 
+
+#### Fixing bugs
+
+If you discover a bug or would like to fix a bug, please raise an issue, before sending a
+pull request so it can be tracked. Select the **Bug Report** template in creating a new issue and fill all the mandatory sections of the template, including **What happend ...** , **Reprodcution script**, **OS** , and **Python version**. 
+
+### PR review
+
+If you decide to submit a PR that addresses a new feature and/or a bug, for which a corresponding issue has already been submitted, work on your forked version of the repo and after additions/modifications of code in your fork, submit a PR, mentioning what issue it addresses and other optional information that facilitates the review process. At this point, the maintainers of the repo will assign one or more reviwers to your PR. 
+
+
+### Merge approval
+
+The PR reviewers use LGTM (Looks Good To Me) in comments on the code
+review to indicate acceptance, or ask for changes to the specific sections of the code. A PR requires an approval from at least one reviewer, before it is merged by the maintainer. 
+
+For a list of the maintainers, see the [MAINTAINERS.md](MAINTAINERS.md) page.
+
 
 ## Transform Setup and Testing
 

@@ -17,7 +17,7 @@
 # Code specific heuristics like alpha numeric, char token ratio implementations & others are taken from CodeParrot and BigCode Dataset
 # preprocessing scripts and modified according to data-prep-kit specific framework.
 
-
+CODE_QUALITY_PARAMS = "code_quality"
 import os
 from argparse import ArgumentParser, Namespace
 
@@ -29,7 +29,7 @@ from data_processing.utils import TransformUtils
 from transformers import AutoTokenizer
 
 
-CODE_QUALITY_PARAMS = "code_quality_params"
+
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 

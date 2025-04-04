@@ -53,6 +53,25 @@ git config --global user.signingkey /PATH/TO/.SSH/KEY.PUB
 ```
 where you substitue /PATH/TO/.SSH/KEY.PUB with the path to your new public SSH key. 
 
+To verify that you have done the above steps correctly, please use the command:
+
+```
+git config --global --edit 
+```
+and confirm that in your editor, you see the following important sections:
+
+```
+# This is user's git configuration file.
+[user]
+        email = your email address
+        name = your first and last name
+        signingkey = /PATH TO KEY/KEY.PUB
+[commit]
+        gpgsign = true
+[gpg]
+        format = ssh
+```
+
 ### Creating issues
 
 To contribute code or documentation, please create an [issue](https://github.com/data-prep-kit/data-prep-kit/issues) to engage with the maintainers and the open source community on the proposed enhancements, describe what problem it solves, and the use cases it covers. Alternatively, you can scan the existing issues and engage with the authors/commentators. Once the issue is assigned, the assignee is encouraged to submit a [PR](https://github.com/data-prep-kit/data-prep-kit/pulls).  

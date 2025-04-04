@@ -20,7 +20,7 @@ from dpk_code_quality.runtime import CodeQualityRuntime
 class TestCodeQualityTransform(AbstractTransformLauncherTest):
 
     def get_test_transform_fixtures(self):
-        basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../transforms/universal/code_quality/test-data"))
+        basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../test-data"))
         fixtures = []
         transform_config = {
             "cq_contents_column_name": "contents",

@@ -12,16 +12,12 @@
 
 
 # This major versions is generally changed manually when a breaking change to apis is made in the libraries, for example.
-DPK_MAJOR_VERSION=0
-# The minor version is incremented manually when significant features have been added that are backward compatible with the previous major.minor release.
-DPK_MINOR_VERSION=2
-# The minor version is incremented AUTOMATICALLY by the release.sh script when a new release is set.
-DPK_MICRO_VERSION=5
-# The suffix is generally always set in the main/development branch and only nulled out when creating release branches.
-# It can be manually incremented, for example, to allow publishing a new intermediate version wheel to pypi. 
+DPK_NEXT_MAJOR_RELEASE=1.0.0
+# The suffix is set in the main/development branch and only nulled out when creating release branches.
+# It is manually incremented to provide a new intermediate wheel to pypi for regression and integration testing. 
 DPK_VERSION_SUFFIX=.dev0
 
-DPK_VERSION=$(DPK_MAJOR_VERSION).$(DPK_MINOR_VERSION).$(DPK_MICRO_VERSION)$(DPK_VERSION_SUFFIX)
+DPK_VERSION=$(DPK_NEXT_MAJOR_RELEASE)$(DPK_VERSION_SUFFIX)
 
 # Data prep lab wheel version
 DPK_LIB_VERSION=$(DPK_VERSION)
@@ -29,7 +25,11 @@ DPK_LIB_KFP_VERSION=$(DPK_VERSION)
 DPK_LIB_KFP_VERSION_v2=$(DPK_VERSION)
 DPK_LIB_KFP_SHARED=$(DPK_VERSION)
 
-DPK_CONNECTOR_VERSION=0.2.4.dev0
+
+DPK_CONNECTOR_NEXT_MAJOR_RELEASE=0.2.4
+DPK_CONNECTOR_SUFFIX=.dev0
+
+DPK_CONNECTOR_VERSION=$(DPK_CONNECTOR_NEXT_MAJOR_RELEASE)$(DPK_CONNECTOR_SUFFIX)
 
 ################## ################## ################## ################## ################## ##################
 # Begin versions that the repo depends on. 
@@ -70,6 +70,21 @@ else
 	DOCKER_IMAGE_VERSION?=$(TRANSFORMS_PKG_VERSION)
 endif
 
+.PHONY: docker-tag dpk-tag transforms-tag
+# Printout the docker tag currently being used
 docker-tag:
 	@echo $(DOCKER_IMAGE_VERSION)
+
+# Printout the current releast tag for the DPK wheel
+dpk-tag:
+	@echo $(DPK_VERSION)
+
+# Printout the current releast tag for the trsnsdfotmd wheel
+transforms-tag:
+	@echo $(TRANSFORMS_PKG_VERSION)
+
+# Printout the current release tag for the DPK Connector wheel
+dpk-connector-tag:
+	@echo $(DPK_CONNECTOR_VERSION)
+
 

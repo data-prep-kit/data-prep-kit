@@ -7,10 +7,9 @@ We can use
 
 Just follow one.  (A) is recommended!
 
-## Option A (Recommended): Anaconda Python environment
+## Option A (Recommended): Anaconda/MiniForge Python environment
 
-You can install Anaconda by following the [guide here](https://www.anaconda.com/download/).
-
+You can use either [Anaconda](https://www.anaconda.com/download/) or [Miniforge](https://github.com/conda-forge/miniforge) to create your Python environment.
 
 We will create an environment for this workshop with all the required libraries installed.
 
@@ -47,7 +46,7 @@ conda install -y gxx_linux-64
 ### A-2: Install dependencies
 
 ```bash
-cd examples/notebooks/rag-pdf-1
+cd examples/rag-pdf-1
 ```
 
 ```bash
@@ -76,7 +75,7 @@ python --version
 ### B-2: Create a venv
 
 ```bash
-cd examples/notebooks/rag
+cd examples/rag-pdf-1
 
 
 python -m venv venv

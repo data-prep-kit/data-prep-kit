@@ -17,14 +17,16 @@ We will demonstrate the following:
 The code can be run on either 
 
 1.  Google colab: very easy to run; no local setup needed.
-2.  On your local Python environment.  Here is a quick guide.  You can  find instructions for latest version [here](../../../README.md#-getting-started)
+2.  On your local Python environment.  You can  find instructions [here](../../doc/quick-start/quick-start.md).  Here is a quick guide.
+
+You can use either [Anaconda](https://www.anaconda.com/download/) or [Miniforge](https://github.com/conda-forge/miniforge) to create your Python environment.
 
 ```bash
 conda create -n data-prep-kit -y python=3.11
 conda activate data-prep-kit
 
 # install the following in 'data-prep-kit' environment
-cd examples/notebooks/pdf-processing-1
+cd examples/pdf-processing-1
 pip3 install  -r requirements.txt
 
 # start jupyter and run the notebooks with this jupyter
@@ -37,9 +39,9 @@ PDF files are located in [examples/data-files/pdf-processing-1](../../data-files
 
 ## Running the code
 
-[python version](pdf_processing_1_python.ipynb)  &nbsp;    [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/data-prep-kit/data-prep-kit/blob/dev/examples/notebooks/pdf-processing-1/pdf_processing_1_python.ipynb)
+[python version](pdf_processing_1_python.ipynb)  &nbsp;    [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/data-prep-kit/data-prep-kit/blob/dev/examples/pdf-processing-1/pdf_processing_1_python.ipynb)
 
-[ray version](pdf_processing_1_ray.ipynb)  &nbsp;   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/data-prep-kit/data-prep-kit/blob/dev/examples/notebooks/pdf-processing-1/pdf_processing_1_ray.ipynb)
+[ray version](pdf_processing_1_ray.ipynb)  &nbsp;   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/data-prep-kit/data-prep-kit/blob/dev/examples/pdf-processing-1/pdf_processing_1_ray.ipynb)
 
 ## Troubleshooting
 

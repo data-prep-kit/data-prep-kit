@@ -55,7 +55,7 @@ class Html2ParquetTransform(AbstractBinaryTransform):
         title = member_filename if member_filename else TransformUtils.get_file_basename(file_name)
 
         output_format_value = str(self.output_format)
-        if output_format_value not in ["markdown", "txt"]:
+        if output_format_value not in ["markdown", "txt", "json"]:
             raise RuntimeError(f"Unknown output_format {self.output_format}.")
 
         if self.favor_precision == html2parquet_favor_precision.TRUE:
@@ -168,6 +168,7 @@ html2parquet_favor_recall_key = f"favor_recall"
 class html2parquet_output_format(str, enum.Enum):
     MARKDOWN = "markdown"
     TEXT = "txt"
+    JSON = "json"
 
     def __str__(self):
         return str(self.value)

@@ -23,6 +23,7 @@ from dpk_gneissweb_classification.transform import (
     model_url_cli_param,
     output_label_column_name_cli_param,
     output_score_column_name_cli_param,
+    n_processes_cli_param
 )
 
 
@@ -48,12 +49,14 @@ params = {
     "runtime_creation_delay": 0,
     "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
     # classification params
-    model_credential_cli_param: "PUT YOUR OWN HUGGINGFACE CREDENTIAL",
-    model_file_name_cli_param: "model.bin",
-    model_url_cli_param:"facebook/fasttext-language-identification",
+    model_credential_cli_param: os.environ.get('HF_READ_ACCESS_TOKEN', "PUT YOUR OWN HUGGINGFACE CREDENTIAL"),
+    model_file_name_cli_param: ["fasttext_medical.bin"],
+    model_url_cli_param:["ibm-granite/GneissWeb.Med_classifier"],
     content_column_name_cli_param: "text",
-    output_label_column_name_cli_param: "ft_label",
-    output_score_column_name_cli_param: "ft_score",
+    output_label_column_name_cli_param: ["ft_label"],
+    output_score_column_name_cli_param: ["ft_score"],
+    n_processes_cli_param: 1,
+
 }
 if __name__ == "__main__":
     # Set the simulated command line args
@@ -62,3 +65,5 @@ if __name__ == "__main__":
     launcher = RayTransformLauncher(ClassificationRayTransformConfiguration())
     # Launch the ray actor(s) to process the input
     launcher.launch()
+
+

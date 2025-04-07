@@ -10,6 +10,7 @@ Below we discuss the following:
 * [Using HuggingFace data](#huggingface)
 
 <a name ="adding"></a>
+
 ## Add your own transform
 
 At the core of the framework, is a data processing library, that provides a systematic way to implement the data processing modules. The library is python-based and enables the application of "transforms" to a one or more input data files to produce one or more output data files. We use the popular [parquet](https://arrow.apache.org/docs/python/parquet.html) format to store the data (code or language). 
@@ -39,6 +40,7 @@ For a deeper understanding of the library's architecture, its transforms, and av
 Additionally, check out our [video tutorial](https://www.youtube.com/watch?v=0WUMG6HIgMg) for a visual, example-driven guide on adding custom modules.
 
 <a name = "cli"></a>
+
 ## Running Transforms at the Command Line 
 
 You can run transforms via the command line or from within a docker image.
@@ -48,6 +50,7 @@ You can run transforms via the command line or from within a docker image.
 
 
 <a name = "scaling"></a>
+
 ## Scaling from laptop to cluster <a name = "laptop_cluster"></a>💻 -> 🖥️☁️ 
 Data-prep-kit provides the flexibility to transition your projects from 
 proof-of-concept (PoC) stage to full-scale production mode, 
@@ -79,6 +82,7 @@ When you finish working with the cluster, and want to clean up or destroy it. Se
 [clean up the cluster](kfp/doc/setup.md#cleanup)
 
 <a name = "huggingface"></a>
+
 ## Using HuggingFace Data 
 
 If you wish to download and use parquet data files from HuggingFace 

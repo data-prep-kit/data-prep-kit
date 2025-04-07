@@ -17,7 +17,7 @@ from dpk_gneissweb_classification.nlp import get_label_ds_pa
 
 def test_classification():
     nlp_langid = ClassificationModelFactory.create_model(
-      "facebook/fasttext-language-identification", "model.bin","YOUR_HUGGINGFACE_ACCESS_TOKEN"
+      "ibm-granite/GneissWeb.Med_classifier", "fasttext_medical.bin","HF_READ_ACCESS_TOKEN"
     )
 
     documents = pa.array(
@@ -36,7 +36,7 @@ def test_classification():
     )
     table = pa.Table.from_arrays([documents], names=["contents"])
     table, stats = get_label_ds_pa(table, nlp_langid, "contents", "label", "score")
-    assert table["label"].to_pylist() == ["de", "pt", "ja", "fr", "es"]
+    assert table["label"].to_pylist() == ["cc", "cc", "cc", "cc", "cc"]
     assert len(table["score"].to_pylist()) == len(table["label"].to_pylist())
-    assert "ft_lang" not in table.column_names
+    assert "ft_label" not in table.column_names
     assert "ft_score" not in table.column_names

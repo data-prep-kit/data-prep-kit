@@ -1,17 +1,21 @@
-
-
 <h1 align="center">Data Prep Kit</h1>
 
-<?[alt text](doc/Data-prep-kit-diagram.png)>
+<div align="center">
 
-<div align="center"> 
+[![arXiv](https://img.shields.io/badge/arXiv-2409.18164-b31b1b.svg)](https://arxiv.org/abs/2409.18164)
+[![Docs](https://img.shields.io/badge/docs-live-brightgreen)](https://data-prep-kit.github.io/data-prep-kit/)
+[![PyPI version](https://img.shields.io/pypi/v/data-prep-toolkit-transforms)](https://pypi.org/project/data-prep-toolkit-transforms/)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![Apache 2.0](https://img.shields.io/github/license/data-prep-kit/data-prep-kit)](https://opensource.org/license/apache-2-0)
+[![GitHub Issues](https://img.shields.io/github/issues/kylelobo/The-Documentation-Compendium.svg)](https://github.com/data-prep-kit/data-prep-kit/issues)
+  [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/kylelobo/The-Documentation-Compendium.svg)](https://github.com/data-prep-kit/data-prep-kit/pulls)
+  [![LF AI & Data](https://img.shields.io/badge/LF%20AI%20%26%20Data-003778?logo=linuxfoundation&logoColor=fff&color=0094ff&labelColor=003778)](https://lfaidata.foundation/projects/)
+  [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/10250/badge)](https://www.bestpractices.dev/projects/10250)
 
-<?  [![Status](https://img.shields.io/badge/status-active-success.svg)]() ?>
-<?  [![GitHub Issues](https://img.shields.io/github/issues/kylelobo/The-Documentation-Compendium.svg)](https://github.com/IBM/data-prep-kit/issues) ?>
-<?  [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/kylelobo/The-Documentation-Compendium.svg)](https://github.com/IBM/data-prep-kit/pulls) ?>
-</div> 
+  </div>
 
-Data Prep Kit is a community-driven project that simplifies unstructured data preparation for LLM application development. It addresses the growing challenge of preparing diverse data (language, code, vision, multimodal) for fine-tuning, instruction-tuning, and RAG applications. The modules in the kit have been tested in producing pre-training datasets for the [Granite open source LLM models](https://huggingface.co/ibm-granite).
+
+Data Prep Kit accelerates unstructured data preparation for LLM app developers. Developers can use Data Prep Kit to cleanse, transform, and enrich use case-specific unstructured data to pre-train LLMs, fine-tune LLMs, instruct-tune LLMs, or build retrieval augmented generation (RAG) applications for LLMs. Data Prep Kit can readily scale from a commodity laptop all the way to data center scale.
 
 ## Features <a name = "features"></a>
 
@@ -21,9 +25,10 @@ Data Prep Kit is a community-driven project that simplifies unstructured data pr
 - The kit provides a framework for developing custom transforms for processing parquet files. 
 - The kit uses [Kubeflow Pipelines](https://www.kubeflow.org/docs/components/pipelines/v1/introduction/)-based [workflow automation](kfp/doc/simple_transform_pipeline.md).
 
+
 ## Installation
 
-The latest version of the Data Prep Kit is available on PyPi for Python 3.10, 3.11 or 3.12. It can be installed using: 
+The latest version of the Data Prep Kit is available on PyPi for Python 3.10, 3.11 and 3.12. It can be installed using: 
 
 ```bash
 pip install  'data-prep-toolkit-transforms[all]'
@@ -37,7 +42,7 @@ For guidance on creating the virtual environment for installing the data prep ki
 
 ### Fastest way to experience Data Prep Kit
 
-With no setup necessary, let's use a Google Colab friendly notebook to try Data Prep Kit. This is a simple transform to extract content from PDF files: [examples/notebooks/Run_your_first_transform_colab.ipynb](examples/notebooks/Run_your_first_transform_colab.ipynb)  | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/IBM/data-prep-kit/blob/dev/examples/notebooks/Run_your_first_transform_colab.ipynb). ([Here](doc/google-colab.md) are some tips for running Data Prep Kit transforms on Google Colab. For this simple example, these tips are either already taken care of, or are not needed.)  The same notebook can be downloaded and run on the local machine, without cloning the repo or any other setup. 
+With no setup necessary, let's use a Google Colab friendly notebook to try Data Prep Kit. This is a simple transform to extract content from PDF files: [examples/notebooks/Run_your_first_transform_colab.ipynb](examples/notebooks/Run_your_first_transform_colab.ipynb)  | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/data-prep-kit/data-prep-kit/blob/dev/examples/notebooks/Run_your_first_transform_colab.ipynb). ([Here](doc/google-colab.md) are some tips for running Data Prep Kit transforms on Google Colab. For this simple example, these tips are either already taken care of, or are not needed.)  The same notebook can be downloaded and run on the local machine, without cloning the repo or any other setup. 
 
 ### Examples
 
@@ -61,9 +66,12 @@ Please click [here](doc/quick-start/quick-start.md#running-transforms-on-windows
 All the transforms in the kit include small sample data files for testing, but advanced users who want to download real data files from HuggingFace and use them in testing, can refer to [this](ADVANCED.md#using-data-from-huggingface). 
 
 
-## Current list of transforms <a name="table"></a>
-The matrix below shows the the combination of modules and supported runtimes. All the modules can be accessed [here](transforms) and can be combined to form data processing pipelines, as shown in the [examples](examples) folder. 
+## Supported data transforms <a name="table"></a>
 
+<details>
+      <summary>Click to expand for detailed list of transforms.</summary>
+
+The matrix below shows the the combination of modules and supported runtimes. All the modules can be accessed [here](transforms) and can be combined to form data processing pipelines, as shown in the [examples](examples) folder. 
 
 | Modules                                                                              |    Python-only     |        Ray         |       Spark        |     KFP on Ray     |
 |:-------------------------------------------------------------------------------------|:------------------:|:------------------:|:------------------:|:------------------:|
@@ -77,18 +85,24 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 | [Fuzzy dedup filter](transforms/universal/fdedup/README.md)                      | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [Unique ID annotation](transforms/universal/doc_id/README.md)                    | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [Filter on annotations](transforms/universal/filter/README.md)                   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| [Profiler](transforms/universal/profiler/python/README.md)                       | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| [Resize](transforms/universal/resize/python/README.md)                           | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [Profiler](transforms/universal/profiler/README.md)                       | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [Resize](transforms/universal/resize/README.md)                           | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [Hate, Abuse, Profanity (HAP)](transforms/universal/hap/README.md)               | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Tokenizer](transforms/universal/tokenization/README.md)                         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
-| **Language-only**                                                                    |                    |                    |                    |                    |
+| [Tokenization2Arrow](transforms/universal/tokenization2arrow/README.md)                         | :white_check_mark: | :white_check_mark: | 
+| [Repetition removal](transforms/universal/rep_removal/README.md)                         | :white_check_mark: | :white_check_mark: |                   |  |
+| [Bloom filter](transforms/universal/bloom/README.md)                         | :white_check_mark: |  |                    |  |
+**Language-only**                                                                    |                    |                    |                    |                    |
 | [Language identification](transforms/language/lang_id/README.md)              | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Document quality](transforms/language/doc_quality/README.md)                 | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Document chunking for RAG](transforms/language/doc_chunk/README.md)          | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Text encoder](transforms/language/text_encoder/README.md)                    | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [PII Annotator/Redactor](transforms/language/pii_redactor/README.md)          | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
-| [Similarity](transforms/language/similarity/README.md)                        | :white_check_mark: |                    |                    |                    |
-| **Code-only**                                                                         |                    |                     |             |                    |
+| [Similarity](transforms/language/similarity/README.md)                        | :white_check_mark: |                    |                    |                    |  |
+| [GneissWeb classification](transforms/language/gneissweb_classification/README.md)          | :white_check_mark: | :white_check_mark: |                    |  |
+| [Readability scores](transforms/language/readability/README.md)          | :white_check_mark: | :white_check_mark: |                    |  |
+| [Extreme tokenized annotation](transforms/language/extreme_tokenized/README.md)          | :white_check_mark: | :white_check_mark: |                    |  |
+**Code-only**                                                                         |                    |                     |             |                    |
 | [Programming language annotation](transforms/code/proglang_select/python/README.md)  | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Code quality annotation](transforms/code/code_quality/python/README.md)             | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Malware annotation](transforms/code/malware/python/README.md)                       | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
@@ -97,14 +111,31 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 | [License Select Annotation](transforms/code/license_select/python/README.md)         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Code profiler](transforms/code/code_profiler/README.md)                             | :white_check_mark: | :white_check_mark: |                    |  |
 
+</details>
+
 ## Contributing
+
 Contributors are welcome to add new modules to expand to other data modalities as well as add runtime support for existing modules! Please read [this](CONTRIBUTING.md) for details.
 
 ## Get help and support
-Please feel free to connect with us using the [discussion](https://github.com/IBM/data-prep-kit/discussions) section.
+
+Please feel free to connect with us using the [discussion](https://github.com/data-prep-kit/data-prep-kit/discussions) section.
+
+## MAINTAINERS
+
+For a list of current maintainers, please [see](MAINTAINERS.md).
+
+## CHANGELOG 
+
+For the history of releases and changes, please [see](release-notes.md).
 
 ## Resources
-[Papers, talks, presentations and tutorials](resources.md).
+
+[Papers, talks, presentations and tutorials](resources.md)
+
+[Granite open source LLM models](https://huggingface.co/ibm-granite) 
+
+[GneissWeb](https://research.ibm.com/blog/gneissweb-for-granite-training) 
 
 ## Citation <a name = "citations"></a>
 
@@ -126,3 +157,16 @@ If you use Data Prep Kit in your research, please cite our paper:
       url={https://arxiv.org/abs/2409.18164}, 
 }
 ```
+## License
+
+All source files must include a Copyright and License header. If you would like to see the detailed LICENSE click [here](LICENSE).
+
+## LF AI & Data
+
+Data Prep Kit is hosted as a project in the [LF AI & Data Foundation](https://lfaidata.foundation/projects/).
+
+### IBM ❤️ Open Source AI
+
+The project was started by the Data for AI Models team at IBM Research. 
+
+Copyright © Data Prep Kit Framework - a Series of LF Projects, LLC.

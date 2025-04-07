@@ -30,7 +30,7 @@ cache, and later load the snapshot to deduplicate only new files, avoiding repro
 | Input Column Name                                                   | Data Type | Description                      |
 |---------------------------------------------------------------------|-----------|----------------------------------|
 | Column specified by the _contents_column_ configuration argument    | str       | Column that stores document text |
-| Column specified by the _document_id_column_ configuration argument | int64     | Column that stores document ID   |
+| Column specified by the _document_id_column_ configuration argument | str       | Column that stores document ID   |
 
 ## Output Columns Annotated by This Transform
 This transform does not perform any annotations; it only filters out the documents that are marked as duplicates.

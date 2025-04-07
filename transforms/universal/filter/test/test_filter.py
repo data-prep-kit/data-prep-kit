@@ -15,7 +15,7 @@ import os
 
 import pyarrow as pa
 import pyarrow.parquet as pq
-from data_processing.test_support.transform import AbstractTableTransformTest
+from data_processing.test_support.transform.table_transform_test import AbstractTableTransformTest
 from data_processing.transform import get_transform_config
 from dpk_filter.transform import (
     FilterTransform,

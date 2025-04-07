@@ -19,12 +19,14 @@ import dpk_fdedup.cluster_analysis.transform
 import dpk_fdedup.data_cleaning.transform
 import dpk_fdedup.get_duplicate_list.transform
 import dpk_fdedup.signature_calc.transform
+from data_processing.runtime.pure_python import PythonTransformLauncher
+from data_processing.utils import ParamsUtils, get_logger, str2bool
 from dpk_fdedup.cluster_analysis.transform_python import (
     ClusterAnalysisPythonTransformConfiguration,
 )
-from dpk_fdedup.data_cleaning.transform_python import DataCleaningPythonTransformConfiguration
-from data_processing.runtime.pure_python import PythonTransformLauncher
-from data_processing.utils import ParamsUtils, get_logger, str2bool
+from dpk_fdedup.data_cleaning.transform_python import (
+    DataCleaningPythonTransformConfiguration,
+)
 from dpk_fdedup.get_duplicate_list.transform_python import (
     GetDuplicateListPythonTransformConfiguration,
 )
@@ -59,8 +61,9 @@ class ServiceOrchestrator:
         self.global_params = global_params
         self.logger = get_logger(__name__)
 
-    def orchestrate(self):
+    def orchestrate(self) -> int:
         service_list = self.global_params.services.split(",")
+        status = 0
         for service in service_list:
             self.logger.info(f"Starting {service} step")
             if service not in SERVICE_DICT:
@@ -76,6 +79,7 @@ class ServiceOrchestrator:
             else:
                 self.logger.error(f"{service} failed with status {status}, aborting ...")
                 break
+        return status
 
     def get_arguments(self, in_args: argparse.Namespace, service_name: str) -> list:
         sys_argv = ["python"]
@@ -259,8 +263,6 @@ def parse_args() -> argparse.Namespace:
     )
 
     return parser.parse_args()
-
-
 
 
 # Class used by the notebooks to ingest binary files and create parquet files

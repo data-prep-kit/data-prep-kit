@@ -22,7 +22,7 @@ pip install  'data-prep-toolkit-transforms[ray,all]'
 The above installs all available transforms and both the python and Ray runtimes. 
 
 NOTE: As of this writing, on linux systems there is an 
-[issue](https://github.com/IBM/data-prep-kit/issues/873) 
+[issue](https://github.com/data-prep-kit/data-prep-kit/issues/873) 
 installing `fasttext` for the `lang_id` transform. 
 A workaround is to
 [install using conda](quick-start.md#conda).
@@ -44,8 +44,8 @@ First, we load some data for the transform to run on using the following python 
 import urllib.request
 import shutil
 shutil.os.makedirs("input", exist_ok=True)
-urllib.request.urlretrieve("https://raw.githubusercontent.com/IBM/data-prep-kit/dev/transforms/language/pdf2parquet/test-data/input/archive1.zip", "input/archive1.zip")
-urllib.request.urlretrieve("https://raw.githubusercontent.com/IBM/data-prep-kit/dev/transforms/language/pdf2parquet/test-data/input/redp5110-ch1.pdf", "input/redp5110-ch1.pdf")
+urllib.request.urlretrieve("https://raw.githubusercontent.com/data-prep-kit/data-prep-kit/dev/transforms/language/pdf2parquet/test-data/input/archive1.zip", "input/archive1.zip")
+urllib.request.urlretrieve("https://raw.githubusercontent.com/data-prep-kit/data-prep-kit/dev/transforms/language/pdf2parquet/test-data/input/redp5110-ch1.pdf", "input/redp5110-ch1.pdf")
 ```
 ```shell 
 % ls input

@@ -41,7 +41,7 @@ params = {
     "runtime_job_id": "job_id",
     "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
     # lang_id params
-    model_credential_cli_param: "PUT YOUR OWN HUGGINGFACE CREDENTIAL",
+    model_credential_cli_param: os.environ.get('HF_READ_ACCESS_TOKEN', "PUT YOUR OWN HUGGINGFACE CREDENTIAL"),
     model_kind_cli_param: KIND_FASTTEXT,
     model_url_cli_param: "facebook/fasttext-language-identification",
     content_column_name_cli_param: "text",

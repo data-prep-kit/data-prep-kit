@@ -6,6 +6,11 @@ Please see the set of [transform project conventions](../../README.md#transform-
 ## Summary 
 This transform will identify language of each text with confidence score with fasttext language identification model. [ref](https://huggingface.co/facebook/fasttext-language-identification)
 
+## Contributors
+
+- Daiki Tsuzuku (dtsuzuku@jp.ibm.com)
+- Maroun Touma (touma@us.ibm.com)
+
 ## Configuration and command line Options
 
 The set of dictionary keys holding [LangIdentificationTransform](dpk_lang_id/transform.py) 
@@ -13,12 +18,12 @@ configuration for values are as follows:
 
 | Key name  | Default  | Description |
 |------------|----------|--------------|
-| _model_credential_ | _unset_ | specifies the credential you use to get model. This will be huggingface token. [Guide to get huggingface token](https://huggingface.co/docs/hub/security-tokens) |
-| _model_kind_ | _unset_ | specifies what kind of model you want to use for language identification. Currently, only `fasttext` is available. |
-| _model_url_ | _unset_ |  specifies url that model locates. For fasttext, this will be repo nme of the model, like `facebook/fasttext-language-identification` |
-| _content_column_name_ | `contents` | specifies name of the column containing documents |
-| _output_lang_column_name_ | `lang` | specifies name of the output column to hold predicted language code |
-| _output_score_column_name_ | `score` | specifies name of the output column to hold score of prediction |
+| _lang_id_model_credential_ | _unset_ | specifies the credential you use to get model. This will be huggingface token. [Guide to get huggingface token](https://huggingface.co/docs/hub/security-tokens) |
+| _lang_id_model_kind_ | _unset_ | specifies what kind of model you want to use for language identification. Currently, only `fasttext` is available. |
+| _lang_id_model_url_ | _unset_ |  specifies url that model locates. For fasttext, this will be repo nme of the model, like `facebook/fasttext-language-identification` |
+| _lang_id_content_column_name_ | `contents` | specifies name of the column containing documents |
+| _lang_id_output_lang_column_name_ | `lang` | specifies name of the output column to hold predicted language code |
+| _lang_id_output_score_column_name_ | `score` | specifies name of the output column to hold score of prediction |
 
 ## Running
 
@@ -50,6 +55,8 @@ To use the transform image to transform your data, please refer to the
 [running images quickstart](../../../doc/quick-start/run-transform-image.md),
 substituting the name of this transform image and runtime as appropriate.
 
+
+
 # Language Identification Ray Transform 
 Please see the set of
 [transform project conventions](../../README.md#transform-project-conventions)
@@ -73,3 +80,29 @@ the set of
 To use the transform image to transform your data, please refer to the 
 [running images quickstart](../../../doc/quick-start/run-transform-image.md),
 substituting the name of this transform image and runtime as appropriate.
+
+# Supported Languages
+|                     |                     |                     |            |            |    |  |  |
+| :-----------------: | :-----------------: | :-----------------: | :-----------------: | :-----------------: | :-----------------: | :-----------------: | :-----------------: |
+|Afrikaans|Albanian|Alemannic|Amharic|Arabic|Aragonese|Armenian|Asaro'o
+|Assamese|Asturian|Avaric|Azerbaijani|Bashkir|Basque|Bavarian|Belarusian
+|Bengali|Bihari languages|Bishnupriya Manipuri|Bosnian|Breton|Bulgarian|Buriat|Burmese
+|Catalan|Cebuano|Central Bikol|Central Khmer|Central Kurdish|Chavacano|Chechen|Chinese
+|Chuvash|Cornish|Corsican|Croatian|Czech|Danish|Dimli|Divehi
+|Doteli|Dutch|Eastern Mari|Egyptian Arabic|Emilian-Romagnol|English|Esperanto|Estonian
+|Fiji Hindi|Finnish|French|Galician|Georgian|German|Goan Konkani|Greek
+Guarani|Gujarati|Haitian Creole|Hebrew|Hill Mari|Hindi|Hungarian|Icelandic
+Ido|Ilokano|Indonesian|Interlingua|Interlingue|Irish|Italian|Japanese
+Javanese|Kalmyk|Kannada|Kapampangan|Karachay-Balkar|Kazakh|Komi|Korean
+Kurdish|Kyrgyz|Lao|Latin|Latvian|Lezgian|Limburgish|Lithuanian
+Lojban|Lombard|Low German|Lower Sorbian|Luxembourgish|Macedonian|Maithili|Malagasy
+Malay|Malayalam|Maltese|Manx|Marathi|Mazandarani|Min|Mirandese
+Mongolian|Nahuatl|Neapolitan|Nepal Bhasa|Nepali|Northern Frisian|Northern Luri|Norwegian
+Norwegian Nynorsk|Occitan|Odia|Ossetian|Palatine|Pashto|Persian|Piedmontese
+Polish|Portuguese|Punjabi|Quechua|Romanian|Romansh|Russian|Rusyn
+Sanskrit|Sardinian|Scots|Scottish Gaelic|Serbian|Serbo-Croatian|Sicilian|Sindhi
+Sinhala|Slovak|Slovenian|Somali|South Azerbaijani|Spanish|Sundanese|Swahili
+Swedish|Tagalog|Tajik|Tamil|Tatar|Telugu|Thai|Tibetan
+Turkish|Turkmen|Tuvan|Uighur|Ukrainian|Upper Sorbian|Urdu|Uzbek
+Venetian|Veps|Vietnamese|Volapük|Walloon|Waray|Welsh|West Flemish
+Western Frisian|Western Punjabi|Wu Chinese|Yakut|Yiddish|Yoruba|Yue

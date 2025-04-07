@@ -21,7 +21,7 @@ pip install data-prep-connector
 ### From Github
 
 ```sh
-pip install git+https://github.com/IBM/data-prep-kit.git@dev#subdirectory=data-connector-lib
+pip install git+https://github.com/data-prep-kit/data-prep-kit.git@dev#subdirectory=data-connector-lib
 ```
 
 ## Example usage

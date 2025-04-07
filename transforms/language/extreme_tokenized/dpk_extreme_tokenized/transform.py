@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 import pyarrow as pa
+import pyarrow.compute as pc
 from data_processing.data_access import DataAccessFactory
 from data_processing.transform import AbstractTableTransform
 from data_processing.utils import TransformUtils, get_logger
@@ -73,9 +74,16 @@ class ExtremeTokenizedTransform(AbstractTableTransform):
          - tokens_per_doc_size - ratio between number of tokens and document size
          - tokens_per_doc_num_chars - ratio between number of tokens and number of characters in document
         """
-        logger.info(f"Transforming table with {table.num_rows} rows from file {file_name}")
+        logger.debug(f"Transforming table with {table.num_rows} rows from file {file_name}")
         file_path = Path(file_name)
         pq_input_path = self.data_access.input_folder
+        condition = pc.and_(
+            pc.is_valid(table[self.contents_column_name]),  # Non-null rows
+            pc.not_equal(table[self.contents_column_name], ""),  # Non-empty strings
+        )
+        # Apply the filter
+        table = table.filter(condition)
+        logger.debug(f"After filtering, input table has {table.num_rows} rows")
         data_access_for_arrow = self.daf.create_data_access()
         suffix_path = str(file_path.relative_to(pq_input_path))
         arrow_file_path = os.path.join(self.arrow_location, suffix_path.replace(".parquet", ".arrow"))
@@ -83,6 +91,10 @@ class ExtremeTokenizedTransform(AbstractTableTransform):
         arrow_reader = pa.ipc.open_file(arrow_bytes)
         _ = arrow_reader.read_all()
         doc_tokens = [arrow_reader.get_batch(i)["tokens"].to_pylist() for i in range(arrow_reader.num_record_batches)]
+        if table.num_rows != len(doc_tokens):
+            logger.error(f"Cannot process {file_name} file because of mismatch between")
+            logger.error(f"the number of documents {table.num_rows} and the number of token lists {len(doc_tokens)}")
+            return [], {"mismatched_docs_tokens_files": 1}
         doc_num_tokens = [len(x) for x in doc_tokens]
         table_length = table.num_rows
         doc_size_kbs = [0.0] * table_length

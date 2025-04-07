@@ -35,12 +35,12 @@ class TestRayLangIdentificationTransform(AbstractTransformLauncherTest):
         basedir = "../test-data"
         basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))
         config = {
-            model_credential_cli_param: "PUT YOUR OWN HUGGINGFACE CREDENTIAL",
-            model_file_name_cli_param: "model.bin",
-            model_url_cli_param:"facebook/fasttext-language-identification",
+            model_credential_cli_param: os.environ.get('HF_READ_ACCESS_TOKEN', "PUT YOUR OWN HUGGINGFACE CREDENTIAL"),
+            model_file_name_cli_param: ["fasttext_medical.bin"],
+            model_url_cli_param:["ibm-granite/GneissWeb.Med_classifier"],
             content_column_name_cli_param: "text",
-            output_label_column_name_cli_param: "ft_lang",
-            output_score_column_name_cli_param: "ft_score",
+            output_label_column_name_cli_param: ["label_med"],
+            output_score_column_name_cli_param: ["score"],
             "run_locally": True,
 
         }
@@ -52,3 +52,4 @@ class TestRayLangIdentificationTransform(AbstractTransformLauncherTest):
                 basedir + "/expected",
             )
         ]
+

@@ -1,5 +1,35 @@
 # Data Prep Kit Release notes
 
+## Release 1.1.0 - 3/10/2025
+
+## General
+
+1. Updated tutorials and documentations
+1. Added GneissWeb Transforms, GneissWeb recipe and support for XML ingest in Docling 
+1. Bug fixes for Windows Support, KFP workflow pipelines, and CI/CD workflow
+
+### Recipes
+1. Updated RAG Notebooks for PDF and HTML
+1. New GneissWeb Notebook showcasing advanced data prep operations for improved model performance
+1. New Agentic Notebook showcasing integration with Langchain and Llama-index
+
+### Transforms
+1. GneissWeb transforms: [extreme tokenized](transforms/language/extreme_tokenized/README.md), [readability](transforms/language/readability/README.md), [gneissweb classification](transforms/language/gneissweb_classification/README.md), [Rep Removal](transforms/universal/rep_removal/README.md), [Tokenization2Arrow](transforms/universal/tokenization2arrow/README.md), [Bloom](transforms/universal/bloom/README.md)
+1. Code Profiler: Added Support for CSharp
+1. Header Cleanser: Enhanced with multi-processing support
+1. Fuzzy Dedup: Support for Windows Folder names
+1. PDF to Parquet: Update docling to 2.25 for ingesting XML/JATS
+1. HAP: Assign 0 score for empty content
+
+### data-prep-toolkit libraries (python, ray, spark) 
+
+1. Disabled fcntl on Windows
+
+### KFP Pipelines
+
+1. Updated super pipeline KFPv2
+
+
 ## Release 1.0.0 - 1/24/2025
 
 ## General
@@ -33,6 +63,7 @@ Integrate Semantic profiler and report generation for code profiler transform
 ## Release 0.2.2 - 11/25/2024
 
 ### General 
+
 1. Update RAG example to use granite model 
 1. Updated transforms with Docling 2
 1. Added single package for dpk with extra for \[spark\] and \[ray\]
@@ -70,6 +101,7 @@ Integrate Semantic profiler and report generation for code profiler transform
 ## Release 0.2.2- HTTP Connector Module - 10/23/2024
 
 ### General 
+
 1. Bug fixes across the repo
 1. Minor enhancements and experimentation with single packaging techniques using \[extra\]
 1. Decoupled the release process for each of the component so we can be more responsive to the needs of our stakeholders
@@ -86,6 +118,7 @@ Integrate Semantic profiler and report generation for code profiler transform
 ## Release 0.2.1 - 9/24/2024
 
 ### General 
+
 1. Bug fixes across the repo
 1. Added AI Alliance RAG demo, tutorials and notebooks and tips for running on google colab
 1. Added new transforms and single package for transforms published to pypi
@@ -117,6 +150,7 @@ Integrate Semantic profiler and report generation for code profiler transform
 ## Release 0.2.0 - 6/27/2024
 
 ### General 
+
 1. Many bug fixes across the repo, plus the following specifics.
 1. Enhanced CI/CD and makefile improvements  include definition of top-level targets (clean, set-verions, build, publish, test)
 1. Automation of release process branch/tag management

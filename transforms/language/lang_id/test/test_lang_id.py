@@ -10,6 +10,7 @@
 # limitations under the License.
 ################################################################################
 
+import os
 import pyarrow as pa
 from data_processing.test_support.transform.table_transform_test import (
     AbstractTableTransformTest,
@@ -26,7 +27,7 @@ class TestLangIdentificationTransform(AbstractTableTransformTest):
 
     def get_test_transform_fixtures(self) -> list[tuple]:
         config = {
-            "model_credential": "PUT YOUR OWN HUGGINGFACE CREDENTIAL",
+            "model_credential": os.environ.get('HF_READ_ACCESS_TOKEN', "PUT YOUR OWN HUGGINGFACE CREDENTIAL"),
             "model_kind": KIND_FASTTEXT,
             "model_url": "facebook/fasttext-language-identification",
             "content_column_name": "contents",

@@ -9,16 +9,9 @@ Here is the process:
 ## Step-1: Setup Python Env
 
 ```bash
-conda create -n dpk-html-processing-py311  python=3.11
+conda create -n rag-html-1  python=3.11
 
-conda activate dpk-html-processing-py311
-```
-
-If on linux do this
-
-```bash
-conda install -y gcc_linux-64
-conda install -y gxx_linux-64
+conda activate rag-html-1
 ```
 
 Install modules
@@ -49,7 +42,7 @@ This step will crawl a site and download HTML files in `input` directory
 
 We will process downloaded HTML files and extract the text as markdown.  The output will be saved in the`output/2-markdown` directory in markdown format
 
-[2_extract_text_from_html.ipynb](2_extract_text_from_html.ipynb)
+[2_process_html.ipynb](2_process_html.ipynb)
 
 ## Step-5: Save data into DB
 

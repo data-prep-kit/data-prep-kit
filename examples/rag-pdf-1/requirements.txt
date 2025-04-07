@@ -1,5 +1,5 @@
 ## Data prep kit
-data-prep-toolkit-transforms[ray,all]==1.0.0
+data-prep-toolkit-transforms[ray,all]==1.1.0
 
 # Milvus
 pymilvus
@@ -38,3 +38,4 @@ ipywidgets
 IProgress
 chardet==5.2.0
 charset-normalizer==3.3.2
+tqdm

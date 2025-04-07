@@ -1,6 +1,0 @@
-data-prep-toolkit-transforms[ray,all]==1.0.0
-
-# jupyter
-jupyterlab
-ipykernel
-ipywidgets

@@ -14,16 +14,18 @@ RUN pip install --no-cache-dir pytest
 ARG DPK_WHEEL_FILE_NAME
 ARG TRANSFORM_NAME
 
+# remove the pre-installed scpiy and pandas that conflict with the required numpy
+RUN python -m pip uninstall -y scipy pandas && python -m pip cache purge
+
 # Copy and install data processing libraries 
 # These are expected to be placed in the docker context before this is run (see the make image).
 COPY --chmod=775 --chown=ray:root data-processing-dist data-processing-dist
 RUN  pip install --no-cache-dir data-processing-dist/${DPK_WHEEL_FILE_NAME}[ray]
 
 COPY --chmod=775 --chown=ray:root dpk_${TRANSFORM_NAME}/ dpk_${TRANSFORM_NAME}/
+
 COPY --chown=ray:root requirements.txt requirements.txt 
 RUN pip install --no-cache-dir -r requirements.txt
-# remove the pre-installed scpiy that conflicts with the instlled numpy (scipy is not needed anyway) 
-RUN python -m pip uninstall -y scipy && python -m pip cache purge
 
 RUN python -c 'import nltk; nltk.download("punkt_tab")'
 

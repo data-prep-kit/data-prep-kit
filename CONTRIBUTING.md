@@ -2,48 +2,10 @@
 
 Our project welcomes external contributions. If you have an itch, please feel free to scratch it.
 
-### Legal and "Signing" prerequisites for your contributions 
+### Signing prerequisites 
 
-Each source file must include a license header for the Apache
-Software License 2.0. Using the SPDX format is the simplest approach.
-e.g.,
+We have a requirement that all signed commits must have a github "verified" signature, before a corresponding Pull Request (PR) can be merged. 
 
-```
-/*
-Copyright <holder> All Rights Reserved.
-
-SPDX-License-Identifier: Apache-2.0
-*/
-```
-
-We have tried to make it as easy as possible to make contributions. This
-applies to how we handle the legal aspects of contribution. We use the
-same approach - the [Developer's Certificate of Origin 1.1 (DCO)](https://github.com/hyperledger/fabric/blob/master/docs/source/DCO1.1.txt) - that the Linux® Kernel [community](https://elinux.org/Developer_Certificate_Of_Origin)
-uses to manage code contributions.
-
-We simply ask that when submitting a Pull Request(PR) for review, the developer
-must include a sign-off statement in the commit message.
-
-Here is an example Signed-off-by line, which indicates that the
-submitter accepts the DCO:
-
-```
-Signed-off-by: John Doe <john.doe@example.com>
-```
-
-To include Signed-off-by message automatically, set the git config as,
-```
-git config user.name "FirstName LastName"
-git config user.email "YourEmail@example.com"
-```
-
-and include flag `-s | --sign-off` when you commit a change to your local git repository, for example
-
-```
-git commit -s -m "your commit message"
-```
-
-We have an additional requirement that all signed commits must have a github "verified" signature, before a corresponding PR can be merged. 
 Follow the instructions [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account) for creating and adding a new SSH key to your github profile settings. Please make sure to select a "sigining" key and not the default "authentication" key. Then you need to tell github about your new SSH key by using the commands: 
 
 ```
@@ -72,6 +34,13 @@ and confirm that in your editor, you see the following important sections:
         format = ssh
 ```
 
+You will now include the flag `-s | --sign-off` when you commit a change to your local git repository, for example
+
+```
+git commit -s -m "your commit message"
+```
+
+
 ### Creating issues
 
 To contribute code or documentation, please create an [issue](https://github.com/data-prep-kit/data-prep-kit/issues) to engage with the maintainers and the open source community on the proposed enhancements, describe what problem it solves, and the use cases it covers. Alternatively, you can scan the existing issues and engage with the authors/commentators. Once the issue is assigned, the assignee is encouraged to submit a [PR](https://github.com/data-prep-kit/data-prep-kit/pulls).  
@@ -98,6 +67,26 @@ review to indicate acceptance, or ask for changes to the specific sections of th
 
 For a list of the maintainers, see the [MAINTAINERS.md](MAINTAINERS.md) page.
 
+### Legal 
+
+Each source file must include a license header for the Apache
+Software License 2.0. Using the SPDX format is the simplest approach.
+e.g.,
+
+```
+/*
+Copyright <holder> All Rights Reserved.
+
+SPDX-License-Identifier: Apache-2.0
+*/
+```
+
+We have tried to make it as easy as possible to make contributions. This
+applies to how we handle the legal aspects of contribution. We use the
+same approach - [Developer's Certificate of Origin 1.1 (DCO)](https://github.com/hyperledger/fabric/blob/master/docs/source/DCO1.1.txt) - that the Linux® Kernel [community](https://elinux.org/Developer_Certificate_Of_Origin)
+uses to manage code contributions.
+
+When submitting a PR that has been signed-off (please see above for the signing requirement), the developer accepts the DCO. 
 
 ## Transform Setup and Testing
 

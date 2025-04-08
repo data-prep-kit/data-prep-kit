@@ -22,7 +22,7 @@ DPKConfigS3.set_env_var("S3_REGION", "us-east-1")
 
 
 s3_conf = {
-     "da": "data_processing.data_access.DataAccessS3",
+     "da_class": "data_processing.data_access.DataAccessS3",
     "input_folder": "test/table_read_write/input/",
     "output_folder": "test/table_read_write/output/",
 }

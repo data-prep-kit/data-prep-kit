@@ -29,7 +29,7 @@ class DataAccessFactory(DataAccessFactoryBase):
     This class has to be serializable, so that we can pass it to the actors
     """
     default_class = 'DataAccessLocal'
-    default_module = 'data_processing.data_access'
+    default_package = 'data_processing.data_access'
 
     s3_class = 'DataAccessS3'
 
@@ -51,7 +51,7 @@ class DataAccessFactory(DataAccessFactoryBase):
         self.enable_data_navigation = enable_data_navigation
         self.data_access=None
         self.data_access_class=self.default_class
-        self.data_access_module=self.default_module
+        self.data_access_package=self.default_package
         
 
     def add_input_params(self, parser: argparse.ArgumentParser) -> None:
@@ -79,6 +79,14 @@ class DataAccessFactory(DataAccessFactoryBase):
                 "s3-path/your-output-bucket",
                 "Path to output folder of processed files",
             ],
+            "da_class": [
+                "package[.module].classname",
+                "Class name that implements the desired data access",
+            ],
+            "other attributes": [
+                "class-defined-attributes",
+                "Attributes that are required by the data access class referenced in da_class",
+            ],
         }
         parser.add_argument(
             f"--{self.cli_arg_prefix}s3_config",
@@ -86,18 +94,19 @@ class DataAccessFactory(DataAccessFactoryBase):
             default=None,
             help="AST string containing input/output paths.\n" + ParamsUtils.get_ast_help_text(help_example_dict),
         )
+
         parser.add_argument(
             f"--{self.cli_arg_prefix}lh_config",
             type=ast.literal_eval,
             default=None,
-            help="AST string containing input/output using lakehouse.\n",
+            help="AST string containing input/output using lakehouse.\n" + ParamsUtils.get_ast_help_text(help_example_dict),
         )
 
         parser.add_argument(
             f"--{self.cli_arg_prefix}data_config",
             type=ast.literal_eval,
             default=None,
-            help="AST string containing input/output for custom defined data access class.\n",
+            help="AST string containing input/output for custom defined data access class.\n" + ParamsUtils.get_ast_help_text(help_example_dict),
         )
 
         help_example_dict = {
@@ -144,19 +153,6 @@ class DataAccessFactory(DataAccessFactoryBase):
         parser.add_argument(
             f"--{self.cli_arg_prefix}num_samples", type=int, default=-1, help="number of random input files to process"
         )
-        parser.add_argument(
-            f"--{self.cli_arg_prefix}da_class",
-            type=str,
-            required=False,
-            help="ClassName that implements DataAccess API",
-        )
-        parser.add_argument(
-            f"--{self.cli_arg_prefix}da_module",
-            type=str, 
-            required=False,
-            help="Module that implements DataAccess Class",
-        )
-
 
     def apply_input_params(self, args: Union[dict, argparse.Namespace]) -> bool:
         """
@@ -179,17 +175,14 @@ class DataAccessFactory(DataAccessFactoryBase):
         files_to_use = arg_dict.get(f"{self.cli_arg_prefix}files_to_use", [".parquet"])
         files_to_checkpoint = arg_dict.get(f"{self.cli_arg_prefix}files_to_checkpoint", [".parquet"])
 
-        ################################################################
-        # Set Data Access Class to used baed on provided cli parameters
-        self.data_access_class=arg_dict.get(f"{self.cli_arg_prefix}da_class")
-        self.data_access_module=arg_dict.get(f"{self.cli_arg_prefix}da_module")
-        if self.data_access_class is None or self.data_access_class == '':
-            ## The use of s3_config will be depricated over time
-            if (arg_dict.get(f"{self.cli_arg_prefix}s3_config")):
-                self.data_access_class='DataAccessS3'
-            else:
-                self.data_access_class=self.default_class
-            self.data_access_module=self.default_module
+        ########################################################################
+        # Set Data Access Class defaults to used baed on provided cli parameters
+        ## The use of s3_config will be depricated over time
+        if (arg_dict.get(f"{self.cli_arg_prefix}s3_config")):
+            self.data_access_class='DataAccessS3'
+        else:
+            self.data_access_class=self.default_class
+        self.data_access_package=self.default_package
 
 
         ################################################################
@@ -222,19 +215,23 @@ class DataAccessFactory(DataAccessFactoryBase):
             f"data factory {self.cli_arg_prefix} "
             f"data configuration used: {self.config}"
             )
+            ##########################################################################
             ## Data Access Class can be specified as par of the data configuration dictionary
-            ## expects config = {'da': modulename.classname, 'input_folder': ..,  }
-            if 'da' in self.config:
-                dotNdx=self.config['da'].rfind(".")
+            # expect da_class string to be in the form: package[.submodule].classname
+            da_class=self.config.get('da_class')
+            if da_class:
+                dotNdx=da_class.rfind(".")
                 if dotNdx <= 0:
                     self.logger.error(
-                        f"data factory {self.cli_arg_prefix} configuration must specify the data access class and its module name"
-                        f"{self.config['da']} must have the following format: modulename.classname"
+                        f"data factory {self.cli_arg_prefix} configuration must specify the data access class and its package name"
+                        f"{self.config['da']} must have the following format: packagename.classname"
                     )
-                    return False
-                self.data_access_class=self.config['da'][dotNdx+1:]
-                self.data_access_module=self.config['da'][:dotNdx]
-
+                    self.data_access_package=None
+                    self.data_access_class=da_class
+                else:
+                    self.data_access_class=da_class[dotNdx+1:]
+                    self.data_access_package=da_class[:dotNdx]
+                self.logger.info(f"Using Package: {self.data_access_package} and class: {self.data_access_class}")
 
         # Check whether both max_files and number samples are defined
         self.logger.info(f"data factory {self.cli_arg_prefix} max_files {max_files}, n_sample {n_samples}")
@@ -263,23 +260,22 @@ class DataAccessFactory(DataAccessFactoryBase):
                 f"random samples {n_samples}, files to use {files_to_use}, files to checkpoint {files_to_checkpoint}"
             )
 
-
         try:
-            if self.data_access_module and self.data_access_module != '':
+            if self.data_access_package and self.data_access_package != '':
                 ## For now, this is always the case where we set a default
-                self.data_access=getattr(importlib.import_module(self.data_access_module), self.data_access_class)
+                self.data_access=getattr(importlib.import_module(self.data_access_package), self.data_access_class)
             else:
-                ## In the future, we may want to allow global scope modules
+                ## In the future, we may want to allow global scope packages
                 self.data_access=globals().get(self.data_access_class)
         except ImportError:
-            self.logger.error(f"Failed to import module {self.data_access_module}")
+            self.logger.error(f"Failed to import package {self.data_access_package}")
             return False
         except AttributeError:
-            self.logger.error(f"Class {self.data_access_class} {self.data_access_module}  Not found")
+            self.logger.error(f"Class {self.data_access_class} {self.data_access_package}  Not found")
             return False
             # At this point, we could call the class validation method if we want to retain the same logic as before
         if not self.data_access:
-            self.logger.error(f"Failed to import module {self.data_access_module}.{self.data_access_class}")
+            self.logger.error(f"Failed to import package {self.data_access_package}.{self.data_access_class}")
             return False
         self.logger.info(
                 f"data factory {self.cli_arg_prefix} "
@@ -300,7 +296,7 @@ class DataAccessFactory(DataAccessFactoryBase):
                 ##### MT
                 ## A number of transform assumes they can call this method directly without
                 ## any pre-configration to get a local data access class without any validation
-                self.data_access=getattr(importlib.import_module(self.data_access_module), self.data_access_class)
+                self.data_access=getattr(importlib.import_module(self.data_access_package), self.data_access_class)
             return self.data_access(
                 config=self.config,
                 d_sets=self.dsets,
@@ -311,12 +307,12 @@ class DataAccessFactory(DataAccessFactoryBase):
                 files_to_checkpoint=self.files_to_checkpoint
             )
         except ImportError:
-            self.logger.error(f"Failed to import module {self.data_access_module}")
+            self.logger.error(f"Failed to import package {self.data_access_package}")
             raise
         except AttributeError:
             self.logger.error(f"Class {self.data_access_class}  Not found")
             raise
         except Exception:
-            self.logger.error(f"Failed to create data access instance {self.data_access_module}.{self.data_access_class}")
+            self.logger.error(f"Failed to create data access instance {self.data_access_package}.{self.data_access_class}")
             raise
    

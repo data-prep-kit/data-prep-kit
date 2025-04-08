@@ -34,7 +34,9 @@ KFP_LIB_CONFIG_FILE := ${REPOROOT}/kfp/kfp_support_lib/${WORKFLOW_SUPPORT_LIB}/p
 FORCE:
 
 %.yaml: %.py FORCE
-	$(MAKE) set-versions PIPELINE_FILE=$<
+# Currenttly causing issues when user want to control the specific image name and tag
+# Let user decides when to run set-versions
+#	$(MAKE) set-versions PIPELINE_FILE=$<
 	$(MAKE) .workflows.compile-pipeline WF_NAME=$(shell (basename $< .py))
 
 .PHONY: .workflows.test-pipeline

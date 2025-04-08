@@ -12,11 +12,11 @@
 
 import os
 
-from code_quality_transform_python import CodeQualityPythonTransformConfiguration
-from data_processing.runtime.pure_python import PythonTransformLauncher
+from dpk_code_quality.ray.runtime import CodeQualityRayTransformConfiguration
 from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
+from data_processing_ray.runtime.ray import RayTransformLauncher
 
 
 class TestCodeQualityTransform(AbstractTransformLauncherTest):
@@ -27,12 +27,13 @@ class TestCodeQualityTransform(AbstractTransformLauncherTest):
 
     def get_test_transform_fixtures(self) -> list[tuple]:
         cli = {
+            "run_locally": True,
             "cq_contents_column_name": "contents",
             "cq_language_column_name": "language",
             "cq_tokenizer": "codeparrot/codeparrot",
         }
         basedir = "../test-data"
         basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))
-        launcher = PythonTransformLauncher(CodeQualityPythonTransformConfiguration())
+        launcher = RayTransformLauncher(CodeQualityRayTransformConfiguration())
         fixtures = [(launcher, cli, basedir + "/input", basedir + "/expected")]
         return fixtures

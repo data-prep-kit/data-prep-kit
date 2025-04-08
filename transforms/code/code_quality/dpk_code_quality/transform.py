@@ -17,7 +17,7 @@
 # Code specific heuristics like alpha numeric, char token ratio implementations & others are taken from CodeParrot and BigCode Dataset
 # preprocessing scripts and modified according to data-prep-kit specific framework.
 
-
+CODE_QUALITY_PARAMS = "code_quality"
 import os
 from argparse import ArgumentParser, Namespace
 
@@ -29,9 +29,8 @@ from data_processing.utils import TransformUtils
 from transformers import AutoTokenizer
 
 
-CODE_QUALITY_PARAMS = "code_quality_params"
+
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-model_credential_from_env = os.environ.get("HF_READ_ACCESS_TOKEN")
 
 
 def is_xml(data, lang):
@@ -195,14 +194,16 @@ class CodeQualityTransform(AbstractTableTransform):
     def __init__(self, config: dict):
         super().__init__(config)
 
-        self.code_quality = config.get(CODE_QUALITY_PARAMS)
+        self.code_quality = config.get(CODE_QUALITY_PARAMS) 
+        if not self.code_quality["hf_token"]:
+            self.code_quality["hf_token"]=os.getenv("HF_READ_ACCESS_TOKEN")
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.code_quality["tokenizer"], use_auth_token=self.code_quality["hf_token"]
         )
 
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict]:
         """
-        Chain all preprocessing steps into one function to not fill cache.
+        Chain all preprocessing steps into one function
         """
 
         TransformUtils.validate_columns(
@@ -294,7 +295,7 @@ class CodeQualityTransformConfiguration(TransformConfiguration):
             required=False,
             type=str,
             dest="hf_token",
-            default=model_credential_from_env,
+            default="",
             help="Huggingface auth token to download and use the tokenizer.",
         )
 

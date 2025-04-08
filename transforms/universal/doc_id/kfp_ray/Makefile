@@ -2,6 +2,7 @@ REPOROOT=${CURDIR}/../../../../
 WORKFLOW_VENV_ACTIVATE=${REPOROOT}/transforms/venv/bin/activate
 include $(REPOROOT)/transforms/.make.workflows
 
+TRANSFORM_NAME?=$(shell basename $(shell dirname `pwd`))
 
 # Include the common configuration for this transform
 #include ../transform.config
@@ -40,8 +41,17 @@ workflow-test: workflow-build
 		BUILD_SPECIFIC_RUNTIME=$(BUILD_SPECIFIC_RUNTIME) \
 		PIPELINE_FILE=$(TRANSFORM_NAME)_wf.yaml .workflows.test-pipeline
 
+.PHONY: workflow-run
+workflow-run:
+	$(MAKE) TRANSFORM_SRC=${SRC_DIR} \
+		TRANSFORM_RUNTIME=$(TRANSFORM_RUNTIME) \
+		TRANSFORM_NAME=$(TRANSFORM_NAME) \
+		BUILD_SPECIFIC_RUNTIME=$(BUILD_SPECIFIC_RUNTIME) \
+		PIPELINE_FILE=$(TRANSFORM_NAME)_wf.yaml .workflows.run-pipeline
+
 .PHONY: workflow-upload
 workflow-upload:
 	@for file in $(YAML_WF); do \
 		$(MAKE) .workflows.upload-pipeline PIPELINE_FILE=$$file; \
 	done
+

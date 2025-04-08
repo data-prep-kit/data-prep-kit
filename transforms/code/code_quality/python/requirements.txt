@@ -1,3 +1,0 @@
-data-prep-toolkit>=1.0.0.dev0
-bs4==0.0.2
-transformers>=4.38.2

@@ -31,7 +31,7 @@ from python_apiserver_client.params import (
 S3_SECRET = "s3-secret"
 
 # the name of the job script
-EXEC_SCRIPT_NAME: str = "code_quality_transform_ray.py"
+EXEC_SCRIPT_NAME: str = "-m dpk_code_quality.ray.runtime"
 PREFIX: str = ""
 
 task_image = "quay.io/dataprep1/data-prep-kit/code_quality-ray:1.1.1.dev0"

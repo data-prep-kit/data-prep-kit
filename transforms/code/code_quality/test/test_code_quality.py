@@ -11,29 +11,24 @@
 ################################################################################
 
 import os
-
-from code_quality_transform_ray import CodeQualityRayTransformConfiguration
 from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
-from data_processing_ray.runtime.ray import RayTransformLauncher
-
+from data_processing.runtime.pure_python import PythonTransformLauncher
+from dpk_code_quality.runtime import CodeQualityRuntime
 
 class TestCodeQualityTransform(AbstractTransformLauncherTest):
-    """
-    Extends the super-class to define the test data for the tests defined there.
-    The name of this class MUST begin with the word Test so that pytest recognizes it as a test class.
-    """
 
-    def get_test_transform_fixtures(self) -> list[tuple]:
-        cli = {
-            "run_locally": True,
+    def get_test_transform_fixtures(self):
+        basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../test-data"))
+        fixtures = []
+        transform_config = {
             "cq_contents_column_name": "contents",
             "cq_language_column_name": "language",
-            "cq_tokenizer": "codeparrot/codeparrot",
+            "cq_tokenizer": "codeparrot/codeparrot"
         }
-        basedir = "../test-data"
-        basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))
-        launcher = RayTransformLauncher(CodeQualityRayTransformConfiguration())
-        fixtures = [(launcher, cli, basedir + "/input", basedir + "/expected")]
+        launcher = PythonTransformLauncher(CodeQualityRuntime())
+        fixtures.append((launcher, transform_config, 
+                         basedir + "/input", 
+                         basedir + "/expected"))
         return fixtures

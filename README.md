@@ -1,5 +1,9 @@
 <h1 align="center">Data Prep Kit</h1>
 
+<p align="center">
+<img src="doc/LF_DataPrepKit_Logo_Postive.png" />
+</p>
+
 <div align="center">
 
 [![arXiv](https://img.shields.io/badge/arXiv-2409.18164-b31b1b.svg)](https://arxiv.org/abs/2409.18164)

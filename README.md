@@ -19,7 +19,13 @@
   </div>
 
 
-Data Prep Kit accelerates unstructured data preparation for LLM app developers. Developers can use Data Prep Kit to cleanse, transform, and enrich use case-specific unstructured data to pre-train LLMs, fine-tune LLMs, instruct-tune LLMs, or build retrieval augmented generation (RAG) applications for LLMs. Data Prep Kit can readily scale from a commodity laptop all the way to data center scale.
+Data Prep Kit accelerates unstructured data preparation for LLM app developers. Developers can use Data Prep Kit to cleanse, transform, and enrich use case-specific unstructured data to 
+- [Pre-train LLMs](https://github.com/data-prep-kit/data-prep-kit/blob/dev/examples/notebooks/GneissWeb/GneissWeb.ipynb) 
+- [Fine-tune LLMs](https://github.com/data-prep-kit/data-prep-kit/tree/dev/examples/notebooks/fine%20tuning),
+- Instruct-tune LLMs 
+- Build [Retrieval Augmented Generation (RAG)](https://github.com/data-prep-kit/data-prep-kit/tree/dev/examples/rag-html-1) applications for LLMs
+
+Data Prep Kit can readily scale from a commodity laptop all the way to data center scale.
 
 ## Features <a name = "features"></a>
 

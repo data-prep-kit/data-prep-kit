@@ -10,31 +10,56 @@
 # limitations under the License.
 ################################################################################
 
-import time
+import time, datetime
 import torch
 from argparse import ArgumentParser, Namespace
 from typing import Any
 import numpy as np
+import lance
+import os
+import ray
+import json
+from lance.fragment import write_fragments
 
 import pyarrow as pa
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import CLIArgumentProvider, TransformUtils
+from data_processing.utils import CLIArgumentProvider, TransformUtils, get_logger
 from sentence_transformers import SentenceTransformer
+from data_processing.data_access import DataAccess
 
+# from dpk_text_encoder.transform_utils import RedisLockManager
 
 short_name = "text_encoder"
 cli_prefix = f"{short_name}_"
 model_name_key = "model_name"
 content_column_name_key = "content_column_name"
 output_embeddings_column_name_key = "output_embeddings_column_name"
+lanceDB_data_uri_key="lanceDB_data_uri"
+# lanceDB_table_key="lanceDB_table"
+lanceDB_batch_size_key="lanceDB_batch_size"
+embedding_batch_size_key="embedding_batch_size"
+fragments_json_folder_key="fragments_json_folder"
+dataset_name_key="dataset_name"
+
 model_name_cli_param = f"{cli_prefix}{model_name_key}"
 content_column_name_cli_param = f"{cli_prefix}{content_column_name_key}"
 output_embeddings_column_name_cli_param = f"{cli_prefix}{output_embeddings_column_name_key}"
+lanceDB_data_uri_cli_param = f"{cli_prefix}{lanceDB_data_uri_key}"
+# lanceDB_table_cli_param = f"{cli_prefix}{lanceDB_table_key}"
+lanceDB_batch_size_cli_param = f"{cli_prefix}{lanceDB_batch_size_key}"
+embedding_batch_size_cli_param = f"{cli_prefix}{embedding_batch_size_key}"
+fragments_json_folder_cli_param = f"{cli_prefix}{fragments_json_folder_key}"
+dataset_name_cli_param = f"{cli_prefix}{dataset_name_key}"
 
 default_model_name = "ibm-granite/granite-embedding-30m-english"
 default_content_column_name = "contents"
 default_output_embeddings_column_name = "embeddings"
-
+default_lanceDB_data_uri_name = ""
+# default_lanceDB_table_name = ""
+default_lanceDB_batch_size = 1048576
+default_embedding_batch_size = 512
+default_fragments_json_folder = ""
+default_dataset_name = ""
 
 class TextEncoderTransform(AbstractTableTransform):
     """
@@ -46,7 +71,6 @@ class TextEncoderTransform(AbstractTableTransform):
         # Make sure that the param name corresponds to the name used in apply_input_params method
         # of TextEncoderTransform class
         super().__init__(config)
-        from data_processing.utils import get_logger
 
         self.logger = get_logger(__name__)
 
@@ -55,14 +79,112 @@ class TextEncoderTransform(AbstractTableTransform):
         self.output_embeddings_column_name = config.get(
             output_embeddings_column_name_key, default_output_embeddings_column_name
         )
+
+        self.actor_id = ray.get_runtime_context().get_actor_id()
+
         if torch.cuda.is_available():
-            print("GPU is available!")
+            self.logger.info(f"GPU is available!")
             device = torch.device("cuda")  # Use GPU
         else:
-            print("GPU is not available. Using CPU.")
+            self.logger.info(f"GPU is not available. Using CPU.")
             device = torch.device("cpu")   # Use CPU
         self.model = SentenceTransformer(self.model_name)
         self.model = self.model.to(device)
+
+        # settign up data_access, input_folder, output_folder, and fragments_json_folder
+        self.data_access: DataAccess = config.get("data_access", None)
+        assert self.data_access is not None, f"data_access is missing."
+        self.input_folder = self.data_access.get_input_folder()
+        assert self.input_folder is not None, f"input_folder is missing."
+        self.input_folder = self.input_folder if self.input_folder.endswith("/") else self.input_folder + "/"
+        self.output_folder = self.data_access.get_output_folder()
+        assert self.output_folder is not None, f"output_folder is missing."
+        self.output_folder = self.output_folder if self.output_folder.endswith("/") else self.output_folder + "/"
+        self.fragments_json_folder = config.get(fragments_json_folder_key, default_fragments_json_folder)
+        assert bool(self.fragments_json_folder.strip()), f"fragments_json_folder is missing."
+        self.fragments_json_folder = self.fragments_json_folder if self.fragments_json_folder.endswith("/") else self.fragments_json_folder + "/"
+
+        # setting up lanceDB_data_URI, lanceDB_batch_size, lanceDB_buffer, output_files_buffer, lanceDB_total_rows, embedding_batch_size, fragments_count, dataset_name
+        self.lanceDB_data_URI = config.get(lanceDB_data_uri_key, default_lanceDB_data_uri_name)
+        assert bool(self.lanceDB_data_URI.strip()), f"lanceDB_data_URI is missing."
+        self.lanceDB_batch_size = config.get(lanceDB_batch_size_key, default_lanceDB_batch_size)
+        self.lanceDB_buffer = []
+        self.output_files_buffer = []
+        self.lanceDB_total_rows = 0
+        self.embedding_batch_size = config.get(embedding_batch_size_key, default_embedding_batch_size)
+        self.fragments_count = 0
+        self.dataset_name = config.get(dataset_name_key, default_dataset_name)
+        assert bool(self.dataset_name.strip()), f"dataset_name is missing."
+
+    def _lanceDB_add_table_2_buffer(self, table: pa.Table, file: str):
+        self.lanceDB_buffer.append(table)
+        self.lanceDB_total_rows += table.num_rows
+        self.output_files_buffer.append(file)
+        
+        if self.lanceDB_total_rows >= self.lanceDB_batch_size:
+            self._lanceDB_flush()
+
+    def _lanceDB_flush(self):
+        """Flush the accumulated data to LanceDB when buffer is full."""
+        if not self.lanceDB_buffer:
+            return  # No data to flush
+
+        # Concatenate all buffered tables
+        combined_table = pa.concat_tables(self.lanceDB_buffer)
+        assert combined_table.num_rows == self.lanceDB_total_rows, print(f"combined_table num_rows not equal to buffered lanceDB_total_rows")
+        # write fragments to lanceDB_data_URI
+        try:
+            fragments = write_fragments(combined_table, self.lanceDB_data_URI)
+        except Exception as e:
+            self.logger.error(f"write_fragments failed: {e}")
+        fragments_json = [json.dumps(fragment.to_json()) for fragment in fragments]
+        frags = {}
+        frags["dataset"] = self.dataset_name
+        frags["fragment"] = fragments_json
+        # self.logger.info(f"{frags=}")
+        frags_bytes = json.dumps(frags).encode("utf-8")
+        # self.logger.info(f"{frags_bytes=}")
+        frag_path = f"{self.fragments_json_folder}{self.actor_id}_{str(self.fragments_count)}.json"
+        # self.logger.info(f"{frag_path=}")
+        try:
+            self.data_access.save_file(frag_path, frags_bytes)
+            self.fragments_count += 1
+        except Exception as e:
+            self.logger.error(f"write frag_json to {self.fragments_json_folder=} failed: {e}")
+        # write an empty parquet table to the output folder, to allow DPK checkpointing=True
+        empty_batches = []
+        empty_table = pa.Table.from_batches(empty_batches, schema=combined_table.schema)
+        try:
+            for file in self.output_files_buffer:
+                file = file.replace(self.input_folder, self.output_folder)
+                self.data_access.save_table(file, empty_table)
+        except Exception as e:
+            self.logger.error(f"write empty pyarrow to {self.output_folder=} failed: {e}")
+        
+        # current_time = datetime.datetime.fromtimestamp(time.time()).strftime('%H:%M:%S')
+        # print(f"{self.actor_id} at {current_time} write {combined_table.num_rows} rows to LanceDB_data_URI.")
+
+        # Reset buffer
+        self.lanceDB_buffer = []
+        self.lanceDB_total_rows = 0
+        self.output_files_buffer = []
+        del combined_table
+
+
+    def _compute_embeddings(self, docs: list, embed_batch_size: int) -> list[list[float]]:
+        """ given a list of documents, compute their embeddings as a list of list, using sentence_transformer API """
+        embeddings = []
+        for i in range(0, len(docs), embed_batch_size):
+            embed_text_batch = docs[i : i + embed_batch_size]
+            try:
+                with torch.no_grad():
+                    embeddings_batch = self.model.encode(embed_text_batch)
+                    embeddings += embeddings_batch.tolist()
+            except Exception as e:
+                print(f"Error: No embeddings created for this batch. Exception: {e}")
+                pass
+
+        return embeddings
 
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
         """ """
@@ -71,20 +193,23 @@ class TextEncoderTransform(AbstractTableTransform):
         # make sure that the content column exists
         TransformUtils.validate_columns(table=table, required=[self.content_column_name])
 
-        embeddings = list(
-            map(
-                lambda x: self.model.encode(x, convert_to_numpy=True, show_progress_bar=False),
-                table[self.content_column_name].to_pylist(),
-            ),
-        )
+        documents = table.column(self.content_column_name).to_pylist()
 
-        embeddings_float16 =[emb.astype(np.float16) for emb in embeddings]
-        pyarrow_embeddings = pa.array(embeddings_float16)
-
-        result = TransformUtils.add_column(table=table, name=self.output_embeddings_column_name, content=pyarrow_embeddings)
-
-        metadata = {"nfiles": 1, "nrows": len(result)}
-        return [result], metadata
+        embeddings = self._compute_embeddings(documents, self.embedding_batch_size)
+        embedding_dtype = pa.list_(pa.float16(), len(embeddings[0]))
+        embeddings_float16 = [np.array(emb, dtype=np.float16) for emb in embeddings]
+        embeddings_pa_array = pa.array(embeddings_float16, type=embedding_dtype)
+        new_table = table.add_column(len(table.schema), self.output_embeddings_column_name, embeddings_pa_array)
+        
+        self._lanceDB_add_table_2_buffer(new_table, file_name)
+        metadata = {"nfiles": 1, "num_rows": new_table.num_rows}
+        del new_table
+        del table
+        return [], metadata
+    
+    def flush(self) -> tuple[list[pa.Table], dict[str, Any]]:
+        self._lanceDB_flush()
+        return [], {}
 
 
 class TextEncoderTransformConfiguration(TransformConfiguration):
@@ -99,13 +224,12 @@ class TextEncoderTransformConfiguration(TransformConfiguration):
             transform_class=TextEncoderTransform,
             # remove_from_metadata=[pwd_key],
         )
-        from data_processing.utils import get_logger
 
         self.logger = get_logger(__name__ + "cfg")  # workaround issue #481
 
     def add_input_params(self, parser: ArgumentParser) -> None:
         """
-        Add Transform-specific arguments to the given  parser.
+        Add Transform-specific arguments to the given parser.
         This will be included in a dictionary used to initialize the TextEncoderTransform.
         By convention a common prefix should be used for all transform-specific CLI args
         (e.g, noop_, pii_, etc.)
@@ -124,6 +248,48 @@ class TextEncoderTransformConfiguration(TransformConfiguration):
             f"--{model_name_cli_param}",
             default=default_model_name,
             help=f"Name of the HF model to use for encoding the text. The default model is {default_model_name}",
+        )
+        parser.add_argument(
+            f"--{lanceDB_data_uri_cli_param}",
+            type=str,
+            default=default_lanceDB_data_uri_name,
+            required=False,
+            help="LanceDB data URI",
+        )
+        # parser.add_argument(
+        #     f"--{lanceDB_table_cli_param}",
+        #     type=str,
+        #     required=False,
+        #     default=default_lanceDB_table_name,
+        #     help="LanceDB table name",
+        # )
+        parser.add_argument(
+            f"--{lanceDB_batch_size_cli_param}",
+            type=int,
+            required=False,
+            default=default_lanceDB_batch_size,
+            help="LanceDB batch size",
+        )
+        parser.add_argument(
+            f"--{embedding_batch_size_cli_param}",
+            type=int,
+            required=False,
+            default=default_embedding_batch_size,
+            help="Embedding batch size",
+        )
+        parser.add_argument(
+            f"--{fragments_json_folder_cli_param}",
+            type=str,
+            required=False,
+            default=default_fragments_json_folder,
+            help="Fragments JSON file folder",
+        )
+        parser.add_argument(
+            f"--{dataset_name_cli_param}",
+            type=str,
+            required=False,
+            default=default_dataset_name,
+            help="Dataset name used to label list of fragment json objects",
         )
 
     def apply_input_params(self, args: Namespace) -> bool:

@@ -1,1 +1,4 @@
-sentence-transformers>=3.0.1
+sentence-transformers>=2.2.2
+transformers>=4.35.2
+lancedb>=0.21.2
+pylance>=0.25.0

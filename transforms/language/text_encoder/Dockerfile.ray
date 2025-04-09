@@ -22,6 +22,7 @@ RUN pip install ${PIP_INSTALL_EXTRA_ARGS} --no-cache-dir -r requirements.txt
 
 # Set environment
 ENV PYTHONPATH /home/ray
+ENV RAY_DEDUP_LOGS=0
 
 # Put these at the end since they seem to upset the docker cache.
 ARG BUILD_DATE

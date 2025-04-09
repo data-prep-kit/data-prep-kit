@@ -27,14 +27,13 @@ run-python-cli-sample:
 	make venv
 	source venv/bin/activate && \
 	rm -rf output && \
-	export $REDIS_HOST = 'local_host'
-	export $REDIS_PORT = 
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
 			--data_local_config "{ 'input_folder' : 'test-data/ds01/input/', 'output_folder' : 'output/'}" \
-			--text_encoder_lanceDB_uri "output/test_lanceDB/"  \
-			--text_encoder_lanceDB_table "test_table" \
+			--text_encoder_lanceDB_data_uri "output/test.db/test.lance/"  \
 			--text_encoder_lanceDB_batch_size 10 \
-			--text_encoder_embedding_batch_size 5
+			--text_encoder_embedding_batch_size 5 \
+			--text_encoder_fragments_json_folder "output/fragments_json/" \
+			--text_encoder_dataset_name "test"
 
 
 run-ray-cli-sample:
@@ -43,8 +42,10 @@ run-ray-cli-sample:
 	rm -rf output && \
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.runtime \
             --data_local_config "{ 'input_folder' : 'test-data/ds01/input/', 'output_folder' : 'output/'}" \
-			--text_encoder_lanceDB_uri "output/test_lanceDB/"  \
-			--text_encoder_lanceDB_table "test_table" \
+			--text_encoder_lanceDB_data_uri "output/test.db/test.lance/"  \
 			--text_encoder_lanceDB_batch_size 10 \
-			--text_encoder_embedding_batch_size 5
+			--text_encoder_fragments_json_folder "output/fragments_json/" \
+			--text_encoder_embedding_batch_size 5 \
+			--text_encoder_dataset_name "test" \
+			--run_locally True
 

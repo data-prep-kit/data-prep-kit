@@ -100,13 +100,29 @@ class TextEncoderTransform(AbstractTableTransform):
         self.output_folder = self.data_access.get_output_folder()
         assert self.output_folder is not None, f"output_folder is missing."
         self.output_folder = self.output_folder if self.output_folder.endswith("/") else self.output_folder + "/"
+        if not os.path.exists(self.output_folder):
+            try:
+                os.makedirs(self.output_folder, exist_ok=True)
+            except OSError as e:
+                self.logger.error(f"Cannot create directories for {self.output_folder}: {e}")
+
         self.fragments_json_folder = config.get(fragments_json_folder_key, default_fragments_json_folder)
         assert bool(self.fragments_json_folder.strip()), f"fragments_json_folder is missing."
         self.fragments_json_folder = self.fragments_json_folder if self.fragments_json_folder.endswith("/") else self.fragments_json_folder + "/"
-
+        if not os.path.exists(self.fragments_json_folder):
+            try:
+                os.makedirs(self.fragments_json_folder, exist_ok=True)
+            except OSError as e:
+                self.logger.error(f"Cannot create directories for {self.fragments_json_folder}: {e}")
+                
         # setting up lanceDB_data_URI, lanceDB_batch_size, lanceDB_buffer, output_files_buffer, lanceDB_total_rows, embedding_batch_size, fragments_count, dataset_name
         self.lanceDB_data_URI = config.get(lanceDB_data_uri_key, default_lanceDB_data_uri_name)
         assert bool(self.lanceDB_data_URI.strip()), f"lanceDB_data_URI is missing."
+        if not os.path.exists(self.lanceDB_data_URI):
+            try:
+                os.makedirs(self.lanceDB_data_URI, exist_ok=True)
+            except OSError as e:
+                self.logger.error(f"Cannot create directories for {self.lanceDB_data_URI}: {e}")
         self.lanceDB_batch_size = config.get(lanceDB_batch_size_key, default_lanceDB_batch_size)
         self.lanceDB_buffer = []
         self.output_files_buffer = []

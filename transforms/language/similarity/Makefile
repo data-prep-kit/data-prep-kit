@@ -35,3 +35,24 @@ run-local-python-sample:
 	$(MAKE) venv
 	@source venv/bin/activate && \
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).local_python
+
+run-ray-cli-sample: 
+	$(MAKE) venv
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.transform \
+				--data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
+				--similarity_es_pwd $(SIMILARITY_ES_PWD) \
+				--similarity_es_userid $(SIMILARITY_ES_USERID) \
+				--similarity_es_endpoint $(SIMILARITY_ES_ENDPOINT) \
+				--similarity_es_index $(SIMILARITY_ES_INDEX)
+
+run-ray-s3-sample: 
+	$(MAKE) venv
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.s3 \
+				--data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
+				--similarity_es_pwd $(SIMILARITY_ES_PWD) \
+				--similarity_es_userid $(SIMILARITY_ES_USERID) \
+				--similarity_es_endpoint $(SIMILARITY_ES_ENDPOINT) \
+				--similarity_es_index $(SIMILARITY_ES_INDEX)
+			

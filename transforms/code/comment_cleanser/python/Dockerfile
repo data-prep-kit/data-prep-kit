@@ -35,7 +35,7 @@ COPY test/ test/
 COPY test-data/ test-data/
 
 # Set environment
-ENV PYTHONPATH /home/dpk
+ENV PYTHONPATH=/home/dpk
 
 # Put these at the end since they seem to upset the docker cache.
 ARG BUILD_DATE

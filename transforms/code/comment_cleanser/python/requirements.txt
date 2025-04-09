@@ -1,6 +1,7 @@
 data-prep-toolkit>=0.2.5.dev0
 timeout-timer==0.2.0
-comment_parser==1.2.4
+comment-parser==1.2.4
 joblib==1.4.2
 scikit-learn==1.6.1
 setuptools==76.0.0
+wheel

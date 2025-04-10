@@ -32,6 +32,7 @@ class DataAccessS3(DataAccess):
         checkpoint: bool = False,
         m_files: int = -1,
         n_samples: int = -1,
+        batch_size: int = -1,
         files_to_use: list[str] = [".parquet"],
         files_to_checkpoint: list[str] = [".parquet"],
     ):
@@ -46,7 +47,7 @@ class DataAccessS3(DataAccess):
         :param files_to_use: files extensions of files to include
         :param files_to_checkpoint: files extensions of files to use for checkpointing
         """
-        super().__init__(d_sets=d_sets, checkpoint=checkpoint, m_files=m_files, n_samples=n_samples,
+        super().__init__(d_sets=d_sets, checkpoint=checkpoint, m_files=m_files, n_samples=n_samples, batch_size=batch_size,
                          files_to_use=files_to_use, files_to_checkpoint=files_to_checkpoint)
         if (
             s3_credentials is None

@@ -11,8 +11,8 @@
 ################################################################################
 
 import random
+import os
 from typing import Any
-
 import pyarrow as pa
 from data_processing.utils import KB, MB, GB, TransformUtils, get_logger
 
@@ -27,6 +27,7 @@ class DataAccess:
             checkpoint: bool,
             m_files: int,
             n_samples: int,
+            batch_size: int,
             files_to_use: list[str],
             files_to_checkpoint: list[str],
     ):
@@ -36,6 +37,7 @@ class DataAccess:
         :param checkpoint: flag to return only files that do not exist in the output directory
         :param m_files: max amount of files to return
         :param n_samples: amount of files to randomly sample
+        :param batch_size: batch size to use
         :param files_to_use: files extensions of files to include
         :param files_to_checkpoint: files extensions of files to use for checkpointing
         """
@@ -45,6 +47,8 @@ class DataAccess:
         self.n_samples = n_samples
         self.files_to_use = files_to_use
         self.files_to_checkpoint = files_to_checkpoint
+        self.batch_size = batch_size
+        self.processed_files = [] # records files processed from batches 
         self.logger = get_logger(__name__)
 
     def get_output_folder(self) -> str:
@@ -103,6 +107,7 @@ class DataAccess:
             return files, path_profile, retries
         return path_list, path_profile, retries
 
+
     def _get_files_to_process_internal(self) -> tuple[list[str], dict[str, float], int]:
         """
         Get files to process
@@ -154,7 +159,27 @@ class DataAccess:
                 cm_files=self.m_files,
             )
         return path_list, profile, retries
+    def get_batches_to_process(self) -> tuple[list[int], dict[str, float], int]:
+        """
+        Get batch files to process
+        :return: list of batch files and a dictionary of the batch files profile:
+        "total_batch_size"
+        """
+        if len(self.processed_files) == 0:
+            files, _ , _ , = self.get_files_to_process()
+            if len(files) == 0:
+                self.logger.warning("No files to process, returning empty list")
+                return [], {}, 0
+            self.to_process = files
 
+        # retrieve the number of files from batch size from the to_process variable and place in a new batch variable. then, append the processed_files to included the retrieved files
+        batch_files = self.to_process[:self.batch_size]
+        self.processed_files += batch_files
+        self.to_process = self.to_process[self.batch_size:]
+        
+        return batch_files
+            
+          
     def _get_folders_to_use(self) -> tuple[list[str], int]:
         """
         convert data sets to a list of folders to use

@@ -27,7 +27,6 @@ from data_processing.utils import CLIArgumentProvider, TransformUtils, get_logge
 from sentence_transformers import SentenceTransformer
 from data_processing.data_access import DataAccess
 
-# from dpk_text_encoder.transform_utils import RedisLockManager
 
 short_name = "text_encoder"
 cli_prefix = f"{short_name}_"
@@ -35,7 +34,6 @@ model_name_key = "model_name"
 content_column_name_key = "content_column_name"
 output_embeddings_column_name_key = "output_embeddings_column_name"
 lanceDB_data_uri_key="lanceDB_data_uri"
-# lanceDB_table_key="lanceDB_table"
 lanceDB_batch_size_key="lanceDB_batch_size"
 embedding_batch_size_key="embedding_batch_size"
 fragments_json_folder_key="fragments_json_folder"
@@ -45,7 +43,6 @@ model_name_cli_param = f"{cli_prefix}{model_name_key}"
 content_column_name_cli_param = f"{cli_prefix}{content_column_name_key}"
 output_embeddings_column_name_cli_param = f"{cli_prefix}{output_embeddings_column_name_key}"
 lanceDB_data_uri_cli_param = f"{cli_prefix}{lanceDB_data_uri_key}"
-# lanceDB_table_cli_param = f"{cli_prefix}{lanceDB_table_key}"
 lanceDB_batch_size_cli_param = f"{cli_prefix}{lanceDB_batch_size_key}"
 embedding_batch_size_cli_param = f"{cli_prefix}{embedding_batch_size_key}"
 fragments_json_folder_cli_param = f"{cli_prefix}{fragments_json_folder_key}"
@@ -55,7 +52,6 @@ default_model_name = "ibm-granite/granite-embedding-30m-english"
 default_content_column_name = "contents"
 default_output_embeddings_column_name = "embeddings"
 default_lanceDB_data_uri_name = ""
-# default_lanceDB_table_name = ""
 default_lanceDB_batch_size = 1048576
 default_embedding_batch_size = 512
 default_fragments_json_folder = ""
@@ -114,7 +110,7 @@ class TextEncoderTransform(AbstractTableTransform):
                 os.makedirs(self.fragments_json_folder, exist_ok=True)
             except OSError as e:
                 self.logger.error(f"Cannot create directories for {self.fragments_json_folder}: {e}")
-                
+
         # setting up lanceDB_data_URI, lanceDB_batch_size, lanceDB_buffer, output_files_buffer, lanceDB_total_rows, embedding_batch_size, fragments_count, dataset_name
         self.lanceDB_data_URI = config.get(lanceDB_data_uri_key, default_lanceDB_data_uri_name)
         assert bool(self.lanceDB_data_URI.strip()), f"lanceDB_data_URI is missing."
@@ -147,7 +143,7 @@ class TextEncoderTransform(AbstractTableTransform):
 
         # Concatenate all buffered tables
         combined_table = pa.concat_tables(self.lanceDB_buffer)
-        assert combined_table.num_rows == self.lanceDB_total_rows, print(f"combined_table num_rows not equal to buffered lanceDB_total_rows")
+        assert combined_table.num_rows == self.lanceDB_total_rows, f"combined_table num_rows not equal to buffered lanceDB_total_rows"
         # write fragments to lanceDB_data_URI
         try:
             fragments = write_fragments(combined_table, self.lanceDB_data_URI)
@@ -177,8 +173,8 @@ class TextEncoderTransform(AbstractTableTransform):
         except Exception as e:
             self.logger.error(f"write empty pyarrow to {self.output_folder=} failed: {e}")
         
-        # current_time = datetime.datetime.fromtimestamp(time.time()).strftime('%H:%M:%S')
-        # print(f"{self.actor_id} at {current_time} write {combined_table.num_rows} rows to LanceDB_data_URI.")
+        current_time = datetime.datetime.fromtimestamp(time.time()).strftime('%H:%M:%S')
+        self.logger.info(f"{self.actor_id} at {current_time} writes {combined_table.num_rows} rows to {self.lanceDB_data_URI}.")
 
         # Reset buffer
         self.lanceDB_buffer = []
@@ -197,7 +193,7 @@ class TextEncoderTransform(AbstractTableTransform):
                     embeddings_batch = self.model.encode(embed_text_batch)
                     embeddings += embeddings_batch.tolist()
             except Exception as e:
-                print(f"Error: No embeddings created for this batch. Exception: {e}")
+                self.logger.error(f"Error: No embeddings created for this batch. Exception: {e}")
                 pass
 
         return embeddings
@@ -272,13 +268,6 @@ class TextEncoderTransformConfiguration(TransformConfiguration):
             required=False,
             help="LanceDB data URI",
         )
-        # parser.add_argument(
-        #     f"--{lanceDB_table_cli_param}",
-        #     type=str,
-        #     required=False,
-        #     default=default_lanceDB_table_name,
-        #     help="LanceDB table name",
-        # )
         parser.add_argument(
             f"--{lanceDB_batch_size_cli_param}",
             type=int,

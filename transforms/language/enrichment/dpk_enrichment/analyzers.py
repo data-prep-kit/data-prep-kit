@@ -9,7 +9,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ################################################################################
-import os, sys, re, yaml, json
+import os, sys, re, yaml, json, traceback
 import string, unicodedata
 
 from collections import Counter
@@ -298,7 +298,7 @@ for n in RANGE_TOP_NGRAMS:
 for n in RANGE_DUP_NGRAMS:
     DEFAULT_TEXT_ENRICHER_DICT[f"dup_{n}_gram_char_ratio"] = 0.0
 
-def text_enrichers(text: str, word_tokenizer: WordTokenizer, normalize_newlines: bool = False, logger: Any = None) -> Dict:
+def text_enrichers(text: str, word_tokenizer: WordTokenizer, newlines_normalized: str = None, logger: Any = None) -> Dict:
     # split into paragraphs
     paragraphs = list(filter(None, re.split(NEWLINE_SPLIT_PATTERN, text)))
     if not paragraphs:
@@ -402,15 +402,19 @@ def text_enrichers(text: str, word_tokenizer: WordTokenizer, normalize_newlines:
             bulletpoint_ratio = num_bulletpoint_lines / len(paragraphs),
         ))
 
-        if normalize_newlines:
-            text_enrichments['text'] = "\n".join(filter(lambda p: len(p.strip()) > 0, paragraphs))
-
+        if newlines_normalized:
+            text_enrichments[newlines_normalized] = "\n".join(filter(lambda p: len(p.strip()) > 0, paragraphs))
+        text_enrichments['error'] = ""
         return text_enrichments
     except Exception as e:
         text_enrichments = {}
         text_enrichments.update(DEFAULT_TEXT_ENRICHER_DICT)
         # indicate error
         text_enrichments['avg_word_length'] = -1.0
+        t = traceback.format_exc()
+        text_enrichments['error'] = f"{e}\n{t}";
+        if newlines_normalized:
+            text_enrichments[newlines_normalized] = ""
         if logger:
             logger.warning(f"exception during enrichment: {e}")
         return text_enrichments

@@ -19,8 +19,8 @@ from data_processing.utils import CLIArgumentProvider, TransformUtils, Unrecover
 from dpk_enrichment.analyzers import DEFAULT_TEXT_ENRICHER_DICT, text_enrichers
 from datatrove.utils.word_tokenizers import WordTokenizer, load_word_tokenizer
 
-def text_enrichment(text: str, word_tokenizer: WordTokenizer, columns_map: dict[str, str], logger: Any) -> dict[str, Any]:
-    r = text_enrichers(text, word_tokenizer, False)
+def text_enrichment(text: str, word_tokenizer: WordTokenizer, columns_map: dict[str, str], normalized_text: str, logger: Any) -> dict[str, Any]:
+    r = text_enrichers(text, word_tokenizer, normalized_text)
     return {v: r[k] for k, v in columns_map.items() if v}
 
 short_name = "enrichment"
@@ -31,6 +31,8 @@ param_table = [
         ("output_column_prefix", str, "", "Prefix to add to all output column names that are not explicitly defined"),
         ("content_column_name", str, "text", "Name of the content column"),
         ("lang_column_name", str, "lang", "Name of the column with the language identifier"),
+        ("newline_normalized_column_name", str, "", "Name of an output column for newline normalized text"),
+        ("error_column_name", str, "", "Name of an output column for the eventual error encountered during processing"),
     ]
 
 def get_transform_params():
@@ -58,8 +60,15 @@ class EnrichmentTransform(AbstractTableTransform):
         self.doc_column = get_config(config, "content_column_name")
         self.lang_column = get_config(config, "lang_column_name")
         self.output_column_prefix = get_config(config, "output_column_prefix")
+        self.newline_normalized_column_name = get_config(config, "newline_normalized_column_name")
+        self.error_column_name = get_config(config, "error_column_name")
 
         self.output_columns = { k: self.output_column_prefix + config.get(f"{k}_column_name", k) for k in DEFAULT_TEXT_ENRICHER_DICT.keys() if config.get(f"{k}_column_name", k) }
+        if self.error_column_name:
+            self.output_columns["error"] = self.error_column_name
+        if self.newline_normalized_column_name:
+            self.output_columns["newline_normalized"] = self.newline_normalized_column_name
+
         if len([k for k, v in self.output_columns.items() if v]) == 0:
             raise UnrecoverableException("At least one output colum must be given")
         self.tok_api_ver = 0
@@ -104,7 +113,8 @@ class EnrichmentTransform(AbstractTableTransform):
 
     def enrich_text(self, table: pyarrow.Table, content_column: str, lang_column: str, output_columns: dict[str, str]) -> tuple[pyarrow.table, Any]:
         enrichment = pyarrow.Table.from_pylist(list(
-            map(lambda x: text_enrichment(x[0], self.get_tokenizer(x[1]), output_columns, self.logger), zip(table[content_column].to_pylist(), table[lang_column].to_pylist()))
+            map(lambda x: text_enrichment(x[0], self.get_tokenizer(x[1]), output_columns, "newline_normalized" if self.newline_normalized_column_name else None, self.logger), 
+                zip(table[content_column].to_pylist(), table[lang_column].to_pylist()))
         ))
 
         result = table

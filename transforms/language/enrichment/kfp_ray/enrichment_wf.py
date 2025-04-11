@@ -24,7 +24,6 @@ from workflow_support.compile_utils import (
 
 task_image = "quay.io/dataprep1/data-prep-kit/enrichment-ray:latest"
 
-# the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_enrichment.ray.runtime"
 
 # components
@@ -48,6 +47,8 @@ def compute_exec_params_func(
     enrichment_output_column_prefix: str,
     enrichment_content_column_name: str,
     enrichment_lang_column_name: str,
+    enrichment_newline_normalized_column_name: str,
+    enrichment_error_column_name: str,
     enrichment_num_newlines_column_name: str,
     enrichment_num_paragraphs_column_name: str,
     enrichment_num_words_column_name: str,
@@ -91,6 +92,8 @@ def compute_exec_params_func(
         "enrichment_output_column_prefix": enrichment_output_column_prefix,
         "enrichment_content_column_name": enrichment_content_column_name,
         "enrichment_lang_column_name": enrichment_lang_column_name,
+        "enrichment_newline_normalized_column_name": enrichment_newline_normalized_column_name,
+        "enrichment_error_column_name": enrichment_error_column_name,
         "enrichment_num_newlines_column_name": enrichment_num_newlines_column_name,
         "enrichment_num_paragraphs_column_name": enrichment_num_paragraphs_column_name,
         "enrichment_num_words_column_name": enrichment_num_words_column_name,
@@ -176,6 +179,8 @@ def enrichment(
     enrichment_output_column_prefix: str = "e_",
     enrichment_content_column_name: str = "text",
     enrichment_lang_column_name: str = "lang",
+    enrichment_newline_normalized_column_name: str = "",
+    enrichment_error_column_name: str = "",
     enrichment_num_newlines_column_name: str = "num_newlines",
     enrichment_num_paragraphs_column_name: str = "num_paragraphs",
     enrichment_num_words_column_name: str = "num_words",
@@ -243,6 +248,8 @@ def enrichment(
     :param enrichment_output_column_prefix - Prefix to add to all output column names that are not explicitly defined
     :param enrichment_content_column_name - Name of the content column
     :param enrichment_lang_column_name - Name of the column with the language identifier
+    :param enrichment_newline_normalized_column_name - Name of an output column for newline normalized text
+    :param enrichment_error_column_name - Name of an output column for the eventual error encountered during processing
     :param enrichment_num_newlines_column_name - Column name for num_newlines
     :param enrichment_num_paragraphs_column_name - Column name for num_paragraphs
     :param enrichment_num_words_column_name - Column name for num_words
@@ -305,6 +312,8 @@ def enrichment(
             enrichment_output_column_prefix=enrichment_output_column_prefix,
             enrichment_content_column_name=enrichment_content_column_name,
             enrichment_lang_column_name=enrichment_lang_column_name,
+            enrichment_newline_normalized_column_name=enrichment_newline_normalized_column_name,
+            enrichment_error_column_name=enrichment_error_column_name,
             enrichment_num_newlines_column_name=enrichment_num_newlines_column_name,
             enrichment_num_paragraphs_column_name=enrichment_num_paragraphs_column_name,
             enrichment_num_words_column_name=enrichment_num_words_column_name,

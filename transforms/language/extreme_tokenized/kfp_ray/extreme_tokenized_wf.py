@@ -52,7 +52,7 @@ def compute_exec_params_func(
     runtime_pipeline_id: str,
     runtime_job_id: str,
     runtime_code_location: dict,
-    et_doc_column: str,
+    et_contents_column_name: str,
     et_arrow_path: str,
 ) -> dict:
     from runtime_utils import KFPUtils
@@ -69,7 +69,7 @@ def compute_exec_params_func(
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
         "runtime_code_location": str(runtime_code_location),
-        "et_doc_column": et_doc_column,
+        "et_contents_column_name": et_contents_column_name,
         "et_arrow_path": et_arrow_path,
     }
 
@@ -127,7 +127,7 @@ def extreme_tokenized(
     runtime_pipeline_id: str = "pipeline_id",
     runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # doc id parameters
-    et_doc_column: str = "contents",
+    et_contents_column_name: str = "contents",
     et_arrow_path: str = "test/extreme_tokenized/input/arrow",
     # additional parameters
     additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
@@ -202,7 +202,7 @@ def extreme_tokenized(
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
             runtime_code_location=runtime_code_location,
-            et_doc_column=et_doc_column,
+            et_contents_column_name=et_contents_column_name,
             et_arrow_path=et_arrow_path,
         )
         ComponentUtils.add_settings_to_component(compute_exec_params, ONE_HOUR_SEC * 2)

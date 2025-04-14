@@ -16,6 +16,8 @@ import os
 import pyarrow as pa
 import pyarrow.parquet as pq
 from data_processing.test_support.transform import AbstractTableTransformTest
+from data_processing.runtime.pure_python import PythonTransformLauncher
+from dpk_header_cleanser.runtime import HeaderCleanserRuntime
 from data_processing.utils import str2bool
 from header_cleanser_transform import (
     COLUMN_KEY,
@@ -60,7 +62,8 @@ class TestHeaderCleanserTransform(AbstractTableTransformTest):
         copyright = True
         input_dir = os.path.join(basedir, "input")
         expected_output_dir = os.path.join(basedir, "expected", "license-and-copyright-local")
-        fixtures.append(
+        launcher = PythonTransformLauncher(HeaderCleanserRuntime())
+        fixtures.append(launcher,
             self.create_header_cleanser_test_fixture(
                 column_name,
                 license,
@@ -73,7 +76,7 @@ class TestHeaderCleanserTransform(AbstractTableTransformTest):
         # test for only license removal
         copyright = False
         expected_output_dir = os.path.join(basedir, "expected", "license-local")
-        fixtures.append(
+        fixtures.append(launcher,
             self.create_header_cleanser_test_fixture(
                 column_name,
                 license,
@@ -89,7 +92,8 @@ class TestHeaderCleanserTransform(AbstractTableTransformTest):
         copyright = True
         input_dir = os.path.join(basedir, "input")
         expected_output_dir = os.path.join(basedir, "expected", "copyright-local")
-        fixtures.append(
+        
+        fixtures.append(launcher,
             self.create_header_cleanser_test_fixture(
                 column_name,
                 license,

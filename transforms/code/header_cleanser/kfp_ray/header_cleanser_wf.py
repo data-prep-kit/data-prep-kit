@@ -21,25 +21,15 @@ from workflow_support.compile_utils import (
     ComponentUtils,
 )
 
-from python_apiserver_client.params import (
-        EnvironmentVariables,
-        EnvVarFrom,
-        EnvVarSource,
-)
 
-# The secret name containing the s3 credentials. 
+# The secret name containing the s3 credentials.
 S3_SECRET = "s3-secret"
 
 # the name of the job script
-EXEC_SCRIPT_NAME: str = "-m dpk_code_quality.ray.runtime"
+EXEC_SCRIPT_NAME: str = "header_cleanser_transform_ray.py"
 PREFIX: str = ""
 
-task_image = "quay.io/dataprep1/data-prep-kit/code_quality-ray:latest"
-
-# The name of the secret that holds the HugginFace token
-HF_SECRET = "hf-secret"
-# The secret key that holds the HugginFace token
-HF_SECRET_KEY = "hf-token"
+task_image = "quay.io/dataprep1/data-prep-kit/header_cleanser-ray:latest"
 
 # components
 base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
@@ -59,9 +49,14 @@ def compute_exec_params_func(
     runtime_pipeline_id: str,
     runtime_job_id: str,
     runtime_code_location: dict,
-    cq_contents_column_name: str,
-    cq_language_column_name: str,
-    cq_tokenizer: str,
+    header_cleanser_contents_column_name: str,
+    header_cleanser_document_id_column_name: str,
+    header_cleanser_license: bool,
+    header_cleanser_copyright: bool,
+    header_cleanser_n_processes: int,
+    header_cleanser_tmp_dir: str,
+    header_cleanser_timeout: int,
+    header_cleanser_skip_timeout: bool,
 ) -> dict:
     from runtime_utils import KFPUtils
 
@@ -74,9 +69,14 @@ def compute_exec_params_func(
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
         "runtime_code_location": str(runtime_code_location),
-        "cq_contents_column_name": cq_contents_column_name,
-        "cq_language_column_name": cq_language_column_name,
-        "cq_tokenizer": cq_tokenizer,
+        "header_cleanser_contents_column_name": header_cleanser_contents_column_name,
+        "header_cleanser_document_id_column_name": header_cleanser_document_id_column_name,
+        "header_cleanser_license": header_cleanser_license,
+        "header_cleanser_copyright": header_cleanser_copyright,
+        "header_cleanser_n_processes": header_cleanser_n_processes,
+        "header_cleanser_tmp_dir": header_cleanser_tmp_dir,
+        "header_cleanser_timeout": header_cleanser_timeout,
+        "header_cleanser_skip_timeout": header_cleanser_skip_timeout,
     }
 
 
@@ -100,31 +100,24 @@ execute_ray_jobs_op = comp.load_component_from_file(component_spec_path + "execu
 cleanup_ray_op = comp.load_component_from_file(component_spec_path + "deleteRayClusterComponent.yaml")
 
 # Task name is part of the pipeline name, the ray cluster name and the job name in DMF.
-TASK_NAME: str = "code_quality"
+TASK_NAME: str = "header_cleanser"
 
-# HuggingFace token is exported as environment variables in Ray node pods.
-# Alternatively, the secret name can be passed to the KFP component,
-# which will set it as an environment variable in the Ray nodes.
-# In this option the secret name can be set at runtime
-# but is dependent on the KFP version.
-env_v = EnvVarFrom(source=EnvVarSource.SECRET, name=HF_SECRET, key=HF_SECRET_KEY)
-envs = EnvironmentVariables(from_ref={"HF_READ_ACCESS_TOKEN": env_v})
 
 # Pipeline to invoke execution on remote resource
 @dsl.pipeline(
     name=TASK_NAME + "-ray-pipeline",
-    description="Pipeline for code quality task",
+    description="Pipeline for header cleaning task",
 )
-def code_quality(
+def header_cleanser(
     # Ray cluster
-    ray_name: str = "code_quality-kfp-ray",  # name of Ray cluster
+    ray_name: str = "header_cleanser-kfp-ray",  # name of Ray cluster
     ray_run_id_KFPv2: str = "",   # Ray cluster unique ID used only in KFP v2
     # Add image_pull_secret and image_pull_policy to ray workers if needed
-    ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image, "environment": envs.to_dict()},
-    ray_worker_options: dict = {"replicas": 2, "max_replicas": 2, "min_replicas": 2, "cpu": 2, "memory": 4, "image": task_image, "environment": envs.to_dict()},
+    ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
+    ray_worker_options: dict = {"replicas": 2, "max_replicas": 2, "min_replicas": 2, "cpu": 2, "memory": 4, "image": task_image},
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
-    data_s3_config: str = "{'input_folder': 'test/code_quality/input/', 'output_folder': 'test/code_quality/output/'}",
+    data_s3_config: str = "{'input_folder': 'test/header_cleanser/input/', 'output_folder': 'test/header_cleanser/output/'}",
     data_s3_access_secret: str = S3_SECRET,
     data_max_files: int = -1,
     data_num_samples: int = -1,
@@ -132,15 +125,20 @@ def code_quality(
     runtime_actor_options: dict = {'num_cpus': 0.8},
     runtime_pipeline_id: str = "runtime_pipeline_id",
     runtime_code_location: dict = {'github': 'github', 'commit_hash': '12345', 'path': 'path'},
-    # code quality parameters
-    cq_contents_column_name: str = "contents",
-    cq_language_column_name: str = "language",
-    cq_tokenizer: str = "codeparrot/codeparrot",
+    # header cleanser parameters
+    header_cleanser_contents_column_name: str = "contents",
+    header_cleanser_document_id_column_name: str = "document_id",
+    header_cleanser_license: bool = True,
+    header_cleanser_copyright: bool = True,
+    header_cleanser_n_processes: int = 5,
+    header_cleanser_tmp_dir: str = "",
+    header_cleanser_timeout: int = 300,
+    header_cleanser_skip_timeout: bool = False,
     # additional parameters
-    additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
+    additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 800, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
 ):
     """
-    Pipeline to execute Code Quality transform
+    Pipeline to execute Header Cleanser transform
     :param ray_name: name of the Ray cluster
     :param ray_run_id_KFPv2: a unique string id used for the Ray cluster, applicable only in KFP v2.
     :param ray_head_options: head node options, containing the following:
@@ -172,9 +170,14 @@ def code_quality(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param cq_contents_column_name - Name of the column holds the data to process
-    :param cq_language_column_name - Name of the column holds the programming language details
-    :param cq_tokenizer - Name or path to the tokenizer
+    :param contents_column_name - Name of the column holds the data to process
+    :param document_id_column_name - Name of the column holds the document id
+    :param license - Hold value true or false to delete/remove license or not.
+    :param copyright - Hold value true or false to delete/remove copyright or not.
+    :param n_processes - num processes to scan codes in parallel
+    :param tmp_dir - Path to tmp dir for codes
+    :param timeout - Value of timeout to scan codes
+    :param skip_timeout - Hold value true or false to skip removing copyright/header or not when scaning timeout.
     :return: None
     """
     # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
@@ -202,9 +205,14 @@ def code_quality(
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
             runtime_code_location=runtime_code_location,
-            cq_contents_column_name=cq_contents_column_name,
-            cq_language_column_name=cq_language_column_name,
-            cq_tokenizer=cq_tokenizer,
+            header_cleanser_contents_column_name=header_cleanser_contents_column_name,
+            header_cleanser_document_id_column_name=header_cleanser_document_id_column_name,
+            header_cleanser_license=header_cleanser_license,
+            header_cleanser_copyright=header_cleanser_copyright,
+            header_cleanser_n_processes=header_cleanser_n_processes,
+            header_cleanser_tmp_dir=header_cleanser_tmp_dir,
+            header_cleanser_timeout=header_cleanser_timeout,
+            header_cleanser_skip_timeout=header_cleanser_skip_timeout,
         )
 
         ComponentUtils.add_settings_to_component(compute_exec_params, ONE_HOUR_SEC * 2)
@@ -246,4 +254,4 @@ def code_quality(
 
 if __name__ == "__main__":
     # Compiling the pipeline
-    compiler.Compiler().compile(code_quality, __file__.replace(".py", ".yaml"))
+    compiler.Compiler().compile(header_cleanser, __file__.replace(".py", ".yaml"))

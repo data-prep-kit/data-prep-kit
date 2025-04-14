@@ -18,8 +18,7 @@ import pyarrow.parquet as pq
 from data_processing.test_support.transform import AbstractTableTransformTest
 from data_processing.runtime.pure_python import PythonTransformLauncher
 from dpk_header_cleanser.runtime import HeaderCleanserRuntime
-from data_processing.utils import str2bool
-from dpk_header_cleanser.transformer import (
+from dpk_header_cleanser.transform import (
     COLUMN_KEY,
     COPYRIGHT_KEY,
     LICENSE_KEY,

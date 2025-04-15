@@ -15,7 +15,7 @@ import os
 from data_processing.runtime import AbstractTransformLauncher
 from data_processing_ray.runtime.ray import RayTransformLauncher
 from dpk_filter.test_support import AbstractPythonFilterTransformTest
-from dpk_filter.ray.transform import FilterRayTransformConfiguration
+from dpk_filter.ray.runtime import FilterRayTransformConfiguration
 
 
 class TestPythonFilterTransform(AbstractPythonFilterTransformTest):

@@ -1,6 +1,6 @@
 [project]
 name = "data_prep_toolkit_transforms"
-version = "1.0.1.dev1"
+version = "1.1.1.dev0"
 requires-python = ">=3.10,<3.13"
 keywords = ["transforms", "data preprocessing", "data preparation", "llm", "generative", "ai", "fine-tuning", "llmapps" ]
 description = "Data Preparation Toolkit Transforms using Ray"
@@ -56,9 +56,11 @@ all = { file = [
 "universal/ededup/requirements.txt",
 "universal/fdedup/requirements.txt",
 "universal/hap/requirements.txt",
+"universal/bloom/requirements.txt",
 "universal/tokenization/requirements.txt",
 "universal/web2parquet/requirements.txt",
-"universal/rep_removal/requirements.txt"
+"universal/rep_removal/requirements.txt",
+"universal/tokenization2arrow/requirements.txt"
 ]}
 
 language = { file = [
@@ -84,11 +86,25 @@ language = { file = [
 "universal/ededup/requirements.txt",
 "universal/fdedup/requirements.txt",
 "universal/hap/requirements.txt",
+"universal/bloom/requirements.txt",
 "universal/tokenization/requirements.txt",
 "universal/web2parquet/requirements.txt",
 "universal/profiler/requirements.txt",
 "universal/resize/requirements.txt",
-"universal/rep_removal/requirements.txt"
+"universal/rep_removal/requirements.txt",
+"universal/tokenization2arrow/requirements.txt"
+]}
+
+gneissweb = { file = [
+"language/extreme_tokenized/requirements.txt",
+"language/readability/requirements.txt",
+"language/gneissweb_classification/requirements.txt",
+"universal/filter/requirements.txt",
+"universal/tokenization/requirements.txt",
+"universal/resize/requirements.txt",
+"universal/rep_removal/requirements.txt",
+"universal/bloom/requirements.txt",
+"universal/tokenization2arrow/requirements.txt"
 ]}
 
 # pyproject.toml must be in a parent and cannot be in sibling
@@ -115,6 +131,7 @@ pii_redactor = { file = ["language/pii_redactor/requirements.txt"]}
 filter = { file = ["universal/filter/requirements.txt"]}
 doc_id = { file = ["universal/doc_id/requirements.txt"]}
 hap = { file = ["universal/hap/requirements.txt"]}
+bloom = { file = ["universal/bloom/requirements.txt"]}
 ededup = { file = ["universal/ededup/requirements.txt"]} 
 fdedup = { file = ["universal/fdedup/requirements.txt"]} 
 tokenization = { file = ["universal/tokenization/requirements.txt"]} 
@@ -130,6 +147,8 @@ code_profiler = { file = ["code/code_profiler/requirements.txt"]}
 gneissweb_classification = { file = ["language/gneissweb_classification/requirements.txt"]}
 
 rep_removal = { file = ["universal/rep_removal/requirements.txt"]}
+tokenization2arrow = { file = ["universal/tokenization2arrow/requirements.txt"]}
+
 # Does not seem to work for our custom layout
 # copy all files to a single src and let automatic discovery find them
 
@@ -147,6 +166,7 @@ dpk_text_encoder = "language/text_encoder/dpk_text_encoder"
 dpk_pii_redactor = "language/pii_redactor/dpk_pii_redactor"
 dpk_doc_id = "universal/doc_id/dpk_doc_id"
 dpk_hap = "universal/hap/dpk_hap"
+dpk_bloom = "universal/bloom/dpk_bloom"
 dpk_ededup = "universal/ededup/dpk_ededup"
 dpk_fdedup = "universal/fdedup/dpk_fdedup"
 dpk_tokenization = "universal/tokenization/dpk_tokenization"
@@ -159,6 +179,7 @@ dpk_profiler = "universal/profiler/dpk_profiler"
 dpk_resize = "universal/resize/dpk_resize"
 dpk_gneissweb_classification = "language/gneissweb_classification/dpk_gneissweb_classification"
 dpk_rep_removal = "universal/rep_removal/dpk_rep_removal"
+dpk_tokenization2arrow = "universal/tokenization2arrow/dpk_tokenization2arrow"
 
 
 [tool.setuptools.package-data]

@@ -23,8 +23,8 @@ except ImportError:
 
 
 # create parameters
-input_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "test-data", "input"))
-output_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "output"))
+input_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "test-data", "input"))
+output_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "output"))
 local_conf = {
     "input_folder": input_folder,
     "output_folder": output_folder,
@@ -36,7 +36,7 @@ params = {
     "run_locally": True,
     # Data access. Only required parameters are specified
     "data_local_config": ParamsUtils.convert_to_ast(local_conf),
-    "data_files_to_use": ast.literal_eval("['.pdf','.zip']"),
+    "data_files_to_use": ast.literal_eval("['.pdf','.xml','.zip']"),
     # orchestrator
     "runtime_worker_options": ParamsUtils.convert_to_ast(worker_options),
     "runtime_num_workers": 3,

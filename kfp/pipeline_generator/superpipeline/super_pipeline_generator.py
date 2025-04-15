@@ -103,14 +103,13 @@ if __name__ == "__main__":
     task_op = (
         "    "
         + task_name
-        + " = run_"
+        + " = _create_component("
+        + "pipeline_name=p1_orch_"
         + task_name
-        + "_op(name=p1_orch_"
-        + task_name
-        + '_name, prefix="p3_", params=args, host=orch_host, input_folder=p2_pipeline_input_parent_path)'
+        + '_name, displayed_name='
+        + '"' + task_name + '",'
+        + 'prefix="p3_", input_folder=p2_pipeline_input_parent_path)'
     )
-    task_op += "\n    _set_component(" + task_name + ', "' + task_name + '")'
-
     sub_workflows_operations += task_op
     i = 1
     prefix_index = 4
@@ -118,19 +117,20 @@ if __name__ == "__main__":
         task_name = task["name"]
         task_op = (
             "\n    "
+
             + task_name
-            + " = run_"
+            + " = _create_component("
+            + "pipeline_name=p1_orch_"
             + task_name
-            + "_op(name=p1_orch_"
-            + task_name
-            + '_name, prefix="p'
+            + '_name, displayed_name='
+            + '"' + task_name + '", prefix="p'
             + str(prefix_index)
-            + '_", params=args, host=orch_host, input_folder='
+            + '_", input_folder='
             + pipeline_tasks[i - 1]["name"]
-            + ".output)"
-        )
-        task_op += (
-            "\n    _set_component(" + task_name + ', "' + task_name + '", ' + pipeline_tasks[i - 1]["name"] + ")"
+            + '.output,'
+            + 'prev_op='
+            + pipeline_tasks[i - 1]["name"]
+            + ")"
         )
         sub_workflows_operations += task_op
         prefix_index += 1

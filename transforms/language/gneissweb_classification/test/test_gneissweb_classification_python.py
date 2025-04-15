@@ -27,12 +27,12 @@ class TestPythonClassificationTransform(AbstractTransformLauncherTest):
 
     def get_test_transform_fixtures(self) -> list[tuple]:
         cli_params = {
-            "gcls_model_credential": "PUT YOUR OWN HUGGINGFACE CREDENTIAL",
-            "gcls_model_file_name": "model.bin",
-            "gcls_model_url":"facebook/fasttext-language-identification",
+            "gcls_model_credential": os.environ.get('HF_READ_ACCESS_TOKEN', "PUT YOUR OWN HUGGINGFACE CREDENTIAL"),
+            "gcls_model_file_name": ["fasttext_medical.bin"],
+            "gcls_model_url":["ibm-granite/GneissWeb.Med_classifier"],
             "gcls_content_column_name": "text",
-            "gcls_output_label_column_name": "ft_lang",
-            "gcls_output_score_column_name": "ft_score",
+            "gcls_output_label_column_name": ["label_med"],
+            "gcls_output_score_column_name": ["score"],
         }
     
 
@@ -41,3 +41,4 @@ class TestPythonClassificationTransform(AbstractTransformLauncherTest):
         launcher = PythonTransformLauncher(ClassificationPythonTransformConfiguration())
         fixtures.append((launcher, cli_params, basedir + "/input", basedir + "/expected"))
         return fixtures
+

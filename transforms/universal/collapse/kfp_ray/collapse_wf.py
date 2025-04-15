@@ -53,7 +53,7 @@ def compute_exec_params_func(
     runtime_job_id: str,
     runtime_code_location: dict,
     collapse_input_columns: str,
-    collpase_output_column: str
+    collapse_output_column: str
 ) -> dict:
     from runtime_utils import KFPUtils
 
@@ -70,7 +70,7 @@ def compute_exec_params_func(
         "runtime_job_id": runtime_job_id,
         "runtime_code_location": str(runtime_code_location),
         "collapse_input_columns": collapse_input_columns,
-        "collpase_output_column": collpase_output_column,
+        "collapse_output_column": collapse_output_column,
     }
 
 
@@ -128,7 +128,7 @@ def collapse(
     runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # doc id parameters
     collapse_input_columns: str = "['title','contents']",
-    collpase_output_column: str = "text",
+    collapse_output_column: str = "text",
     # additional parameters
     additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
 ):
@@ -203,7 +203,7 @@ def collapse(
             runtime_job_id=run_id,
             runtime_code_location=runtime_code_location,
             collapse_input_columns=collapse_input_columns,
-            collapse_output_column=collpase_output_column,
+            collapse_output_column=collapse_output_column,
         )
         ComponentUtils.add_settings_to_component(compute_exec_params, ONE_HOUR_SEC * 2)
         # start Ray cluster

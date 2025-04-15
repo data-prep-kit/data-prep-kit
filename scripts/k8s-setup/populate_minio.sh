@@ -48,3 +48,5 @@ mc cp --recursive ${REPOROOT}/transforms/universal/profiler/test-data/input/ kfp
 mc cp --recursive ${REPOROOT}/transforms/universal/resize/test-data/input/ kfp/test/resize/input
 mc cp --recursive ${REPOROOT}/transforms/universal/hap/test-data/input/ kfp/test/hap/input
 mc cp --recursive ${REPOROOT}/transforms/universal/rep_removal/test-data/input/ kfp/test/rep_removal/input
+mc cp --recursive ${REPOROOT}/transforms/universal/blocklist/test-data/input/ kfp/test/blocklist/input
+mc cp --recursive ${REPOROOT}/transforms/universal/blocklist/test-data/domains/ kfp/test/blocklist/domains

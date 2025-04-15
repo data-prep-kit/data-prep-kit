@@ -1,7 +1,8 @@
 <h1 align="center">Data Prep Kit</h1>
 
 <p align="center">
-<img src="doc/LF_DataPrepKit_Logo_Postive.png" />
+<img src="doc/LF_DataPrepKit_Logo_Postive.png#gh-light-mode-only" width="75%" height="75%" />
+<img src="doc/LF_DataPrepKit_Logo_Negative.png#gh-dark-mode-only" width="75%" height="75%"/>
 </p>
 
 <div align="center">

@@ -116,7 +116,7 @@ def extreme_tokenized(
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
     data_s3_config: str = "{'input_folder': 'test/extreme_tokenized/input/', 'output_folder': 'test/extreme_tokenized/output/'}",
-    data_s3_access_secret: str = S3_SECRET,
+    data_s3_secret: str = S3_SECRET,
     data_max_files: int = -1,
     data_num_samples: int = -1,
     data_checkpointing: bool = False,
@@ -127,7 +127,7 @@ def extreme_tokenized(
     runtime_pipeline_id: str = "pipeline_id",
     runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # doc id parameters
-    et_contents_column_name: str = "contents",
+    et_contents_column_name: str = "text",
     et_arrow_path: str = "test/extreme_tokenized/input/arrow",
     # additional parameters
     additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
@@ -236,7 +236,7 @@ def extreme_tokenized(
             env2key = ComponentUtils.set_secret_key_to_env(prefix="jjj")
             kubernetes.use_secret_as_env(task=execute_job, secret_name=S3_SECRET, secret_key_to_env=env2key)
         else:
-            ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
+            ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_secret)
         execute_job.after(ray_cluster)
 
 

@@ -136,13 +136,37 @@ class TextEncoderTransform(AbstractTableTransform):
         if self.lanceDB_total_rows >= self.lanceDB_batch_size:
             self._lanceDB_flush()
 
+    def _rearrange_table_order(self, table: pa.Table, desired_order: list[str]) -> pa.Table:
+        selected_columns = [table.field(col) for col in desired_order]
+        selected_arrays = [table.column(col) for col in desired_order]
+        return pa.Table.from_arrays(selected_arrays, names=desired_order, schema=pa.schema(selected_columns))
+
+    def _reorder_table_lanceDB_buffer(self):
+        buffer = []
+        for table in self.lanceDB_buffer:
+            # find the schema that starts with "text"
+            if 'text' == table.schema.names[0]:
+                desired_order = table.column_names
+                break
+        for table in self.lanceDB_buffer:
+            if table.column_names != desired_order:
+                table = self._rearrange_table_order(table, desired_order)
+            buffer.append(table)
+        self.lanceDB_buffer = buffer
+
     def _lanceDB_flush(self):
         """Flush the accumulated data to LanceDB when buffer is full."""
         if not self.lanceDB_buffer:
             return  # No data to flush
-
+        
+        if self.dataset_name == "Gneissweb":
+            self._reorder_table_lanceDB_buffer()
         # Concatenate all buffered tables
-        combined_table = pa.concat_tables(self.lanceDB_buffer)
+        try:
+            combined_table = pa.concat_tables(self.lanceDB_buffer)
+        except Exception as e:
+            self.logger.error(f"pa.concat_tables failed: {e}")
+
         assert combined_table.num_rows == self.lanceDB_total_rows, f"combined_table num_rows not equal to buffered lanceDB_total_rows"
         # write fragments to lanceDB_data_URI
         try:

@@ -24,9 +24,6 @@ from dpk_header_cleanser.transform import (
 
 
 class TestHeaderCleanserTransform(AbstractTransformLauncherTest):
-    """
-    CLI-style test class using folder-based input/output for HeaderCleanser.
-    """
 
     def get_test_transform_fixtures(self) -> list[tuple]:
         basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../test-data"))
@@ -36,8 +33,8 @@ class TestHeaderCleanserTransform(AbstractTransformLauncherTest):
         # Case 1: both license & copyright
         config1 = {
             "header_cleanser_contents_column_name": "contents",
-            "header_cleanser_license": True,
-            "header_cleanser_copyright": True
+            "header_cleanser_license": "true",
+            "header_cleanser_copyright": "true"
         }
         fixtures.append((launcher, config1,
                          os.path.join(basedir, "input"),
@@ -46,8 +43,8 @@ class TestHeaderCleanserTransform(AbstractTransformLauncherTest):
         # Case 2: license only
         config2 = {
             "header_cleanser_contents_column_name": "contents",
-            "header_cleanser_license": True,
-            "header_cleanser_copyright": False
+            "header_cleanser_license": "true",
+            "header_cleanser_copyright": "false"
         }
         fixtures.append((launcher, config2,
                          os.path.join(basedir, "input"),
@@ -56,8 +53,8 @@ class TestHeaderCleanserTransform(AbstractTransformLauncherTest):
         # Case 3: copyright only
         config3 = {
             "header_cleanser_contents_column_name": "contents",
-            "header_cleanser_license": False,
-            "header_cleanser_copyright": True
+            "header_cleanser_license": "false",
+            "header_cleanser_copyright": "true"
         }
         fixtures.append((launcher, config3,
                          os.path.join(basedir, "input"),

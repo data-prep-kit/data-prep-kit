@@ -35,10 +35,9 @@ class TestHeaderCleanserTransform(AbstractTransformLauncherTest):
 
         # Case 1: both license & copyright
         config1 = {
-            "run_locally": True,
-            COLUMN_KEY: "contents",
-            LICENSE_KEY: True,
-            COPYRIGHT_KEY: True,
+            "header_cleanser_contents_column_name": "contents",
+            "header_cleanser_license": True,
+            "header_cleanser_copyright": True
         }
         fixtures.append((launcher, config1,
                          os.path.join(basedir, "input"),
@@ -46,10 +45,9 @@ class TestHeaderCleanserTransform(AbstractTransformLauncherTest):
 
         # Case 2: license only
         config2 = {
-            "run_locally": True,
-            COLUMN_KEY: "contents",
-            LICENSE_KEY: True,
-            COPYRIGHT_KEY: False,
+            "header_cleanser_contents_column_name": "contents",
+            "header_cleanser_license": True,
+            "header_cleanser_copyright": False
         }
         fixtures.append((launcher, config2,
                          os.path.join(basedir, "input"),
@@ -57,10 +55,9 @@ class TestHeaderCleanserTransform(AbstractTransformLauncherTest):
 
         # Case 3: copyright only
         config3 = {
-            "run_locally": True,
-            COLUMN_KEY: "contents",
-            LICENSE_KEY: False,
-            COPYRIGHT_KEY: True,
+            "header_cleanser_contents_column_name": "contents",
+            "header_cleanser_license": False,
+            "header_cleanser_copyright": True
         }
         fixtures.append((launcher, config3,
                          os.path.join(basedir, "input"),

@@ -50,56 +50,37 @@ class TestHeaderCleanserTransform(AbstractTableTransformTest):
         with open(os.path.join(expected_output_dir, "metadata.json"), "r") as meta_file:
             expected_metadata = json.load(meta_file)
         expected_metadata_list = [expected_metadata, {}]
-        return HeaderCleanserTransform(config), [input_df], [expected_output_df], expected_metadata_list
+        return config, input_df, expected_output_df, expected_metadata_list
 
-    def get_test_transform_fixtures(self) -> list[tuple]:
+    def get_test_transform_fixtures(self):
         fixtures = []
-        basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../test-data/"))
-        # test for both license and copyright removal
+        basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../test-data"))
         column_name = "contents"
-        license = True
-        copyright = True
-        input_dir = os.path.join(basedir, "input")
-        expected_output_dir = os.path.join(basedir, "expected", "license-and-copyright-local")
         launcher = PythonTransformLauncher(HeaderCleanserRuntime())
-        fixtures.append(launcher,
-            self.create_header_cleanser_test_fixture(
-                column_name,
-                license,
-                copyright,
-                input_dir,
-                expected_output_dir,
-            )
-        )
 
-        # test for only license removal
-        copyright = False
-        expected_output_dir = os.path.join(basedir, "expected", "license-local")
-        fixtures.append(launcher,
-            self.create_header_cleanser_test_fixture(
-                column_name,
-                license,
-                copyright,
-                input_dir,
-                expected_output_dir,
-            )
+        # Case 1: both license & copyright
+        config, input_df, expected_df, expected_metadata = self.create_header_cleanser_test_fixture(
+            column_name, True, True,
+            os.path.join(basedir, "input"),
+            os.path.join(basedir, "expected", "license-and-copyright-local")
         )
+        fixtures.append((launcher, config, input_df, expected_df, expected_metadata))
 
-        # test for only copyright removal
-        column_name = "contents"
-        license = False
-        copyright = True
-        input_dir = os.path.join(basedir, "input")
-        expected_output_dir = os.path.join(basedir, "expected", "copyright-local")
-        
-        fixtures.append(launcher,
-            self.create_header_cleanser_test_fixture(
-                column_name,
-                license,
-                copyright,
-                input_dir,
-                expected_output_dir,
-            )
+        # Case 2: license only
+        config, input_df, expected_df, expected_metadata = self.create_header_cleanser_test_fixture(
+            column_name, True, False,
+            os.path.join(basedir, "input"),
+            os.path.join(basedir, "expected", "license-local")
         )
+        fixtures.append((launcher, config, input_df, expected_df, expected_metadata))
+
+        # Case 3: copyright only
+        config, input_df, expected_df, expected_metadata = self.create_header_cleanser_test_fixture(
+            column_name, False, True,
+            os.path.join(basedir, "input"),
+            os.path.join(basedir, "expected", "copyright-local")
+        )
+        fixtures.append((launcher, config, input_df, expected_df, expected_metadata))
 
         return fixtures
+

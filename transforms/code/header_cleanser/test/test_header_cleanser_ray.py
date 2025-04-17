@@ -30,6 +30,7 @@ class TestHeaderCleanserTransform(AbstractTransformLauncherTest):
             "header_cleanser_contents_column_name": "contents",
             "header_cleanser_license": True,
             "header_cleanser_copyright": True,
+            "run_locally": True
         }
         basedir = "../test-data"
         basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))

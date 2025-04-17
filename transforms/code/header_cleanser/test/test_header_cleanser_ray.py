@@ -24,12 +24,16 @@ from dpk_header_cleanser.transform import (
 )
 
 class TestHeaderCleanserTransform(AbstractTransformLauncherTest):
+    """
+    Extends the super-class to define the test data for the tests defined there.
+    The name of this class MUST begin with the word Test so that pytest recognizes it as a test class.
+    """
 
     def get_test_transform_fixtures(self) -> list[tuple]:
         config = {
-            COLUMN_KEY: column,
-            LICENSE_KEY: license,
-            COPYRIGHT_KEY: copyright,
+            "contents_column_name": COLUMN_KEY,
+            "license": LICENSE_KEY,
+            "copyright": COPYRIGHT_KEY,
         }
         basedir = "../test-data"
         basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))

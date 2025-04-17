@@ -135,7 +135,7 @@ def gneissweb_classification(
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
     data_s3_config: str = "{'input_folder': 'test/gneissweb_classification/input', 'output_folder': 'test/gneissweb_classification/output/'}",
-    data_s3_access_secret: str = S3_SECRET,
+    data_s3_secret: str = S3_SECRET,
     other_secrets: dict = {},
     data_max_files: int = -1,
     data_num_samples: int = -1,
@@ -251,7 +251,7 @@ def gneissweb_classification(
             env2key = ComponentUtils.set_secret_key_to_env()
             kubernetes.use_secret_as_env(task=ray_cluster, secret_name=S3_SECRET, secret_key_to_env=env2key)
         else:
-            ComponentUtils.set_s3_env_vars_to_component(ray_cluster, data_s3_access_secret)
+            ComponentUtils.set_s3_env_vars_to_component(ray_cluster, data_s3_secret)
         ray_cluster.after(compute_exec_params)
 
         # Execute job
@@ -272,7 +272,7 @@ def gneissweb_classification(
             env2key = ComponentUtils.set_secret_key_to_env()
             kubernetes.use_secret_as_env(task=execute_job, secret_name=S3_SECRET, secret_key_to_env=env2key)
         else:
-            ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
+            ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_secret)
         execute_job.after(ray_cluster)
 
 

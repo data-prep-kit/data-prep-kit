@@ -37,8 +37,8 @@ class TestHeaderCleanserTransform(AbstractTransformLauncherTest):
         # Case 1: both license & copyright
         config1 = {
             "header_cleanser_contents_column_name": "contents",
-            "header_cleanser_license": "true",
-            "header_cleanser_copyright": "true",
+            "header_cleanser_license": True,
+            "header_cleanser_copyright": True,
         }
         fixtures.append((
             launcher,
@@ -50,8 +50,8 @@ class TestHeaderCleanserTransform(AbstractTransformLauncherTest):
         # Case 2: license only
         config2 = {
             "header_cleanser_contents_column_name": "contents",
-            "header_cleanser_license": "true",
-            "header_cleanser_copyright": "false",
+            "header_cleanser_license": True,
+            "header_cleanser_copyright": False,
         }
         fixtures.append((
             launcher,
@@ -63,8 +63,8 @@ class TestHeaderCleanserTransform(AbstractTransformLauncherTest):
         # Case 3: copyright only
         config3 = {
             "header_cleanser_contents_column_name": "contents",
-            "header_cleanser_license": "false",
-            "header_cleanser_copyright": "true",
+            "header_cleanser_license": False,
+            "header_cleanser_copyright": True,
         }
         fixtures.append((
             launcher,

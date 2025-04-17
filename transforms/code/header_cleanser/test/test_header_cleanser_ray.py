@@ -17,11 +17,7 @@ from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
 from data_processing_ray.runtime.ray import RayTransformLauncher
-from dpk_header_cleanser.transform import (
-    COLUMN_KEY,
-    COPYRIGHT_KEY,
-    LICENSE_KEY,
-)
+
 
 class TestHeaderCleanserTransform(AbstractTransformLauncherTest):
     """
@@ -31,9 +27,9 @@ class TestHeaderCleanserTransform(AbstractTransformLauncherTest):
 
     def get_test_transform_fixtures(self) -> list[tuple]:
         config = {
-            COLUMN_KEY: "contents",
-            LICENSE_KEY: True,
-            COPYRIGHT_KEY: True,
+            "header_cleanser_contents_column_name": "contents",
+            "header_cleanser_license": True,
+            "header_cleanser_copyright": True,
         }
         basedir = "../test-data"
         basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))

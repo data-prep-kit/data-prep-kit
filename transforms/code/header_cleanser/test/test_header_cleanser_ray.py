@@ -25,15 +25,36 @@ class TestHeaderCleanserTransform(AbstractTransformLauncherTest):
     The name of this class MUST begin with the word Test so that pytest recognizes it as a test class.
     """
 
-    def get_test_transform_fixtures(self) -> list[tuple]:
-        config = {
-            "header_cleanser_contents_column_name": "contents",
-            "header_cleanser_license": True,
-            "header_cleanser_copyright": True,
-            "run_locally": True
-        }
-        basedir = "../test-data"
-        basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))
-        launcher = RayTransformLauncher(HeaderCleanserRayTransformConfiguration())
-        fixtures = [(launcher, config, os.path.join(basedir, "input"), os.path.join(basedir, "expected"))]
-        return fixtures
+def get_test_transform_fixtures(self) -> list[tuple]:
+    basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../test-data"))
+    launcher = RayTransformLauncher(HeaderCleanserRayTransformConfiguration())
+    fixtures = []
+
+    # Case 1: both license & copyright
+    cli1 = {
+        "header_cleanser_contents_column_name": "contents",
+        "header_cleanser_license": True,
+        "header_cleanser_copyright": True,
+        "run_locally": True,
+    }
+    fixtures.append((launcher, cli1, basedir + "/input", basedir + "/expected/license-and-copyright-local"))
+
+    # Case 2: license only
+    cli2 = {
+        "header_cleanser_contents_column_name": "contents",
+        "header_cleanser_license": True,
+        "header_cleanser_copyright": False,
+        "run_locally": True,
+    }
+    fixtures.append((launcher, cli2, basedir + "/input", basedir + "/expected/license-local"))
+
+    # Case 3: copyright only
+    cli3 = {
+        "header_cleanser_contents_column_name": "contents",
+        "header_cleanser_license": False,
+        "header_cleanser_copyright": True,
+        "run_locally": True,
+    }
+    fixtures.append((launcher, cli3, basedir + "/input", basedir + "/expected/copyright-local"))
+
+    return fixtures

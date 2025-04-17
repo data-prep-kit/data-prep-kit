@@ -24,40 +24,53 @@ from dpk_header_cleanser.transform import (
 
 
 class TestHeaderCleanserTransform(AbstractTransformLauncherTest):
+    """
+    Folder-based test for HeaderCleanser using PythonTransformLauncher.
+    CLI arguments are passed via config dict (must be registered in HeaderCleanserConfiguration).
+    """
 
     def get_test_transform_fixtures(self) -> list[tuple]:
         basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../test-data"))
-        fixtures = []
         launcher = PythonTransformLauncher(HeaderCleanserRuntime())
+        fixtures = []
 
         # Case 1: both license & copyright
         config1 = {
             "header_cleanser_contents_column_name": "contents",
             "header_cleanser_license": "true",
-            "header_cleanser_copyright": "true"
+            "header_cleanser_copyright": "true",
         }
-        fixtures.append((launcher, config1,
-                         os.path.join(basedir, "input"),
-                         os.path.join(basedir, "expected", "license-and-copyright-local")))
+        fixtures.append((
+            launcher,
+            config1,
+            os.path.join(basedir, "input"),
+            os.path.join(basedir, "expected", "license-and-copyright-local")
+        ))
 
         # Case 2: license only
         config2 = {
             "header_cleanser_contents_column_name": "contents",
             "header_cleanser_license": "true",
-            "header_cleanser_copyright": "false"
+            "header_cleanser_copyright": "false",
         }
-        fixtures.append((launcher, config2,
-                         os.path.join(basedir, "input"),
-                         os.path.join(basedir, "expected", "license-local")))
+        fixtures.append((
+            launcher,
+            config2,
+            os.path.join(basedir, "input"),
+            os.path.join(basedir, "expected", "license-local")
+        ))
 
         # Case 3: copyright only
         config3 = {
             "header_cleanser_contents_column_name": "contents",
             "header_cleanser_license": "false",
-            "header_cleanser_copyright": "true"
+            "header_cleanser_copyright": "true",
         }
-        fixtures.append((launcher, config3,
-                         os.path.join(basedir, "input"),
-                         os.path.join(basedir, "expected", "copyright-local")))
+        fixtures.append((
+            launcher,
+            config3,
+            os.path.join(basedir, "input"),
+            os.path.join(basedir, "expected", "copyright-local")
+        ))
 
         return fixtures

@@ -25,7 +25,7 @@ from dpk_header_cleanser.transform import (
     HeaderCleanserTransform,
 )
 
-""""
+"""
 class TestHeaderCleanserTransform(AbstractTableTransformTest):
     
     #Extends the super-class to define the test data for the tests defined there.
@@ -84,4 +84,4 @@ class TestHeaderCleanserTransform(AbstractTableTransformTest):
 
         return fixtures
 
-""""
+"""

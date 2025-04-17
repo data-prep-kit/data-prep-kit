@@ -31,9 +31,9 @@ class TestHeaderCleanserTransform(AbstractTransformLauncherTest):
 
     def get_test_transform_fixtures(self) -> list[tuple]:
         config = {
-            "contents_column_name": COLUMN_KEY,
-            "license": LICENSE_KEY,
-            "copyright": COPYRIGHT_KEY,
+            COLUMN_KEY: "contents",
+            LICENSE_KEY: True,
+            COPYRIGHT_KEY: True,
         }
         basedir = "../test-data"
         basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))

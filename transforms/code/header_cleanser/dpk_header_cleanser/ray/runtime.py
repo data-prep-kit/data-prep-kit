@@ -23,11 +23,6 @@ class HeaderCleanserRayTransformConfiguration(RayTransformRuntimeConfiguration):
         super().__init__(transform_config=HeaderCleanserTransformConfiguration())
 
 
-if __name__ == "__main__":
-    launcher = RayTransformLauncher(HeaderCleanserRayTransformConfiguration())
-    launcher.launch()
-
-
 class HeaderCleanser:
     def __init__(self, **kwargs):
         self.params = {}
@@ -51,3 +46,8 @@ class HeaderCleanser:
         launcher = RayTransformLauncher(HeaderCleanserRayTransformConfiguration())
         return_code = launcher.launch()
         return return_code
+    
+    
+if __name__ == "__main__":
+    launcher = RayTransformLauncher(HeaderCleanserRayTransformConfiguration())
+    launcher.launch()

@@ -39,7 +39,7 @@ class TestHeaderCleanserTransform(AbstractTableTransformTest):
         copyright: bool,
         input_dir: str,
         expected_output_dir: str,
-    ) -> tuple[HeaderCleanserTransform, pa.Table, pa.Table, list[dict]]:
+    ) -> tuple[dict, pa.Table, pa.Table, list[dict]]:
         config = {
             COLUMN_KEY: column,
             LICENSE_KEY: license,

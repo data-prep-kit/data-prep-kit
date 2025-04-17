@@ -53,7 +53,7 @@ class HeaderCleanserConfiguration(TransformConfiguration):
             help="Name of the document ID column",
         )
         parser.add_argument(
-            "--header_cleanser_remove_license",
+            "--header_cleanser_license",
             required=False,
             type=bool,
             dest="license",
@@ -61,7 +61,7 @@ class HeaderCleanserConfiguration(TransformConfiguration):
             help="Whether to remove license text",
         )
         parser.add_argument(
-            "--header_cleanser_remove_copyright",
+            "--header_cleanser_copyright",
             required=False,
             type=bool,
             dest="copyright",

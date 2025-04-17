@@ -25,13 +25,12 @@ from dpk_header_cleanser.transform import (
     HeaderCleanserTransform,
 )
 
-"""
+
 class TestHeaderCleanserTransform(AbstractTableTransformTest):
     
     #Extends the super-class to define the test data for the tests defined there.
     #The name of this class MUST begin with the word Test so that pytest recognizes it as a test class.
     
-
     def create_header_cleanser_test_fixture(
         self,
         column: str,
@@ -39,7 +38,7 @@ class TestHeaderCleanserTransform(AbstractTableTransformTest):
         copyright: bool,
         input_dir: str,
         expected_output_dir: str,
-    ) -> tuple[dict, pa.Table, pa.Table, list[dict]]:
+    ):
         config = {
             COLUMN_KEY: column,
             LICENSE_KEY: license,
@@ -84,4 +83,3 @@ class TestHeaderCleanserTransform(AbstractTableTransformTest):
 
         return fixtures
 
-"""

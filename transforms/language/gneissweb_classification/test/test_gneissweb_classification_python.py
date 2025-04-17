@@ -27,7 +27,6 @@ class TestPythonClassificationTransform(AbstractTransformLauncherTest):
 
     def get_test_transform_fixtures(self) -> list[tuple]:
         cli_params = {
-            "gcls_model_credential": os.environ.get('HF_READ_ACCESS_TOKEN', "PUT YOUR OWN HUGGINGFACE CREDENTIAL"),
             "gcls_model_file_name": ["fasttext_medical.bin"],
             "gcls_model_url":["ibm-granite/GneissWeb.Med_classifier"],
             "gcls_content_column_name": "text",

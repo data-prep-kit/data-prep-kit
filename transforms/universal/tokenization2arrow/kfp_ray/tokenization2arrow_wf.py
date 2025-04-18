@@ -20,29 +20,24 @@ from workflow_support.compile_utils import (
     ONE_WEEK_SEC,
     ComponentUtils,
 )
-from python_apiserver_client.params import (
-        EnvironmentVariables,
-        EnvVarFrom,
-        EnvVarSource,
-)
 
-# The name of the secret that holds the HugginFace token
-HF_SECRET = "hf-secret"
-# The secret key that holds the HugginFace token
-HF_SECRET_KEY = "hf-token"
 
-S3_SECRET="s3-secret"
-
-task_image = "quay.io/dataprep1/data-prep-kit/gneissweb_classification-ray:latest"
+# The secret name containing the s3 credentials.
+S3_SECRET = "s3-secret"
 
 # the name of the job script
-EXEC_SCRIPT_NAME: str = "-m dpk_gneissweb_classification.ray.transform"
+EXEC_SCRIPT_NAME: str = "-m dpk_tokenization2arrow.ray.runtime"
+
+task_image = "quay.io/dataprep1/data-prep-kit/tokenization2arrow-ray:latest"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing_v2:latest"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
+# path to kfp component specifications files
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)
+
+
 
 # compute execution parameters. Here different transforms might need different implementations. As
 # a result, instead of creating a component we are creating it in place here.
@@ -52,15 +47,15 @@ def compute_exec_params_func(
     data_s3_config: str,
     data_max_files: int,
     data_num_samples: int,
-    data_checkpointing: bool,
     runtime_pipeline_id: str,
     runtime_job_id: str,
     runtime_code_location: dict,
-    gcls_model_file_name: str,
-    gcls_model_url: str,
-    gcls_content_column_name: str,
-    gcls_output_label_column_name: str,
-    gcls_output_score_column_name: str,
+    tkn_tokenizer: str,
+    tkn_tokenizer_args: str,
+    tkn_doc_id_column: str,
+    tkn_doc_content_column: str,
+    tkn_text_lang: str,
+    tkn_chunk_size: int,
 ) -> dict:
     from runtime_utils import KFPUtils
 
@@ -68,17 +63,17 @@ def compute_exec_params_func(
         "data_s3_config": data_s3_config,
         "data_max_files": data_max_files,
         "data_num_samples": data_num_samples,
-        "data_checkpointing": data_checkpointing,
         "runtime_num_workers": KFPUtils.default_compute_execution_params(str(worker_options), str(actor_options)),
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
         "runtime_code_location": str(runtime_code_location),
-        "gcls_model_file_name": gcls_model_file_name,
-        "gcls_model_url": gcls_model_url,
-        "gcls_content_column_name": gcls_content_column_name,
-        "gcls_output_label_column_name": gcls_output_label_column_name,
-        "gcls_output_score_column_name": gcls_output_score_column_name,
+        "tkn_tokenizer": tkn_tokenizer,
+        "tkn_tokenizer_args": tkn_tokenizer_args,
+        "tkn_doc_id_column": tkn_doc_id_column,
+        "tkn_doc_content_column": tkn_doc_content_column,
+        "tkn_text_lang": tkn_text_lang,
+        "tkn_chunk_size": tkn_chunk_size,
     }
 
 
@@ -87,11 +82,24 @@ def compute_exec_params_func(
 # KFPv2 recommends using the `@dsl.component` decorator, which doesn't exist in KFPv1. Therefore, here we use
 # this if/else statement and explicitly call the decorator.
 if os.getenv("KFPv2", "0") == "1":
+    # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
+    # a unique string in a component (at runtime) and pass it to the `clean_up_task` of `ExitHandler`, due to
+    # https://github.com/kubeflow/pipelines/issues/10187. Therefore, meantime we use a unique string created at
+    # compilation time.
+    import uuid
+
     compute_exec_params_op = dsl.component_decorator.component(
         func=compute_exec_params_func, base_image=base_kfp_image
     )
+    print(
+        "WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
+        + "same version of the same pipeline !!!"
+    )
+
+    run_id = uuid.uuid4().hex
 else:
     compute_exec_params_op = comp.create_component_from_func(func=compute_exec_params_func, base_image=base_kfp_image)
+    run_id = dsl.RUN_ID_PLACEHOLDER
 
 # create Ray cluster
 create_ray_op = comp.load_component_from_file(component_spec_path + "createRayClusterComponent.yaml")
@@ -101,59 +109,49 @@ execute_ray_jobs_op = comp.load_component_from_file(component_spec_path + "execu
 cleanup_ray_op = comp.load_component_from_file(component_spec_path + "deleteRayClusterComponent.yaml")
 
 # Task name is part of the pipeline name, the ray cluster name and the job name in DMF.
-TASK_NAME: str = "gneissweb_classification"
-
-
-# HuggingFace token is exported as environment variables in Ray node pods.
-# Alternatively, the secret name can be passed to the KFP component,
-# which will set it as an environment variable in the Ray nodes.
-# In this option the secret name can be set at runtime
-# but is dependent on the KFP version.
-env_v = EnvVarFrom(source=EnvVarSource.SECRET, name=HF_SECRET, key=HF_SECRET_KEY)
-envs = EnvironmentVariables(from_ref={"HF_READ_ACCESS_TOKEN": env_v})
+TASK_NAME: str = "tokenization2arrow"
 
 
 @dsl.pipeline(
     name=TASK_NAME + "-ray-pipeline",
-    description="Pipeline for Gneissweb Classification task",
+    description="Pipeline for tokenization2arrow",
 )
-def gneissweb_classification(
+def tokenization2arrow(
     # Ray cluster
-    ray_name: str = "gneissweb_classification-kfp-ray",  # name of Ray cluster
-    ray_run_id_KFPv2: str = "",  # Ray cluster unique ID used only in KFP v2
+    ray_name: str = "tkn-kfp-ray",  # name of Ray cluster
+    ray_run_id_KFPv2: str = "",   # Ray cluster unique ID used only in KFP v2
     # Add image_pull_secret and image_pull_policy to ray workers if needed
-    ray_head_options: dict = {"cpu": 16, "memory": 16, "image": task_image, "environment": envs.to_dict()},
+    ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
     ray_worker_options: dict = {
-        "replicas": 1,
-        "max_replicas": 1,
-        "min_replicas": 1,
-        "cpu": 16,
-        "memory": 16,
+        "replicas": 2,
+        "max_replicas": 2,
+        "min_replicas": 2,
+        "cpu": 2,
+        "memory": 4,
         "image": task_image,
-        "environment": envs.to_dict()
     },
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
-    data_s3_config: str = "{'input_folder': 'test/gneissweb_classification/input', 'output_folder': 'test/gneissweb_classification/output/'}",
+    data_s3_config: str = "{'input_folder': 'test/tokenization/ds01/input/', 'output_folder': 'test/tokenization/ds01/output/'}",
     data_s3_access_secret: str = S3_SECRET,
     data_max_files: int = -1,
     data_num_samples: int = -1,
-    data_checkpointing: bool = False,
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
     runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
-    # gneissweb_classification parameters
-    gcls_model_url: str = "ibm-granite/GneissWeb.Quality_annotator",
-    gcls_model_file_name: str = "fasttext_gneissweb_quality_annotator.bin",
-    gcls_content_column_name: str = "text",
-    gcls_output_label_column_name: str = "cosmo_fastText_label",
-    gcls_output_score_column_name: str = "cosmo_fastText_score",
+    # tokenizer parameters
+    tkn_tokenizer: str = "hf-internal-testing/llama-tokenizer",
+    tkn_doc_id_column: str = "document_id",
+    tkn_doc_content_column: str = "contents",
+    tkn_text_lang: str = "en",
+    tkn_tokenizer_args: str = "cache_dir=/tmp/hf",
+    tkn_chunk_size: int = 0,
     # additional parameters
     additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
 ):
     """
-    Pipeline to execute gneissweb_classification transform
+    Pipeline to execute tokenization transform
     :param ray_name: name of the Ray cluster
     :param ray_run_id_KFPv2: a unique string id used for the Ray cluster, applicable only in KFP v2.
     :param ray_head_options: head node options, containing the following:
@@ -186,11 +184,12 @@ def gneissweb_classification(
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
     :param runtime_code_location - code location
-    :param gcls_model_file_name - filename of model
-    :param gcls_model_url - url that model locates. For fasttext, this will be repo name of the model
-    :param gcls_content_column_name - Column name to get content
-    :param gcls_output_label_column_name - Column name to store label
-    :param gcls_output_score_column_name - Column name to store the score
+    :param tkn_tokenizer - Tokenizer used for tokenization
+    :param tkn_tokenizer_args - Arguments for tokenizer.
+    :param tkn_doc_id_column - Column contains document id which values should be unique across dataset
+    :param tkn_doc_content_column - Column contains document content
+    :param tkn_text_lang - Specify language used in the text content for better text splitting if needed
+    :param tkn_chunk_size - Specify >0 value to tokenize each row/text in chunks of characters (rounded in words)
     :return: None
     """
     # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
@@ -198,10 +197,8 @@ def gneissweb_classification(
     # https://github.com/kubeflow/pipelines/issues/10187. Therefore, meantime the user is requested to insert
     # a unique string created at run creation time.
     if os.getenv("KFPv2", "0") == "1":
-        print(
-            "WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
-            "same version of the same pipeline !!!"
-        )
+        print("WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
+              "same version of the same pipeline !!!")
         run_id = ray_run_id_KFPv2
     else:
         run_id = dsl.RUN_ID_PLACEHOLDER
@@ -219,15 +216,15 @@ def gneissweb_classification(
             data_s3_config=data_s3_config,
             data_max_files=data_max_files,
             data_num_samples=data_num_samples,
-            data_checkpointing=data_checkpointing,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
             runtime_code_location=runtime_code_location,
-            gcls_model_file_name=gcls_model_file_name,
-            gcls_model_url=gcls_model_url,
-            gcls_content_column_name=gcls_content_column_name,
-            gcls_output_label_column_name=gcls_output_label_column_name,
-            gcls_output_score_column_name=gcls_output_score_column_name,
+            tkn_tokenizer=tkn_tokenizer,
+            tkn_tokenizer_args=tkn_tokenizer_args,
+            tkn_doc_id_column=tkn_doc_id_column,
+            tkn_doc_content_column=tkn_doc_content_column,
+            tkn_text_lang=tkn_text_lang,
+            tkn_chunk_size=tkn_chunk_size,
         )
 
         ComponentUtils.add_settings_to_component(compute_exec_params, ONE_HOUR_SEC * 2)
@@ -242,7 +239,6 @@ def gneissweb_classification(
         )
         ComponentUtils.add_settings_to_component(ray_cluster, ONE_HOUR_SEC * 2)
         ray_cluster.after(compute_exec_params)
-
         # Execute job
         execute_job = execute_ray_jobs_op(
             ray_name=ray_name,
@@ -255,10 +251,10 @@ def gneissweb_classification(
         ComponentUtils.add_settings_to_component(execute_job, ONE_WEEK_SEC)
         if os.getenv("KFPv2", "0") == "1":
             from kfp import kubernetes
-
+            
             # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
             # As a workaround, the secret name is hard coded.
-            env2key = ComponentUtils.set_secret_key_to_env(prefix="jjj")
+            env2key = ComponentUtils.set_secret_key_to_env()
             kubernetes.use_secret_as_env(task=execute_job, secret_name=S3_SECRET, secret_key_to_env=env2key)
         else:
             ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
@@ -267,4 +263,4 @@ def gneissweb_classification(
 
 if __name__ == "__main__":
     # Compiling the pipeline
-    compiler.Compiler().compile(gneissweb_classification, __file__.replace(".py", ".yaml"))
+    compiler.Compiler().compile(tokenization2arrow, __file__.replace(".py", ".yaml"))

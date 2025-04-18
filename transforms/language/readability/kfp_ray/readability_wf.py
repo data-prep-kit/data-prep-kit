@@ -20,29 +20,23 @@ from workflow_support.compile_utils import (
     ONE_WEEK_SEC,
     ComponentUtils,
 )
-from python_apiserver_client.params import (
-        EnvironmentVariables,
-        EnvVarFrom,
-        EnvVarSource,
-)
 
-# The name of the secret that holds the HugginFace token
-HF_SECRET = "hf-secret"
-# The secret key that holds the HugginFace token
-HF_SECRET_KEY = "hf-token"
 
-S3_SECRET="s3-secret"
+task_image = "quay.io/dataprep1/data-prep-kit/readability-ray:latest"
 
-task_image = "quay.io/dataprep1/data-prep-kit/gneissweb_classification-ray:latest"
+# The secret name containing the s3 credentials.
+S3_SECRET = "s3-secret"
 
 # the name of the job script
-EXEC_SCRIPT_NAME: str = "-m dpk_gneissweb_classification.ray.transform"
-
+EXEC_SCRIPT_NAME: str = "-m dpk_readability.ray.runtime"
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing_v2:latest"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
 # path to kfp component specifications files
-component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)
+component_spec_path = os.getenv(
+   "KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH
+)
+
 
 # compute execution parameters. Here different transforms might need different implementations. As
 # a result, instead of creating a component we are creating it in place here.
@@ -53,14 +47,13 @@ def compute_exec_params_func(
     data_max_files: int,
     data_num_samples: int,
     data_checkpointing: bool,
+    data_data_sets: str,
+    data_files_to_use: str,
     runtime_pipeline_id: str,
     runtime_job_id: str,
     runtime_code_location: dict,
-    gcls_model_file_name: str,
-    gcls_model_url: str,
-    gcls_content_column_name: str,
-    gcls_output_label_column_name: str,
-    gcls_output_score_column_name: str,
+    readability_contents_column_name: str,
+    readability_score_list: str,
 ) -> dict:
     from runtime_utils import KFPUtils
 
@@ -69,16 +62,15 @@ def compute_exec_params_func(
         "data_max_files": data_max_files,
         "data_num_samples": data_num_samples,
         "data_checkpointing": data_checkpointing,
+        "data_data_sets": data_data_sets.strip(),
+        "data_files_to_use": data_files_to_use,
         "runtime_num_workers": KFPUtils.default_compute_execution_params(str(worker_options), str(actor_options)),
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
         "runtime_code_location": str(runtime_code_location),
-        "gcls_model_file_name": gcls_model_file_name,
-        "gcls_model_url": gcls_model_url,
-        "gcls_content_column_name": gcls_content_column_name,
-        "gcls_output_label_column_name": gcls_output_label_column_name,
-        "gcls_output_score_column_name": gcls_output_score_column_name,
+        "readability_contents_column_name": readability_contents_column_name,
+        "readability_score_list": readability_score_list,
     }
 
 
@@ -99,61 +91,49 @@ create_ray_op = comp.load_component_from_file(component_spec_path + "createRayCl
 execute_ray_jobs_op = comp.load_component_from_file(component_spec_path + "executeRayJobComponent.yaml")
 # clean up Ray
 cleanup_ray_op = comp.load_component_from_file(component_spec_path + "deleteRayClusterComponent.yaml")
-
 # Task name is part of the pipeline name, the ray cluster name and the job name in DMF.
-TASK_NAME: str = "gneissweb_classification"
-
-
-# HuggingFace token is exported as environment variables in Ray node pods.
-# Alternatively, the secret name can be passed to the KFP component,
-# which will set it as an environment variable in the Ray nodes.
-# In this option the secret name can be set at runtime
-# but is dependent on the KFP version.
-env_v = EnvVarFrom(source=EnvVarSource.SECRET, name=HF_SECRET, key=HF_SECRET_KEY)
-envs = EnvironmentVariables(from_ref={"HF_READ_ACCESS_TOKEN": env_v})
+TASK_NAME: str = "readability"
 
 
 @dsl.pipeline(
     name=TASK_NAME + "-ray-pipeline",
-    description="Pipeline for Gneissweb Classification task",
+    description="Pipeline for readability",
 )
-def gneissweb_classification(
+def readability(
     # Ray cluster
-    ray_name: str = "gneissweb_classification-kfp-ray",  # name of Ray cluster
-    ray_run_id_KFPv2: str = "",  # Ray cluster unique ID used only in KFP v2
+    ray_name: str = "readability-kfp-ray",  # name of Ray cluster
+    ray_run_id_KFPv2: str = "",   # Ray cluster unique ID used only in KFP v2
     # Add image_pull_secret and image_pull_policy to ray workers if needed
-    ray_head_options: dict = {"cpu": 16, "memory": 16, "image": task_image, "environment": envs.to_dict()},
+    ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
     ray_worker_options: dict = {
-        "replicas": 1,
-        "max_replicas": 1,
-        "min_replicas": 1,
-        "cpu": 16,
-        "memory": 16,
+        "replicas": 2,
+        "max_replicas": 2,
+        "min_replicas": 2,
+        "cpu": 2,
+        "memory": 4,
         "image": task_image,
-        "environment": envs.to_dict()
     },
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
-    data_s3_config: str = "{'input_folder': 'test/gneissweb_classification/input', 'output_folder': 'test/gneissweb_classification/output/'}",
+    data_s3_config: str = "{'input_folder': 'test/readability/input/', 'output_folder': 'test/readability/output/'}",
     data_s3_access_secret: str = S3_SECRET,
     data_max_files: int = -1,
     data_num_samples: int = -1,
     data_checkpointing: bool = False,
+    data_data_sets: str = "",
+    data_files_to_use: str = "['.parquet']",
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
     runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
-    # gneissweb_classification parameters
-    gcls_model_url: str = "ibm-granite/GneissWeb.Quality_annotator",
-    gcls_model_file_name: str = "fasttext_gneissweb_quality_annotator.bin",
-    gcls_content_column_name: str = "text",
-    gcls_output_label_column_name: str = "cosmo_fastText_label",
-    gcls_output_score_column_name: str = "cosmo_fastText_score",
+    # doc id parameters
+    readability_contents_column_name: str = "contents",
+    readability_score_list: str = "mcalpine_eflaw_textstat",
     # additional parameters
     additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
 ):
     """
-    Pipeline to execute gneissweb_classification transform
+    Pipeline to execute NOOP transform
     :param ray_name: name of the Ray cluster
     :param ray_run_id_KFPv2: a unique string id used for the Ray cluster, applicable only in KFP v2.
     :param ray_head_options: head node options, containing the following:
@@ -186,11 +166,10 @@ def gneissweb_classification(
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
     :param runtime_code_location - code location
-    :param gcls_model_file_name - filename of model
-    :param gcls_model_url - url that model locates. For fasttext, this will be repo name of the model
-    :param gcls_content_column_name - Column name to get content
-    :param gcls_output_label_column_name - Column name to store label
-    :param gcls_output_score_column_name - Column name to store the score
+    :param doc_id_doc_column - document column
+    :param doc_id_hash_column - hash id column
+    :param doc_id_int_column - integer id column
+    :param doc_id_start_id - starting id
     :return: None
     """
     # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
@@ -198,10 +177,8 @@ def gneissweb_classification(
     # https://github.com/kubeflow/pipelines/issues/10187. Therefore, meantime the user is requested to insert
     # a unique string created at run creation time.
     if os.getenv("KFPv2", "0") == "1":
-        print(
-            "WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
-            "same version of the same pipeline !!!"
-        )
+        print("WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
+              "same version of the same pipeline !!!")
         run_id = ray_run_id_KFPv2
     else:
         run_id = dsl.RUN_ID_PLACEHOLDER
@@ -220,16 +197,14 @@ def gneissweb_classification(
             data_max_files=data_max_files,
             data_num_samples=data_num_samples,
             data_checkpointing=data_checkpointing,
+            data_data_sets=data_data_sets,
+            data_files_to_use=data_files_to_use,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
             runtime_code_location=runtime_code_location,
-            gcls_model_file_name=gcls_model_file_name,
-            gcls_model_url=gcls_model_url,
-            gcls_content_column_name=gcls_content_column_name,
-            gcls_output_label_column_name=gcls_output_label_column_name,
-            gcls_output_score_column_name=gcls_output_score_column_name,
+            readability_contents_column_name= readability_contents_column_name,
+            readability_score_list= readability_score_list,
         )
-
         ComponentUtils.add_settings_to_component(compute_exec_params, ONE_HOUR_SEC * 2)
         # start Ray cluster
         ray_cluster = create_ray_op(
@@ -242,12 +217,12 @@ def gneissweb_classification(
         )
         ComponentUtils.add_settings_to_component(ray_cluster, ONE_HOUR_SEC * 2)
         ray_cluster.after(compute_exec_params)
-
         # Execute job
         execute_job = execute_ray_jobs_op(
             ray_name=ray_name,
             run_id=run_id,
             additional_params=additional_params,
+            # note that the parameters below are specific for NOOP transform
             exec_params=compute_exec_params.output,
             exec_script_name=EXEC_SCRIPT_NAME,
             server_url=server_url,
@@ -255,7 +230,7 @@ def gneissweb_classification(
         ComponentUtils.add_settings_to_component(execute_job, ONE_WEEK_SEC)
         if os.getenv("KFPv2", "0") == "1":
             from kfp import kubernetes
-
+            
             # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
             # As a workaround, the secret name is hard coded.
             env2key = ComponentUtils.set_secret_key_to_env(prefix="jjj")
@@ -267,4 +242,4 @@ def gneissweb_classification(
 
 if __name__ == "__main__":
     # Compiling the pipeline
-    compiler.Compiler().compile(gneissweb_classification, __file__.replace(".py", ".yaml"))
+    compiler.Compiler().compile(readability, __file__.replace(".py", ".yaml"))

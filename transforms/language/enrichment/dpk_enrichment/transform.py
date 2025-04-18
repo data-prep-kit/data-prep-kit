@@ -16,31 +16,14 @@ from typing import Any
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
 from data_processing.utils import CLIArgumentProvider, TransformUtils, UnrecoverableException
 
-from dpk_enrichment.analyzers import DEFAULT_TEXT_ENRICHER_DICT, text_enrichers
+from dpk_enrichment.analyzers import text_enrichers
+from dpk_enrichment.features import DEFAULT_TEXT_ENRICHER_DICT
+from dpk_enrichment.info import short_name, description, get_transform_params, get_transform_param_defaults
 from datatrove.utils.word_tokenizers import WordTokenizer, load_word_tokenizer
 
 def text_enrichment(text: str, word_tokenizer: WordTokenizer, columns_map: dict[str, str], normalized_text: str, logger: Any) -> dict[str, Any]:
     r = text_enrichers(text, word_tokenizer, normalized_text)
     return {v: r[k] for k, v in columns_map.items() if v}
-
-short_name = "enrichment"
-description = "computes a number of features that can be used estimate data quality"
-
-# parameter table: name, type, default_value, description
-param_table = [
-        ("output_column_prefix", str, "", "Prefix to add to all output column names that are not explicitly defined"),
-        ("content_column_name", str, "text", "Name of the content column"),
-        ("lang_column_name", str, "lang", "Name of the column with the language identifier"),
-        ("newline_normalized_column_name", str, "", "Name of an output column for newline normalized text"),
-        ("error_column_name", str, "", "Name of an output column for the eventual error encountered during processing"),
-    ]
-
-def get_transform_params():
-    table = [p for p in param_table] + [(f"{k}_column_name", str, f"{k}", f"Column name for {k}") for k in DEFAULT_TEXT_ENRICHER_DICT.keys()]
-    return table
-
-def get_transform_param_defaults():
-    return {k: d for k, t, d, h  in get_transform_params()}
 
 # read a param value from the config, with the appropriate defaults
 def get_config(config: dict[str, Any], param: str):

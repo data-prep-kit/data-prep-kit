@@ -14,7 +14,7 @@ import string, unicodedata
 
 from collections import Counter
 from typing import Dict, Tuple, Any
-
+import dpk_enrichment.features as fs
 import fasttext
 import ftfy
 import requests
@@ -253,56 +253,11 @@ def clean_and_normalize_line(text: str):
 
 PUNCTUATION_CHAR_TRANSLATE = str.maketrans({c: "" for c in list(unicategories.categories["P"].characters())})
 
-DEFAULT_TEXT_ENRICHER_DICT = {
-    "num_newlines": 0,
-    "num_paragraphs": 0,
-    "num_words": 0,
-    "num_chars": 0,
-    "total_non_newline_chars": 0,
-
-    "avg_word_length": 0.0,
-    "avg_paragraph_length_chars": 0.0,
-    "avg_paragraph_length_words": 0.0,
-
-    "alphanumeric_char_ratio": 0.0,
-    "control_char_ratio": 0.0,
-    "punctuation_char_ratio": 0.0,
-    "other_symbol_char_ratio": 0.0,
-
-    "tabs_word_ratio": 0.0,
-    "hashes_word_ratio": 0.0,
-    "ellipsis_ratio": 0.0,
-    "bulletpoint_ratio": 0.0,
-
-    'dup_paragraphs_ratio': 0.0,
-    'dup_paragraphs_char_ratio': 0.0,
-
-    'top_2_gram_char_ratio': 0.0,
-    'top_3_gram_char_ratio': 0.0,
-    'top_4_gram_char_ratio': 0.0,
-
-    'dup_5_gram_char_ratio': 0.0,
-    'dup_6_gram_char_ratio': 0.0,
-    'dup_7_gram_char_ratio': 0.0,
-    'dup_8_gram_char_ratio': 0.0,
-    'dup_9_gram_char_ratio': 0.0,
-    'dup_10_gram_char_ratio': 0.0,
-}
-
-RANGE_TOP_NGRAMS = range(2,5)
-RANGE_DUP_NGRAMS = range(5,11)
-
-for n in RANGE_TOP_NGRAMS:
-    DEFAULT_TEXT_ENRICHER_DICT[f"top_{n}_gram_char_ratio"] = 0.0
-
-for n in RANGE_DUP_NGRAMS:
-    DEFAULT_TEXT_ENRICHER_DICT[f"dup_{n}_gram_char_ratio"] = 0.0
-
 def text_enrichers(text: str, word_tokenizer: WordTokenizer, newlines_normalized: str = None, logger: Any = None) -> Dict:
     # split into paragraphs
     paragraphs = list(filter(None, re.split(NEWLINE_SPLIT_PATTERN, text)))
     if not paragraphs:
-        return DEFAULT_TEXT_ENRICHER_DICT
+        return fn.DEFAULT_TEXT_ENRICHER_DICT
     try:
         text_enrichments = {}
         num_words = 0
@@ -364,12 +319,12 @@ def text_enrichers(text: str, word_tokenizer: WordTokenizer, newlines_normalized
         text_enrichments["dup_paragraphs_char_ratio"] = char_duplicates_paragraphs / total_chars_paragraphs_normalized if total_chars_paragraphs_normalized > 0 else 0.0
 
         # top n gram stats
-        for n in RANGE_TOP_NGRAMS:
+        for n in fs.RANGE_TOP_NGRAMS:
             n_grams_normalized = get_n_grams(normalized_words, n)
             top_char_length_normalized = find_top_duplicate(n_grams_normalized) if n_grams_normalized else 0
             text_enrichments[f"top_{n}_gram_char_ratio"] = top_char_length_normalized / total_chars_words_normalized  if total_chars_words_normalized > 0 else 0.0
 
-        for n in RANGE_DUP_NGRAMS:
+        for n in fs.RANGE_DUP_NGRAMS:
             n_duplicates_char = find_all_duplicate(normalized_words, n)
             text_enrichments[f"dup_{n}_gram_char_ratio"] = n_duplicates_char / total_chars_words_normalized if total_chars_words_normalized > 0 else 0.0
 
@@ -408,7 +363,7 @@ def text_enrichers(text: str, word_tokenizer: WordTokenizer, newlines_normalized
         return text_enrichments
     except Exception as e:
         text_enrichments = {}
-        text_enrichments.update(DEFAULT_TEXT_ENRICHER_DICT)
+        text_enrichments.update(fs.DEFAULT_TEXT_ENRICHER_DICT)
         # indicate error
         text_enrichments['avg_word_length'] = -1.0
         t = traceback.format_exc()

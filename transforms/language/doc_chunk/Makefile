@@ -22,3 +22,27 @@ ifeq ($(OS),Linux)
 	DOCKER_BUILD_EXTRA_ARGS=--build-arg PIP_INSTALL_EXTRA_ARGS=${PIP_INSTALL_EXTRA_ARGS}
 	endif
 endif
+
+# Used to generate expected data for Unit Test
+run-cli-sample-json:
+	make venv
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).transform_python \
+             --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'test-data/expected'}"  \
+            --doc_chunk_chunking_type dl_json
+
+
+run-cli-sample-md:
+	make venv
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).transform_python \
+             --data_local_config "{ 'input_folder' : 'test-data/input_md', 'output_folder' : 'test-data/expected_md'}"  \
+            --doc_chunk_chunking_type li_markdown
+
+run-cli-sample-text:
+	make venv
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).transform_python \
+            --data_local_config "{ 'input_folder' : 'test-data/input_toke_text', 'output_folder' : 'test-data/expected_token_text'}"  \
+            --doc_chunk_chunking_type li_token_text \
+			--doc_chunk_output_chunk_column_name chunk_text

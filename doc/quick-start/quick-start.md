@@ -111,7 +111,7 @@ A working windows environment can be setup using Anaconda Navigator with:
 To install the transforms on windows, use the following commands:
 
 ```
-pip intall data-prep-toolkit==0.2.3.post1
+pip install data-prep-toolkit==0.2.3.post1
 pip install data-prep-toolkit-transforms[all]
 pip install fasttext-wheel
 ```
@@ -119,14 +119,14 @@ pip install fasttext-wheel
 To install the ray transforms on windows using the ray runtime, use the following commands:
 
 ```
-pip intall data-prep-toolkit[ray]==0.2.3.post1
+pip install data-prep-toolkit[ray]==0.2.3.post1
 pip install data-prep-toolkit-transforms[all]
 pip install fasttext-wheel
 ```
 
 To install a single transform, for example pdf2parquet, use the following commands:
 ```bash
-pip intall data-prep-toolkit==0.2.3.post1
+pip install data-prep-toolkit==0.2.3.post1
 pip install --user data-prep-toolkit-transforms[pdf2parquet]
 ```
 

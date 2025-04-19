@@ -1,5 +1,9 @@
 FROM docker.io/python:3.10.14-slim-bullseye
 
+RUN apt-get update && apt-get install -y \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN pip install --upgrade --no-cache-dir pip 
 
 # install pytest

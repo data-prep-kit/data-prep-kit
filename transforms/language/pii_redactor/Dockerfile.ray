@@ -1,6 +1,9 @@
-ARG BASE_IMAGE=docker.io/rayproject/ray:2.24.0-py310
+FROM docker.io/rayproject/ray:2.36.1-py311
+# Pydantic issue with 3.12. Stick to py311 for now
+# TypeError: ForwardRef._evaluate() missing 1 required keyword-only argument: 'recursive_guard'
+#ARG BASE_IMAGE=docker.io/rayproject/ray:2.36.1-py311
+#FROM ${BASE_IMAGE}
 
-FROM ${BASE_IMAGE}
 
 # see https://docs.openshift.com/container-platform/4.17/openshift_images/create-images.html#use-uid_create-images
 USER root

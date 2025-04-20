@@ -1,7 +1,8 @@
 <h1 align="center">Data Prep Kit</h1>
 
 <p align="center">
-<img src="doc/LF_DataPrepKit_Logo_Postive.png" />
+<img src="doc/LF_DataPrepKit_Logo_Postive.png#gh-light-mode-only" width="25%" height="25%" />
+<img src="doc/LF_DataPrepKit_Logo_Negative.png#gh-dark-mode-only" width="25%" height="25%"/>
 </p>
 
 <div align="center">
@@ -18,8 +19,10 @@
 
   </div>
 
+Data Prep Kit accelerates unstructured data preparation for LLM app developers. Developers can use Data Prep Kit to cleanse, transform, and enrich use case-specific unstructured data to pre-train LLMs, fine-tune LLMs, instruct-tune LLMs, or build [Retrieval Augmented Generation (RAG)](https://github.com/data-prep-kit/data-prep-kit/blob/dev/examples/rag-html-1/README.md) applications for LLMs
 
-Data Prep Kit accelerates unstructured data preparation for LLM app developers. Developers can use Data Prep Kit to cleanse, transform, and enrich use case-specific unstructured data to pre-train LLMs, fine-tune LLMs, instruct-tune LLMs, or build retrieval augmented generation (RAG) applications for LLMs. Data Prep Kit can readily scale from a commodity laptop all the way to data center scale.
+Data Prep Kit can readily scale from a commodity laptop all the way to data center scale.
+
 
 ## Features <a name = "features"></a>
 

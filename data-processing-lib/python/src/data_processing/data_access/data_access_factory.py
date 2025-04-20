@@ -65,11 +65,14 @@ class DataAccessFactory(DataAccessFactoryBase):
         :return: None
         """
 
+        self.logger.debug(f"{__name__} - add_input_param: self.cli_arg_prefix={self.cli_arg_prefix} self.enable_data_navigation={self.enable_data_navigation}")
+
         if self.enable_data_navigation:
             self.__add_data_navigation_params(parser)
             
 
     def __add_data_navigation_params(self, parser):
+
         help_example_dict = {
             "input_folder": [
                 "s3-path/your-input-bucket",
@@ -161,6 +164,10 @@ class DataAccessFactory(DataAccessFactoryBase):
         :param args: user defined arguments
         :return: None
         """
+        import os
+        self.logger.debug(f"list of Env. Variables for this prefix {self.cli_arg_prefix}")
+        list= [x for x,_ in os.environ.items() if x.startswith(self.cli_arg_prefix)]
+        self.logger.debug(f"{list}")
         if isinstance(args, argparse.Namespace):
             arg_dict = vars(args)
         elif isinstance(args, dict):
@@ -175,10 +182,16 @@ class DataAccessFactory(DataAccessFactoryBase):
         files_to_use = arg_dict.get(f"{self.cli_arg_prefix}files_to_use", [".parquet"])
         files_to_checkpoint = arg_dict.get(f"{self.cli_arg_prefix}files_to_checkpoint", [".parquet"])
 
-        ########################################################################
-        # Set Data Access Class defaults to used baed on provided cli parameters
-        ## The use of s3_config will be depricated over time
+        #########################################################################
+        # Set Data Access Class defaults to used based on provided cli parameters
+        ## The use of s3_config and local_config will be depricated over time
+        ## For now, allow backward compatibility until we adapt all the tansforms
+        ## to use the new logic and specify their prefix configuration as needed
         if (arg_dict.get(f"{self.cli_arg_prefix}s3_config")):
+            self.data_access_class='DataAccessS3'
+        elif (arg_dict.get(f"{self.cli_arg_prefix}local_config")):
+            self.data_access_class='DataAccessLocal'
+        elif (arg_dict.get(f"data_s3_config")):
             self.data_access_class='DataAccessS3'
         else:
             self.data_access_class=self.default_class

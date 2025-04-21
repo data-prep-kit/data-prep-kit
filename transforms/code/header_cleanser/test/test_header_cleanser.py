@@ -22,7 +22,7 @@ from dpk_header_cleanser.transform import (
     COPYRIGHT_KEY,
 )
 
-"""
+
 class TestHeaderCleanserTransform(AbstractTransformLauncherTest):
     
     #Folder-based test for HeaderCleanser using PythonTransformLauncher.
@@ -74,4 +74,3 @@ class TestHeaderCleanserTransform(AbstractTransformLauncherTest):
         ))
 
         return fixtures
-"""

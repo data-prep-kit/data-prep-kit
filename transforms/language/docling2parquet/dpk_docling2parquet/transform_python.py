@@ -17,13 +17,13 @@ from data_processing.runtime.pure_python.runtime_configuration import (
     PythonTransformRuntimeConfiguration,
 )
 from data_processing.utils import ParamsUtils, get_logger
-from dpk_docling2parquet.transform import docling2parquetTransformConfiguration
+from dpk_docling2parquet.transform import Docling2ParquetTransformConfiguration
 
 
 logger = get_logger(__name__)
 
 
-class docling2parquetPythonTransformConfiguration(PythonTransformRuntimeConfiguration):
+class Docling2ParquetPythonTransformConfiguration(PythonTransformRuntimeConfiguration):
     """
     Implements the PythonTransformConfiguration for docling2parquet as required by the PythonTransformLauncher.
     """
@@ -33,11 +33,11 @@ class docling2parquetPythonTransformConfiguration(PythonTransformRuntimeConfigur
         Initialization
         :param base_configuration - base configuration class
         """
-        super().__init__(transform_config=docling2parquetTransformConfiguration())
+        super().__init__(transform_config=Docling2ParquetTransformConfiguration())
 
 
 # Class used by the notebooks to ingest binary files and create parquet files
-class docling2parquet:
+class Docling2Parquet:
     def __init__(self, **kwargs):
         self.params = {}
         for key in kwargs:
@@ -54,13 +54,13 @@ class docling2parquet:
     def transform(self):
         sys.argv = ParamsUtils.dict_to_req(d=(self.params))
         # create launcher
-        launcher = PythonTransformLauncher(docling2parquetPythonTransformConfiguration())
+        launcher = PythonTransformLauncher(Docling2ParquetPythonTransformConfiguration())
         # launch
         return_code = launcher.launch()
         return return_code
 
 
 if __name__ == "__main__":
-    launcher = PythonTransformLauncher(docling2parquetPythonTransformConfiguration())
+    launcher = PythonTransformLauncher(Docling2ParquetPythonTransformConfiguration())
     logger.info("Launching docling2parquet transform")
     launcher.launch()

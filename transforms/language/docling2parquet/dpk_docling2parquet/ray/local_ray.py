@@ -17,7 +17,7 @@ import sys
 from data_processing.utils import ParamsUtils
 try:
     from data_processing_ray.runtime.ray import RayTransformLauncher
-    from dpk_docling2parquet.ray.transform import docling2parquetRayTransformConfiguration
+    from dpk_docling2parquet.ray.transform import Docling2ParquetRayTransformConfiguration
 except ImportError:
     raise ImportError("Please install data_prep_toolkit[ray]")
 
@@ -50,6 +50,6 @@ if __name__ == "__main__":
     # Set the simulated command line args
     sys.argv = ParamsUtils.dict_to_req(d=params)
     # create launcher
-    launcher = RayTransformLauncher(docling2parquetRayTransformConfiguration())
+    launcher = RayTransformLauncher(Docling2ParquetRayTransformConfiguration())
     # Launch the ray actor(s) to process the input
     launcher.launch()

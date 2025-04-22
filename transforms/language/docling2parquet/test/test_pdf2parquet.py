@@ -17,10 +17,10 @@ from data_processing.data_access.data_access_local import DataAccessLocal
 from data_processing.test_support import get_files_in_folder
 from data_processing.test_support.transform import AbstractBinaryTransformTest
 from data_processing.utils import TransformUtils
-from dpk_docling2parquet.transform import docling2parquetTransform
+from dpk_docling2parquet.transform import Docling2ParquetTransform
 
 
-class Testdocling2parquetTransform(AbstractBinaryTransformTest):
+class TestDocling2ParquetTransform(AbstractBinaryTransformTest):
     """
     Extends the super-class to define the test data for the tests defined there.
     The name of this class MUST begin with the word Test so that pytest recognizes it as a test class.
@@ -62,7 +62,7 @@ class Testdocling2parquetTransform(AbstractBinaryTransformTest):
             # This fails because the AbstractBinaryTransformTest is checking the bytes-size of the parquet
             # since we need ignored columns, this is not a valid anymore.
             # (
-            #     docling2parquetTransform(config),
+            #     Docling2ParquetTransform(config),
             #     input_files,
             #     expected_files,
             #     expected_metadata_list,

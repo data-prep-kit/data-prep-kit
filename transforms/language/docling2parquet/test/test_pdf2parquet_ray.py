@@ -17,10 +17,10 @@ from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
 from data_processing_ray.runtime.ray import RayTransformLauncher
-from dpk_docling2parquet.ray.transform import docling2parquetRayTransformConfiguration
+from dpk_docling2parquet.ray.transform import Docling2ParquetRayTransformConfiguration
 
 
-class TestRaydocling2parquetTransform(AbstractTransformLauncherTest):
+class TestRayDocling2ParquetTransform(AbstractTransformLauncherTest):
     """
     Extends the super-class to define the test data for the tests defined there.
     The name of this class MUST begin with the word Test so that pytest recognizes it as a test class.
@@ -34,7 +34,7 @@ class TestRaydocling2parquetTransform(AbstractTransformLauncherTest):
             "run_locally": True,
         }
         fixtures = []
-        launcher = RayTransformLauncher(docling2parquetRayTransformConfiguration())
+        launcher = RayTransformLauncher(Docling2ParquetRayTransformConfiguration())
         fixtures.append(
             (
                 launcher,

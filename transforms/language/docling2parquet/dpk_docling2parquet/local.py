@@ -13,7 +13,7 @@
 import os
 
 from data_processing.data_access import DataAccessLocal
-from dpk_docling2parquet.transform import docling2parquetTransform
+from dpk_docling2parquet.transform import Docling2ParquetTransform
 
 
 # create parameters
@@ -25,7 +25,7 @@ docling2parquet_params = {}
 if __name__ == "__main__":
     # Here we show how to run outside of the runtime
     # Create and configure the transform.
-    transform = docling2parquetTransform(docling2parquet_params)
+    transform = Docling2ParquetTransform(docling2parquet_params)
     # Use the local data access to read a parquet table.
     data_access = DataAccessLocal()
     file_to_process = os.path.join(input_folder, "redp5110-ch1.pdf")

@@ -117,7 +117,7 @@ docling2parquet_double_precision_cli_param = (
 )
 
 
-class docling2parquetTransform(AbstractBinaryTransform):
+class Docling2ParquetTransform(AbstractBinaryTransform):
     """ """
 
     def __init__(self, config: dict):
@@ -417,14 +417,14 @@ class docling2parquetTransform(AbstractBinaryTransform):
         return result, {}
 
 
-class docling2parquetTransformConfiguration(TransformConfiguration):
+class Docling2ParquetTransformConfiguration(TransformConfiguration):
     """
     Provides support for configuring and using the associated Transform class include
     configuration with CLI args and combining of metadata.
     """
 
     def __init__(
-        self, transform_class: type[AbstractBinaryTransform] = docling2parquetTransform
+        self, transform_class: type[AbstractBinaryTransform] = Docling2ParquetTransform
     ):
         super().__init__(
             name=shortname,

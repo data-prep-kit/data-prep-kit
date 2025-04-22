@@ -1,6 +1,6 @@
-# docling2parquet Transform 
+# Docling2Parquet Transform 
 
-The docling2parquet transform iterates through PDF, Docx, Pptx, Images files or zip of files and generates parquet files
+The Docling2Parquet transform iterates through PDF, Docx, Pptx, Images files or zip of files and generates parquet files
 containing the converted document in Markdown or JSON format.
 
 The conversion is using the [Docling package](https://github.com/DS4SD/docling).

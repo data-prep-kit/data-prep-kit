@@ -16,7 +16,7 @@ import sys
 
 from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.utils import ParamsUtils
-from dpk_docling2parquet.transform_python import docling2parquetPythonTransformConfiguration
+from dpk_docling2parquet.transform_python import Docling2ParquetPythonTransformConfiguration
 
 
 # create parameters
@@ -56,7 +56,7 @@ if __name__ == "__main__":
     sys.argv = ParamsUtils.dict_to_req(d=params)
     # create launcher
     launcher = PythonTransformLauncher(
-        runtime_config=docling2parquetPythonTransformConfiguration()
+        runtime_config=Docling2ParquetPythonTransformConfiguration()
     )
     # Launch the ray actor(s) to process the input
     launcher.launch()

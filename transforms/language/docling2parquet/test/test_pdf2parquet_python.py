@@ -20,11 +20,11 @@ from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
 from docling_core.types.doc import DocItem, DoclingDocument, TextItem
-from dpk_docling2parquet.transform_python import docling2parquetPythonTransformConfiguration
+from dpk_docling2parquet.transform_python import Docling2ParquetPythonTransformConfiguration
 from pydantic import ValidationError
 
 
-class TestPythondocling2parquetTransform(AbstractTransformLauncherTest):
+class TestPythonDocling2ParquetTransform(AbstractTransformLauncherTest):
     """
     Extends the super-class to define the test data for the tests defined there.
     The name of this class MUST begin with the word Test so that pytest recognizes it as a test class.
@@ -42,7 +42,7 @@ class TestPythondocling2parquetTransform(AbstractTransformLauncherTest):
         ignore_columns = ["date_acquired", "document_id", "pdf_convert_time", "hash"]
 
         fixtures = []
-        launcher = PythonTransformLauncher(docling2parquetPythonTransformConfiguration())
+        launcher = PythonTransformLauncher(Docling2ParquetPythonTransformConfiguration())
 
         # Default parameters
         fixtures.append(

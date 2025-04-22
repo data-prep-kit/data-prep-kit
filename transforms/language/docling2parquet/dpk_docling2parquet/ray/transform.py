@@ -24,8 +24,8 @@ except ImportError:
     raise ImportError("Please install data_prep_toolkit[ray]")
 
 from dpk_docling2parquet.transform import (
-    docling2parquetTransform,
-    docling2parquetTransformConfiguration,
+    Docling2ParquetTransform,
+    Docling2ParquetTransformConfiguration,
 )
 from ray.util.metrics import Counter, Gauge
 
@@ -33,7 +33,7 @@ from ray.util.metrics import Counter, Gauge
 logger = get_logger(__name__)
 
 
-class docling2parquetRayTransform(docling2parquetTransform):
+class Docling2ParquetRayTransform(Docling2ParquetTransform):
     def __init__(self, config: dict):
         """ """
         super().__init__(config)
@@ -53,7 +53,7 @@ class docling2parquetRayTransform(docling2parquetTransform):
         self.doc_counter.inc(1)
 
 
-class docling2parquetRayTransformConfiguration(RayTransformRuntimeConfiguration):
+class Docling2ParquetRayTransformConfiguration(RayTransformRuntimeConfiguration):
     """
     Implements the RayTransformConfiguration for docling2parquet as required by the RayTransformLauncher.
     """
@@ -63,11 +63,11 @@ class docling2parquetRayTransformConfiguration(RayTransformRuntimeConfiguration)
         Initialization
         :param base_configuration - base configuration class
         """
-        super().__init__(transform_config=docling2parquetTransformConfiguration(transform_class=docling2parquetRayTransform))
+        super().__init__(transform_config=Docling2ParquetTransformConfiguration(transform_class=Docling2ParquetRayTransform))
 
 
 # Class used by the notebooks to ingest binary files and create parquet files
-class docling2parquet:
+class Docling2Parquet:
     def __init__(self, **kwargs):
         self.params = {}
         for key in kwargs:
@@ -91,13 +91,13 @@ class docling2parquet:
     def transform(self):
         sys.argv = ParamsUtils.dict_to_req(d=(self.params))
         # create launcher
-        launcher = RayTransformLauncher(docling2parquetRayTransformConfiguration())
+        launcher = RayTransformLauncher(Docling2ParquetRayTransformConfiguration())
         # launch
         return_code = launcher.launch()
         return return_code
 
 
 if __name__ == "__main__":
-    launcher = RayTransformLauncher(docling2parquetRayTransformConfiguration())
+    launcher = RayTransformLauncher(Docling2ParquetRayTransformConfiguration())
     logger.info("Launching docling2parquet transform")
     launcher.launch()

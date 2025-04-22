@@ -17,13 +17,13 @@ import sys
 from data_processing.utils import ParamsUtils
 try:
     from data_processing_ray.runtime.ray import RayTransformLauncher
-    from dpk_docling2parquet.ray.transform import docling2parquetRayTransformConfiguration
+    from dpk_docling2parquet.ray.transform import Docling2ParquetRayTransformConfiguration
 except ImportError:
     raise ImportError("Please install data_prep_toolkit[ray]")
 
 
 # create launcher
-launcher = RayTransformLauncher(docling2parquetRayTransformConfiguration())
+launcher = RayTransformLauncher(Docling2ParquetRayTransformConfiguration())
 # create parameters
 s3_cred = {
     "access_key": "localminioaccesskey",

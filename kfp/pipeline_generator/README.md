@@ -1,9 +1,15 @@
-## Steps to generate a new pipeline
+## Steps to generate a pipeline
 
-- create a `descriptor.yaml` file for the required task. See for example the demo pipeline descriptor (example-pipeline.yaml).
+- Create a `descriptor.yaml` file for the required task. See for example the demo pipeline
+  descriptor [example-pipeline.yaml](example-pipeline.yaml).
 
-- create a venv with the necessary tooling for the workflow generator, and activate i: 
-    `make -C ../../transforms workflow-venv` and `source ../../transforms/venv/bin/activate`
+- Create a Python virtual environment with the necessary tooling for the workflow generator, and activate it: 
+    ```bash
+    make -C ../../transforms workflow-venv
+    source ../../transforms/venv/bin/activate
+    ```
 
-- run the workflow generator:
-    `python make_dpk_wf.py --workflow demo_wf.py --path ../../transforms example-pipeline.yaml`
+- Run the workflow generator:
+  ```bash
+  ./make_dpk_wf.py --workflow demo_wf.py --path ../../transforms example-pipeline.yaml
+  ```

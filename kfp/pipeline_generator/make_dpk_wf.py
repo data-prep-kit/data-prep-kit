@@ -1,0 +1,306 @@
+#!/usr/bin/env python 
+
+# (C) Copyright IBM Corp. 2024.
+# Licensed under the Apache License, Version 2.0 (the “License”);
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#  http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an “AS IS” BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+################################################################################
+
+import os, sys, stat, json, re, importlib, yaml, subprocess, tempfile, argparse
+
+DEFAULT_RAY_HEAD_OPTIONS = dict(cpu=1, memory=4)
+DEFAULT_RAY_WORKER_OPTIONS = dict(replicas=2, max_replicas=2, min_replicas=2, cpu=2, memory=4)
+KUBERAY_SERVER_URL = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888"
+ADDITIONAL_PARAMS = dict(wait_interval=2, 
+    wait_cluster_ready_tmout=400, 
+    wait_cluster_up_tmout=300, 
+    wait_job_ready_tmout=400, 
+    wait_print_tmout=30, 
+    http_retries=5, 
+    delete_cluster_delay_minutes=0)
+DEFAULT_RUNTIME_ACTOR_OPTIONS = dict(num_cpus=1)
+DEFAULT_RUNTIME_CODE_LOCATION = dict(github="github", commit_hash="12345", path="path")
+TRANSFORM_DICT_PARAMS = [
+    # param-name, default-value, update-with-image-info, description           
+    ("ray_head_options", DEFAULT_RAY_HEAD_OPTIONS, True, "Ray head options"),
+    ("ray_worker_options", DEFAULT_RAY_WORKER_OPTIONS, True, "Ray worker options"),
+    ("runtime_actor_options", DEFAULT_RUNTIME_ACTOR_OPTIONS, False, ""),
+    ("runtime_code_location", DEFAULT_RUNTIME_CODE_LOCATION, False, ""),
+    ("additional_params", ADDITIONAL_PARAMS, False, ""),
+    ]
+# parameters used from the 'transform_common_fields' section
+TRANSFORM_COMMON_FIELDS = [ "image", "image_pull_secret", "script_name", "s3_access_secret" ] + [ t[0] for t in TRANSFORM_DICT_PARAMS ]
+# parameters used from any transform entry
+TRANSFORM_FIELDS = TRANSFORM_COMMON_FIELDS + [ "image_tag", "transform", "name", "params", "args", "description", "ray_name" ]
+#
+# resolve all format like string values that reference 'name', 'transform' and 'description'
+#
+def re_format(d, transform, name, description):
+    if isinstance(d, dict):
+        return {k: re_format(v, transform, name, description) for k, v in d.items()}
+    if isinstance(d, list):
+        return [ re_format(v, transform, name, description) for v in d ]
+    if isinstance(d, str):
+        return d.format(transform=transform, name=name, description=description)
+    return d
+#
+# Update <d> with <u> recursively
+#
+def r_update(d, u):
+    return { 
+        k: u.get(k, d.get(k, None)) if not isinstance(u.get(k, d.get(k, None)), dict) else r_update(d.get(k, {}), u.get(k, {}))
+        for k in set([k for k in d.keys()]+[k for k in u.keys()])
+    }
+
+def re_condition(d):
+    d["name"] = d.get("name", d.get("transform", None))
+    transform, name, description = [d.get(k, None) for k in ["transform", "name", "description"]]
+    return re_format(d, transform, name, description)
+#
+# Print a warning for every field in <d> not in the <allowed_fields> set
+#
+def check_fields(d, allowed_fields, where):
+    allowed = set(allowed_fields)
+    for f in d.keys():
+        if f not in allowed:
+            print(f"warning: unrecognized field '{f}' in {where}", file=sys.stderr)  
+    return d
+#
+# Search for a dpk transform and and query it for 'short_name', 'description' and the argument list (table)
+#
+def get_transform_info(transform, module, python_path):
+    save_path = [ p for p in sys.path ]
+    sys.path += [ p for p in python_path.split(":") if p not in sys.path ]
+
+    module_name = f"dpk_{transform}.{module}"
+    tr = importlib.import_module(module_name)
+
+    short_name = tr.short_name
+    description = tr.description
+    args = [dict(name=f"{short_name}_{name}", type=type.__name__, value=value, description=desc) for name, type, value, desc in tr.get_transform_params()]
+    
+    sys.path = save_path
+    return (description, args)
+
+def get_kfp_ray_args(pipeline_config, transform_config):
+    tc = transform_config
+    pc = pipeline_config
+    name = tc["transform"]
+    image_info = { k: tc[k] for k in ["image", "image_pull_secret"] if k in tc }
+    args = []
+    args.append(dict(name=f"ray_name", type="str", value=tc.get("ray_name", f"{pc['name']}-{name}-kfp-ray"), description=f"name of the {name} Ray cluster"))
+    #args.append(dict(name=f"{name}_ray_run_id_KFPv2", type="str", value="", description="Ray cluster unique ID used only in KFP v2"))
+    for param, def_value, update_image, descr in TRANSFORM_DICT_PARAMS:
+        value = json.loads(json.dumps(def_value))
+        value.update(tc.get(param, {}))
+        if update_image:
+            value.update(image_info)
+        args.append(dict(name=f"{param}", type="dict", value=value, description=descr))
+    return args
+#
+# Defaults for the global parameters
+#
+def fixup_global_params(pd, input_file):
+    name=os.path.basename(input_file)
+    def_pd =  dict(
+            server_url=KUBERAY_SERVER_URL,
+            data_max_files=-1, 
+            data_num_samples=-1,
+            name=name,
+            description=f"KFP pipeline for {name}",
+            dsl_pipeline_name=pd.get("name", name),
+            data_checkpointing=False)
+    def_pd.update(pd)
+    def_pd["dsl_pipeline_name"] = re.sub(r"^([^a-zA-Z])", "dsl_\\1", re.sub(r"(\s|[._::,/*-])+", "_", def_pd["dsl_pipeline_name"]))
+    return def_pd
+
+def has_dpk_transform(directory):
+    with os.scandir(directory) as entries:
+        for entry in entries:
+            if os.path.isdir(entry) and entry.name.startswith("dpk_"):
+                return True
+    return False
+
+def scan_dir_for_dpk_transforms(directory):
+    if has_dpk_transform(directory):
+        return [directory]
+    dirs = []
+    with os.scandir(directory) as entries:
+        for entry in entries:
+            if os.path.isdir(entry):
+                dset = set(dirs)
+                dirs = dirs + [ d for d in scan_dir_for_dpk_transforms(os.path.join(directory, entry.name)) if d not in dset ]
+    return dirs
+#
+# Find all the directories in the path that contain transforms
+#
+def scan_path_for_dpk_transforms(path):
+    dirs = []
+    for p in path.split(":"):
+        if os.path.isdir(p):
+            dset = set(dirs)
+            dirs = dirs + [ d for d in scan_dir_for_dpk_transforms(p) if d not in dset ]
+    return ":".join(dirs)
+#
+# Expand the input parameters to the complete set, using the defaults from the transform 
+#
+def expand_params(input_file, output_file, python_path):
+    errors = 0
+    ### read the definition file
+    with open(input_file, "r") as f:
+        pipeline_descriptor = yaml.safe_load(f)
+
+    ### make a python path for transforms
+    python_path = scan_path_for_dpk_transforms(python_path)
+
+    ### apply the common parameters and check for errors
+    transforms = pipeline_descriptor.get("transforms", None)
+    if not transforms:
+        print(f"{input_file}: no transforms found", file=sys.stderr)
+        return 1, None
+
+    transform_common = pipeline_descriptor.get("transform_common_parameters", {})
+    check_fields(transform_common, TRANSFORM_COMMON_FIELDS, "transform_common_parameters") 
+
+    for i, t in enumerate(transforms):
+        check_fields(t, TRANSFORM_FIELDS, f"transform at position {i} ({t.get('name', t.get('transform', '?'))})")
+
+    transform_common = json.dumps(transform_common)
+    transforms = [ re_condition(r_update(json.loads(transform_common), tr)) for tr in transforms ]
+    
+    for i, t in enumerate(transforms):
+        if not t.get("transform", None):
+            print(f"{input_file}: unknown transform at position {i}", file=sys.stderr)
+            errors += 1
+        if not t.get("image", None):
+            print(f"{input_file}: image not defined for transform at  position {i} ({t.get('transform', '?')})", file=sys.stderr)
+            errors += 1
+
+    if errors:
+        return 1, None
+
+    ### apply defaults to global parameters
+    pipeline_descriptor = fixup_global_params(pipeline_descriptor, input_file)
+
+    ### grab the parameter definiton for each transform
+    for i, t in enumerate(transforms):
+        transform = t["transform"]
+        label = f"{t['name']}" if t["name"] == transform else f"{t['name']} ({transform})"
+        desc, args = t.get("description", None), t.get("args", None)
+
+        ### load the transform and query it for the argument list (if we don't already have it)
+        if not args:
+            for module in ["info", "transform"]:
+                try:
+                    mdesc, args = get_transform_info(transform, module, python_path)
+                except Exception as e:
+                    ### the info module might not exist, but report failure to load the transfom 
+                    if module == "transform":
+                        print(f"{input_file}: can't get parameters for transform at position {i} ({transform})", file=sys.stderr)
+                        print(e, file=sys.stderr)
+                else:
+                    if not desc:
+                        dec = mdesc
+                    break;
+
+        ### fixup the image name if we have an explicit tag
+        image_tag =  t.get("image_tag", None)
+        if image_tag:
+            t["image"] = ":".join(t["image"].split(":")[:-1]+[image_tag])
+
+        if desc:
+            t["description"] = desc
+
+        ### override the default argument values with the ones in the descriptor file
+        if args:
+            param_values = { f"{transform}_{p}": v for p, v in t.get("params", {}).items() }
+            t["args"] = [dict(name=a["name"], type=a["type"], description=a["description"],  value=param_values.get(a["name"], a["value"])) for a in args]
+        else:
+            t["args"] = []
+
+        ### issue a warning for all params not needed by the transform
+        unused_params = [ p for p in t.get("params", {}).keys() if f"{transform}_{p}" not in set([ a["name"] for a in t["args"] ]) ]
+        for up in unused_params:
+            print(f"warning: parameter \"{up}\" is not used by transform \"{label}\"", file=sys.stderr)
+
+        ### augment the transform arguments with the the ones required by ray and kfp 
+        t["kfp_args"] = get_kfp_ray_args(pipeline_descriptor, t)
+
+    pipeline_descriptor["transforms"] = transforms
+    if transform_common:
+        del pipeline_descriptor["transform_common_parameters"]
+    
+    if output_file == "-":
+        yaml.dump(pipeline_descriptor, sys.stdout, default_flow_style=False)
+    elif output_file:
+        with open(output_file, "w") as f:
+            yaml.dump(pipeline_descriptor, f, default_flow_style=False)
+    return 0, pipeline_descriptor
+#
+# Genereate the KFP python workflow by applying the complete set of parameters to the template
+#
+def apply_template(descriptor, template_file, output_file):
+    if not template_file:
+        print("template file is needed", file=sys.stderr)
+        return 1, None
+
+    from jinja2 import Environment, FileSystemLoader
+
+    script_dir = os.path.dirname(os.path.abspath(template_file))
+    environment = Environment(loader=FileSystemLoader(script_dir))
+    template = environment.get_template(os.path.basename(template_file))
+
+    content = template.render(descriptor)
+
+    if output_file == "-":
+        sys.stdout.write(content)
+    elif output_file:
+        with open(output_file, mode="w", encoding="utf-8") as wf:
+            wf.write(content)
+        st = os.stat(output_file)
+        os.chmod(output_file, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+
+    return 0, content
+#
+# Main entry point
+#
+def make_dpk_workflow(pipeline_file, expanded_pipeline_file, workflow_python_file, workflow_yaml_file, workflow_template_file, transform_search_path):
+    rc, descr = expand_params(pipeline_file, expanded_pipeline_file, transform_search_path)
+    if rc:
+        return rc
+    rc, wf = apply_template(descr, workflow_template_file, workflow_python_file)
+    if rc:
+        return rc
+    if workflow_yaml_file:
+        wfpy = workflow_python_file
+        if not wfpy:
+            tmp = tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", delete=False)
+            tmp.write(wf)
+            tmp.close()
+            wfpy = tmp.name
+        rc = subprocess.run(["python", wfpy, "-o", workflow_yaml_file]).returncode
+        if not workflow_python_file:
+            os.unlink(wfpy)
+    return rc
+
+
+if __name__ == "__main__":
+    default_template = os.path.join(os.path.dirname(os.path.relpath(__file__)), "template-dpk_wf.py")
+
+    parser = argparse.ArgumentParser(description="pipeline generator")
+    parser.add_argument(dest="descriptor", metavar="INPUT", type=str, default="pipeline-descriptor.yaml", help="pipeline definition file (yaml)")
+    parser.add_argument("-y", "--yaml", type=str, default=None, help="output pipeline descriptor augmented with all transforms arguments")
+    parser.add_argument("-t", "--template", type=str, default=default_template, help="template to generate workflow file from (%(default)s)")
+    parser.add_argument("-w", "--workflow", type=str, default=None, help="output python workflow file")
+    parser.add_argument("-o", "--output", type=str, default=None, help="output yaml workflow file")
+    parser.add_argument("-p", "--path", type=str, default=".", help="python path to search for transforms")
+    args = parser.parse_args()
+
+    rc = make_dpk_workflow(args.descriptor, args.yaml, args.workflow, args.output, args.template, args.path)
+    sys.exit(rc)

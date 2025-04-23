@@ -1,3 +1,0 @@
-data-prep-toolkit>=0.2.5.dev0
-parameterized
-pandas

@@ -3,7 +3,7 @@ name: "demo-2trans"
 description: "Example pipeline with two transforms"
 
 ## dpk/kfp image name and pull secret
-kfp_base_image: "us.icr.io/cil15-shared-registry/preprocessing-pipelines/kfp-data-processing:0.2.3"
+kfp_base_image: "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 image_pull_secret: "secret-for-quay-io"
 
 ## input, output and temporary storage locations, along with the corresponding s3 access secret name
@@ -39,7 +39,7 @@ transforms:
     ## use a label for this transform rather than its name,
     name: filter
 
-    ## for this trasform use a specific image tag,
+    ## for this transform use a specific image tag,
     ## it will override the tag in the image name set in the common area
     image_tag: "1.1"
 

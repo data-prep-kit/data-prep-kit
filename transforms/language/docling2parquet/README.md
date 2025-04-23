@@ -41,18 +41,18 @@ The output table will contain following columns
 | output column name | data type | description |
 |-|-|-|
 | source_filename | string | the basename of the source archive or file |
-| filename | string | the basename of the PDF file |
-| contents | string | the content of the PDF |
+| filename | string | the basename of the document file |
+| contents | string | the content of the document |
 | document_id | string | the document id, a random uuid4  |
 | document_hash | string | the document hash of the input content |
 | ext | string | the detected file extension |
 | hash | string | the hash of the `contents` column |
 | size | string | the size of `contents` |
 | date_acquired | date | the date when the transform was executing |
-| num_pages | number | number of pages in the PDF |
-| num_tables | number | number of tables in the PDF |
-| num_doc_elements | number | number of document elements in the PDF |
-| pdf_convert_time | float | time taken to convert the document in seconds |
+| num_pages | number | number of pages in the document |
+| num_tables | number | number of tables in the document |
+| num_doc_elements | number | number of document elements in the document |
+| document_convert_time | float | time taken to convert the document in seconds |
 
 
 ## Configuration
@@ -129,13 +129,13 @@ Currently we have:
 - [Unit test](test/test_docling2parquet_python.py)
 - [Integration test](test/test_docling2parquet.py)
 
-# docling2parquet Ray Transform 
+# Docling2Parquet Ray Transform 
 
 This module implements the ray version of the [docling2parquet transform](dpk_docling2parquet/ray/).
 
 ## Configuration and command line Options
 
-Ingest PDF to Parquet configuration and command line options are the same as for the base python transform. 
+Ingest Docling to Parquet configuration and command line options are the same as for the base python transform. 
 
 
 ## Running
@@ -163,14 +163,14 @@ The transform will produce the following statsd metrics:
 
 | metric name                      | Description                                                      |
 |----------------------------------|------------------------------------------------------------------|
-| worker_pdf_doc_count             | Number of PDF documents converted by the worker                  |
-| worker_pdf_pages_count           | Number of PDF pages converted by the worker                      |
-| worker_pdf_page_avg_convert_time | Average time for converting a single PDF page on each worker     |
-| worker_pdf_convert_time          | Time spent converting a single document                          |
+| worker_doc_count                 | Number of documents converted by the worker                      |
+| worker_doc_pages_count           | Number of document pages converted by the worker                 |
+| worker_doc_page_avg_convert_time | Average time for converting a single document page on each worker|
+| worker_document_convert_time     | Time spent converting a single document                          |
 
 
 # Credits
 
-The PDF document conversion is developed by the AI for Knowledge group in IBM Research Zurich.
+The Docling document conversion is developed by the AI for Knowledge group in IBM Research Zurich.
 The main package is [Docling](https://github.com/DS4SD/docling).
 

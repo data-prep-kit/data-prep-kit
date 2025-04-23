@@ -39,7 +39,7 @@ class TestPythonDocling2ParquetTransform(AbstractTransformLauncherTest):
         }
 
         # this is added as a fixture to remove these columns from comparison
-        ignore_columns = ["date_acquired", "document_id", "pdf_convert_time", "hash"]
+        ignore_columns = ["date_acquired", "document_id", "document_convert_time", "hash"]
 
         fixtures = []
         launcher = PythonTransformLauncher(Docling2ParquetPythonTransformConfiguration())

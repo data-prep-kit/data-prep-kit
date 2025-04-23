@@ -1,8 +1,8 @@
-# docling2parquet Ray-base KubeFlow Pipeline Transformation 
+# Docling2Parquet Ray-base KubeFlow Pipeline Transformation 
 
 
 ## Summary 
-This project allows execution of the [docling2parquet Ray transform](../ray) as a 
+This project allows execution of the [docling2parquet Ray transform](../kfp_ray/) as a 
 [KubeFlow Pipeline](https://www.kubeflow.org/docs/components/pipelines/overview/)
 
 The detail pipeline is presented in the [Simplest Transform pipeline tutorial](../../../../kfp/doc/simple_transform_pipeline.md) 

@@ -38,12 +38,12 @@ class Docling2ParquetRayTransform(Docling2ParquetTransform):
         """ """
         super().__init__(config)
 
-        self.doc_counter = Counter("worker_pdf_doc_count", "Number of PDF documents converted by the worker")
-        self.page_counter = Counter("worker_pdf_pages_count", "Number of PDF pages converted by the worker")
+        self.doc_counter = Counter("worker_doc_count", "Number of documents converted by the worker")
+        self.page_counter = Counter("worker_doc_pages_count", "Number of document pages converted by the worker")
         self.page_convert_gauge = Gauge(
-            "worker_pdf_page_avg_convert_time", "Average time for converting a single PDF page on each worker"
+            "worker_doc_page_avg_convert_time", "Average time for converting a single document page on each worker"
         )
-        self.doc_convert_gauge = Gauge("worker_pdf_convert_time", "Time spent converting a single document")
+        self.doc_convert_gauge = Gauge("worker_document_convert_time", "Time spent converting a single document")
 
     def _update_metrics(self, num_pages: int, elapse_time: float):
         if num_pages > 0:

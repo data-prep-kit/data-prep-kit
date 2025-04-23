@@ -258,7 +258,7 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
             "hash": TransformUtils.str_to_hash(content_string),
             "size": len(content_string),
             "date_acquired": datetime.now().isoformat(),
-            "pdf_convert_time": elapse_time,
+            "document_convert_time": elapse_time,
         }
 
         return file_data

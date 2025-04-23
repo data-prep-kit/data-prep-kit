@@ -1,0 +1,7 @@
+ftfy
+unicategories
+unicodedataplus
+datatrove
+fasttext
+nltk
+spacy

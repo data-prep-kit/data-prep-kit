@@ -28,10 +28,9 @@ MY_CONFIG.EMBEDDING_MODEL = 'ibm-granite/granite-embedding-30m-english'
 MY_CONFIG.EMBEDDING_LENGTH = 384
 
 ## LLM Model
-# MY_CONFIG.LLM_MODEL = "meta/meta-llama-3-8b-instruct"
+MY_CONFIG.LLM_MODEL = "meta/meta-llama-3-8b-instruct"
 # MY_CONFIG.LLM_MODEL = "meta/meta-llama-3-70b-instruct"
-# MY_CONFIG.LLM_MODEL = "ibm-granite/granite-3.0-2b-instruct"
-MY_CONFIG.LLM_MODEL = "ibm-granite/granite-3.1-8b-instruct"
+# MY_CONFIG.LLM_MODEL = "ibm-granite/granite-3.2-8b-instruct"
 MY_CONFIG.MAX_CONTEXT_WINDOW = 4096 #tokens
 
 

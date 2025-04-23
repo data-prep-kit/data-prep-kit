@@ -36,7 +36,11 @@ mc cp --recursive ${REPOROOT}/transforms/language/pdf2parquet/test-data/input/22
 mc cp --recursive ${REPOROOT}/transforms/language/text_encoder/test-data/input/ kfp/test/text_encoder/input
 mc cp --recursive ${REPOROOT}/transforms/language/doc_chunk/test-data/input/ kfp/test/doc_chunk/input
 mc cp --recursive ${REPOROOT}/transforms/language/html2parquet/test-data/input/test1.html kfp/test/html2parquet/input
+mc cp --recursive ${REPOROOT}/transforms/language/enrichment/test-data/input/ kfp/test/enrichment/input
+mc cp --recursive ${REPOROOT}/transforms/language/ml_filter/test-data/input/ kfp/test/ml_filter/input
 mc cp --recursive ${REPOROOT}/transforms/language/gneissweb_classification/test-data/input/ kfp/test/gneissweb_classification/input
+mc cp --recursive ${REPOROOT}/transforms/language/extreme_tokenized/test-data/input/ kfp/test/extreme_tokenized/input
+mc cp --recursive ${REPOROOT}/transforms/language/readability/test-data/input/ kfp/test/readability/input
 # universal
 mc cp --recursive ${REPOROOT}/transforms/universal/doc_id/test-data/input/ kfp/test/doc_id/input
 mc cp --recursive ${REPOROOT}/transforms/universal/ededup/test-data/input/ kfp/test/ededup/input

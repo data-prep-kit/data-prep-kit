@@ -13,10 +13,12 @@
 ################################################################################
 
 import os, sys, stat, json, re, importlib, yaml, subprocess, tempfile, argparse
+from collections import namedtuple
 
 DEFAULT_RAY_HEAD_OPTIONS = dict(cpu=1, memory=4)
 DEFAULT_RAY_WORKER_OPTIONS = dict(replicas=2, max_replicas=2, min_replicas=2, cpu=2, memory=4)
 KUBERAY_SERVER_URL = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888"
+KFP_BASE_IMAGE = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 ADDITIONAL_PARAMS = dict(wait_interval=2, 
     wait_cluster_ready_tmout=400, 
     wait_cluster_up_tmout=300, 
@@ -26,18 +28,57 @@ ADDITIONAL_PARAMS = dict(wait_interval=2,
     delete_cluster_delay_minutes=0)
 DEFAULT_RUNTIME_ACTOR_OPTIONS = dict(num_cpus=1)
 DEFAULT_RUNTIME_CODE_LOCATION = dict(github="github", commit_hash="12345", path="path")
+DictField = namedtuple("DictField", "Name Value UpdateWithImage Description")
 TRANSFORM_DICT_PARAMS = [
-    # param-name, default-value, update-with-image-info, description           
-    ("ray_head_options", DEFAULT_RAY_HEAD_OPTIONS, True, "Ray head options"),
-    ("ray_worker_options", DEFAULT_RAY_WORKER_OPTIONS, True, "Ray worker options"),
-    ("runtime_actor_options", DEFAULT_RUNTIME_ACTOR_OPTIONS, False, ""),
-    ("runtime_code_location", DEFAULT_RUNTIME_CODE_LOCATION, False, ""),
-    ("additional_params", ADDITIONAL_PARAMS, False, ""),
+    DictField("ray_head_options", DEFAULT_RAY_HEAD_OPTIONS, True, "Ray head options"),
+    DictField("ray_worker_options", DEFAULT_RAY_WORKER_OPTIONS, True, "Ray worker options"),
+    DictField("runtime_actor_options", DEFAULT_RUNTIME_ACTOR_OPTIONS, False, "Runtime actor options"),
+    DictField("runtime_code_location", DEFAULT_RUNTIME_CODE_LOCATION, False, "git repository information"),
+    DictField("additional_params", ADDITIONAL_PARAMS, False, "additional paramters for the Ray control commands"),
     ]
+Field = namedtuple("Field", "Name Type Description")
 # parameters used from the 'transform_common_fields' section
-TRANSFORM_COMMON_FIELDS = [ "image", "image_pull_secret", "script_name", "s3_access_secret" ] + [ t[0] for t in TRANSFORM_DICT_PARAMS ]
+TRANSFORM_COMMON_FIELDS = sorted([ Field(t.Name, dict, t.Description) for t in TRANSFORM_DICT_PARAMS ] + [
+    Field("image", str, "image name for the transform"), 
+    Field("image_pull_secret", str, "Kubernetes secret for the image repository"), 
+    Field("script_name", str, "python arguments for invoking the transform"), 
+#    Field("s3_access_secret", str, "s3 secret for i/o"),
+    ], key=lambda x: x.Name)
 # parameters used from any transform entry
-TRANSFORM_FIELDS = TRANSFORM_COMMON_FIELDS + [ "image_tag", "transform", "name", "params", "args", "description", "ray_name" ]
+TRANSFORM_FIELDS = sorted(TRANSFORM_COMMON_FIELDS + [ 
+    Field("image_tag", str, "tag for the image name"), 
+    Field("transform", str, "the transform name"), 
+    Field("name", str, "name to identify this step in workflow, by default the transform name is used"), 
+    Field("params", dict, "dictionary param_name: value to replace the default values defined in the transform"),
+    Field("args", str, "list of arguments to pass to the transform, by default read fom the transform"), 
+    Field("description",str, "description for this step in the workflow, the transfom's description is used by default"), 
+    Field("ray_name", str, "name to use for the Ray cluster, the name of the transform is used by default"),
+    ], key=lambda x: x.Name)
+GlobalField = namedtuple("GlobalField", "Name Type Required Value Description")
+GLOBAL_FIELDS = sorted([
+    GlobalField("name", str, False, "", "name for this workflow, defaults to the descriptor filename"),
+    GlobalField("description", str, False, "", "description for this workflow"),
+    GlobalField("server_url", str, False, KUBERAY_SERVER_URL, "KubeRay server URL"),
+    GlobalField("dsl_pipeline_name", str, False, "", "DSL function name, defaults to the workflow name"),
+    GlobalField("data_max_files", int, False, -1, "number of files to process, -1 to process all"),
+    GlobalField("data_num_samples", int, False, -1, "number of samples to process, -1 to process all"),
+    GlobalField("data_checkpointing", bool, False, False, "whether to use data checkpointing"),
+    GlobalField("transform_common_parameters", dict, False, {}, "parameters that apply to all transforms in this workflow"),
+    GlobalField("transforms", list, True, [], "the list of transforms in execution order"),
+    GlobalField("kfp_base_image", str, False, KFP_BASE_IMAGE, "dpk/kfp image name"),
+    GlobalField("s3_access_secret", str, False, "s3-access", "s3 access secret for the input, output and temporary storage"),
+    GlobalField("image_pull_secret", str, False, "image-pull-secret", "secret for getting the dpk/kfp image"),
+    GlobalField("input_folder", str, False, "input", "input location"),
+    GlobalField("output_folder", str, False, "output", "output location"),
+    GlobalField("tmp_folder", str, False, "output/tmp", "temporary storage location"),
+    ], key=lambda x: x.Name)
+
+def valid_global_fields():
+    return set([f.Name for f in GLOBAL_FIELDS])
+def valid_transform_common_fields():
+    return set([f.Name for f in TRANSFORM_COMMON_FIELDS])
+def valid_transform_fields():
+    return set([f.Name for f in TRANSFORM_FIELDS])
 #
 # resolve all format like string values that reference 'name', 'transform' and 'description'
 #
@@ -83,7 +124,7 @@ def get_transform_info(transform, module, python_path):
 
     short_name = tr.short_name
     description = tr.description
-    args = [dict(name=f"{short_name}_{name}", type=type.__name__, value=value, description=desc) for name, type, value, desc in tr.get_transform_params()]
+    args = [dict(name=f"{short_name}_{p.Name}", type=p.Type.__name__, value=p.Default, description=p.Description) for p in tr.get_transform_params()]
     
     sys.path = save_path
     return (description, args)
@@ -96,29 +137,31 @@ def get_kfp_ray_args(pipeline_config, transform_config):
     args = []
     args.append(dict(name=f"ray_name", type="str", value=tc.get("ray_name", f"{pc['name']}-{name}-kfp-ray"), description=f"name of the {name} Ray cluster"))
     #args.append(dict(name=f"{name}_ray_run_id_KFPv2", type="str", value="", description="Ray cluster unique ID used only in KFP v2"))
-    for param, def_value, update_image, descr in TRANSFORM_DICT_PARAMS:
-        value = json.loads(json.dumps(def_value))
-        value.update(tc.get(param, {}))
-        if update_image:
+    for dp in TRANSFORM_DICT_PARAMS:
+        value = json.loads(json.dumps(dp.Value))
+        value.update(tc.get(dp.Name, {}))
+        if dp.UpdateWithImage:
             value.update(image_info)
-        args.append(dict(name=f"{param}", type="dict", value=value, description=descr))
+        args.append(dict(name=f"{dp.Name}", type="dict", value=value, description=dp.Description))
     return args
 #
 # Defaults for the global parameters
 #
 def fixup_global_params(pd, input_file):
     name=os.path.basename(input_file)
-    def_pd =  dict(
-            server_url=KUBERAY_SERVER_URL,
-            data_max_files=-1, 
-            data_num_samples=-1,
-            name=name,
-            description=f"KFP pipeline for {name}",
-            dsl_pipeline_name=pd.get("name", name),
-            data_checkpointing=False)
-    def_pd.update(pd)
-    def_pd["dsl_pipeline_name"] = re.sub(r"^([^a-zA-Z])", "dsl_\\1", re.sub(r"(\s|[._::,/*-])+", "_", def_pd["dsl_pipeline_name"]))
-    return def_pd
+    global_defaults = {g.Name: g.Value for g in GLOBAL_FIELDS if not g.Required}
+    global_defaults.update(dict(
+        name=name,
+        description=f"KFP pipeline for {name}",
+        dsl_pipeline_name=pd.get("name", name),
+        ))
+    global_defaults.update(pd)
+    ## sanitize the dsl name
+    global_defaults["dsl_pipeline_name"] = re.sub(r"^([^a-zA-Z])", "dsl_\\1", re.sub(r"(\s|[._::,/*-])+", "_", global_defaults["dsl_pipeline_name"]))
+    for f in pd.keys():
+        if f not in valid_global_fields():
+            print(f"warning: unused global field {f}", file=sys.stderr)
+    return global_defaults
 
 def has_dpk_transform(directory):
     with os.scandir(directory) as entries:
@@ -166,10 +209,10 @@ def expand_params(input_file, output_file, python_path):
         return 1, None
 
     transform_common = pipeline_descriptor.get("transform_common_parameters", {})
-    check_fields(transform_common, TRANSFORM_COMMON_FIELDS, "transform_common_parameters") 
+    check_fields(transform_common, valid_transform_common_fields(), "transform_common_parameters") 
 
     for i, t in enumerate(transforms):
-        check_fields(t, TRANSFORM_FIELDS, f"transform at position {i} ({t.get('name', t.get('transform', '?'))})")
+        check_fields(t, valid_transform_fields(), f"transform at position {i} ({t.get('name', t.get('transform', '?'))})")
 
     transform_common = json.dumps(transform_common)
     transforms = [ re_condition(r_update(json.loads(transform_common), tr)) for tr in transforms ]
@@ -300,7 +343,22 @@ if __name__ == "__main__":
     parser.add_argument("-w", "--workflow", type=str, default=None, help="output python workflow file")
     parser.add_argument("-o", "--output", type=str, default=None, help="output yaml workflow file")
     parser.add_argument("-p", "--path", type=str, default=".", help="python path to search for transforms")
+    parser.add_argument("-f", "--help-fields", action='store_true', default=False, help="display the list of valid fields")
     args = parser.parse_args()
-
-    rc = make_dpk_workflow(args.descriptor, args.yaml, args.workflow, args.output, args.template, args.path)
+    if args.help_fields:
+        print("\nGlobal fields")
+        print("=============")
+        for f in GLOBAL_FIELDS:
+            print(f"  {f.Name} ({f.Type.__name__}):\n     {f.Description}, default: {f.Value if f.Value else 'none'}")
+        print("\nTransform common fields")
+        print("======================")
+        for f in TRANSFORM_COMMON_FIELDS:
+            print(f"  {f.Name} ({f.Type.__name__}):\n     {f.Description}")
+        print("\nTransform fields")
+        print("======================")
+        for f in TRANSFORM_FIELDS:
+            print(f"  {f.Name} ({f.Type.__name__}):\n     {f.Description}")
+        rc = 0
+    else:
+        rc = make_dpk_workflow(args.descriptor, args.yaml, args.workflow, args.output, args.template, args.path)
     sys.exit(rc)

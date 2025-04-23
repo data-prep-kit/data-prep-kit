@@ -1,79 +1,64 @@
 REPOROOT=../../..
 # Use make help, to see the available rules
-include $(REPOROOT)/.make.defaults
+include $(REPOROOT)/transforms/.make.cicd.targets
 
-setup::
-	@# Help: Recursively make $@ all subdirs 
-	$(MAKE) RULE=$@ .recurse
+#
+# This is intended to be included across the Makefiles provided within
+# a given transform's directory tree,  so must use compatible syntax.
+#
+################################################################################
+# This defines the name of the transform and is used to match against
+# expected files and is used to define the transform's image name. 
+TRANSFORM_NAME=$(shell basename `pwd`)
 
-clean::
-	@# Help: Recursively make $@ all subdirs 
-	$(MAKE) RULE=$@ .recurse
+################################################################################
 
-build::
-	@# Help: Recursively make $@ in subdirs 
-	$(MAKE) RULE=$@ .recurse
-venv::
-	@# Help: Recursively make $@ in subdirs 
-	$(MAKE) RULE=$@ .recurse
+# Developers should adapt this according to their implementation if they do not follow the proposed template
+# We continue to refine this. The current settings are based on current template
+TRANSFORM_PYTHON_SRC="-m dpk_$(TRANSFORM_NAME).runtime"
+TRANSFORM_RAY_SRC="-m dpk_$(TRANSFORM_NAME).ray.runtime"
+TRANSFORM_SPARK_SRC="-m dpk_$(TRANSFORM_NAME).spark.runtime"
 
-image:: 
-	@# Help: Recursively make $@ in all subdirs 
-	@$(MAKE) RULE=$@ .recurse
 
-set-versions:  
-	@# Help: Recursively $@ in all subdirs 
-	@$(MAKE) RULE=$@ .recurse
 
-publish:: 
-	@# Help: Recursively make $@ in all subdirs 
-	@$(MAKE) RULE=$@ .recurse
+# Used primarily to regenerate expected files used by make Unit Test
+run-sample-cli:
+	make venv \
+	&& source venv/bin/activate \
+	&& python -m dpk_header_cleanser.runtime --data_local_config '{"input_folder": "test-data/input", "output_folder": "output/python/license-and-copyright-local"}' \
+			--header_cleanser_contents_column_name contents \
+			--header_cleanser_license True \
+			--header_cleanser_copyright True
+#
+	source venv/bin/activate \
+	&& python -m dpk_header_cleanser.runtime --data_local_config '{"input_folder": "test-data/input", "output_folder": "output/python/license-local"}' \
+			--header_cleanser_contents_column_name contents \
+			--header_cleanser_license True \
+			--header_cleanser_copyright False
+#
+	source venv/bin/activate \
+	&& python -m dpk_header_cleanser.runtime --data_local_config '{"input_folder": "test-data/input", "output_folder": "output/python/copyright-local"}' \
+			--header_cleanser_contents_column_name contents \
+			--header_cleanser_license False \
+			--header_cleanser_copyright True
 
-test-image:: 
-	@# Help: Recursively make $@ in all subdirs 
-	@$(MAKE) RULE=$@ .recurse
-
-test:: 
-	@# Help: Recursively make $@ in all subdirs 
-	@$(MAKE) RULE=$@ .recurse
-
-test-src::
-	@# Help: Recursively make $@ in all subdirs 
-	$(MAKE) RULE=$@ .recurse
-
-kind-load-image::
-	@# Help: Recursively make $@ in all subdirs 
-	$(MAKE) RULE=$@ .recurse
-
-docker-load-image::
-	@# Help: Recursively make $@ in all subdirs
-	$(MAKE) RULE=$@ .recurse
-
-docker-save-image::
-	@# Help: Recursively make $@ in all subdirs 
-	$(MAKE) RULE=$@ .recurse
-
-.PHONY: workflow-venv
-workflow-venv:
-	if [ -e kfp_ray ]; then                 \
-	    $(MAKE) -C kfp_ray workflow-venv;   \
-	fi
-
-.PHONY: workflow-test
-workflow-test:
-	if [ -e kfp_ray ]; then                 \
-	    $(MAKE) -C kfp_ray workflow-test;   \
-	fi
-	
-.PHONY: workflow-upload
-workflow-upload:
-	if [ -e kfp_ray ]; then                 \
-	    $(MAKE) -C kfp_ray workflow-upload; \
-	fi
-
-.PHONY: workflow-build
-workflow-build:
-	if [ -e kfp_ray ]; then                 \
-	    $(MAKE) -C  kfp_ray workflow-build; \
-	fi
-
+	source venv/bin/activate \
+	&& python -m dpk_header_cleanser.ray.runtime --data_local_config '{"input_folder": "test-data/input", "output_folder": "output/ray/license-and-copyright-local"}' \
+			--header_cleanser_contents_column_name contents \
+			--header_cleanser_license True \
+			--header_cleanser_copyright True \
+			--run_locally True
+#
+	source venv/bin/activate \
+	&& python -m dpk_header_cleanser.ray.runtime --data_local_config '{"input_folder": "test-data/input", "output_folder": "output/ray/license-local"}' \
+			--header_cleanser_contents_column_name contents \
+			--header_cleanser_license True \
+			--header_cleanser_copyright False \
+			--run_locally True
+#
+	source venv/bin/activate \
+	&& python -m dpk_header_cleanser.ray.runtime --data_local_config '{"input_folder": "test-data/input", "output_folder": "output/ray/copyright-local"}' \
+			--header_cleanser_contents_column_name contents \
+			--header_cleanser_license False \
+			--header_cleanser_copyright True \
+			--run_locally True

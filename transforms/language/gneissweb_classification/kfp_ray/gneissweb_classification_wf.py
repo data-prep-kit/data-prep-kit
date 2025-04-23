@@ -31,6 +31,7 @@ HF_SECRET = "hf-secret"
 # The secret key that holds the HugginFace token
 HF_SECRET_KEY = "hf-token"
 
+S3_SECRET="s3-secret"
 
 task_image = "quay.io/dataprep1/data-prep-kit/gneissweb_classification-ray:latest"
 
@@ -134,7 +135,7 @@ def gneissweb_classification(
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
     data_s3_config: str = "{'input_folder': 'test/gneissweb_classification/input', 'output_folder': 'test/gneissweb_classification/output/'}",
-    data_s3_access_secret: str = "s3-secret",
+    data_s3_access_secret: str = S3_SECRET,
     data_max_files: int = -1,
     data_num_samples: int = -1,
     data_checkpointing: bool = False,
@@ -252,7 +253,15 @@ def gneissweb_classification(
             server_url=server_url,
         )
         ComponentUtils.add_settings_to_component(execute_job, ONE_WEEK_SEC)
-        ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
+        if os.getenv("KFPv2", "0") == "1":
+            from kfp import kubernetes
+
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env(prefix="jjj")
+            kubernetes.use_secret_as_env(task=execute_job, secret_name=S3_SECRET, secret_key_to_env=env2key)
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
         execute_job.after(ray_cluster)
 
 

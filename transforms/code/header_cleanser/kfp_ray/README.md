@@ -2,7 +2,7 @@
 
 
 ## Summary 
-This project allows execution of the [header cleanser Ray transform](../ray) as a 
+
 [KubeFlow Pipeline](https://www.kubeflow.org/docs/components/pipelines/overview/)
 
 The detail pipeline is presented in the [Simplest Transform pipeline tutorial](../../../../kfp/doc/simple_transform_pipeline.md) 
@@ -25,4 +25,3 @@ make workflow-build
 ```
 
 The next steps are described in [Deploying a pipeline](../../../../kfp/doc/simple_transform_pipeline.md#deploying-a-pipeline-)
-and [Executing pipeline and watching execution results](../../../../kfp/doc/simple_transform_pipeline.md#executing-pipeline-and-watching-execution-results-)

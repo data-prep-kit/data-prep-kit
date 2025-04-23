@@ -1,5 +1,10 @@
 <h1 align="center">Data Prep Kit</h1>
 
+<p align="center">
+<img src="doc/LF_DataPrepKit_Logo_Postive.png#gh-light-mode-only" width="25%" height="25%" />
+<img src="doc/LF_DataPrepKit_Logo_Negative.png#gh-dark-mode-only" width="25%" height="25%"/>
+</p>
+
 <div align="center">
 
 [![arXiv](https://img.shields.io/badge/arXiv-2409.18164-b31b1b.svg)](https://arxiv.org/abs/2409.18164)
@@ -14,8 +19,10 @@
 
   </div>
 
+Data Prep Kit accelerates unstructured data preparation for LLM app developers. Developers can use Data Prep Kit to cleanse, transform, and enrich use case-specific unstructured data to pre-train LLMs, fine-tune LLMs, instruct-tune LLMs, or build [Retrieval Augmented Generation (RAG)](https://github.com/data-prep-kit/data-prep-kit/blob/dev/examples/rag-html-1/README.md) applications for LLMs
 
-Data Prep Kit accelerates unstructured data preparation for LLM app developers. Developers can use Data Prep Kit to cleanse, transform, and enrich use case-specific unstructured data to pre-train LLMs, fine-tune LLMs, instruct-tune LLMs, or build retrieval augmented generation (RAG) applications for LLMs. Data Prep Kit can readily scale from a commodity laptop all the way to data center scale.
+Data Prep Kit can readily scale from a commodity laptop all the way to data center scale.
+
 
 ## Features <a name = "features"></a>
 
@@ -28,7 +35,7 @@ Data Prep Kit accelerates unstructured data preparation for LLM app developers. 
 
 ## Installation
 
-The latest version of the Data Prep Kit is available on PyPi for Python 3.10, 3.11 or 3.12. It can be installed using: 
+The latest version of the Data Prep Kit is available on PyPi for Python 3.10, 3.11 and 3.12. It can be installed using: 
 
 ```bash
 pip install  'data-prep-toolkit-transforms[all]'
@@ -57,25 +64,23 @@ For advanced users, [here](ADVANCED.md) is more information for adding your own 
 running transforms from the command line, scaling and automation and more. 
 Also, repository structure and use are discussed [here](doc/repo.md).
 
-### Windows users
-
-Please click [here](doc/quick-start/quick-start.md#running-transforms-on-windows) for guidance on how to run transforms in Windows.
-
 ### Using HuggingFace data files 
 
 All the transforms in the kit include small sample data files for testing, but advanced users who want to download real data files from HuggingFace and use them in testing, can refer to [this](ADVANCED.md#using-data-from-huggingface). 
 
 
-## Current list of transforms <a name="table"></a>
+## Supported data transforms <a name="table"></a>
+
+<details>
+      <summary>Click to expand for detailed list of transforms.</summary>
 
 The matrix below shows the the combination of modules and supported runtimes. All the modules can be accessed [here](transforms) and can be combined to form data processing pipelines, as shown in the [examples](examples) folder. 
-
 
 | Modules                                                                              |    Python-only     |        Ray         |       Spark        |     KFP on Ray     |
 |:-------------------------------------------------------------------------------------|:------------------:|:------------------:|:------------------:|:------------------:|
 | **Data Ingestion**                                                                   |                    |                    |                    |                    |
-| [Code (from zip) to Parquet](transforms/code/code2parquet/python/README.md) | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
-| [PDF to Parquet](transforms/language/docling2parquet/README.md)                 | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| [Code (from zip) to Parquet](transforms/code/code2parquet/README.md) | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| [Docling to Parquet](transforms/language/docling2parquet/README.md)                 | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [HTML to Parquet](transforms/language/html2parquet/README.md)               | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Web to Parquet](transforms/universal/web2parquet/README.md)                | :white_check_mark: |                    |                    |                |         
 | **Universal (Code & Language)**                                                      |                    |                    |                    |                    | 
@@ -101,14 +106,15 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 | [Readability scores](transforms/language/readability/README.md)          | :white_check_mark: | :white_check_mark: |                    |  |
 | [Extreme tokenized annotation](transforms/language/extreme_tokenized/README.md)          | :white_check_mark: | :white_check_mark: |                    |  |
 **Code-only**                                                                         |                    |                     |             |                    |
-| [Programming language annotation](transforms/code/proglang_select/python/README.md)  | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
-| [Code quality annotation](transforms/code/code_quality/python/README.md)             | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| [Programming language annotation](transforms/code/proglang_select/README.md)  | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| [Code quality annotation](transforms/code/code_quality/README.md)             | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Malware annotation](transforms/code/malware/python/README.md)                       | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Header cleanser](transforms/code/header_cleanser/python/README.md)                  | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Semantic file ordering](transforms/code/repo_level_ordering/ray/README.md)          |                    | :white_check_mark: |                    |                    |
-| [License Select Annotation](transforms/code/license_select/python/README.md)         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| [License Select Annotation](transforms/code/license_select/README.md)         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Code profiler](transforms/code/code_profiler/README.md)                             | :white_check_mark: | :white_check_mark: |                    |  |
 
+</details>
 
 ## Contributing
 

@@ -19,6 +19,7 @@ from data_processing.data_access import (
     DataAccessFactoryBase,
     DataAccessLocal,
     DataAccessS3,
+    DataAccessHF,
 )
 from data_processing.utils import ParamsUtils, str2bool
 
@@ -46,6 +47,7 @@ class DataAccessFactory(DataAccessFactoryBase):
         super().__init__(cli_arg_prefix=cli_arg_prefix)
         self.s3_config = None
         self.local_config = None
+        self.hf_config = None
         self.enable_data_navigation = enable_data_navigation
 
     def add_input_params(self, parser: argparse.ArgumentParser) -> None:
@@ -77,6 +79,7 @@ class DataAccessFactory(DataAccessFactoryBase):
             self.__add_data_navigation_params(parser)
 
     def __add_data_navigation_params(self, parser):
+        # s3 config
         help_example_dict = {
             "input_folder": [
                 "s3-path/your-input-bucket",
@@ -93,6 +96,7 @@ class DataAccessFactory(DataAccessFactoryBase):
             default=None,
             help="AST string containing input/output paths.\n" + ParamsUtils.get_ast_help_text(help_example_dict),
         )
+        # local config
         help_example_dict = {
             "input_folder": ["./input", "Path to input folder of files to be processed"],
             "output_folder": ["/tmp/output", "Path to output folder of processed files"],
@@ -103,6 +107,19 @@ class DataAccessFactory(DataAccessFactoryBase):
             default=None,
             help="ast string containing input/output folders using local fs.\n"
             + ParamsUtils.get_ast_help_text(help_example_dict),
+        )
+        # hf config
+        help_example_dict = {
+            "hf_token": ["./input", "HF token required for write operation"],
+            "input_folder": ["./input", "Path to input folder of files to be processed"],
+            "output_folder": ["/tmp/output", "Path to output folder of processed files"],
+        }
+        parser.add_argument(
+            f"--{self.cli_arg_prefix}hf_config",
+            type=ast.literal_eval,
+            default=None,
+            help="ast string containing hf_token/input/output folders using hf fs.\n"
+                 + ParamsUtils.get_ast_help_text(help_example_dict),
         )
         parser.add_argument(
             f"--{self.cli_arg_prefix}max_files", type=int, default=-1, help="Max amount of files to process"
@@ -154,6 +171,7 @@ class DataAccessFactory(DataAccessFactoryBase):
         s3_cred = arg_dict.get(f"{self.cli_arg_prefix}s3_cred", None)
         s3_config = arg_dict.get(f"{self.cli_arg_prefix}s3_config", None)
         local_config = arg_dict.get(f"{self.cli_arg_prefix}local_config", None)
+        hf_config = arg_dict.get(f"{self.cli_arg_prefix}hf_config", None)
         checkpointing = arg_dict.get(f"{self.cli_arg_prefix}checkpointing", False)
         max_files = arg_dict.get(f"{self.cli_arg_prefix}max_files", -1)
         data_sets = arg_dict.get(f"{self.cli_arg_prefix}data_sets", None)
@@ -163,18 +181,20 @@ class DataAccessFactory(DataAccessFactoryBase):
         # check which configuration (S3 or Local) is specified
         s3_config_specified = 1 if s3_config is not None else 0
         local_config_specified = 1 if local_config is not None else 0
+        hf_config_specified = 1 if hf_config is not None else 0
 
         # check that only one (S3 or Local) configuration is specified
-        if s3_config_specified + local_config_specified > 1:
+        if s3_config_specified + local_config_specified + hf_config_specified > 1:
             self.logger.error(
                 f"data factory {self.cli_arg_prefix} "
                 f"{'S3, ' if s3_config_specified == 1 else ''}"
                 f"{'Local ' if local_config_specified == 1 else ''}"
+                f"{'hf ' if hf_config_specified == 1 else ''}"
                 "configurations specified, but only one configuration expected"
             )
             return False
 
-        # further validate the specified configuration (S3 or Local)
+        # further validate the specified configuration (S3, hf or Local)
         if s3_config_specified == 1:
             if not self._validate_s3_config(s3_config=s3_config):
                 return False
@@ -188,6 +208,20 @@ class DataAccessFactory(DataAccessFactoryBase):
                 f'input path - {self.s3_config["input_folder"]}, '
                 f'output path - {self.s3_config["output_folder"]}'
             )
+        elif hf_config_specified == 1:
+            if not self._validate_hf_config(hf_config=hf_config):
+                return False
+            self.hf_config = hf_config
+            self.logger.info(
+                f"data factory {self.cli_arg_prefix} is using HF data access: "               
+                f"input_folder - {self.hf_config['input_folder']} "
+                f"output_folder - {self.hf_config['output_folder']}"
+            )
+        elif s3_cred is not None:
+            if not self._validate_s3_cred(s3_credentials=s3_cred):
+                return False
+            self.s3_cred = s3_cred
+            self.logger.info(f"data factory {self.cli_arg_prefix} is using s3 configuration without input/output path")
         elif local_config_specified == 1:
             if not self._validate_local_config(local_config=local_config):
                 return False
@@ -197,11 +231,6 @@ class DataAccessFactory(DataAccessFactoryBase):
                 f"input_folder - {self.local_config['input_folder']} "
                 f"output_folder - {self.local_config['output_folder']}"
             )
-        elif s3_cred is not None:
-            if not self._validate_s3_cred(s3_credentials=s3_cred):
-                return False
-            self.s3_cred = s3_cred
-            self.logger.info(f"data factory {self.cli_arg_prefix} is using s3 configuration without input/output path")
         else:
             self.logger.info(
                 f"data factory {self.cli_arg_prefix} " f"is using local configuration without input/output path"
@@ -240,6 +269,17 @@ class DataAccessFactory(DataAccessFactoryBase):
         Create data access based on the parameters
         :return: corresponding data access class
         """
+        if self.hf_config is not None:
+            # hf-config is specified, its hf
+            return DataAccessHF(
+                hf_config=self.hf_config,
+                d_sets=self.dsets,
+                checkpoint=self.checkpointing,
+                m_files=self.max_files,
+                n_samples=self.n_samples,
+                files_to_use=self.files_to_use,
+                files_to_checkpoint=self.files_to_checkpoint,
+            )
         if self.s3_config is not None or self.s3_cred is not None:
             # If S3 config or S3 credential are specified, its S3
             return DataAccessS3(
@@ -252,14 +292,13 @@ class DataAccessFactory(DataAccessFactoryBase):
                 files_to_use=self.files_to_use,
                 files_to_checkpoint=self.files_to_checkpoint,
             )
-        else:
-            # anything else is local data
-            return DataAccessLocal(
-                local_config=self.local_config,
-                d_sets=self.dsets,
-                checkpoint=self.checkpointing,
-                m_files=self.max_files,
-                n_samples=self.n_samples,
-                files_to_use=self.files_to_use,
-                files_to_checkpoint=self.files_to_checkpoint,
-            )
+        # anything else is local data
+        return DataAccessLocal(
+            local_config=self.local_config,
+            d_sets=self.dsets,
+            checkpoint=self.checkpointing,
+            m_files=self.max_files,
+            n_samples=self.n_samples,
+            files_to_use=self.files_to_use,
+            files_to_checkpoint=self.files_to_checkpoint,
+        )

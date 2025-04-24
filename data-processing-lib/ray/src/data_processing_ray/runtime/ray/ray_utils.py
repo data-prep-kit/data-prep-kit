@@ -37,10 +37,10 @@ class RayUtils:
 
     @staticmethod
     def get_available_resources(
-        available_cpus_gauge: Gauge = None,
-        available_gpus_gauge: Gauge = None,
-        available_memory_gauge: Gauge = None,
-        object_memory_gauge: Gauge = None,
+            available_cpus_gauge: Gauge = None,
+            available_gpus_gauge: Gauge = None,
+            available_memory_gauge: Gauge = None,
+            object_memory_gauge: Gauge = None,
     ) -> dict[str, Any]:
         """
         Get currently available cluster resources
@@ -98,7 +98,7 @@ class RayUtils:
 
     @staticmethod
     def create_actors(
-        clazz: type, params: dict[str, Any], actor_options: dict[str, Any], n_actors: int, creation_delay: int = 0
+            clazz: type, params: dict[str, Any], actor_options: dict[str, Any], n_actors: int, creation_delay: int = 0
     ) -> list[ActorHandle]:
         """
         Create a set of actors
@@ -130,16 +130,16 @@ class RayUtils:
 
     @staticmethod
     def process_files(
-        executors: ActorPool,
-        files: list[str],
-        print_interval: int,
-        files_in_progress_gauge: Gauge,
-        files_completed_gauge: Gauge,
-        available_cpus_gauge: Gauge,
-        available_gpus_gauge: Gauge,
-        available_memory_gauge: Gauge,
-        object_memory_gauge: Gauge,
-        logger: logging.Logger,
+            executors: ActorPool,
+            files: list[str],
+            print_interval: int,
+            files_in_progress_gauge: Gauge,
+            files_completed_gauge: Gauge,
+            available_cpus_gauge: Gauge,
+            available_gpus_gauge: Gauge,
+            available_memory_gauge: Gauge,
+            object_memory_gauge: Gauge,
+            logger: logging.Logger,
     ) -> int:
         """
         Process files

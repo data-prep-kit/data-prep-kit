@@ -1,7 +1,7 @@
 
 <p align="center">
-<img src="doc/LF_DataPrepKit_Logotype_Positive.png#gh-light-mode-only" />
-<img src="doc/LF_DataPrepKit_Logotype_Negative.png#gh-dark-mode-only" />
+<img src="doc/LF_DataPrepKit_Logotype_Positive.png#gh-light-mode-only" width="60%" height="60%" />
+<img src="doc/LF_DataPrepKit_Logotype_Negative.png#gh-dark-mode-only" width="60%" height="60%"/>
 </p>
 
 <div align="center">

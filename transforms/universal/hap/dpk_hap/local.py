@@ -14,6 +14,9 @@ import os
 from data_processing.data_access import DataAccessLocal
 from dpk_hap.transform import HAPTransform
 
+from data_processing.utils import get_logger
+logger = get_logger(__name__)
+
 
 # create parameters
 input_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../test-data/input"))
@@ -38,7 +41,7 @@ if __name__ == "__main__":
 
     # Use the local data access to read a parquet table.
     table, _ = data_access.get_table(os.path.join(input_folder, "test1.parquet"))
-    print(f"input table: {table}")
+    logger.info(f"input table: {table}")
 
     # Create and configure the transform.
     transform = HAPTransform(hap_params)
@@ -47,5 +50,5 @@ if __name__ == "__main__":
     table_list, metadata = transform.transform(table)
 
     for tb in table_list:
-        print(f"\noutput table: {tb}")
-    print(f"output metadata : {metadata}")
+        logger.info(f"\noutput table: {tb}")
+    logger.info(f"output metadata : {metadata}")

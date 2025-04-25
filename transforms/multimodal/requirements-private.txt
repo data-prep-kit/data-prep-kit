@@ -1,0 +1,4 @@
+# can we use the open source version for docling
+# docling>=2.1.0, <3.0.0
+#docling-ibm
+iocr==1.6.0-rc.39

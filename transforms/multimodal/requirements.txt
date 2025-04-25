@@ -1,0 +1,12 @@
+ultralytics
+omegaconf
+opencv-python
+numpy
+transformers
+Pillow
+pandas
+torch>=2.2.2
+polars
+docling>=2.1.0, <3.0.0
+#docling
+

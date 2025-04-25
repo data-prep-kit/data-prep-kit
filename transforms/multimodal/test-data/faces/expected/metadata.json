@@ -1,0 +1,43 @@
+{
+  "pipeline": "pipeline_id",
+  "job details": {
+    "job category": "preprocessing",
+    "job name": "faces",
+    "job type": "pure python",
+    "job id": "job_id",
+    "start_time": "2024-08-23 12:04:28",
+    "end_time": "2024-08-23 12:04:30",
+    "status": "success"
+  },
+  "code": {
+    "github": "github",
+    "commit_hash": "12345",
+    "path": "path"
+  },
+  "job_input_params": {
+    "model_path": "/Users/dawood/git/data-prep-kit-inner/transforms/multimodal/proto/python/models/yolov8n-face.pt",
+    "checkpointing": false,
+    "max_files": -1,
+    "random_samples": -1,
+    "files_to_use": [
+      ".parquet"
+    ]
+  },
+  "job_output_stats": {
+    "source_files": 1,
+    "source_size": 200734,
+    "result_files": 1,
+    "result_size": 201125,
+    "processing_time": 0.6666879653930664,
+    "source_doc_count": 3,
+    "result_doc_count": 3
+  },
+  "source": {
+    "name": "/Users/dawood/git/data-prep-kit-inner/transforms/multimodal/proto/python/test-data/j2p/expected",
+    "type": "path"
+  },
+  "target": {
+    "name": "/Users/dawood/git/data-prep-kit-inner/transforms/multimodal/proto/python/output",
+    "type": "path"
+  }
+}

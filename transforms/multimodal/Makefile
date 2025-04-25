@@ -38,10 +38,7 @@ endif
 # propagate extras to docker
 DOCKER_BUILD_EXTRA_ARGS=--build-arg "PIP_INSTALL_EXTRA_ARGS=${PIP_INSTALL_EXTRA_ARGS}"
 
-
-
-# The needed (large) models are stored in box
-
+# large files are stored in seperate git repo or can be obtained from HF
 models: models/yolov8m_200e.pt models/yolov8m-seg.pt models/yolov8n-face.pt
 
 models/yolov8n-face.pt:
@@ -60,7 +57,17 @@ models/yolov8m-seg.pt:
 	curl -L --output models/yolov8m-seg.pt https://github.com/touma-I/large-files/raw/refs/heads/main/models/yolov8m-seg.pt
 
 
-venv:: models 
+venv:: models
+
+
+test-mm-src: venv
+	@# Help: Run pytest on the test directory inside the venv 
+	source venv/bin/activate;       \
+	export PYTHONPATH=. ;  \
+	$(PYTEST) test/faces_test ; \
+	$(PYTEST) test/nsfw_test ; \
+	$(PYTEST) test/people_test
+
 
 
 

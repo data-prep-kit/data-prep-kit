@@ -42,7 +42,7 @@ TRANSFORM_COMMON_FIELDS = sorted([ Field(t.Name, dict, t.Description) for t in T
     Field("image", str, "image name for the transform"), 
     Field("image_pull_secret", str, "Kubernetes secret for the image repository"), 
     Field("script_name", str, "python arguments for invoking the transform"), 
-#    Field("s3_access_secret", str, "s3 secret for i/o"),
+    Field("env", dict, "environment setting"),
     ], key=lambda x: x.Name)
 # parameters used from any transform entry
 TRANSFORM_FIELDS = sorted(TRANSFORM_COMMON_FIELDS + [ 
@@ -243,14 +243,19 @@ def expand_params(input_file, output_file, python_path):
                 try:
                     mdesc, args = get_transform_info(transform, module, python_path)
                 except Exception as e:
-                    ### the info module might not exist, but report failure to load the transfom 
+                    ### the info module might not exist, but report the failure to load the transfom 
                     if module == "transform":
-                        print(f"{input_file}: can't get parameters for transform at position {i} ({transform})", file=sys.stderr)
-                        print(e, file=sys.stderr)
+                        print(f"error: can't get parameters for transform at position {i} ({transform})", file=sys.stderr)
+                        print(f"reason: {e}", file=sys.stderr)
                 else:
                     if not desc:
                         dec = mdesc
                     break;
+
+        ### still no args, give up
+        if args is None:
+            errors +=1
+            continue
 
         ### fixup the image name if we have an explicit tag
         image_tag =  t.get("image_tag", None)
@@ -261,11 +266,9 @@ def expand_params(input_file, output_file, python_path):
             t["description"] = desc
 
         ### override the default argument values with the ones in the descriptor file
-        if args:
-            param_values = { f"{transform}_{p}": v for p, v in t.get("params", {}).items() }
-            t["args"] = [dict(name=a["name"], type=a["type"], description=a["description"],  value=param_values.get(a["name"], a["value"])) for a in args]
-        else:
-            t["args"] = []
+
+        param_values = { f"{transform}_{p}": v for p, v in t.get("params", {}).items() }
+        t["args"] = [dict(name=a["name"], type=a["type"], description=a["description"],  value=param_values.get(a["name"], a["value"])) for a in args]
 
         ### issue a warning for all params not needed by the transform
         unused_params = [ p for p in t.get("params", {}).keys() if f"{transform}_{p}" not in set([ a["name"] for a in t["args"] ]) ]
@@ -274,6 +277,25 @@ def expand_params(input_file, output_file, python_path):
 
         ### augment the transform arguments with the the ones required by ray and kfp 
         t["kfp_args"] = get_kfp_ray_args(pipeline_descriptor, t)
+        if t.get("env", None) is None:
+            continue
+
+        envo, envs = {}, {}
+        for en, ev in t["env"].items():
+            if isinstance(ev, str):
+                envs[en] = ev
+            elif isinstance(ev, dict):
+                if ev.get("source", None) is None or  ev.get("name", None) is None or ev.get("key", None) is None:
+                    print(f"error: environment variable {en} needs all source, name and key values", file=sys.stderr)
+                    errors += 1
+                if ev.get("source", None) and ev.get("source", "").upper() not in ["SECRET", "CONFIGMAP", "RESOURCE_FIELD", "FIELD"]:
+                    print(f"error: environment variable {en} has unknown source \"{ev['source']}\"", file=sys.stderr)
+                envo[en] = ev
+            else:
+                envs[en] = f"{ev}"
+        t["envo"] = envo
+        t["envs"] = envs
+        del t["env"]
 
     pipeline_descriptor["transforms"] = transforms
     if transform_common:
@@ -284,7 +306,8 @@ def expand_params(input_file, output_file, python_path):
     elif output_file:
         with open(output_file, "w") as f:
             yaml.dump(pipeline_descriptor, f, default_flow_style=False)
-    return 0, pipeline_descriptor
+
+    return errors, pipeline_descriptor
 #
 # Genereate the KFP python workflow by applying the complete set of parameters to the template
 #

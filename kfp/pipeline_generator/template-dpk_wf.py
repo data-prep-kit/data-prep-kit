@@ -13,16 +13,19 @@
 ################################################################################
 import os, json, yaml
 from typing import NamedTuple
-
 import kfp.compiler
 import kfp.components
 import kfp.dsl 
-
 from workflow_support.compile_utils import (
     DEFAULT_KFP_COMPONENT_SPEC_PATH,
     ONE_HOUR_SEC,
     ONE_WEEK_SEC,
     ComponentUtils,
+)
+from python_apiserver_client.params import (
+    EnvironmentVariables,
+    EnvVarFrom,
+    EnvVarSource,
 )
 #
 # KFP pipeline with {% for tr in transforms %}{{tr.name}}{% if not loop.last %}, {% endif %}{%- endfor %}
@@ -149,8 +152,22 @@ execute_ray_jobs_op = load_component("executeRayJobComponent.yaml")
 # clean up Ray
 cleanup_ray_op = load_component("deleteRayClusterComponent.yaml")
 
-# Task name is part of the pipeline name, the ray cluster name and the job name in DMF.
-TASK_NAME: str = "{{ pipeline_name }}"
+
+{%- for tr in transforms %}
+{%- if "envs" in tr %}
+# environment variables for {% if tr.name == tr.transform %}{{tr.name}}{% else %}{{tr.name}} ({{tr.transform}}){% endif %}
+{{tr.name}}_envs = EnvironmentVariables(
+    from_ref = dict(
+    {%- for en, ev in tr.envo.items() %}
+    {{en}}=EnvVarFrom(source=EnvVarSource.{{ev.source | upper}}, name="{{ev.name}}", key="{{ev.key}}"),
+    {%- endfor %}),
+    key_value = dict(
+    {%- for en, ev in tr.envs.items() %}
+    {{en}}="{{ev}}",
+    {%- endfor %})
+    )
+{%- endif %}
+{%- endfor %}
 
 @kfp.dsl.pipeline(
         name = "{{name}}",
@@ -170,7 +187,11 @@ def {{dsl_pipeline_name}}(
     # args for {% if tr.name == tr.transform %}{{tr.name}}{% else %}{{tr.name}} ({{tr.transform}}){% endif %}
     {{tr.name}}_ray_run_id_KFPv2: str = "",
     {%- for arg in tr.kfp_args %}
+    {%- if "envs" in tr and (arg.name == "ray_worker_options" or arg.name == "ray_head_options") %}
+    {{tr.name}}_{{arg.name}}: dict = {{arg.value}} | dict(environment={{tr.name}}_envs.to_dict()),
+    {%- else %}    
     {{tr.name}}_{{arg.name}}: {{arg.type}} = {% if arg.type == "str" %}'{{arg.value}}'{% else %}{{arg.value}}{% endif %},
+    {%- endif %}
     {%- endfor %}
     {%- for arg in tr.args %}
     {% if tr.name == tr.transform %}{{arg.name}}{% else %}{{tr.name}}_{{arg.name}}{% endif %}: {{arg.type}} = {% if arg.type == "str" %}'{{arg.value}}'{% else %}{{arg.value}}{% endif %},

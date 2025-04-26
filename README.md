@@ -63,10 +63,6 @@ For advanced users, [here](ADVANCED.md) is more information for adding your own 
 running transforms from the command line, scaling and automation and more. 
 Also, repository structure and use are discussed [here](doc/repo.md).
 
-### Windows users
-
-Please click [here](doc/quick-start/quick-start.md#running-transforms-on-windows) for guidance on how to run transforms in Windows.
-
 ### Using HuggingFace data files 
 
 All the transforms in the kit include small sample data files for testing, but advanced users who want to download real data files from HuggingFace and use them in testing, can refer to [this](ADVANCED.md#using-data-from-huggingface). 
@@ -83,7 +79,7 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 |:-------------------------------------------------------------------------------------|:------------------:|:------------------:|:------------------:|:------------------:|
 | **Data Ingestion**                                                                   |                    |                    |                    |                    |
 | [Code (from zip) to Parquet](transforms/code/code2parquet/README.md) | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
-| [PDF to Parquet](transforms/language/pdf2parquet/README.md)                 | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| [Docling to Parquet](transforms/language/docling2parquet/README.md)                 | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [HTML to Parquet](transforms/language/html2parquet/README.md)               | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Web to Parquet](transforms/universal/web2parquet/README.md)                | :white_check_mark: |                    |                    |                |         
 | **Universal (Code & Language)**                                                      |                    |                    |                    |                    | 

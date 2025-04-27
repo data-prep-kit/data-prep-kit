@@ -19,8 +19,9 @@ import os
 shortname = "people"
 cli_prefix = f"{shortname}_"
 model_path_key = "model_path"
-count_model_path_default = "models/yolov8m-seg.pt"
-blur_model_path_default = "models/yolov8m_200e.pt"
+
+count_model_path_default = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../models/yolov8m-seg.pt"))
+blur_model_path_default = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../models/yolov8m_200e.pt"))
 model_path_default = blur_model_path_default    # to match default mode = blur
 model_path_cli_key = f"{cli_prefix}{model_path_key}"
 

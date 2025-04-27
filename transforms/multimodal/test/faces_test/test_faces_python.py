@@ -31,9 +31,8 @@ class TestRayProtoTransform(AbstractTransformLauncherTest):
         fixtures = []
         # launcher = ProtoRayLauncher()
         launcher = PythonTransformLauncher(FacesPythonTransformConfiguration())
-        config = { "faces_model_path" : basedir + "/models/yolov8n-face.pt"}
         fixtures.append(
-            (launcher, config,
+            (launcher, {},
                 basedir + "/test-data/j2p/expected", basedir + "/test-data/faces/expected")
         )
         return fixtures

@@ -31,7 +31,7 @@ class TestRayProtoTransform(AbstractTransformLauncherTest):
         fixtures = []
         # launcher = ProtoRayLauncher()
         launcher = PythonTransformLauncher(PeoplePythonTransformConfiguration())
-        config = { "people_model_path" : basedir + "/models/yolov8m-seg.pt"}
+        config = {}
         fixtures.append(
             (launcher, config,
                 basedir + "/test-data/j2p/expected", basedir + "/test-data/people/expected")

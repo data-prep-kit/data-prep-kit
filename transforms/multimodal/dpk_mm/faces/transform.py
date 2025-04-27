@@ -7,11 +7,11 @@ from ultralytics import YOLO
 from data_processing.utils import CLIArgumentProvider
 
 from dpk_mm.util import JsonUtils
-
+import os
 shortname = "faces"
 cli_prefix = f"{shortname}_"
 model_path_key = "model_path"
-model_path_default = "models/yolov8n-face.pt"
+model_path_default = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../models/yolov8n-face.pt"))
 model_path_cli_key = f"{cli_prefix}{model_path_key}"
 
 class FacesTransform(AbstractMultimodalTransform):

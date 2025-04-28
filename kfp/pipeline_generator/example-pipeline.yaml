@@ -22,7 +22,7 @@ transform_common_parameters:
     ray_head_options: { "cpu": 1, "memory": 4 }
 
     ## entry point in the transform image 
-    script_name: "-m dpk_{transform}.ray.runtime"
+    invocation: "-m dpk_{transform}.ray.runtime"
     image: "quay.io/dataprep1/data-prep-kit/{transform}-ray:latest"
     image_pull_secret: "secret-for-image-repo"
 

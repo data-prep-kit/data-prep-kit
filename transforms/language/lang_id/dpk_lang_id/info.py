@@ -10,24 +10,24 @@
 # limitations under the License.
 ################################################################################
 
-import dpk_enrichment.features as fs
+import os
 from collections import namedtuple
 
-short_name = "enrichment"
-description = "computes a number of features that can be used estimate data quality"
+short_name = "lang_id"
+description = "language identification (currently fasstext only)"
 
 Param = namedtuple("Param", "Name Required Type Default Description")
 _param_table = [
-        Param("output_column_prefix", False, str, "", "Prefix to add to all output column names that are not explicitly defined"),
-        Param("content_column_name", False, str, "text", "Name of the content column"),
-        Param("lang_column_name", False, str, "lang", "Name of the column with the language identifier"),
-        Param("newline_normalized_column_name", False, str, "", "Name of an output column for newline normalized text"),
-        Param("error_column_name", False, str, "", "Name of an output column for the eventual error encountered during processing"),
+        Param("content_column_name", False, str, "contents", "Column name to get the content from"),
+        Param("model_credential", False, str, os.environ.get("HF_READ_ACCESS_TOKEN", ""), "Credential to access the model for language detection placed in URL. When not set the environment variable \"HF_READ_ACCESS_TOKEN\" is used."),
+        Param("model_kind", True, str, "", "Kind of model for language detection. Currently only fasttext is supported."),
+        Param("model_url", True, str, "", "URL of model for language detection"),
+        Param("output_lang_column_name", False, str, "lang", "Column name to store the identified language label"),
+        Param("output_score_column_name", False, str, "score", "Column name to store the score of language identification"),
     ]
 
 def get_transform_params():
-    table = [p for p in _param_table] + [Param(f"{k}_column_name", False, str, f"{k}", f"Column name for {k}") for k in fs.DEFAULT_TEXT_ENRICHER_DICT.keys()]
-    return table
+    return _param_table
 
 def get_transform_param_defaults():
     return {p.Name: p.Default for p in get_transform_params()}

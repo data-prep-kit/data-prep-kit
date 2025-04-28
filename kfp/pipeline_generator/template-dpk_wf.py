@@ -293,7 +293,7 @@ def {{dsl_pipeline_name}}(
             run_id={{tr.name}}_run_id,
             additional_params=str({{tr.name}}_additional_params),
             exec_params=compute_exec_params_task.outputs["{{tr.name}}"],
-            exec_script_name="{{tr.script_name}}",
+            exec_script_name="{{tr.invocation}}",
             server_url=server_url,
         )
         {{tr.name}}_execute_job.set_display_name("Run {% if tr.name == tr.transform %}{{tr.name}}{% else %}{{tr.name}} ({{tr.transform}}){% endif %}")

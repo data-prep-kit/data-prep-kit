@@ -11,28 +11,11 @@
 ################################################################################
 
 import json, argparse, pyarrow, yaml, os
-from collections import namedtuple
 from typing import Any
 import pyarrow.compute as pc
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
 from data_processing.utils import CLIArgumentProvider, TransformUtils, UnrecoverableException
-
-short_name = "ml_filter"
-description = "filter using a per-language table of conditions"
-
-Param = namedtuple("Param", "Name Required Type Default Description")
-_param_table = [
-        Param("column_prefix", False, str, "", "Prefix for to all columns referenced in the conditions table"),
-        Param("lang_column_name", False, str, "lang", "Name of the column with the language identifier"),
-        Param("config", False, str, os.path.expanduser("~/cleansing-config.yaml"), "File name for the condition table (yaml)"),
-        Param("ignore_missing_columns", False, bool, False, "Ignore conditions that reference fields not present in the data"),
-    ]
-
-def get_transform_params():
-    return _param_table
-
-def get_transform_param_defaults():
-    return {p.Name: p.Default for p in get_transform_params()}
+from dpk_ml_filter.info import short_name, description, get_transform_params, get_transform_param_defaults
 
 def get_config(config: dict[str, Any], param: str):
     return config.get(param, get_transform_param_defaults().get(param, None))

@@ -34,14 +34,14 @@ TRANSFORM_DICT_PARAMS = [
     DictField("ray_worker_options", DEFAULT_RAY_WORKER_OPTIONS, True, "Ray worker options"),
     DictField("runtime_actor_options", DEFAULT_RUNTIME_ACTOR_OPTIONS, False, "Runtime actor options"),
     DictField("runtime_code_location", DEFAULT_RUNTIME_CODE_LOCATION, False, "git repository information"),
-    DictField("additional_params", ADDITIONAL_PARAMS, False, "additional paramters for the Ray control commands"),
+    DictField("additional_params", ADDITIONAL_PARAMS, False, "additional parameters for the Ray control commands"),
     ]
 Field = namedtuple("Field", "Name Type Description")
 # parameters used from the 'transform_common_fields' section
 TRANSFORM_COMMON_FIELDS = sorted([ Field(t.Name, dict, t.Description) for t in TRANSFORM_DICT_PARAMS ] + [
     Field("image", str, "image name for the transform"), 
     Field("image_pull_secret", str, "Kubernetes secret for the image repository"), 
-    Field("script_name", str, "python arguments for invoking the transform"), 
+    Field("invocation", str, "python arguments for invoking the transform"), 
     Field("env", dict, "environment setting"),
     ], key=lambda x: x.Name)
 # parameters used from any transform entry
@@ -124,10 +124,11 @@ def get_transform_info(transform, module, python_path):
 
     short_name = tr.short_name
     description = tr.description
+    invocation = tr.ray_invocation
     args = [dict(name=f"{short_name}_{p.Name}", type=p.Type.__name__, value=p.Default, description=p.Description) for p in tr.get_transform_params()]
     
     sys.path = save_path
-    return (description, args)
+    return (description, args, invocation)
 
 def get_kfp_ray_args(pipeline_config, transform_config):
     tc = transform_config
@@ -235,35 +236,33 @@ def expand_params(input_file, output_file, python_path):
     for i, t in enumerate(transforms):
         transform = t["transform"]
         label = f"{t['name']}" if t["name"] == transform else f"{t['name']} ({transform})"
-        desc, args = t.get("description", None), t.get("args", None)
+        # description and invocation can be overridden in the yaml, args must be from the transform
+        desc, args, invocation = None, t.get("args", None), None
 
-        ### load the transform and query it for the argument list (if we don't already have it)
+        ### load the transform and query it for the argument list, etc.
         if not args:
             for module in ["info", "transform"]:
                 try:
-                    mdesc, args = get_transform_info(transform, module, python_path)
+                    desc, args, invocation = get_transform_info(transform, module, python_path)
                 except Exception as e:
                     ### the info module might not exist, but report the failure to load the transfom 
                     if module == "transform":
                         print(f"error: can't get parameters for transform at position {i} ({transform})", file=sys.stderr)
                         print(f"reason: {e}", file=sys.stderr)
                 else:
-                    if not desc:
-                        dec = mdesc
                     break;
 
-        ### still no args, give up
+        ### can't do without args
         if args is None:
             errors +=1
             continue
 
+        t["description"], t["invocation"] = t.get("description", desc), t.get("invocation", invocation)
+        
         ### fixup the image name if we have an explicit tag
         image_tag =  t.get("image_tag", None)
         if image_tag:
             t["image"] = ":".join(t["image"].split(":")[:-1]+[image_tag])
-
-        if desc:
-            t["description"] = desc
 
         ### override the default argument values with the ones in the descriptor file
 

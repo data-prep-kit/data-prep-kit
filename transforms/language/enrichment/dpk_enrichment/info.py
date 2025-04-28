@@ -15,6 +15,8 @@ from collections import namedtuple
 
 short_name = "enrichment"
 description = "computes a number of features that can be used estimate data quality"
+ray_invocation = "-m dpk_enrichment.ray.runtime"
+invocation = "-m dpk_enrichment.runtime"
 
 Param = namedtuple("Param", "Name Required Type Default Description")
 _param_table = [

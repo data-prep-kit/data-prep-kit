@@ -80,7 +80,7 @@ Note that the transform settings are used to *update* the common settings when p
 - `runtime_code_location: dict`<sup>**C**</sup>
      Git repository information.
   
-- `script_name`<sup>**C**</sup>
+- `invocation`<sup>**C**</sup>
      Python arguments for invoking the transform.
 
 - `additional_params: dict`<sup>**C**</sup>

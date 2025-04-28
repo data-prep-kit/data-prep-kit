@@ -15,6 +15,8 @@ from collections import namedtuple
 
 short_name = "lang_id"
 description = "language identification (currently fasstext only)"
+ray_invocation = "-m dpk_lang_id.ray.transform"
+invocation = "-m dpk_lang_id.transform_python"
 
 Param = namedtuple("Param", "Name Required Type Default Description")
 _param_table = [

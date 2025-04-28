@@ -10,26 +10,24 @@
 # limitations under the License.
 ################################################################################
 
-import dpk_enrichment.features as fs
+import os
 from collections import namedtuple
 
-short_name = "enrichment"
-description = "computes a number of features that can be used estimate data quality"
-ray_invocation = "-m dpk_enrichment.ray.runtime"
-invocation = "-m dpk_enrichment.runtime"
+short_name = "ml_filter"
+description = "filter using a per-language table of conditions"
+ray_invocation = "-m dpk_ml_filter.ray.runtime"
+invocation = "-m dpk_ml_filter.runtime"
 
 Param = namedtuple("Param", "Name Required Type Default Description")
 _param_table = [
-        Param("output_column_prefix", False, str, "", "Prefix to add to all output column names that are not explicitly defined"),
-        Param("content_column_name", False, str, "text", "Name of the content column"),
+        Param("column_prefix", False, str, "", "Prefix for to all columns referenced in the conditions table"),
         Param("lang_column_name", False, str, "lang", "Name of the column with the language identifier"),
-        Param("newline_normalized_column_name", False, str, "", "Name of an output column for newline normalized text"),
-        Param("error_column_name", False, str, "", "Name of an output column for the eventual error encountered during processing"),
+        Param("config", False, str, os.path.expanduser("~/cleansing-config.yaml"), "File name for the condition table (yaml)"),
+        Param("ignore_missing_columns", False, bool, False, "Ignore conditions that reference fields not present in the data"),
     ]
 
 def get_transform_params():
-    table = [p for p in _param_table] + [Param(f"{k}_column_name", False, str, f"{k}", f"Column name for {k}") for k in fs.DEFAULT_TEXT_ENRICHER_DICT.keys()]
-    return table
+    return _param_table
 
 def get_transform_param_defaults():
     return {p.Name: p.Default for p in get_transform_params()}

@@ -19,7 +19,6 @@ from data_processing.test_support.launch.transform_test import (
 from dpk_lang_id.lang_models import KIND_FASTTEXT
 from dpk_lang_id.transform_python import LangIdentificationPythonTransformConfiguration
 
-
 class TestPythonLangIdentificationTransform(AbstractTransformLauncherTest):
     """
     Extends the super-class to define the test data for the tests defined there.

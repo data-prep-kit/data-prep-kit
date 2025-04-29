@@ -53,7 +53,7 @@ body:
             - transforms/html2parquet
             - transforms/lang_id
             - transforms/license_select
-            - transforms/pdf2parquet
+            - transforms/docling2parquet
             - transforms/pii_redactor
             - transforms/profiler
             - transforms/proglang_select

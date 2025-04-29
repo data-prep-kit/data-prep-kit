@@ -14,7 +14,7 @@ or
 installing the python transforms will also install  `data-prep-toolkit`
 
 installing the ray transforms will also install  `data-prep-toolkit[ray]`
-   
+
 ## Release notes:
 
 ### 1.1.1.dev0

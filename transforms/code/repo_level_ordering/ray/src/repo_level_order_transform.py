@@ -259,6 +259,15 @@ class RepoLevelOrderRuntime(DefaultRayTransformRuntime):
             get_dominant_language_func,
             get_transforming_func,
         )
+        from dpk_repo_level_order.internal.fix_title_contents_add_filepath import fix_title_contents
+        title_column_name='title',
+        repo_column_name='repo_name',
+        dataset_column_name='dataset',
+        contents_column_name='contents'
+        fix_title_contents_func = fix_title_contents(title_column_name, repo_column_name, dataset_column_name, contents_column_name)
+        mapper_function_params = mapper_function_params | {
+                "fix_title_contents_func": fix_title_contents_func,
+            }
 
         if self.sorting_enabled:
             self.logger.info(f"Repo level sorting is enabled. Algo: {self.sorting_algo}")

@@ -18,15 +18,14 @@ from typing import Callable
 import pandas as pd
 import pyarrow as pa
 from dpk_repo_level_order.internal.check_languages import (
-    get_dominant_language_repo_packing,
-)
+    get_dominant_language_repo_packing,)
 from dpk_repo_level_order.internal.sorting.semantic_ordering import (
     check_and_update_title,
     sort_by_path,
     sort_sem,
 )
 from func_timeout.exceptions import FunctionTimedOut
-
+from dpk_repo_level_order.internal.fix_title_contents_add_filepath import prepend_filename_token_filepath
 
 SORT_BY_PATH = "SORT_BY_PATH"
 SORT_SEMANTIC = "SORT_SEMANTIC"
@@ -160,7 +159,14 @@ def superrow_table(table: pa.Table, repo_column_name: str, language_column_name=
             lang_dist[k.as_py()] = v.as_py()
         return lang_dist
 
+    title_column_name = "title"
     super_row = table.column("contents").to_pylist()
+    titles = table.column(title_column_name).to_pylist()
+    repo_names = table.column(repo_column_name).to_pylist()
+    super_row = [
+        prepend_filename_token_filepath(title, repo_name, contents)
+        for title, repo_name, contents in zip(titles, repo_names, super_row)
+    ]
     repo_doc_ids = table.column("document_id").to_pylist()
     lang_dist = lang_distribution(language_column_name)
 
@@ -189,7 +195,7 @@ def superrow_table(table: pa.Table, repo_column_name: str, language_column_name=
     return new_table
 
 
-def get_transforming_func(sorting_func=None, superrows_func=None, filename_func=None, language_column_name="language"):
+def get_transforming_func(sorting_func=None, superrows_func=None, filename_func=None, language_column_name="language", fix_title_contents_func=None):
     """
     This function takes three optional functions as input and returns a
     function that can be applied to a pyarrow table and file name.
@@ -214,8 +220,10 @@ def get_transforming_func(sorting_func=None, superrows_func=None, filename_func=
 
     def my_transform(table, file_name):
         out_table = table
+        if fix_title_contents_func:
+            out_table = fix_title_contents_func(out_table)
         if sorting_func:
-            out_table = sorting_func(table, file_name)
+            out_table = sorting_func(out_table, file_name)
         if filename_func:
             file_name = filename_func(table, file_name)
         if superrows_func:

@@ -13,6 +13,7 @@
 import dpk_enrichment.features as fs
 from collections import namedtuple
 
+__version__ = "1.0.0"
 short_name = "enrichment"
 description = "computes a number of features that can be used estimate data quality"
 ray_invocation = "-m dpk_enrichment.ray.runtime"

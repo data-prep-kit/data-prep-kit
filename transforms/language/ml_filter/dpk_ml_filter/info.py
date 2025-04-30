@@ -13,6 +13,7 @@
 import os
 from collections import namedtuple
 
+__version__ = "1.0.0"
 short_name = "ml_filter"
 description = "filter using a per-language table of conditions"
 ray_invocation = "-m dpk_ml_filter.ray.runtime"

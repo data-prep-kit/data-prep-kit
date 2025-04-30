@@ -13,6 +13,7 @@
 import os
 from collections import namedtuple
 
+__version__ = "1.0.1"
 short_name = "lang_id"
 description = "language identification (currently fasstext only)"
 ray_invocation = "-m dpk_lang_id.ray.transform"

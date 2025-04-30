@@ -16,6 +16,7 @@ from typing import NamedTuple
 import kfp.compiler
 import kfp.components
 import kfp.dsl 
+import kfp
 from workflow_support.compile_utils import (
     DEFAULT_KFP_COMPONENT_SPEC_PATH,
     ONE_HOUR_SEC,
@@ -142,6 +143,11 @@ def load_component(yaml_fn):
     with open(os.path.join(COMPONENT_SPEC_PATH, yaml_fn), 'r') as file:
         component_yaml = yaml.safe_load(file)
     component_yaml["implementation"]["container"]["image"] = KFP_IMAGE
+    {% if legacy %} 
+    if os.path.basename(yaml_fn) == "deleteRayClusterComponent.yaml":
+        component_yaml["inputs"] = component_yaml["inputs"][:-1]
+        component_yaml["implementation"]["container"]["command"] = component_yaml["implementation"]["container"]["command"][:-2]
+    {% endif %}
     component_txt = yaml.dump(component_yaml, sort_keys=False)
     return kfp.components.load_component_from_text(component_txt)
 
@@ -333,6 +339,8 @@ if __name__ == "__main__":
     parser.add_argument("-t", "--tmp_folder", type=str, default=TMP_FOLDER, help="temporary storage (COS folder) (%(default)s)")
     parser.add_argument("-f", "--input_folder", type=str, default=INPUT_FOLDER, help="COS folder with data to be processed (%(default)s)")
     parser.add_argument("-d", "--output_folder", type=str, default=OUTPUT_FOLDER, help="COS folder to store the processed data (%(default)s)")
+    parser.add_argument("-r", "--run_name", type=str, default=None, help="start a run with this name")
+    parser.add_argument("-e", "--experiment_name", type=str, default=None, help="set the exeperiment name for the run")
 
     args = parser.parse_args()
     KFP_IMAGE=args.image
@@ -342,5 +350,9 @@ if __name__ == "__main__":
     OUTPUT_FOLDER=args.output_folder
     TMP_FOLDER=args.tmp_folder
 
-    # Compiling the pipeline
-    kfp.compiler.Compiler().compile({{dsl_pipeline_name}}, args.output)
+    if args.run_name:
+        # Run the pipeline
+        kfp.Client().create_run_from_pipeline_func({{dsl_pipeline_name}}, run_name=args.run_name, experiment_name=args.experiment_name)
+    else:
+        # Compile the pipeline
+        kfp.compiler.Compiler().compile({{dsl_pipeline_name}}, args.output)

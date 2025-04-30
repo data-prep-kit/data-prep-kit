@@ -125,10 +125,11 @@ def get_transform_info(transform, module, python_path):
     short_name = tr.short_name
     description = tr.description
     invocation = tr.ray_invocation
+    version = tr.__version__
     args = [dict(name=f"{short_name}_{p.Name}", type=p.Type.__name__, value=p.Default, description=p.Description) for p in tr.get_transform_params()]
     
     sys.path = save_path
-    return (description, args, invocation)
+    return (version, description, args, invocation)
 
 def get_kfp_ray_args(pipeline_config, transform_config):
     tc = transform_config
@@ -237,13 +238,13 @@ def expand_params(input_file, output_file, python_path):
         transform = t["transform"]
         label = f"{t['name']}" if t["name"] == transform else f"{t['name']} ({transform})"
         # description and invocation can be overridden in the yaml, args must be from the transform
-        desc, args, invocation = None, t.get("args", None), None
+        version, desc, args, invocation = None, None, t.get("args", None), None
 
         ### load the transform and query it for the argument list, etc.
         if not args:
             for module in ["info", "transform"]:
                 try:
-                    desc, args, invocation = get_transform_info(transform, module, python_path)
+                    version, desc, args, invocation = get_transform_info(transform, module, python_path)
                 except Exception as e:
                     ### the info module might not exist, but report the failure to load the transfom 
                     if module == "transform":
@@ -258,6 +259,7 @@ def expand_params(input_file, output_file, python_path):
             continue
 
         t["description"], t["invocation"] = t.get("description", desc), t.get("invocation", invocation)
+        t["version"] = version
         
         ### fixup the image name if we have an explicit tag
         image_tag =  t.get("image_tag", None)
@@ -284,14 +286,24 @@ def expand_params(input_file, output_file, python_path):
             if isinstance(ev, str):
                 envs[en] = ev
             elif isinstance(ev, dict):
-                if ev.get("source", None) is None or  ev.get("name", None) is None or ev.get("key", None) is None:
-                    print(f"error: environment variable {en} needs all source, name and key values", file=sys.stderr)
+                if "secret" in ev and "key" in ev:
+                    envo[en] = dict(source="secret", name=ev["secret"], key=ev["key"])
+                    continue
+                source = ev.get("source", None)
+                valid_sources = ["SECRET", "CONFIGMAP", "RESOURCE_FIELD", "FIELD"]
+                if source is None or source.upper() not in valid_sources:
+                    print(f"error: at transform \"{label}\", variable \"{en}\" has unknown source [{source}]", file=sys.stderr)
+                    print(f"note: must be one of {', '.join(valid_sources)}", file=sys.stderr)
                     errors += 1
-                if ev.get("source", None) and ev.get("source", "").upper() not in ["SECRET", "CONFIGMAP", "RESOURCE_FIELD", "FIELD"]:
-                    print(f"error: environment variable {en} has unknown source \"{ev['source']}\"", file=sys.stderr)
+                    continue
+                if ev.get("key", None) is None or ev.get("name", None) is None:
+                    print(f"error: at transform \"{label}\", variable \"{en}\" needs all \"source\", \"name\" and \"key\" fields", file=sys.stderr)
+                    errors += 1
+                    continue
                 envo[en] = ev
             else:
                 envs[en] = f"{ev}"
+
         t["envo"] = envo
         t["envs"] = envs
         del t["env"]

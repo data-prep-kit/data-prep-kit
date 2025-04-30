@@ -86,6 +86,14 @@ Note that the transform settings are used to *update* the common settings when p
 - `additional_params: dict`<sup>**C**</sup>
      Additional paramters for the Ray control commands.
 
+- `env: dict`<sup>**C**</sup>
+     Envronment variables. Either in the form `VAR_NAME: VALUE` or as a three field dictionary:
+  ```yaml
+  VARNAME:
+      source: SOURCE # One of SECRET, CONFIGMAP, RESOURCE_FIELD, or FIELD. 
+      name: name
+      key: key
+  ```
 
 ## Steps to generate a pipeline
 

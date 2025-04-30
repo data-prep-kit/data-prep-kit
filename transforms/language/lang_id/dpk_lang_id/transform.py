@@ -22,10 +22,6 @@ from dpk_lang_id.lang_models import LangModelFactory
 from dpk_lang_id.nlp import get_lang_ds_pa
 from dpk_lang_id.info import short_name, description, get_transform_params, get_transform_param_defaults
 
-# read a param value from the config, with the corresponding defaults
-def get_config(config: dict[str, Any], param: str):
-    return config.get(param, get_transform_param_defaults().get(param, ""))
-
 cli_prefix = f"{short_name}_"
 
 model_credential_key = "model_credential"
@@ -50,12 +46,14 @@ class LangIdentificationTransform(AbstractTableTransform):
         # Make sure that the param name corresponds to the name used in apply_input_params method
         # of LangIdentificationTransformConfiguration class
         super().__init__(config)
-        self.nlp_langid = LangModelFactory.create_model(
-            config.get(model_kind_key), config.get(model_url_key), config.get(model_credential_key)
-        )
-        self.content_column_name = get_config(config, content_column_name_key)
-        self.output_lang_column_name = get_config(config, output_lang_column_name_key)
-        self.output_score_column_name = get_config(config, output_score_column_name_key)
+        config = get_transform_param_defaults() | config
+        model_kind = config.get(model_kind_key)
+        model_url = config.get(model_url_key)
+        self.nlp_langid = LangModelFactory.create_model(model_kind, model_url, config.get(model_credential_key))
+        self.logger.info(f"loaded {model_kind} model: {model_url}")
+        self.content_column_name = config.get(content_column_name_key)
+        self.output_lang_column_name = config.get(output_lang_column_name_key)
+        self.output_score_column_name = config.get(output_score_column_name_key)
 
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
         """

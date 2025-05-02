@@ -10,19 +10,10 @@
 # limitations under the License.
 ################################################################################
 
-from dpk_repo_level_order.transform import RepoLevelOrderTransformConfiguration
+from dpk_repo_level_order.transform import RepoLevelOrderRayTransformConfiguration
 from data_processing_ray.runtime.ray import RayTransformLauncher
-from data_processing_ray.runtime.ray.runtime_configuration import (
-    RayTransformRuntimeConfiguration,
-)
 from data_processing.utils import ParamsUtils
 import sys
-
-class RepoLevelOrderRayTransformConfiguration(RayTransformRuntimeConfiguration):
-    def __init__(self):
-        super().__init__(
-            transform_config=RepoLevelOrderTransformConfiguration()
-        )
 
 
 class RepoLevelOrderRay:

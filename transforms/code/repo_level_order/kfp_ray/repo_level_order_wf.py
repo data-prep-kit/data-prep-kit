@@ -29,7 +29,7 @@ task_image = "quay.io/dataprep1/data-prep-kit/repo_level_order-ray:latest"
 S3_SECRET = "s3-secret"
 
 # the name of the job script
-EXEC_SCRIPT_NAME: str = "repo_level_order_transform_ray.py"
+EXEC_SCRIPT_NAME: str = "-m dpk_repo_level_order.ray.runtime"
 
 # components
 base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"

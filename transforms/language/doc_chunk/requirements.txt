@@ -1,3 +1,3 @@
-docling-core>=2.18.0    # remove potential conflicts with pdf2parquet that is being tested with 2.21.2
+docling-core>=2.18.0    # remove potential conflicts with docling2parquet that is being tested with 2.21.2
 pydantic>=2.0.0
 llama-index-core>=0.11.22,<0.12.0

@@ -4,7 +4,7 @@ UNIVERSAL_TRANSFORMS=doc_id ededup fdedup filter html2parquet noop profiler resi
 # Directories in the transforms/code directory for which we want to generate test workflows
 CODE_TRANSFORMS=code2parquet code_quality header_cleanser malware proglang_select repo_level_ordering
 # Directories in the transforms/language directory for which we want to generate test workflows
-LANG_TRANSFORMS=doc_chunk doc_quality lang_id pdf2parquet pii_redactor text_encoder
+LANG_TRANSFORMS=doc_chunk doc_quality lang_id docling2parquet pii_redactor text_encoder
 
 
 # A list that holds transforms that should not be tested with KFP

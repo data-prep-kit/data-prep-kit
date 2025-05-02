@@ -29,7 +29,7 @@ Note: This list includes the transforms that were part of the release starting w
     * [doc_chunk](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/language/doc_chunk/README.md)
 	* [doc_quality](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/language/doc_quality/README.md)
 	* [lang_id](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/language/lang_id/README.md)
-	* [pdf2parquet](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/language/pdf2parquet/README.md)
+	* [docling2parquet](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/language/docling2parquet/README.md)
 	* [text_encoder](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/language/text_encoder/README.md)
 	* [pii_redactor](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/language/pii_redactor/python/README.md)
 * universal

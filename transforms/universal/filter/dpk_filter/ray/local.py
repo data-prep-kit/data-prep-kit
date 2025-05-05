@@ -20,7 +20,8 @@ from dpk_filter.transform import (
     filter_criteria_cli_param,
     filter_logical_operator_cli_param,
 )
-from dpk_filter.ray.runtime import FilterRayTransformConfiguration
+from dpk_filter.transform import FilterTransformConfiguration
+from data_processing_ray.runtime.ray import Transform
 
 
 # create parameters
@@ -66,6 +67,4 @@ if __name__ == "__main__":
     # Create the CLI args as will be parsed by the launcher
     sys.argv = ParamsUtils.dict_to_req(launcher_params | filter_params)
     # Create the longer to launch with the blocklist transform.
-    launcher = RayTransformLauncher(FilterRayTransformConfiguration())
-    # Launch the ray actor(s) to process the input
-    launcher.launch()
+    Transform.launch(FilterTransformConfiguration())

@@ -17,7 +17,7 @@ import sys
 
 from data_processing.utils import ParamsUtils
 from data_processing_ray.runtime.ray import RayTransformLauncher
-from dpk_hap.ray.transform import HAPRayTransformConfiguration
+from dpk_hap.ray.runtime import HAPRayTransformConfiguration
 
 
 # create parameters

@@ -15,7 +15,7 @@ from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
 from data_processing_ray.runtime.ray import RayTransformLauncher
-from dpk_hap.ray.transform import HAPRayTransformConfiguration
+from dpk_hap.ray.runtime import HAPRayTransformConfiguration
 
 
 hap_params = {

@@ -28,7 +28,7 @@ task_image = "quay.io/dataprep1/data-prep-kit/hap-ray:latest"
 S3_SECRET = "s3-secret"
 
 # the name of the job script
-EXEC_SCRIPT_NAME: str = "-m dpk_hap.ray.transform"
+EXEC_SCRIPT_NAME: str = "-m dpk_hap.ray.runtime"
 
 # components
 base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"

@@ -17,7 +17,7 @@ import sys
 
 from data_processing.utils import ParamsUtils
 from data_processing_ray.runtime.ray import RayTransformLauncher
-from dpk_html2parquet.ray.transform import Html2ParquetRayTransformConfiguration
+from dpk_html2parquet.ray.runtime import Html2ParquetRayTransformConfiguration
 
 
 # create parameters

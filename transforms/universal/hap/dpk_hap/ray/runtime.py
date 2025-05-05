@@ -9,23 +9,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ################################################################################
-import sys
 
-from data_processing.runtime.pure_python import Transform
+from data_processing.utils import get_logger
+from data_processing_ray.runtime.ray import (
+    RayTransformRuntimeConfiguration,
+    Transform,
+)
 
-from data_processing.utils import ParamsUtils, get_logger
-from dpk_collapse.transform import CollapseTransformConfiguration
+from dpk_hap.transform import HAPTransformConfiguration
 
 
 logger = get_logger(__name__)
 
 
-# Class used by the notebooks to ingest binary files and create parquet files
-class Collapse (Transform):
+class HAPRayTransformConfiguration(RayTransformRuntimeConfiguration):
+    def __init__(self):
+        super().__init__(transform_config=HAPTransformConfiguration())
+
+class HAP(Transform):
     def __init__(self, **kwargs):
-        super().__init__(CollapseTransformConfiguration(), **kwargs)
-
-
+        super().__init__(HAPTransformConfiguration(), **kwargs)
 
 if __name__ == "__main__":
-    Transform.launch(CollapseTransformConfiguration())
+    Transform.launch(HAPTransformConfiguration())

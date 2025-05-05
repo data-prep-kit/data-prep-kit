@@ -28,7 +28,7 @@ task_image = "quay.io/dataprep1/data-prep-kit/html2parquet-ray:latest"
 S3_SECRET = "s3-secret"
 
 # the name of the job script
-EXEC_SCRIPT_NAME: str = "-m dpk_html2parquet.ray.transform"
+EXEC_SCRIPT_NAME: str = "-m dpk_html2parquet.ray.runtime"
 
 # components
 base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"

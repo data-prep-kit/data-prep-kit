@@ -105,3 +105,22 @@ docker run  --rm
 	    'output_folder' : '...', \
 	    }"  
 ```
+
+### Local Data - Python Runtime with transform-specific parameters 
+
+Here we provide an example of using the image to run a transform with some parameters specific to that transform. Let us use the transform `doc_chunk` and speficy two of its parameters `chunking_type` and `chunk_size_tokens` for this prurpose. 
+
+```shell
+docker run  --rm 
+    -v /home/me/input:/input \
+    -v /home/me/output:/output \
+    doc_chunk-python:latest 	\
+	python -m dpk_doc_chunk.runtime \
+	--doc_chunk_chunking_type=dl_json \
+	--doc_chunk_chunk_size_tokens=128 \
+	--data_local_config "{ \
+	    'input_folder'  : '/input', \
+	    'output_folder' : '/output' \
+	    }"
+
+```

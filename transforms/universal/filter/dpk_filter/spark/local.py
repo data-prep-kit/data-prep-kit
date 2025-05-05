@@ -20,7 +20,7 @@ from dpk_filter.transform import (
     filter_criteria_cli_param,
     filter_logical_operator_cli_param,
 )
-from dpk_filter.spark.transform import FilterSparkTransformConfiguration
+from transforms.universal.filter.dpk_filter.spark.runtime import FilterSparkTransformConfiguration
 
 
 # create parameters

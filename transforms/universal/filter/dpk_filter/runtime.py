@@ -11,12 +11,19 @@
 ################################################################################
 import sys
 
-from data_processing.runtime.pure_python import Transform
+from data_processing.runtime.pure_python import (
+    PythonTransformRuntimeConfiguration,
+    Transform,
+)
 from data_processing.utils import get_logger
 from dpk_filter.transform import FilterTransformConfiguration
 
 
 logger = get_logger(__name__)
+
+class FilterPythonTransformConfiguration(PythonTransformRuntimeConfiguration):
+    def __init__(self):
+        super().__init__(transform_config=FilterTransformConfiguration())
 
 
 class Filter(Transform):

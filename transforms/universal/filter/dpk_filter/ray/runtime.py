@@ -12,13 +12,21 @@
 
 import sys
 from data_processing.utils import  get_logger
-from data_processing_ray.runtime.ray import Transform
+from data_processing_ray.runtime.ray import (
+    Transform,
+    RayTransformRuntimeConfiguration,
+)
+
+
 from dpk_filter.transform import FilterTransformConfiguration
 
 
 logger = get_logger(__name__)
 
 
+class FilterRayTransformConfiguration(RayTransformRuntimeConfiguration):
+    def __init__(self):
+        super().__init__(transform_config=FilterTransformConfiguration())
 
 # Class used by the notebooks to ingest binary files and create parquet files
 class Filter(Transform):

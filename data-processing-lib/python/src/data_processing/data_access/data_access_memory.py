@@ -1,17 +1,13 @@
 from typing import Any
 import pyarrow as pa
 from data_processing.data_access import DataAccess
-
-from datasift.util.log import get_logger
-
-logger = get_logger()
+from data_processing.utils import get_logger
 
 
 class DataAccessMemory(DataAccess):
     """
     Implementation of the Base Data access class for in memory data access.
     """
-
     def __init__(
             self,
             checkpoint: bool = False,
@@ -22,8 +18,9 @@ class DataAccessMemory(DataAccess):
         """
         self.tables = {}
         self.checkpoint = checkpoint
+        self.logger = get_logger(__name__)
 
-        logger.debug(f"Local checkpoint: {self.checkpoint}")
+        self.logger.debug(f"Local checkpoint: {self.checkpoint}")
 
     def get_table(self, path: str) -> tuple[pa.table, int]:
         """

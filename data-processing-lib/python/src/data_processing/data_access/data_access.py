@@ -159,7 +159,8 @@ class DataAccess:
                 cm_files=self.m_files,
             )
         return path_list, profile, retries
-    def get_batches_to_process(self) -> tuple[list[int], dict[str, float], int]:
+
+    def get_batches_to_process(self, batch_size=None):
         """
         Get batch files to process
         :return: list of batch files and a dictionary of the batch files profile:
@@ -172,10 +173,14 @@ class DataAccess:
                 return [], {}, 0
             self.to_process = files
 
+        if batch_size is None:
+            bs = self.batch_size
+        else:
+            bs = batch_size
         # retrieve the number of files from batch size from the to_process variable and place in a new batch variable. then, append the processed_files to included the retrieved files
-        batch_files = self.to_process[:self.batch_size]
+        batch_files = self.to_process[:bs]
         self.processed_files += batch_files
-        self.to_process = self.to_process[self.batch_size:]
+        self.to_process = self.to_process[bs:]
         
         return batch_files
             

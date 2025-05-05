@@ -15,33 +15,12 @@ installing the python transforms will also install  `data-prep-toolkit`
 
 installing the ray transforms will also install  `data-prep-toolkit[ray]`
 
-## List of Transforms in current package
-
-Note: This list includes the transforms that were part of the release starting with data-prep-toolkit-transforms:0.2.1. This list may not always reflect up to date information. Users are encourage to raise an issue in git when they discover missing components or packages that are listed below but not in the current release they get from pypi.
-
-* code
-    * [code2parquet](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/code/code2parquet/python/README.md)
-    * [header_cleanser (Not available on MacOS)](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/code/header_cleanser/python/README.md)
-    * [code_quality](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/code/code_quality/python/README.md)
-    * [proglang_select](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/code/proglang_select/python/README.md)
-    * [code_profiler](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/code/code_profiler/README.md)
-* language
-    * [doc_chunk](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/language/doc_chunk/README.md)
-	* [doc_quality](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/language/doc_quality/README.md)
-	* [lang_id](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/language/lang_id/README.md)
-	* [pdf2parquet](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/language/pdf2parquet/README.md)
-	* [text_encoder](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/language/text_encoder/README.md)
-	* [pii_redactor](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/language/pii_redactor/python/README.md)
-* universal
-    * [ededup](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/universal/ededup/README.md)
-    * [fdedup](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/universal/fdedup/README.md)
-	* [filter](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/universal/filter/python/README.md)
-	* [resize](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/universal/resize/python/README.md)
-	* [tokenization](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/universal/tokenization/README.md)
-	* [doc_id](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/universal/doc_id/README.md)
-	* [web2parquet](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/universal/web2parquet/README.md)
-   
 ## Release notes:
+
+### 1.1.1.dev0
+	Refactored code transforms (code_uality, code2parquet, header_cleanser, license select, proglang_select)
+	Added ml-filter and enrichment
+	renamed PDF2Parquet to Docling2Paruqet 
 
 ### 1.0.1.dev1
 	Added Gneissweb transforms

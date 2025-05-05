@@ -20,6 +20,8 @@ from data_processing.transform import AbstractTableTransform, TransformConfigura
 from data_processing.utils import GB, TransformUtils, get_logger
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
+logger = get_logger(__name__)
+
 
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
 nltk.download("punkt_tab")
@@ -44,7 +46,7 @@ class HAPTransform(AbstractTableTransform):
         num_batches = len(data) // batch_size
         data_sent_scores = []
         for i in range(num_batches + 1):
-            print(f"Processing batch: {i}/{num_batches}")
+            logger.info(f"Processing batch: {i}/{num_batches}")
             start_idx = i * batch_size
             end_idx = min((i + 1) * batch_size, len(data))
             if start_idx >= end_idx:
@@ -95,14 +97,11 @@ class HAPTransform(AbstractTableTransform):
         assert len(df_doc_list) == len(df_doc_scores)
 
         self.df["hap_score"] = df_doc_scores
-        print(self.df)
+        logger.info(self.df)
 
         out_table = pa.Table.from_pandas(self.df)
         metadata = {}
         return [out_table], metadata
-
-
-logger = get_logger(__name__)
 
 
 class HAPTransformConfiguration(TransformConfiguration):

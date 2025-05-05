@@ -6,6 +6,7 @@ on:
         branches:
             - "dev"
             - "releases/**"
+            - "feature/**"
         tags:
             - "*"
         paths-ignore:
@@ -20,6 +21,7 @@ on:
         branches:
             - "dev"
             - "releases/**"
+            - "feature/**"
         paths-ignore:
             - ".make.*"
             - "**.md"

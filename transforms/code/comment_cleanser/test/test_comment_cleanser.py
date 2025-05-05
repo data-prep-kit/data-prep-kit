@@ -11,24 +11,36 @@
 ################################################################################
 
 import os
-from data_processing.test_support.launch.transform_test import (
-    AbstractTransformLauncherTest,
-)
-from data_processing.runtime.pure_python import PythonTransformLauncher
-from dpk_comment_cleanser.runtime import CommentCleanserRuntime
 
-class TestCommentCleanserTransform(AbstractTransformLauncherTest):
+from data_processing.data_access import DataAccessFactory
+from data_processing.test_support import get_files_in_folder
+from data_processing.test_support.transform import AbstractBinaryTransformTest
+from data_processing.utils import TransformUtils
+from dpk_comment_cleanser.transform import CommentCleanserTransform
+
+class TestCommentCleanserTransform(AbstractBinaryTransformTest):
     """
     Extends the super-class to define the test data for the tests defined there.
     The name of this class MUST begin with the word Test so that pytest recognizes it as a test class.
     """
 
     def get_test_transform_fixtures(self) -> list[tuple]:
-        transform_config = {
+        basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../test-data"))
+        input_dir = os.path.join(basedir, "input")
+        input_files = get_files_in_folder(input_dir, ".zip")
+        input_files = [(name, binary) for name, binary in input_files.items()]
+        expected_metadata_list = {"Removed code comment line": 189}
+        config = {
             "comment_cleanser_contents_column_name": "contents",
         }
-        basedir = "../test-data"
-        basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))
-        launcher = PythonTransformLauncher(CommentCleanserRuntime())
-        fixtures = [(launcher, transform_config, basedir + "/input", basedir + "/expected")]
-        return fixtures
+
+        expected_files = get_files_in_folder(os.path.join(basedir, "expected"), ".parquet")
+        expected_files = [
+            (binary, TransformUtils.get_file_extension(name)[1]) for name, binary in expected_files.items()
+        ]
+
+        return [(CommentCleanserTransform(config), input_files, expected_files, expected_metadata_list)]
+
+
+if __name__ == "__main__":
+    t = TestCommentCleanserTransform()

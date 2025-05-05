@@ -12,11 +12,11 @@
 
 import os
 
-from dpk_comment_cleanser.ray.runtime import CommentCleanserRayTransformConfiguration
+from dpk_comment_cleanser.transform_python import CommentCleanserPythonConfiguration
 from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
-from data_processing_ray.runtime.ray import RayTransformLauncher
+from data_processing.runtime.pure_python import PythonTransformLauncher
 
 
 class TestCommentCleanserTransform(AbstractTransformLauncherTest):
@@ -27,11 +27,10 @@ class TestCommentCleanserTransform(AbstractTransformLauncherTest):
 
     def get_test_transform_fixtures(self) -> list[tuple]:
         cli = {
-            "run_locally": True,
             "comment_cleanser_contents_column_name": "contents",
         }
         basedir = "../test-data"
         basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))
-        launcher = RayTransformLauncher(CommentCleanserRayTransformConfiguration())
+        launcher = PythonTransformLauncher(CommentCleanserPythonConfiguration())
         fixtures = [(launcher, cli, basedir + "/input", basedir + "/expected")]
         return fixtures

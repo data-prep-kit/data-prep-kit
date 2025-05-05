@@ -13,10 +13,20 @@ TRANSFORM_NAME=$(shell basename `pwd`)
 
 ################################################################################
 
-# Developers should adapt this according to their implementation if they do not follow the proposed template
-# We continue to refine this. The current settings are based on current template
-TRANSFORM_PYTHON_SRC="-m dpk_$(TRANSFORM_NAME).runtime"
-TRANSFORM_RAY_SRC="-m dpk_$(TRANSFORM_NAME).ray.runtime"
-TRANSFORM_SPARK_SRC="-m dpk_$(TRANSFORM_NAME).spark.runtime"
 
 
+run-cli-sample:
+	make venv
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).transform_python \
+             --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  
+           
+			
+
+run-ray-cli-sample: 
+	make venv
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.transform \
+		--data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
+        --run_locally True 
+ 

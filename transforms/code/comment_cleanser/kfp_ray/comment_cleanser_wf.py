@@ -23,8 +23,7 @@ from workflow_support.compile_utils import (
 
 
 # the name of the job script
-EXEC_SCRIPT_NAME: str = "comment_cleanser_transform_ray.py"
-PREFIX: str = ""
+EXEC_SCRIPT_NAME: str = "-m dpk_comment_cleanser.ray.transform"
 
 task_image = "quay.io/dataprep1/data-prep-kit/comment_cleanser-ray:latest"
 

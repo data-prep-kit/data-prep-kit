@@ -81,9 +81,6 @@ EXTENSION_MIME_MAP = [
 ]
 
 def code_comment_index(code):
-    # basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../test-data/"))
-    # model = load(os.path.join(basedir,'input/clf_tfid_char_300k_clean.joblib'))
-    # model = load(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../test-data/input/clf_tfid_char_300k_clean.joblib")))
     model = load(os.path.abspath(os.path.join(os.path.dirname(__file__), "../test-data/clf_tfid_char.joblib")))
     comments = []
     code_comment_lines = []

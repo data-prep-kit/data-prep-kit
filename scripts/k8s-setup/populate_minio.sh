@@ -24,7 +24,7 @@ mc cp --recursive ${REPOROOT}/transforms/code/code2parquet/test-data/input/data-
 mc cp --recursive ${REPOROOT}/transforms/code/code2parquet/test-data/languages/ kfp/test/code2parquet/languages
 mc cp --recursive ${REPOROOT}/transforms/code/proglang_select/test-data/input/ kfp/test/proglang_select/input
 mc cp --recursive ${REPOROOT}/transforms/code/proglang_select/test-data/languages/ kfp/test/proglang_select/languages
-mc cp --recursive ${REPOROOT}/transforms/code/malware/ray/test-data/input/ kfp/test/malware/input
+mc cp --recursive ${REPOROOT}/transforms/code/malware/test-data/input/ kfp/test/malware/input
 mc cp --recursive ${REPOROOT}/transforms/code/header_cleanser/test-data/input/ kfp/test/header_cleanser/input
 mc cp --recursive ${REPOROOT}/transforms/code/repo_level_order/test-data/input/ kfp/test/repo_level_ordering/input
 mc cp --recursive ${REPOROOT}/transforms/code/license_select/test-data/input/ kfp/test/license_select/input

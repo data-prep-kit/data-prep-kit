@@ -26,6 +26,7 @@ ray = { file = ["requirements-ray.txt"]}
 all = { file = [
 "code/proglang_select/python/requirements.txt",
 "code/header_cleanser/python/requirements.txt",
+"code/comment_cleanser/python/requirements.txt",
 "code/license_select/python/requirements.txt",
 "code/code_quality/python/requirements.txt",
 "code/code2parquet/python/requirements.txt",
@@ -112,6 +113,7 @@ gneissweb = { file = [
 
 proglang_select = { file = ["code/proglang_select/python/requirements.txt"]} 
 header_cleanser = {file =  ["code/header_cleanser/python/requirements.txt"]}
+comment_cleanser = {file =  ["code/comment_cleanser/python/requirements.txt"]}
 license_select = { file = ["code/license_select/python/requirements.txt"]} 
 code_quality = { file = ["code/code_quality/python/requirements.txt"]} 
 code2parquet = {file =  ["code/code2parquet/python/requirements.txt"]}

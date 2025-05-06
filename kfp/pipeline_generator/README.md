@@ -94,6 +94,15 @@ Note that the transform settings are used to *update* the common settings when p
       name: name
       key: key
   ```
+- `volumes: list[dict]`<sup>**C**</sup>
+     Volumes to mount in the Ray worker pods. The default type is PVC. 
+  ```yaml
+  volumes:
+    - source: cos-pile # Name of the PVC
+      mount_path: /models
+      read_only: true
+      type: pvc
+  ```
 
 ## Steps to generate a pipeline
 

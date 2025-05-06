@@ -43,6 +43,7 @@ TRANSFORM_COMMON_FIELDS = sorted([ Field(t.Name, dict, t.Description) for t in T
     Field("image_pull_secret", str, "Kubernetes secret for the image repository"), 
     Field("invocation", str, "python arguments for invoking the transform"), 
     Field("env", dict, "environment setting"),
+    Field("volumes", list, "list of volume definitions")
     ], key=lambda x: x.Name)
 # parameters used from any transform entry
 TRANSFORM_FIELDS = sorted(TRANSFORM_COMMON_FIELDS + [ 
@@ -278,35 +279,57 @@ def expand_params(input_file, output_file, python_path):
 
         ### augment the transform arguments with the the ones required by ray and kfp 
         t["kfp_args"] = get_kfp_ray_args(pipeline_descriptor, t)
-        if t.get("env", None) is None:
-            continue
+        if t.get("env", None):
+            envo, envs = {}, {}
+            for en, ev in t["env"].items():
+                if isinstance(ev, str):
+                    envs[en] = ev
+                elif isinstance(ev, dict):
+                    if "secret" in ev and "key" in ev:
+                        envo[en] = dict(source="secret", name=ev["secret"], key=ev["key"])
+                        continue
+                    source = ev.get("source", None)
+                    valid_sources = ["SECRET", "CONFIGMAP", "RESOURCE_FIELD", "FIELD"]
+                    if source is None or source.upper() not in valid_sources:
+                        print(f"error: at transform \"{label}\", variable \"{en}\" has unknown source [{source}]", file=sys.stderr)
+                        print(f"note: must be one of {', '.join(valid_sources)}", file=sys.stderr)
+                        errors += 1
+                        continue
+                    if ev.get("key", None) is None or ev.get("name", None) is None:
+                        print(f"error: at transform \"{label}\", variable \"{en}\" needs all \"source\", \"name\" and \"key\" fields", file=sys.stderr)
+                        errors += 1
+                        continue
+                    envo[en] = ev
+                else:
+                    envs[en] = f"{ev}"
 
-        envo, envs = {}, {}
-        for en, ev in t["env"].items():
-            if isinstance(ev, str):
-                envs[en] = ev
-            elif isinstance(ev, dict):
-                if "secret" in ev and "key" in ev:
-                    envo[en] = dict(source="secret", name=ev["secret"], key=ev["key"])
-                    continue
-                source = ev.get("source", None)
-                valid_sources = ["SECRET", "CONFIGMAP", "RESOURCE_FIELD", "FIELD"]
-                if source is None or source.upper() not in valid_sources:
-                    print(f"error: at transform \"{label}\", variable \"{en}\" has unknown source [{source}]", file=sys.stderr)
-                    print(f"note: must be one of {', '.join(valid_sources)}", file=sys.stderr)
-                    errors += 1
-                    continue
-                if ev.get("key", None) is None or ev.get("name", None) is None:
-                    print(f"error: at transform \"{label}\", variable \"{en}\" needs all \"source\", \"name\" and \"key\" fields", file=sys.stderr)
-                    errors += 1
-                    continue
-                envo[en] = ev
-            else:
-                envs[en] = f"{ev}"
+            t["envo"] = envo
+            t["envs"] = envs
+            del t["env"]
 
-        t["envo"] = envo
-        t["envs"] = envs
-        del t["env"]
+        vols = []
+        for vn, vol in enumerate(t.get("volumes", [])):
+            vtype = vol.get("type", 0)
+            if isinstance(vtype, str) and vtype.lower() == "pvc":
+                vtype = 0
+            vol["type"] = vtype
+            if vtype != 0:
+                print(f"error: at transform \"{label}\" volume {vn}, unknown volume type \"{vtype}\"", file=sys.stderr)
+                errors += 1
+                continue
+            if not vol.get("source", None) and not vol.get("mount_path", None):
+                print(f"error: at transform \"{label}\", volume {vn}, both \"source\" and \"mount_path\" are need", file=sys.stderr)
+                errors += 1
+                continue
+            if not vol.get("name", None):
+                vol["name"] = f"vol-{vol['source']}"
+
+            vol["read_only"] = vol.get("read_only", False)
+            vols.append(vol)
+
+        if vols:
+            t["vols"] = vols
+            del t["volumes"]
 
     pipeline_descriptor["transforms"] = transforms
     if transform_common:
@@ -366,6 +389,9 @@ def make_dpk_workflow(pipeline_file, expanded_pipeline_file, workflow_python_fil
             os.unlink(wfpy)
     return rc
 
+"""
+PVC dict(volumeType=0, name="", mountPath="", readOnly=True)
+"""
 
 if __name__ == "__main__":
     default_template = os.path.join(os.path.dirname(os.path.relpath(__file__)), "template-dpk_wf.py")

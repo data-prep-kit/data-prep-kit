@@ -114,7 +114,8 @@ def compute_exec_params_func(
             data_num_samples= -1,
             {%- endif %}
             data_checkpointing= data_checkpointing,
-            runtime_num_workers= KFPUtils.default_compute_execution_params(str({{tr.name}}_ray_worker_options), str({{tr.name}}_runtime_actor_options)),
+            # runtime_num_workers= KFPUtils.default_compute_execution_params(str({{tr.name}}_ray_worker_options), str({{tr.name}}_runtime_actor_options)),
+            runtime_num_workers= KFPUtils.default_compute_execution_params({{tr.name}}_ray_worker_options, {{tr.name}}_runtime_actor_options),
             runtime_worker_options= str({{tr.name}}_runtime_actor_options),
             runtime_pipeline_id= runtime_pipeline_id,
             runtime_code_location= str({{tr.name}}_runtime_code_location),
@@ -143,13 +144,15 @@ def load_component(yaml_fn):
     with open(os.path.join(COMPONENT_SPEC_PATH, yaml_fn), 'r') as file:
         component_yaml = yaml.safe_load(file)
     component_yaml["implementation"]["container"]["image"] = KFP_IMAGE
+
     {% if legacy %} 
     if os.path.basename(yaml_fn) == "deleteRayClusterComponent.yaml":
         component_yaml["inputs"] = component_yaml["inputs"][:-1]
         component_yaml["implementation"]["container"]["command"] = component_yaml["implementation"]["container"]["command"][:-2]
     {% endif %}
     component_txt = yaml.dump(component_yaml, sort_keys=False)
-    return kfp.components.load_component_from_text(component_txt)
+    component = kfp.components.load_component_from_text(component_txt)
+    return component
 
 # create Ray cluster
 create_ray_op = load_component("createRayClusterComponent.yaml")
@@ -157,7 +160,6 @@ create_ray_op = load_component("createRayClusterComponent.yaml")
 execute_ray_jobs_op = load_component("executeRayJobComponent.yaml")
 # clean up Ray
 cleanup_ray_op = load_component("deleteRayClusterComponent.yaml")
-
 
 {%- for tr in transforms %}
 {%- if "envs" in tr %}
@@ -172,6 +174,14 @@ cleanup_ray_op = load_component("deleteRayClusterComponent.yaml")
     {{en}}="{{ev}}",
     {%- endfor %})
     )
+{%- endif %}
+{%- if "vols" in tr %}
+# volumes for {% if tr.name == tr.transform %}{{tr.name}}{% else %}{{tr.name}} ({{tr.transform}}){% endif %} workers
+{{tr.name}}_vols = [
+    {%- for vol in tr.vols %}
+    dict(volumeType={{vol.type}}, name="{{vol.name}}", source="{{vol.source}}", mountPath="{{vol.mount_path}}", readOnly={{vol.read_only}}),
+    {%- endfor %}
+    ]
 {%- endif %}
 {%- endfor %}
 
@@ -193,8 +203,10 @@ def {{dsl_pipeline_name}}(
     # args for {% if tr.name == tr.transform %}{{tr.name}}{% else %}{{tr.name}} ({{tr.transform}}){% endif %}
     {{tr.name}}_ray_run_id_KFPv2: str = "",
     {%- for arg in tr.kfp_args %}
-    {%- if "envs" in tr and (arg.name == "ray_worker_options" or arg.name == "ray_head_options") %}
-    {{tr.name}}_{{arg.name}}: dict = {{arg.value}} | dict(environment={{tr.name}}_envs.to_dict()),
+    {%- if arg.name == "ray_worker_options" or arg.name == "ray_head_options" %}
+    {{tr.name}}_{{arg.name}}: dict = {{arg.value}}     
+    {%- if "envs" in tr %} | dict(environment={{tr.name}}_envs.to_dict()) {%- endif %}
+    {%- if "vols" in tr and  arg.name == "ray_worker_options" %} | dict(volumes={{tr.name}}_vols) {%- endif %},
     {%- else %}    
     {{tr.name}}_{{arg.name}}: {{arg.type}} = {% if arg.type == "str" %}'{{arg.value}}'{% else %}{{arg.value}}{% endif %},
     {%- endif %}
@@ -248,6 +260,7 @@ def {{dsl_pipeline_name}}(
     {{tr.name}}_clean_up_task = cleanup_ray_op(ray_name={{tr.name}}_ray_name, run_id={{tr.name}}_run_id, server_url=server_url, additional_params=str({{tr.name}}_additional_params))
     {% endif %}
     ComponentUtils.add_settings_to_component({{tr.name}}_clean_up_task, ONE_HOUR_SEC * 2)
+
     {{tr.name}}_clean_up_task.set_display_name("Stop {% if tr.name == tr.transform %}{{tr.name}}{% else %}{{tr.name}} ({{tr.transform}}){% endif %} Ray cluster")
     with kfp.dsl.ExitHandler({{tr.name}}_clean_up_task):
     {%- endif %}
@@ -350,9 +363,11 @@ if __name__ == "__main__":
     OUTPUT_FOLDER=args.output_folder
     TMP_FOLDER=args.tmp_folder
 
+    conf = kfp.dsl.PipelineConf()
+    conf.set_image_pull_secrets([dict(name=KFP_IMAGE_PULL_SECRET)])
     if args.run_name:
         # Run the pipeline
-        kfp.Client().create_run_from_pipeline_func({{dsl_pipeline_name}}, run_name=args.run_name, experiment_name=args.experiment_name)
+        kfp.Client().create_run_from_pipeline_func({{dsl_pipeline_name}}, run_name=args.run_name, experiment_name=args.experiment_name, pipeline_conf=conf)
     else:
         # Compile the pipeline
-        kfp.compiler.Compiler().compile({{dsl_pipeline_name}}, args.output)
+        kfp.compiler.Compiler().compile({{dsl_pipeline_name}}, args.output, pipeline_conf=conf)

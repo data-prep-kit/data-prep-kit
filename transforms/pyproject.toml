@@ -24,12 +24,13 @@ file = ["requirements.txt"]
 dev = { file = ["requirements-dev.txt"]}
 ray = { file = ["requirements-ray.txt"]}
 all = { file = [
-"code/proglang_select/python/requirements.txt",
-"code/header_cleanser/python/requirements.txt",
-"code/license_select/python/requirements.txt",
-"code/code_quality/python/requirements.txt",
-"code/code2parquet/python/requirements.txt",
+"code/proglang_select/requirements.txt",
+"code/header_cleanser/requirements.txt",
+"code/license_select/requirements.txt",
+"code/code_quality/requirements.txt",
+"code/code2parquet/requirements.txt",
 "code/code_profiler/requirements.txt",
+"code/malware/requirements.txt",
 
 "language/pii_redactor/requirements.txt",
 
@@ -95,6 +96,29 @@ language = { file = [
 "universal/tokenization2arrow/requirements.txt"
 ]}
 
+code = { file = [
+"code/proglang_select/requirements.txt",
+"code/header_cleanser/requirements.txt",
+"code/license_select/requirements.txt",
+"code/code_quality/requirements.txt",
+"code/code2parquet/requirements.txt",
+"code/code_profiler/requirements.txt",
+"code/malware/requirements.txt",
+
+"universal/filter/requirements.txt",
+"universal/doc_id/requirements.txt",
+"universal/ededup/requirements.txt",
+"universal/fdedup/requirements.txt",
+"universal/hap/requirements.txt",
+"universal/bloom/requirements.txt",
+"universal/tokenization/requirements.txt",
+"universal/web2parquet/requirements.txt",
+"universal/profiler/requirements.txt",
+"universal/resize/requirements.txt",
+"universal/rep_removal/requirements.txt",
+"universal/tokenization2arrow/requirements.txt"
+]}
+
 gneissweb = { file = [
 "language/extreme_tokenized/requirements.txt",
 "language/readability/requirements.txt",
@@ -110,11 +134,14 @@ gneissweb = { file = [
 # pyproject.toml must be in a parent and cannot be in sibling
 # i.e. Cannot access '../code/proglang_select/python/..
 
-proglang_select = { file = ["code/proglang_select/python/requirements.txt"]} 
-header_cleanser = {file =  ["code/header_cleanser/python/requirements.txt"]}
-license_select = { file = ["code/license_select/python/requirements.txt"]} 
-code_quality = { file = ["code/code_quality/python/requirements.txt"]} 
-code2parquet = {file =  ["code/code2parquet/python/requirements.txt"]}
+proglang_select = { file = ["code/proglang_select/requirements.txt"]} 
+header_cleanser = {file =  ["code/header_cleanser/requirements.txt"]}
+license_select = { file = ["code/license_select/requirements.txt"]} 
+code_quality = { file = ["code/code_quality/requirements.txt"]} 
+code2parquet = {file =  ["code/code2parquet/requirements.txt"]}
+malware = {file =  ["code/code2parquet/requirements.txt"]}
+code_profiler = { file = ["code/code_profiler/requirements.txt"]} 
+
 
 profiler = { file = ["universal/profiler/requirements.txt"]} 
 resize = { file = ["universal/resize/requirements.txt"]} 
@@ -141,8 +168,6 @@ web2parquet = { file = ["universal/web2parquet/requirements.txt"]}
 similarity = { file = ["language/similarity/requirements.txt"]}
 extreme_tokenized = { file = ["language/extreme_tokenized/requirements.txt"]}
 readability = { file = ["language/readability/requirements.txt"]}
-
-code_profiler = { file = ["code/code_profiler/requirements.txt"]} 
 
 gneissweb_classification = { file = ["language/gneissweb_classification/requirements.txt"]}
 

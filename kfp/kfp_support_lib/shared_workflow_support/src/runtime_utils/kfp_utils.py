@@ -138,8 +138,14 @@ class KFPUtils:
         logger = get_logger(__name__)
 
         # convert input
-        w_options = KFPUtils.load_from_json(worker_options.replace("'", '"'))
-        a_options = KFPUtils.load_from_json(actor_options.replace("'", '"'))
+        if isinstance(worker_options, str):
+            w_options = KFPUtils.load_from_json(worker_options.replace("'", '"'))
+        else:
+            w_options = worker_options
+        if isinstance(actor_options, str):
+            a_options = KFPUtils.load_from_json(actor_options.replace("'", '"'))
+        else:
+            a_options = actor_options
         # Compute available cluster resources
         cluster_cpu = w_options["replicas"] * w_options["cpu"]
         cluster_mem = w_options["replicas"] * w_options["memory"]

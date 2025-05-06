@@ -41,8 +41,8 @@ class EnrichmentConfiguration(TransformConfiguration):
         By convention a common prefix should be used for all transform-specific CLI args
         (e.g, noop_, pii_, etc.)
         """
-        for key, key_type, key_default, key_help in get_transform_params():
-            parser.add_argument(f"--{short_name}_{key}", type=key_type, default=key_default, help=key_help)
+        for key in get_transform_params():
+            parser.add_argument(f"--{short_name}_{key.Name}", type=key.Type, required=key.Required, default=key.Default, help=key.Description)
 
     def apply_input_params(self, args: argparse.Namespace) -> bool:
         """

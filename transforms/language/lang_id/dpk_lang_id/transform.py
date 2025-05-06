@@ -20,28 +20,16 @@ from data_processing.transform import AbstractTableTransform, TransformConfigura
 from data_processing.utils import CLIArgumentProvider, TransformUtils
 from dpk_lang_id.lang_models import LangModelFactory
 from dpk_lang_id.nlp import get_lang_ds_pa
+from dpk_lang_id.info import short_name, description, get_transform_params, get_transform_param_defaults
 
-
-short_name = "lang_id"
 cli_prefix = f"{short_name}_"
+
 model_credential_key = "model_credential"
 model_kind_key = "model_kind"
 model_url_key = "model_url"
 content_column_name_key = "content_column_name"
 output_lang_column_name_key = "output_lang_column_name"
 output_score_column_name_key = "output_score_column_name"
-model_credential_cli_param = f"{cli_prefix}{model_credential_key}"
-model_kind_cli_param = f"{cli_prefix}{model_kind_key}"
-model_url_cli_param = f"{cli_prefix}{model_url_key}"
-content_column_name_cli_param = f"{cli_prefix}{content_column_name_key}"
-output_lang_column_name_cli_param = f"{cli_prefix}{output_lang_column_name_key}"
-output_score_column_name_cli_param = f"{cli_prefix}{output_score_column_name_key}"
-
-default_content_column_name = "contents"
-default_output_lang_column_name = "lang"
-default_output_score_column_name = "score"
-model_credential_from_env = os.environ.get("HF_READ_ACCESS_TOKEN", "")
-
 
 class LangIdentificationTransform(AbstractTableTransform):
     """
@@ -58,12 +46,14 @@ class LangIdentificationTransform(AbstractTableTransform):
         # Make sure that the param name corresponds to the name used in apply_input_params method
         # of LangIdentificationTransformConfiguration class
         super().__init__(config)
-        self.nlp_langid = LangModelFactory.create_model(
-            config.get(model_kind_key), config.get(model_url_key), config.get(model_credential_key)
-        )
-        self.content_column_name = config.get(content_column_name_key, default_content_column_name)
-        self.output_lang_column_name = config.get(output_lang_column_name_key, default_output_lang_column_name)
-        self.output_score_column_name = config.get(output_score_column_name_key, default_output_score_column_name)
+        config = get_transform_param_defaults() | config
+        model_kind = config.get(model_kind_key)
+        model_url = config.get(model_url_key)
+        self.nlp_langid = LangModelFactory.create_model(model_kind, model_url, config.get(model_credential_key))
+        self.logger.info(f"loaded {model_kind} model: {model_url}")
+        self.content_column_name = config.get(content_column_name_key)
+        self.output_lang_column_name = config.get(output_lang_column_name_key)
+        self.output_score_column_name = config.get(output_score_column_name_key)
 
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
         """
@@ -115,29 +105,9 @@ class LangIdentificationTransformConfiguration(TransformConfiguration):
         By convention a common prefix should be used for all transform-specific CLI args
         (e.g, noop_, pii_, etc.)
         """
-        parser.add_argument(
-            f"--{model_credential_cli_param}",
-            required=False,
-            default=model_credential_from_env,
-            help="Credential to access model for language detection placed in url",
-        )
-        parser.add_argument(f"--{model_kind_cli_param}", required=True, help="Kind of model for language detection")
-        parser.add_argument(f"--{model_url_cli_param}", required=True, help="Url to model for language detection")
-        parser.add_argument(
-            f"--{content_column_name_cli_param}",
-            default=default_content_column_name,
-            help="Column name to get content",
-        )
-        parser.add_argument(
-            f"--{output_lang_column_name_cli_param}",
-            default=default_output_lang_column_name,
-            help="Column name to store identified language",
-        )
-        parser.add_argument(
-            f"--{output_score_column_name_cli_param}",
-            default=default_output_score_column_name,
-            help="Column name to store the score of language identification",
-        )
+
+        for key in get_transform_params():
+            parser.add_argument(f"--{short_name}_{key.Name}", type=key.Type, required=key.Required, default=key.Default, help=key.Description)
 
     def apply_input_params(self, args: Namespace) -> bool:
         """

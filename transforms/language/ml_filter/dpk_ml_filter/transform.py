@@ -11,27 +11,11 @@
 ################################################################################
 
 import json, argparse, pyarrow, yaml, os
-import pyarrow.compute as pc
 from typing import Any
+import pyarrow.compute as pc
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
 from data_processing.utils import CLIArgumentProvider, TransformUtils, UnrecoverableException
-
-short_name = "ml_filter"
-description = "filter using a per-language table of conditions"
-
-# parameter table: name, type, default_value, description
-param_table = [
-        ("column_prefix", str, "", "Prefix for to all columns referenced in the conditions table"),
-        ("lang_column_name", str, "lang", "Name of the column with the language identifier"),
-        ("config", str, os.path.expanduser("~/cleansing-config.yaml"), "File name for the condition table (yaml)"),
-        ("ignore_missing_columns", bool, False, "Ignore conditions that reference fields not present in the data"),
-    ]
-
-def get_transform_params():
-    return param_table
-
-def get_transform_param_defaults():
-    return {k: d for k, t, d, h  in get_transform_params()}
+from dpk_ml_filter.info import short_name, description, get_transform_params, get_transform_param_defaults
 
 def get_config(config: dict[str, Any], param: str):
     return config.get(param, get_transform_param_defaults().get(param, None))

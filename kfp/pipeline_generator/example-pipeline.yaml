@@ -1,0 +1,50 @@
+## name and description for pipeline
+name: "demo-2trans"
+description: "Example pipeline with two transforms"
+
+## dpk/kfp image name and pull secret
+kfp_base_image: "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
+image_pull_secret: "secret-for-quay-io"
+
+## input, output and temporary storage locations, along with the corresponding s3 access secret name
+input_folder: "s3/path/input"
+output_folder: "s3/path/output"
+tmp_folder: "s3/path/output/tmp"
+s3_access_secret: "cos-access"
+
+## how much data to process
+data_max_files: -1
+
+## common settings for all transforms
+transform_common_parameters:
+    ## these ray cluster parameters will be used as defaults for all transforms
+    ray_worker_options: { "cpu": 4, "max_replicas": 2, "memory": 6, "min_replicas": 2, "replicas": 2 }
+    ray_head_options: { "cpu": 1, "memory": 4 }
+
+    ## entry point in the transform image 
+    invocation: "-m dpk_{transform}.ray.runtime"
+    image: "quay.io/dataprep1/data-prep-kit/{transform}-ray:latest"
+    image_pull_secret: "secret-for-image-repo"
+
+## transform sequence
+transforms:
+  - transform: enrichment
+
+    ## override the default parameter values built-in the transform
+    params:
+      content_column_name: "contents"
+      lang_column_name: "language"
+
+  - transform: ml_filter
+    ## use a label for this transform rather than its name,
+    name: filter
+
+    ## for this transform use a specific image tag,
+    ## it will override the tag in the image name set in the common area
+    image_tag: "1.1"
+
+    params:
+      ignore_missing_columns: true
+      config: ""
+      lang_column_name: "language"
+

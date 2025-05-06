@@ -9,6 +9,8 @@ on:
         branches:
             - "dev"
             - "releases/**"
+            - "feature/**"
+
         tags:
             - "*"
         paths:
@@ -27,6 +29,7 @@ on:
         branches:
             - "dev"
             - "releases/**"
+            - "feature/**"
         paths:
             - ".make.*"
             - "transforms/.make.transforms"

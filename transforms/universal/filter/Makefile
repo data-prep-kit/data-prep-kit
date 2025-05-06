@@ -15,7 +15,6 @@ TRANSFORM_NAME=$(shell basename `pwd`)
 
 TRANSFORM_PYTHON_SRC="-m dpk_$(TRANSFORM_NAME).runtime"
 TRANSFORM_RAY_SRC="-m dpk_$(TRANSFORM_NAME).ray.runtime"
-TRANSFORM_RAY_SRC="-m dpk_$(TRANSFORM_NAME).spark.runtime"
 
 
 run-python-cli-sample-arrow:
@@ -69,7 +68,7 @@ run-ray-cli-sample:
 run-spark-cli-sample: 
 	$(MAKE) venv
 	source venv/bin/activate && \
-	$(PYTHON) -m dpk_$(TRANSFORM_NAME).spark.transform \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).spark.runtime \
 			--spark_local_config_filepath ../config/spark_profile_local.yml \
 			--data_local_config "{ 'input_folder' : '../test-data/input', 'output_folder' : '../output'}"  \
 			--filter_criteria_list "[ 'docq_total_words > 100 AND docq_total_words < 200', 'ibmkenlm_docq_perplex_score < 230']"  \

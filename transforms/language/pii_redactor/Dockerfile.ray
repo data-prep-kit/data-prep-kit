@@ -1,5 +1,4 @@
 ARG BASE_IMAGE=docker.io/rayproject/ray:2.24.0-py310
-
 FROM ${BASE_IMAGE}
 
 # see https://docs.openshift.com/container-platform/4.17/openshift_images/create-images.html#use-uid_create-images

@@ -32,7 +32,6 @@ class DataAccessFactoryBase(CLIArgumentProvider):
         :param cli_arg_prefix:  if provided, this will be prepended to all the CLI arguments names.
                Make sure it ends with _
         """
-        self.s3_cred = None
         self.checkpointing = False
         self.dsets = None
         self.max_files = -1
@@ -64,6 +63,7 @@ class DataAccessFactoryBase(CLIArgumentProvider):
         """
         pass
 
+
     def get_input_params(self) -> dict[str, Any]:
         """
         get input parameters for job_input_params for metadata
@@ -89,55 +89,8 @@ class DataAccessFactoryBase(CLIArgumentProvider):
     """
     Some commonly useful validation methods
     """
+    ######
+    ## MT: Move the _validate_xxx to be done by corresponding class
+    ######
 
-    def _validate_s3_cred(self, s3_credentials: dict[str, str]) -> bool:
-        """
-        Validate that
-        :param s3_credentials: dictionary of S3 credentials
-        :return:
-        """
-        if s3_credentials is None:
-            self.logger.error(f"data access factory {self.cli_arg_prefix}: missing s3_credentials")
-            return False
-        valid_config = True
-        if s3_credentials.get("access_key") is None:
-            self.logger.error(f"data access factory {self.cli_arg_prefix}: missing S3 access_key")
-            valid_config = False
-        if s3_credentials.get("secret_key") is None:
-            self.logger.error(f"data access factory {self.cli_arg_prefix}: missing S3 secret_key")
-            valid_config = False
-        return valid_config
 
-    def _validate_local_config(self, local_config: dict[str, str]) -> bool:
-        """
-        Validate that
-        :param local_config: dictionary of local config
-        :return: True if local config is valid, False otherwise
-        """
-        valid_config = True
-        if local_config.get("input_folder", "") == "":
-            valid_config = False
-            self.logger.error(
-                f"data access factory {self.cli_arg_prefix}: " "Could not find input folder in local config"
-            )
-        if local_config.get("output_folder", "") == "":
-            valid_config = False
-            self.logger.error(
-                f"data access factory {self.cli_arg_prefix}: " "Could not find output folder in local config"
-            )
-        return valid_config
-
-    def _validate_s3_config(self, s3_config: dict[str, str]) -> bool:
-        """
-        Validate that
-        :param s3_config: dictionary of local config
-        :return: True if s3l config is valid, False otherwise
-        """
-        valid_config = True
-        if s3_config.get("input_folder", "") == "":
-            valid_config = False
-            self.logger.error(f"data access factory {self.cli_arg_prefix}: Could not find input folder in s3 config")
-        if s3_config.get("output_folder", "") == "":
-            valid_config = False
-            self.logger.error(f"data access factory {self.cli_arg_prefix}: Could not find output folder in s3 config")
-        return valid_config

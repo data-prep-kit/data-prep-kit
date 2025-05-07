@@ -170,7 +170,6 @@ class RepoLevelOrderTransform(AbstractTableTransform):
         return [], metadata
 
 
-
 class RepoLevelOrderTransformConfiguration(TransformConfiguration):
     """
     Provides support for configuring and using the associated Transform class include

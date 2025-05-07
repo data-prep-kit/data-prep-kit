@@ -31,7 +31,7 @@ S3_SECRET = "s3-secret"  # pragma: allowlist secret
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_blocklist.ray.transform"
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing_v2:latest"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)
@@ -118,6 +118,7 @@ def blocklist(
     # data access
     data_s3_config: str = "{'input_folder': 'test/blocklist/input/', 'output_folder': 'test/blocklist/output/'}",
     data_s3_access_secret: str = S3_SECRET,
+    other_secrets: dict = {},
     data_max_files: int = 2,
     data_num_samples: int = -1,
     data_checkpointing: bool = False,
@@ -212,9 +213,19 @@ def blocklist(
             ray_head_options=ray_head_options,
             ray_worker_options=ray_worker_options,
             server_url=server_url,
+            other_secrets=other_secrets,
             additional_params=additional_params,
         )
         ComponentUtils.add_settings_to_component(ray_cluster, ONE_HOUR_SEC * 2)
+        if os.getenv("KFPv2", "0") == "1":
+            from kfp import kubernetes
+
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=ray_cluster, secret_name=S3_SECRET, secret_key_to_env=env2key)
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(ray_cluster, data_s3_access_secret)
         ray_cluster.after(compute_exec_params)
         # Execute job
         execute_job = execute_ray_jobs_op(
@@ -225,7 +236,6 @@ def blocklist(
             exec_script_name=EXEC_SCRIPT_NAME,
             server_url=server_url,
         )
-
         ComponentUtils.add_settings_to_component(execute_job, ONE_WEEK_SEC)
         if os.getenv("KFPv2", "0") == "1":
             from kfp import kubernetes
@@ -237,8 +247,6 @@ def blocklist(
         else:
             ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
         execute_job.after(ray_cluster)
-
-   
 
 
 if __name__ == "__main__":

@@ -24,6 +24,7 @@ from kubernetes.client import (
     V1NodeSelectorTerm,
     V1Toleration,
 )
+from runtime_utils import KFPUtils
 
 
 logger = get_logger(__name__)
@@ -109,7 +110,7 @@ class ComponentUtils:
     def set_s3_env_vars_to_component(
         component: dsl.ContainerOp,
         secret: str,
-        env2key: dict[str, str] = {"S3_KEY": "s3-key", "S3_SECRET": "s3-secret", "ENDPOINT": "s3-endpoint"},
+        env2key: dict[str, str] = KFPUtils.get_s3_env_2_key(),
         prefix: str = None,
     ) -> None:
         """
@@ -130,6 +131,32 @@ class ComponentUtils:
                     ),
                 )
             )
+
+    @staticmethod
+    def add_secret_env_vars_to_component(
+        component: dsl.ContainerOp,
+        secrets: dict,
+        prefix: str = None,
+    ) -> None:
+        """
+        Set S3 env variables to KFP component
+        :param component: kfp component
+        :param secret: secret name with the S3 credentials
+        :param env2key: dict with mapping each env variable to a key in the secret
+        :param prefix: prefix to add to env name
+        """
+        for secret_name, data in secrets.items():
+            for env_name, secret_key in data.items():
+                if prefix is not None:
+                    env_name = f"{prefix}_{env_name}"
+                component = component.add_env_variable(
+                    k8s_client.V1EnvVar(
+                        name=env_name,
+                        value_from=k8s_client.V1EnvVarSource(
+                            secret_key_ref=k8s_client.V1SecretKeySelector(name=secret_name, key=secret_key)
+                        ),
+                    )
+                )
 
     @staticmethod
     def add_cm_volume_to_com_function(component: dsl.ContainerOp, cmName: str, mountPoint: str, optional=False):

@@ -12,11 +12,39 @@
 
 import gzip
 import json
+import traceback
 from typing import Any
 
 import pyarrow
 from data_processing.data_access import ArrowS3, DataAccess
-from data_processing.utils import TransformUtils
+from data_processing.utils import DPKConfig, TransformUtils, get_logger
+
+
+logger = get_logger(__name__)
+
+
+class DPKConfigS3(DPKConfig):
+
+    ## Loaded at startup. Not very useful but here in case
+    S3_KEY = DPKConfig._get_first_env_var(["S3_ACCESS_KEY", "S3_KEY"])
+    S3_SECRET = DPKConfig._get_first_env_var(["S3_SECRET_KEY", "S3_SECRET"])
+    S3_ENDPOINT = DPKConfig._get_first_env_var(["S3_ENDPOINT", "S3_URL"])
+    S3_REGION = DPKConfig._get_first_env_var(["S3_REGION"], "us-east")
+
+    ## use DPKCOnfigS3().S3_KEY or DPKCOnfigS3().S3_SECRET , etc
+    ## Can be reconfigured at runtime and for specific prefixes
+    ## Allows multiple S3 buckets used simultaneously by the same application each having its own credentia
+    def __init__(self, prefix: str = None):
+        self.S3_KEY = DPKConfig._get_first_env_var(
+            [f"{prefix}S3_ACCESS_KEY", f"{prefix}_S3_ACCESS_KEY", f"{prefix}S3_KEY", f"{prefix}_S3_KEY", "S3_ACCESS_KEY", "S3_KEY"]
+        )
+        self.S3_SECRET = DPKConfig._get_first_env_var(
+            [f"{prefix}S3_SECRET_KEY", f"{prefix}_S3_SECRET_KEY", f"{prefix}S3_SECRET", f"{prefix}_S3_SECRET", "S3_SECRET_KEY", "S3_SECRET"]
+        )
+        self.S3_ENDPOINT = DPKConfig._get_first_env_var(
+            [f"{prefix}S3_ENDPOINT", f"{prefix}_S3_ENDPOINT", f"{prefix}S3_URL", f"{prefix}_S3_URL", "S3_ENDPOINT", "S3_URL"]
+        )
+        self.S3_REGION = DPKConfig._get_first_env_var([f"{prefix}S3_REGION", f"{prefix}_S3_REGION", "S3_REGION"], "us-east")
 
 
 class DataAccessS3(DataAccess):
@@ -24,10 +52,41 @@ class DataAccessS3(DataAccess):
     Implementation of the Base Data access class for folder-based data access.
     """
 
+    @classmethod
+    def validate_config(cls, config: dict[str, str], prefix: str = "data_") -> bool:
+        """
+        Validate that
+        :param s3_config: dictionary of local config
+        :return: True if s3l config is valid, False otherwise
+        """
+        valid_config = True
+        if config is None:
+            logger.info(f"data access factory {prefix}: Could not find a valid configuration")
+            access_key = DPKConfigS3(prefix).S3_KEY
+            secret_key = DPKConfigS3(prefix).S3_SECRET
+            endpoint = DPKConfigS3(prefix).S3_ENDPOINT
+        else:
+            if config.get("input_folder", "") == "":
+                valid_config = False
+                logger.error(f"data access factory {prefix}: Could not find input folder in s3 config")
+            if config.get("output_folder", "") == "":
+                valid_config = False
+                logger.error(f"data access factory {prefix}: Could not find output folder in s3 config")
+
+            # Maitain support for legacy code
+            access_key = config.get("access_key", DPKConfigS3(prefix).S3_KEY)
+            secret_key = config.get("secret_key", DPKConfigS3(prefix).S3_SECRET)
+            endpoint = config.get("url", DPKConfigS3(prefix).S3_ENDPOINT)
+
+        if access_key is None or secret_key is None:
+            valid_config = False
+            logger.error(f"data access factory {prefix}: Missing Credentials {access_key} {secret_key} {endpoint} ")
+
+        return valid_config
+
     def __init__(
         self,
-        s3_credentials: dict[str, str],
-        s3_config: dict[str, str] = None,
+        config: dict[str, str],
         d_sets: list[str] = None,
         checkpoint: bool = False,
         m_files: int = -1,
@@ -46,26 +105,43 @@ class DataAccessS3(DataAccess):
         :param files_to_use: files extensions of files to include
         :param files_to_checkpoint: files extensions of files to use for checkpointing
         """
-        super().__init__(d_sets=d_sets, checkpoint=checkpoint, m_files=m_files, n_samples=n_samples,
-                         files_to_use=files_to_use, files_to_checkpoint=files_to_checkpoint)
-        if (
-            s3_credentials is None
-            or s3_credentials.get("access_key", None) is None
-            or s3_credentials.get("secret_key", None) is None
-        ):
-            raise "S3 credentials is not defined"
-        self.s3_credentials = s3_credentials
-        if s3_config is None:
-            self.input_folder = None
-            self.output_folder = None
+        super().__init__(
+            d_sets=d_sets,
+            checkpoint=checkpoint,
+            m_files=m_files,
+            n_samples=n_samples,
+            files_to_use=files_to_use,
+            files_to_checkpoint=files_to_checkpoint,
+        )
+
+        if config is not None:
+            prefix = config.get("prefix", "data_")
+            access_key = config.get("access_key", DPKConfigS3(prefix).S3_KEY)
+            secret_key = config.get("secret_key", DPKConfigS3(prefix).S3_SECRET)
+            endpoint = config.get("url", DPKConfigS3(prefix).S3_ENDPOINT)
+            region = config.get("region", DPKConfigS3(prefix).S3_REGION)
+            input_folder = config.get("input_folder", None)
+            output_folder = config.get("output_folder", None)
         else:
-            self.input_folder = TransformUtils.clean_path(s3_config["input_folder"])
-            self.output_folder = TransformUtils.clean_path(s3_config["output_folder"])
+            access_key = DPKConfigS3().S3_KEY
+            secret_key = DPKConfigS3().S3_SECRET
+            endpoint = DPKConfigS3().S3_ENDPOINT
+            region = DPKConfigS3().S3_REGION
+            input_folder = None
+            output_folder = None
+
+        assert access_key is not None, "S3 Access Key is not defined"
+        assert secret_key is not None, "S3 Secret Key is not defined"
+
+        # Input_folder and output_folder can be None for Unit Testing
+        self.input_folder = TransformUtils.clean_path(input_folder) if input_folder else None
+        self.output_folder = TransformUtils.clean_path(output_folder) if output_folder else None
+
         self.arrS3 = ArrowS3(
-            access_key=s3_credentials.get("access_key"),
-            secret_key=s3_credentials.get("secret_key"),
-            endpoint=s3_credentials.get("url", None),
-            region=s3_credentials.get("region", None),
+            access_key=access_key,
+            secret_key=secret_key,
+            endpoint=endpoint,
+            region=region,
         )
 
     def get_output_folder(self) -> str:
@@ -92,6 +168,7 @@ class DataAccessS3(DataAccess):
             return self.arrS3.list_files(key=path)
         except Exception as e:
             self.logger.error(f"Error listing S3 files for path {path} - {e}")
+            self.logger.error(traceback.format_exc())
             return [], 0
 
     def _get_folders_to_use(self) -> tuple[list[str], int]:
@@ -104,6 +181,7 @@ class DataAccessS3(DataAccess):
             folders, retries = self.arrS3.list_folders(self.input_folder)
         except Exception as e:
             self.logger.error(f"Error listing S3 folders for path {self.input_folder} - {e}")
+            self.logger.error(traceback.format_exc())
             return [], 0
         # Only use valid folders
         for folder in folders:
@@ -124,6 +202,7 @@ class DataAccessS3(DataAccess):
             return self.arrS3.read_table(path)
         except Exception as e:
             self.logger.error(f"Exception reading table {path} from S3 - {e}")
+            self.logger.error(traceback.format_exc())
             return None, 0
 
     def save_table(self, path: str, table: pyarrow.Table) -> tuple[int, dict[str, Any], int]:
@@ -139,6 +218,7 @@ class DataAccessS3(DataAccess):
             return self.arrS3.save_table(key=path, table=table)
         except Exception as e:
             self.logger.error(f"Exception saving table to S3 {path} - {e}")
+            self.logger.error(traceback.format_exc())
             return 0, {}, 0
 
     def save_job_metadata(self, metadata: dict[str, Any]) -> tuple[dict[str, Any], int]:
@@ -176,6 +256,7 @@ class DataAccessS3(DataAccess):
             filedata, retries = self.arrS3.read_file(path)
         except Exception as e:
             self.logger.error(f"Exception reading file {path} - {e}")
+            self.logger.error(traceback.format_exc())
             return None, 0
         if path.endswith("gz"):
             filedata = gzip.decompress(filedata)
@@ -194,3 +275,4 @@ class DataAccessS3(DataAccess):
             return self.arrS3.save_file(key=path, data=data)
         except Exception as e:
             self.logger.error(f"Exception saving file {path} - {e}")
+            self.logger.error(traceback.format_exc())

@@ -16,8 +16,8 @@ ARG DPK_WHEEL_FILE_NAME
 # set up environment required to install and use huggingface and fasttext
 USER root
 RUN sudo apt update && sudo apt install gcc g++ -y
-RUN mkdir -p /home/ray/.cache/huggingface/hub && chmod -R 777 /home/ray/.cache/huggingface/hub
 USER ray
+RUN mkdir -p /home/ray/.cache/huggingface/hub && chmod -R 777 /home/ray/.cache/huggingface/hub
 
 # Copy and install data processing libraries 
 # These are expected to be placed in the docker context before this is run (see the make image).

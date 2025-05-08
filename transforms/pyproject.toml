@@ -31,12 +31,9 @@ all = { file = [
 "code/code2parquet/requirements.txt",
 "code/code_profiler/requirements.txt",
 "code/malware/requirements.txt",
+"code/repo_level_order/requirements.txt",
 
 "language/pii_redactor/requirements.txt",
-
-"universal/profiler/requirements.txt",
-"universal/resize/requirements.txt",
-
 "language/lang_id/requirements.txt",
 "language/doc_quality/requirements.txt",
 "language/docling2parquet/requirements.txt",
@@ -52,6 +49,8 @@ all = { file = [
 ## trafilatura 1.12.0 depends on lxml>=5.2.2; platform_system != "Darwin" or python_version > "3.8"
 ## "language/html2parquet/requirements.txt",
 
+"universal/profiler/requirements.txt",
+"universal/resize/requirements.txt",
 "universal/filter/requirements.txt",
 "universal/doc_id/requirements.txt",
 "universal/ededup/requirements.txt",
@@ -61,7 +60,9 @@ all = { file = [
 "universal/tokenization/requirements.txt",
 "universal/web2parquet/requirements.txt",
 "universal/rep_removal/requirements.txt",
-"universal/tokenization2arrow/requirements.txt"
+"universal/tokenization2arrow/requirements.txt",
+"universal/collapse/requirements.txt",
+"universal/blocklist/requirements.txt"
 ]}
 
 language = { file = [
@@ -76,6 +77,9 @@ language = { file = [
 "language/extreme_tokenized/requirements.txt",
 "language/readability/requirements.txt",
 "language/gneissweb_classification/requirements.txt",
+"language/ml_filter/requirements.txt",
+"language/enrichment/requirements.txt",
+
 
 ##### Cannot have html2parquet until we solve
 ## docling-ibm-models 1.1.7 depends on lxml<5.0.0 and >=4.9.1
@@ -93,7 +97,9 @@ language = { file = [
 "universal/profiler/requirements.txt",
 "universal/resize/requirements.txt",
 "universal/rep_removal/requirements.txt",
-"universal/tokenization2arrow/requirements.txt"
+"universal/tokenization2arrow/requirements.txt",
+"universal/collapse/requirements.txt",
+"universal/blocklist/requirements.txt"
 ]}
 
 code = { file = [
@@ -104,6 +110,7 @@ code = { file = [
 "code/code2parquet/requirements.txt",
 "code/code_profiler/requirements.txt",
 "code/malware/requirements.txt",
+"code/repo_level_order/requirements.txt",
 
 "universal/filter/requirements.txt",
 "universal/doc_id/requirements.txt",
@@ -116,7 +123,10 @@ code = { file = [
 "universal/profiler/requirements.txt",
 "universal/resize/requirements.txt",
 "universal/rep_removal/requirements.txt",
-"universal/tokenization2arrow/requirements.txt"
+"universal/tokenization2arrow/requirements.txt",
+"universal/collapse/requirements.txt",
+"universal/blocklist/requirements.txt"
+
 ]}
 
 gneissweb = { file = [
@@ -141,12 +151,10 @@ code_quality = { file = ["code/code_quality/requirements.txt"]}
 code2parquet = {file =  ["code/code2parquet/requirements.txt"]}
 malware = {file =  ["code/code2parquet/requirements.txt"]}
 code_profiler = { file = ["code/code_profiler/requirements.txt"]} 
-
+repo_level_order = { file= ["code/repo_level_order/requirements.txt"]}
 
 profiler = { file = ["universal/profiler/requirements.txt"]} 
 resize = { file = ["universal/resize/requirements.txt"]} 
-
-######## Named transforms
 doc_chunk = { file = ["language/doc_chunk/requirements.txt"]}
 doc_quality = { file = ["language/doc_quality/requirements.txt"]}
 html2parquet = { file = ["language/html2parquet/requirements.txt"]}
@@ -154,7 +162,12 @@ lang_id = { file = ["language/lang_id/requirements.txt"]}
 docling2parquet = { file = ["language/docling2parquet/requirements.txt"]}
 text_encoder = { file = ["language/text_encoder/requirements.txt"]}
 pii_redactor = { file = ["language/pii_redactor/requirements.txt"]} 
-
+similarity = { file = ["language/similarity/requirements.txt"]}
+extreme_tokenized = { file = ["language/extreme_tokenized/requirements.txt"]}
+readability = { file = ["language/readability/requirements.txt"]}
+gneissweb_classification = { file = ["language/gneissweb_classification/requirements.txt"]}
+ml_filter = { file = ["language/ml_filter/requirements.txt"]}
+enrichment = { file = ["language/enrichment/requirements.txt"]}
 filter = { file = ["universal/filter/requirements.txt"]}
 doc_id = { file = ["universal/doc_id/requirements.txt"]}
 hap = { file = ["universal/hap/requirements.txt"]}
@@ -162,24 +175,13 @@ bloom = { file = ["universal/bloom/requirements.txt"]}
 ededup = { file = ["universal/ededup/requirements.txt"]} 
 fdedup = { file = ["universal/fdedup/requirements.txt"]} 
 tokenization = { file = ["universal/tokenization/requirements.txt"]} 
-
 web2parquet = { file = ["universal/web2parquet/requirements.txt"]}
-
-similarity = { file = ["language/similarity/requirements.txt"]}
-extreme_tokenized = { file = ["language/extreme_tokenized/requirements.txt"]}
-readability = { file = ["language/readability/requirements.txt"]}
-
-gneissweb_classification = { file = ["language/gneissweb_classification/requirements.txt"]}
-
 rep_removal = { file = ["universal/rep_removal/requirements.txt"]}
 tokenization2arrow = { file = ["universal/tokenization2arrow/requirements.txt"]}
+collapse = { file = ["universal/collapse/requirements.txt"]}
+blocklist = { file = ["universal/blocklist/requirements.txt"]}
 
-# Does not seem to work for our custom layout
-# copy all files to a single src and let automatic discovery find them
 
-# When combing named modules with flat modules, need to run
-# the build twice, once with the block below commented out
-# and once after adding the lines below
 [tool.setuptools.package-dir]
 dpk_web2parquet = "universal/web2parquet/dpk_web2parquet"
 dpk_doc_chunk = "language/doc_chunk/dpk_doc_chunk"
@@ -189,6 +191,8 @@ dpk_lang_id = "language/lang_id/dpk_lang_id"
 dpk_docling2parquet = "language/docling2parquet/dpk_docling2parquet"
 dpk_text_encoder = "language/text_encoder/dpk_text_encoder"
 dpk_pii_redactor = "language/pii_redactor/dpk_pii_redactor"
+dpk_ml_filter = "language/ml_filter/dpk_ml_filter"
+dpk_enrichment = "language/enrichment/dpk_enrichment"
 dpk_doc_id = "universal/doc_id/dpk_doc_id"
 dpk_hap = "universal/hap/dpk_hap"
 dpk_bloom = "universal/bloom/dpk_bloom"
@@ -197,14 +201,23 @@ dpk_fdedup = "universal/fdedup/dpk_fdedup"
 dpk_tokenization = "universal/tokenization/dpk_tokenization"
 dpk_similarity = "language/similarity/dpk_similarity"
 dpk_filter = "universal/filter/dpk_filter"
-dpk_code_profiler = "code/code_profiler/dpk_code_profiler"
 dpk_extreme_tokenized = "language/extreme_tokenized/dpk_extreme_tokenized"
 dpk_readability = "language/readability/dpk_readability"
 dpk_profiler = "universal/profiler/dpk_profiler"
 dpk_resize = "universal/resize/dpk_resize"
+dpk_collapse = "universal/collapse/dpk_collapse"
+dpk_blocklist = "universal/blocklist/dpk_blocklist"
 dpk_gneissweb_classification = "language/gneissweb_classification/dpk_gneissweb_classification"
 dpk_rep_removal = "universal/rep_removal/dpk_rep_removal"
 dpk_tokenization2arrow = "universal/tokenization2arrow/dpk_tokenization2arrow"
+dpk_code_profiler = "code/code_profiler/dpk_code_profiler"
+dpk_proglang_select = "code/proglang_select/dpk_proglang_select"
+dpk_header_cleanser = "code/header_cleanser/dpk_header_cleanser"
+dpk_license_select = "code/license_select/dpk_license_select"
+dpk_code_quality = "code/code_quality/dpk_code_quality"
+dpk_code2parquet = "code/code2parquet/dpk_code2parquet"
+dpk_malware = "code/malware/dpk_malware"
+dpk_repo_level_order = "code/repo_level_order/dpk_repo_level_order"
 
 
 [tool.setuptools.package-data]

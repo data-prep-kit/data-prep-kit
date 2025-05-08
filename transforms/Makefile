@@ -103,6 +103,7 @@ set-pkg-version:
 build-pkg-dist:
 	@# Help: Build package wheel 
 	# Only needs to build the whl
+	-rm -fr build dist data_prep_toolkit.egg-info
 	git show --no-patch > universal/web2parquet/gitshow.txt
 	$(MAKE) BUILD_WHEEL_EXTRA_ARG=-w .defaults.build-dist
 	rm universal/web2parquet/gitshow.txt

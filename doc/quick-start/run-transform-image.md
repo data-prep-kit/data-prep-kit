@@ -24,7 +24,7 @@ resize-python                                                                   
 quay.io/dataprep1/data-prep-kit/resize-python                                   latest            bac595b2751f   28 minutes ago     598MB
 ...
 ```
-Or, you can use the pre-built images (latest, or 0.2.1 or later tags) 
+Or, you can use the pre-built images (latest, or 1.0.0 or later tags) 
 on quay.io found at [https://quay.io/user/dataprep1](https://quay.io/user/dataprep1).
 
 ### Local Data - Python Runtime

@@ -23,6 +23,7 @@ This transform supports the following input formats:
 - PDF documents
 - DOCX documents
 - PPTX presentations
+- XLSX spreadsheets 
 - Image files (png, jpeg, etc)
 - HTML pages
 - Markdown documents

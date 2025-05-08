@@ -102,31 +102,27 @@ set-pkg-version:
 
 build-pkg-dist:
 	@# Help: Build package wheel 
-	## Most transforms today don't have a package name.... Need to fix that
-	## In the meantime, we will copy everything to a single folder
-	-rm -fr src
-	mkdir src
-	# Copy all the src folders recursively (not clear if they have subfolders)
-	for x in $(shell find . | grep '[ray| python | spark]/src$$') ; do \
-		echo $$x ; \
-		if [ -d "$$x" ]; then \
-		   cp -r $$x/* src ; \
-		fi \
-	done
 	# Only needs to build the whl
-	git show --no-patch > src/gitshow.txt
+	-rm -fr build dist data_prep_toolkit.egg-info
+	git show --no-patch > universal/web2parquet/gitshow.txt
 	$(MAKE) BUILD_WHEEL_EXTRA_ARG=-w .defaults.build-dist
-	-rm -fr src
+	rm universal/web2parquet/gitshow.txt
 
 test-pkg-dist:
 	@# Help: Setup environment and run unit tests for all transforms.
 	-rm -fr venv
 	python -m venv venv
 	source venv/bin/activate && $(PYTHON) -m pip  install '$(REPOROOT)/data-processing-lib/dist/data_prep_toolkit-$(DPK_VERSION)-py3-none-any.whl[dev,ray]'
-	source venv/bin/activate && $(PYTHON) -m pip  install 'dist/data_prep_toolkit_transforms-$(TRANSFORMS_PKG_VERSION)-py3-none-any.whl[all]'
-	for T in $(shell find . | grep '[ray| python]/test$$') ; do \
-        echo "running unit test on: $$T" ; \
-		source venv/bin/activate && $(PYTEST) $$T; \
+	source venv/bin/activate && $(PYTHON) -m pip  install 'dist/data_prep_toolkit_transforms-$(TRANSFORMS_PKG_VERSION)-py3-none-any.whl[ray,all]'
+	source venv/bin/activate && pip install pytest scancode-toolkit
+	for T in $(shell find . | grep '/test$$') ; do \
+		if [[ "$$T" =~ venv ]] || [[ "$$T" =~ malware ]] || [[ "$$T" =~ code_profiler ]] || [[ "$$T" =~ noop ]] ; then \
+			echo ; \
+		else \
+		    echo "running unit test on: $$T" ; \
+			source venv/bin/activate && cd $$T && $(PYTEST) . --ignore-glob="*_spark.py" ; \
+			cd ../../.. ; \
+		fi; \
     done;
 	@# Help: Setup environment and run unit tests for all transforms
 

@@ -63,11 +63,11 @@ The transform can be tuned with the following parameters.
 
 ### Launched Command Line Options 
 
-When invoking the CLI, the parameters must be set as `--doc_chunk_<name>`, e.g. `--doc_chunk_column_name_key=myoutput`.
+When invoking the CLI, the parameters must be set as `--doc_chunk_<name>`, e.g., `--doc_chunk_column_name=myoutput`.
 
 ### Code example
 
-See a sample [notebook](doc_chunk.ipynb)
+See a sample [notebook](./doc_chunk-python.ipynb)
 
 ### Transforming data using the transform image
 
@@ -106,6 +106,10 @@ chunk documents configuration and command line options are the same as for the b
 In addition to those available to the transform as defined above,
 the set of 
 [launcher options](../../../data-processing-lib/doc/launcher-options.md) are available.
+
+### Code example
+
+See a sample [Ray notebook](./doc_chunk-ray.ipynb)
 
 ### Transforming data using the transform image
 

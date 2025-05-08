@@ -94,6 +94,8 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 | [Tokenization2Arrow](transforms/universal/tokenization2arrow/README.md)                         | :white_check_mark: | :white_check_mark: | 
 | [Repetition removal](transforms/universal/rep_removal/README.md)                         | :white_check_mark: | :white_check_mark: |                   |  |
 | [Bloom filter](transforms/universal/bloom/README.md)                         | :white_check_mark: |  |                    |  |
+| [Collapse](transforms/universal/collapse/README.md)                         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| [Blocklist](transforms/universal/blocklist/README.md)                         | :white_check_mark: |  :white_check_mark: |                    | :white_check_mark: |
 **Language-only**                                                                    |                    |                    |                    |                    |
 | [Language identification](transforms/language/lang_id/README.md)              | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Document quality](transforms/language/doc_quality/README.md)                 | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
@@ -104,6 +106,8 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 | [GneissWeb classification](transforms/language/gneissweb_classification/README.md)          | :white_check_mark: | :white_check_mark: |                    |  |
 | [Readability scores](transforms/language/readability/README.md)          | :white_check_mark: | :white_check_mark: |                    |  |
 | [Extreme tokenized annotation](transforms/language/extreme_tokenized/README.md)          | :white_check_mark: | :white_check_mark: |                    |  |
+| [ML Filter](transforms/language/ml_filter/README.md)                         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| [Enrichment](transforms/language/enrichment/README.md)                         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 **Code-only**                                                                         |                    |                     |             |                    |
 | [Programming language annotation](transforms/code/proglang_select/README.md)  | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Code quality annotation](transforms/code/code_quality/README.md)             | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |

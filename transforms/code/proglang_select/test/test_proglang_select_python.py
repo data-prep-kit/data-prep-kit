@@ -21,7 +21,7 @@ from dpk_proglang_select.transform import (
     lang_lang_column_key,
     lang_output_column_key,
 )
-from dpk_proglang_select.transform_python import ProgLangSelectPythonConfiguration
+from dpk_proglang_select.runtime import ProgLangSelectPythonConfiguration
 
 
 class TestPythonProgLangSelectTransform(AbstractTransformLauncherTest):

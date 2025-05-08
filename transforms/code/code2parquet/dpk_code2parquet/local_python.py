@@ -20,7 +20,7 @@ from dpk_code2parquet.transform import (
     detect_programming_lang_cli_key,
     supported_langs_file_cli_key,
 )
-from dpk_code2parquet.transform_python import CodeToParquetPythonConfiguration
+from transforms.code.code2parquet.dpk_code2parquet.runtime import CodeToParquetPythonConfiguration
 
 
 # create parameters

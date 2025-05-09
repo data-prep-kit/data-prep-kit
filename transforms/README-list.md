@@ -17,19 +17,18 @@ installing the ray transforms will also install  `data-prep-toolkit[ray]`
 
 ## Release notes:
 
-### 1.1.1.dev1
-	Include all code transforms as extra [code]
+### 1.1.1
 
-### 1.1.1.dev0
+	Include all code transforms as extra [code]
 	Refactored code transforms (code_uality, code2parquet, header_cleanser, license select, proglang_select)
 	Added ml-filter and enrichment
 	renamed PDF2Parquet to Docling2Paruqet 
 
-### 1.0.1.dev1
+### 1.0.1
 	Added Gneissweb transforms
 	fdedup fix for windows
-### 1.0.1.dev0
 	PR #979 (code_profiler)
+
 ### 1.0.0.a6
 	Added Profiler
 	Added Resize

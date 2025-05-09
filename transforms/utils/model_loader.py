@@ -60,7 +60,6 @@ def load_model(model_path_or_url: str, model_type: str, token: str = None):
         else:
             model_path = model_path_or_url
 
-        print(f'model_path is {model_path}')
         # dispatch to registered loader
         loader_fn = MODEL_LOADERS[model_type]
         model = loader_fn(model_path, token=token)

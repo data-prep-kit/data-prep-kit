@@ -29,10 +29,10 @@ S3_SECRET = "s3-secret"
 EXEC_SCRIPT_NAME: str = "header_cleanser_transform_ray.py"
 PREFIX: str = ""
 
-task_image = "quay.io/dataprep1/data-prep-kit/header_cleanser-ray:0.2.5"
+task_image = "quay.io/dataprep1/data-prep-kit/header_cleanser-ray:latest"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:0.2.5"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)

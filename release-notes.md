@@ -1,5 +1,27 @@
 # Data Prep Kit Release notes
 
+## Release 1.1.1 - 4/9/2025
+
+## General
+
+1. Move to Linux Foudation organization and re-assign roles for maintainers and contributors
+1. Added logo, ppdated documentations and enforce signed controbutions
+1. Added support for hugging face credential when running verification workflow
+1. Added new transforms and bug fixes
+
+### Transforms
+
+1. Added Multi-lingual ML Filter and Enrichment transforms
+1. Added Blockist and Collapse transforms
+1. Added support for comments based semantic categories 
+1. Ededup added parameter for optional removed field
+1. Refactored all code transforms and publish via wheel in pypi
+
+### Recipes
+
+1. Refctored, re-organized and continue to improve notebooks and recipes
+
+
 ## Release 1.1.0 - 3/10/2025
 
 ## General

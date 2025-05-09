@@ -29,10 +29,10 @@ S3_SECRET = "s3-secret"
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_proglang_select.ray.runtime"
 
-task_image = "quay.io/dataprep1/data-prep-kit/proglang_select-ray:latest"
+task_image = "quay.io/dataprep1/data-prep-kit/proglang_select-ray:0.2.5"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:0.2.5"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)

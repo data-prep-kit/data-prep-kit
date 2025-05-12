@@ -28,10 +28,10 @@ S3_SECRET = "s3-secret"
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_tokenization.ray.transform"
 
-task_image = "quay.io/dataprep1/data-prep-kit/tokenization-ray:0.2.5"
+task_image = "quay.io/dataprep1/data-prep-kit/tokenization-ray:latest"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:0.2.5"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 # path to kfp component specifications files
 
 # path to kfp component specifications files

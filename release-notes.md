@@ -1,5 +1,27 @@
 # Data Prep Kit Release notes
 
+## Release 1.1.1 - 4/9/2025
+
+## General
+
+1. Move to the [Linux Foundation AI&DATA Organization](https://lfaidata.foundation/projects/data-prep-kit/) and re-assign roles for maintainers and contributors
+1. Added logo, updated documentation and enforce signed contributions
+1. Added support for Hugging Face credentials when running verification workflows
+1. Added new transforms and bug fixes
+
+### Transforms
+
+1. Added Multi-lingual ML Filter and Enrichment(Quality annotation) transforms
+1. Added Blockist and Collapse(Column concatenation) transforms
+1. Added support for comments based semantic categories 
+1. Ededup added parameter for optional removed field
+1. Refactored all code transforms and published via wheel in pypi
+
+### Recipes
+
+1. Refactored, re-organized and continued improving notebooks and recipes
+
+
 ## Release 1.1.0 - 3/10/2025
 
 ## General
@@ -88,7 +110,7 @@ Integrate Semantic profiler and report generation for code profiler transform
 
 ### Transforms
 
-1. Enhance pdf2parquet with docling2 support for extracting HTML, DOCS, etc.
+1. Enhance docling2parquet with docling2 support for extracting HTML, DOCS, etc.
 1. Added web2parquet transform
 1. Added HAP transform
 
@@ -142,7 +164,7 @@ Integrate Semantic profiler and report generation for code profiler transform
 
 ### Transforms
 
-1. Added 7 new transdforms including: language identification, profiler, repo level ordering, doc quality, pdf2parquet, HTML2Parquet and PII Transform
+1. Added 7 new transdforms including: language identification, profiler, repo level ordering, doc quality, docling2parquet, HTML2Parquet and PII Transform
 1. Added ededup python implementation and incremental ededup 
 1. Added fuzzy floating point comparison
 

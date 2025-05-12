@@ -19,3 +19,11 @@ TRANSFORM_NAME=$(shell basename `pwd`)
 ################################################################################
 
 
+run-cli-sample: 
+	make venv
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.runtime \
+                --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
+                --et_arrow_path 'test-data/input/arrow' \
+				--et_contents_column_name 'text' \
+				--run_locally True

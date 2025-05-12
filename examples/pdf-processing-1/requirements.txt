@@ -1,4 +1,4 @@
-data-prep-toolkit-transforms[ray,all]==1.1.1.dev1
+data-prep-toolkit-transforms[ray,all]==1.1.1
 
 # jupyter
 jupyterlab

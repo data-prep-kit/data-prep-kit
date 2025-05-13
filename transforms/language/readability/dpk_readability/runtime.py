@@ -15,10 +15,10 @@ import ast
 import sys
 from argparse import ArgumentParser, Namespace
 
-from data_processing.data_access import DataAccessFactory
-from data_processing.runtime.pure_python import PythonTransformLauncher
-from data_processing.runtime.pure_python.runtime_configuration import (
+from data_processing.runtime.pure_python import (
+    PythonTransformLauncher,
     PythonTransformRuntimeConfiguration,
+    Transform
 )
 from data_processing.transform import TransformConfiguration
 from data_processing.utils import CLIArgumentProvider, ParamsUtils, get_logger, str2bool
@@ -142,29 +142,9 @@ class ReadabilityPythonTransformConfiguration(PythonTransformRuntimeConfiguratio
         super().__init__(transform_config=ReadabilityTransformConfiguration())
 
 
-class Readability:
+class Readability(Transform):
     def __init__(self, **kwargs):
-        self.params = {}
-        for key in kwargs:
-            self.params[key] = kwargs[key]
-        try:
-            local_conf = {k: self.params[k] for k in ("input_folder", "output_folder")}
-            self.params["data_local_config"] = ParamsUtils.convert_to_ast(local_conf)
-            del self.params["input_folder"], self.params["output_folder"]
-        except:
-            pass
-        try:
-            worker_options = {k: self.params[k] for k in ("num_cpus", "memory")}
-            self.params["runtime_worker_options"] = ParamsUtils.convert_to_ast(worker_options)
-            del self.params["num_cpus"], self.params["memory"]
-        except:
-            pass
-
-    def transform(self):
-        sys.argv = ParamsUtils.dict_to_req(d=self.params)
-        launcher = PythonTransformLauncher(ReadabilityPythonTransformConfiguration())
-        return_code = launcher.launch()
-        return return_code
+        super().__init__(ReadabilityPythonTransformConfiguration(), **kwargs)
 
 
 if __name__ == "__main__":

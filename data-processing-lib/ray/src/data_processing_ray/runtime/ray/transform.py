@@ -10,36 +10,26 @@
 # limitations under the License.
 ################################################################################
 
-import sys
+from data_processing.utils import ParamsUtils
 
-from data_processing.runtime.pure_python import PythonTransformLauncher
-from data_processing.runtime.pure_python.runtime_configuration import (
-    PythonTransformRuntimeConfiguration,
+from data_processing_ray.runtime.ray.runtime_configuration import (
+    RayTransformRuntimeConfiguration,
 )
-from data_processing.utils import ParamsUtils, get_logger
-from dpk_html2parquet.transform import Html2ParquetTransformConfiguration
+
+from data_processing_ray.runtime.ray import (
+    RayTransformLauncher,
+)
 
 
-logger = get_logger(__name__)
-
-
-class Html2ParquetPythonTransformConfiguration(PythonTransformRuntimeConfiguration):
-    """
-    Implements the PythonTransformConfiguration for HTML2PARQUET as required by the PythonTransformLauncher.
-    """
-
-    def __init__(self):
-        """
-        Initialization
-        :param base_configuration - base configuration class
-        """
-        super().__init__(transform_config=Html2ParquetTransformConfiguration())
-
-
-# Class used by the notebooks to ingest binary files and create parquet files
-class Html2Parquet:
-    def __init__(self, **kwargs):
+class Transform:
+    def __init__(self, transform_config, **kwargs):
         self.params = {}
+        # In some instances when we only have a ray implementation
+        if isinstance(transform_config, RayTransformRuntimeConfiguration):
+            self.runtime=transform_config
+        else:
+            self.runtime = RayTransformRuntimeConfiguration(transform_config)
+
         for key in kwargs:
             self.params[key] = kwargs[key]
         # if input_folder and output_folder are specified, then assume it is represent data_local_config
@@ -50,17 +40,33 @@ class Html2Parquet:
             del self.params["output_folder"]
         except:
             pass
+        try:
+            worker_options = {k: self.params[k] for k in ("num_cpus", "memory")}
+            self.params["runtime_worker_options"] = ParamsUtils.convert_to_ast(worker_options)
+            del self.params["num_cpus"]
+            del self.params["memory"]
+        except:
+            pass
 
+    
     def transform(self):
+        import sys
         sys.argv = ParamsUtils.dict_to_req(d=(self.params))
         # create launcher
-        launcher = PythonTransformLauncher(Html2ParquetPythonTransformConfiguration())
+        launcher = RayTransformLauncher(self.runtime)
         # launch
         return_code = launcher.launch()
         return return_code
 
 
-if __name__ == "__main__":
-    launcher = PythonTransformLauncher(Html2ParquetPythonTransformConfiguration())
-    logger.info("Launching html2parquet transform")
-    launcher.launch()
+    @staticmethod
+    def launch(transform_config):
+        """
+        Cound be involed using TransformConfiguration and Runtime class 
+        exaamples for invocation:
+            Transform.launch(DocIDTransformConfiguration(), DocIDRuntime, **kwargs)
+        """
+        runtime = RayTransformRuntimeConfiguration(transform_config)
+        launcher = RayTransformLauncher(runtime)
+        return_code = launcher.launch()
+        return return_code

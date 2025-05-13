@@ -13,7 +13,9 @@ import os
 import tempfile
 import shutil
 import boto3
-from model_loader_registry import MODEL_LOADERS
+from data_processing.utils import ParamsUtils, get_logger
+from data_processing.utils.model_loader_registry import MODEL_LOADERS
+logger = get_logger(__name__)
 
 
 def load_model(model_path_or_url: str, model_type: str, token: str = None):
@@ -26,6 +28,7 @@ def load_model(model_path_or_url: str, model_type: str, token: str = None):
 
     # check if model_type is supported
     if model_type not in MODEL_LOADERS:
+        logger.error(f"Unsupported model_type '{model_type}'. Available types: {list(MODEL_LOADERS)}")
         raise ValueError(f"Unsupported model_type '{model_type}'. Available types: {list(MODEL_LOADERS)}")
 
     try:
@@ -46,6 +49,7 @@ def load_model(model_path_or_url: str, model_type: str, token: str = None):
                         continue
 
                     if not s3_key.startswith(key_prefix):
+                        logger.error(f"S3 key {s3_key} does not start with expected prefix {key_prefix}")
                         raise ValueError(f"S3 key {s3_key} does not start with expected prefix {key_prefix}")
 
                     # strip prefix to get relative path
@@ -59,6 +63,7 @@ def load_model(model_path_or_url: str, model_type: str, token: str = None):
                     s3.download_file(bucket, s3_key, local_path)
 
             if not found:
+                logger.error(f"No files found at S3 path: {model_path_or_url}")
                 raise FileNotFoundError(f"No files found at S3 path: {model_path_or_url}")
             model_path = temp_dir
 
@@ -76,6 +81,7 @@ def load_model(model_path_or_url: str, model_type: str, token: str = None):
         return model
 
     except Exception as e:
+        logger.error(f"No files found at S3 path: {model_path_or_url}")
         raise RuntimeError(f"Failed to load model from '{model_path_or_url}': {e}")
 
     finally:

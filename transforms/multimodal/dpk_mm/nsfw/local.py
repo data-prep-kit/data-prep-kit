@@ -15,7 +15,7 @@ import sys
 
 from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.utils import ParamsUtils
-from dpk_mm.nsfw.transform_python import NsfwPythonTransformConfiguration
+from dpk_mm.nsfw.runtime import NsfwPythonTransformConfiguration
 
 
 # create parameters

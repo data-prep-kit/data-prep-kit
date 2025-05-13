@@ -15,7 +15,7 @@ import sys
 
 from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.utils import ParamsUtils
-from dpk_mm.faces.transform_python import FacesPythonTransformConfiguration
+from dpk_mm.faces.runtime import FacesPythonTransformConfiguration
 
 
 # create parameters

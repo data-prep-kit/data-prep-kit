@@ -21,7 +21,7 @@ from workflow_support.compile_utils import ONE_HOUR_SEC, ONE_WEEK_SEC, Component
 task_image = "us.icr.io/cil15-shared-registry/preprocessing-pipelines/multimodal-ray:latest"
 
 # the name of the job script
-EXEC_SCRIPT_NAME: str = "people_transform_ray.py"
+EXEC_SCRIPT_NAME: str = "-m dpk_mm.nsfw.ray.runtime"
 
 # components
 base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"

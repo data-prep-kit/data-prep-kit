@@ -17,7 +17,7 @@ from data_processing.utils import ParamsUtils
 
 from data_processing_ray.runtime.ray import RayTransformLauncher
 
-from dpk_mm.ray.faces.transform import FacesRayTransformConfiguration
+from dpk_mm.ray.faces.runtime import FacesRayTransformConfiguration
 
 # create parameters
 # When we have real test data we should switch to this

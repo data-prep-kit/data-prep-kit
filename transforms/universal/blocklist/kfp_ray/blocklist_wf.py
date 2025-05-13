@@ -31,7 +31,7 @@ S3_SECRET = "s3-secret"  # pragma: allowlist secret
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_blocklist.ray.transform"
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing_v2:latest"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)

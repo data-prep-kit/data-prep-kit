@@ -1,8 +1,7 @@
-<h1 align="center">Data Prep Kit</h1>
 
 <p align="center">
-<img src="doc/LF_DataPrepKit_Logo_Postive.png#gh-light-mode-only" width="25%" height="25%" />
-<img src="doc/LF_DataPrepKit_Logo_Negative.png#gh-dark-mode-only" width="25%" height="25%"/>
+<img src="doc/LF_DataPrepKit_Logotype_Positive.png#gh-light-mode-only" width="60%" height="60%" />
+<img src="doc/LF_DataPrepKit_Logotype_Negative.png#gh-dark-mode-only" width="60%" height="60%"/>
 </p>
 
 <div align="center">
@@ -64,10 +63,6 @@ For advanced users, [here](ADVANCED.md) is more information for adding your own 
 running transforms from the command line, scaling and automation and more. 
 Also, repository structure and use are discussed [here](doc/repo.md).
 
-### Windows users
-
-Please click [here](doc/quick-start/quick-start.md#running-transforms-on-windows) for guidance on how to run transforms in Windows.
-
 ### Using HuggingFace data files 
 
 All the transforms in the kit include small sample data files for testing, but advanced users who want to download real data files from HuggingFace and use them in testing, can refer to [this](ADVANCED.md#using-data-from-huggingface). 
@@ -84,7 +79,7 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 |:-------------------------------------------------------------------------------------|:------------------:|:------------------:|:------------------:|:------------------:|
 | **Data Ingestion**                                                                   |                    |                    |                    |                    |
 | [Code (from zip) to Parquet](transforms/code/code2parquet/README.md) | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
-| [PDF to Parquet](transforms/language/pdf2parquet/README.md)                 | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| [Docling to Parquet](transforms/language/docling2parquet/README.md)                 | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [HTML to Parquet](transforms/language/html2parquet/README.md)               | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Web to Parquet](transforms/universal/web2parquet/README.md)                | :white_check_mark: |                    |                    |                |         
 | **Universal (Code & Language)**                                                      |                    |                    |                    |                    | 
@@ -99,6 +94,8 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 | [Tokenization2Arrow](transforms/universal/tokenization2arrow/README.md)                         | :white_check_mark: | :white_check_mark: | 
 | [Repetition removal](transforms/universal/rep_removal/README.md)                         | :white_check_mark: | :white_check_mark: |                   |  |
 | [Bloom filter](transforms/universal/bloom/README.md)                         | :white_check_mark: |  |                    |  |
+| [Collapse(column concatenation)](transforms/universal/collapse/README.md)                         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| [Blocklist](transforms/universal/blocklist/README.md)                         | :white_check_mark: |  :white_check_mark: |                    | :white_check_mark: |
 **Language-only**                                                                    |                    |                    |                    |                    |
 | [Language identification](transforms/language/lang_id/README.md)              | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Document quality](transforms/language/doc_quality/README.md)                 | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
@@ -109,6 +106,8 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 | [GneissWeb classification](transforms/language/gneissweb_classification/README.md)          | :white_check_mark: | :white_check_mark: |                    |  |
 | [Readability scores](transforms/language/readability/README.md)          | :white_check_mark: | :white_check_mark: |                    |  |
 | [Extreme tokenized annotation](transforms/language/extreme_tokenized/README.md)          | :white_check_mark: | :white_check_mark: |                    |  |
+| [ML Filter](transforms/language/ml_filter/README.md)                         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| [ML Enrichment(quality annotation)](transforms/language/enrichment/README.md)                         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 **Code-only**                                                                         |                    |                     |             |                    |
 | [Programming language annotation](transforms/code/proglang_select/README.md)  | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Code quality annotation](transforms/code/code_quality/README.md)             | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |

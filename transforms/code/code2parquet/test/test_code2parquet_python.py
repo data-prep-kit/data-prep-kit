@@ -23,7 +23,7 @@ from dpk_code2parquet.transform import (  # domain_key,; snapshot_key,
     snapshot_cli_key,
     supported_langs_file_cli_key,
 )
-from dpk_code2parquet.transform_python import CodeToParquetPythonConfiguration
+from dpk_code2parquet.runtime import CodeToParquetPythonConfiguration
 
 
 class TestPythonIngestToParquetTransform(AbstractTransformLauncherTest):

@@ -21,6 +21,7 @@ from dpk_ededup.transform_base import (
     int_column_name_cli_param,
     snapshot_directory_cli_param,
     use_snapshot_cli_param,
+    add_removed_column_cli_param
 )
 from dpk_ededup.transform_python import EdedupPythonTransformRuntimeConfiguration
 
@@ -38,6 +39,7 @@ class TestPythonEdedupTransform(AbstractTransformLauncherTest):
         config = {
             doc_column_name_cli_param: "contents",
             int_column_name_cli_param: "document_id",
+            add_removed_column_cli_param: True,
             use_snapshot_cli_param: True,
             snapshot_directory_cli_param: basedir + "/input/snapshot",
         }

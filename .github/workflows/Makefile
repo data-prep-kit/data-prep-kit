@@ -19,6 +19,13 @@ transform-tests:
 	-rm -rf test-code-*.yml
 	$(MAKE) TRANSFORM_SUBDIR=code .transform-tests 
 	$(MAKE) TRANSFORM_SUBDIR=code .transform-kfp-tests
+	-rm -rf test-multimodal-*.yml
+	cat test-transform.template | sed -e "s?@TARGET_TRANSFORM_DIR@?transforms/multimodal?g" > test-multimodal-dpk_mm.yml
+	$(MAKE) TRANSFORM_SUBDIR=multimodal .transform-kfp-tests
+	if [ -d ../../transforms/multimodal/kfp_ray ]; then		\
+		cat test-kfp-transform.template | sed -e "s?@TARGET_TRANSFORM_DIR@?transforms/multimodal/kfp_ray?g" > test-multimodal-kfp.yml;    \
+	fi;
+	
 
 # Expects
 #   TRANSFORM_SUBDIR  transforms subdirectory (such as universal)

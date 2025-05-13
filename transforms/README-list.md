@@ -17,6 +17,9 @@ installing the ray transforms will also install  `data-prep-toolkit[ray]`
 
 ## Release notes:
 
+### 1.1.1.dev1
+	Include all code transforms as extra [code]
+
 ### 1.1.1.dev0
 	Refactored code transforms (code_uality, code2parquet, header_cleanser, license select, proglang_select)
 	Added ml-filter and enrichment

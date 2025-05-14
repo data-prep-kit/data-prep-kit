@@ -16,7 +16,7 @@ from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
 
-from dpk_mm.nsfw.transform_python import NsfwPythonTransformConfiguration
+from dpk_mm.nsfw.runtime import NsfwPythonTransformConfiguration
 
 
 class TestRayProtoTransform(AbstractTransformLauncherTest):

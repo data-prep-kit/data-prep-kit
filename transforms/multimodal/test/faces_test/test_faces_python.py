@@ -16,7 +16,7 @@ from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
 
-from dpk_mm.faces.transform_python import FacesPythonTransformConfiguration
+from dpk_mm.faces.runtime import FacesPythonTransformConfiguration
 
 
 class TestRayProtoTransform(AbstractTransformLauncherTest):

@@ -12,8 +12,8 @@ include $(REPOROOT)/transforms/.make.cicd.targets
 TRANSFORM_NAME=mm
 
 ################################################################################
-TRANSFORM_PYTHON_SRC="-m dpk_$(TRANSFORM_NAME).faces.transform_python"
-TRANSFORM_RAY_SRC="-m dpk_$(TRANSFORM_NAME).ray.faces.transform"
+TRANSFORM_PYTHON_SRC="-m dpk_$(TRANSFORM_NAME).faces.runtime"
+TRANSFORM_RAY_SRC="-m dpk_$(TRANSFORM_NAME).ray.faces.runtime"
 
 
 # large files are stored in seperate git repo or can be obtained from HF
@@ -42,13 +42,13 @@ generate-test-data: venv
 	- rm -fr test-data/people/expected
 	- rm -fr test-data/nsfw/expected
 	source venv/bin/activate && \
-	$(PYTHON) -m dpk_mm.faces.transform_python \
+	$(PYTHON) -m dpk_mm.faces.runtime \
         --data_local_config "{ 'input_folder' : 'test-data/j2p/expected', 'output_folder' : 'test-data/faces/expected'}"
 	source venv/bin/activate && \
-	$(PYTHON) -m dpk_mm.people.transform_python \
+	$(PYTHON) -m dpk_mm.people.runtime \
         --data_local_config "{ 'input_folder' : 'test-data/j2p/expected', 'output_folder' : 'test-data/people/expected'}"
 	source venv/bin/activate && \
-	$(PYTHON) -m dpk_mm.nsfw.transform_python \
+	$(PYTHON) -m dpk_mm.nsfw.runtime \
         --data_local_config "{ 'input_folder' : 'test-data/j2p/expected', 'output_folder' : 'test-data/nsfw/expected'}"
 
 faces_test: venv

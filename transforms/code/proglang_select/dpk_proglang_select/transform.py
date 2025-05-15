@@ -121,7 +121,7 @@ class ProgLangSelectTransformConfiguration(TransformConfiguration):
         parser.add_argument(
             f"--{lang_allowed_langs_file_key}",
             type=str,
-            required=False,
+            required=True,
             default=None,
             help="Path to file containing the list of languages to be matched.",
         )

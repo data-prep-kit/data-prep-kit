@@ -11,7 +11,10 @@
 ################################################################################
 
 from dpk_repo_level_order.transform import *
-from data_processing_ray.runtime.ray import RayTransformLauncher
+from data_processing_ray.runtime.ray import (
+    RayTransformLauncher,
+    Transform
+)
 from data_processing.utils import ParamsUtils
 import sys
 
@@ -197,29 +200,9 @@ class RepoLevelOrderRayTransformConfiguration(RayTransformRuntimeConfiguration):
         )
 
 
-class RepoLevelOrderRay:
+class RepoLevelOrder(Transform):
     def __init__(self, **kwargs):
-        self.params = {}
-        for key in kwargs:
-            self.params[key] = kwargs[key]
-        try:
-            local_conf = {k: self.params[k] for k in ("input_folder", "output_folder")}
-            self.params["data_local_config"] = ParamsUtils.convert_to_ast(local_conf)
-            del self.params["input_folder"], self.params["output_folder"]
-        except:
-            pass
-        try:
-            worker_options = {k: self.params[k] for k in ("num_cpus", "memory")}
-            self.params["runtime_worker_options"] = ParamsUtils.convert_to_ast(worker_options)
-            del self.params["num_cpus"], self.params["memory"]
-        except:
-            pass
-
-    def transform(self):
-        sys.argv = ParamsUtils.dict_to_req(d=(self.params))
-        launcher = RayTransformLauncher(RepoLevelOrderRayTransformConfiguration())
-        return_code = launcher.launch()
-        return return_code
+        super().__init__(RepoLevelOrderRayTransformConfiguration(), **kwargs)
 
 
 if __name__ == "__main__":

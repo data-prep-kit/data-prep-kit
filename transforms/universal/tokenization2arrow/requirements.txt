@@ -1,4 +1,4 @@
 transformers>=4.38.2
-data-prep-toolkit-transforms[tokenization]
+data-prep-toolkit-transforms[tokenization]==1.1.2.dev0
 torch
 python-dotenv

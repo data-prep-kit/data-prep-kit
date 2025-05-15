@@ -4,9 +4,6 @@ include $(REPOROOT)/transforms/.make.workflows
 
 TRANSFORM_NAME?=$(shell basename $(shell dirname `pwd`))
 
-# Include the common configuration for this transform
-#include ../transform.config
-
 SRC_DIR=${CURDIR}/../
 # Use the docker image that is built for ray runtime
 TRANSFORM_RUNTIME=ray

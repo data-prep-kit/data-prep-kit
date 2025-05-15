@@ -1,5 +1,27 @@
 # Data Prep Kit Release notes
 
+## Release 1.1.1 - 4/9/2025
+
+## General
+
+1. Move to the [Linux Foundation AI&DATA Organization](https://lfaidata.foundation/projects/data-prep-kit/) and re-assign roles for maintainers and contributors
+1. Added logo, updated documentation and enforce signed contributions
+1. Added support for Hugging Face credentials when running verification workflows
+1. Added new transforms and bug fixes
+
+### Transforms
+
+1. Added Multi-lingual ML Filter and Enrichment(Quality annotation) transforms
+1. Added Blockist and Collapse(Column concatenation) transforms
+1. Added support for comments based semantic categories 
+1. Ededup added parameter for optional removed field
+1. Refactored all code transforms and published via wheel in pypi
+
+### Recipes
+
+1. Refactored, re-organized and continued improving notebooks and recipes
+
+
 ## Release 1.1.0 - 3/10/2025
 
 ## General

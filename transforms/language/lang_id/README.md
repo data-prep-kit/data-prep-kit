@@ -10,6 +10,7 @@ This transform will identify language of each text with confidence score with fa
 
 - Daiki Tsuzuku (dtsuzuku@jp.ibm.com)
 - Maroun Touma (touma@us.ibm.com)
+- Shalisha Witherspoon (shalisha.witherspoon@ibm.com)
 
 ## Configuration and command line Options
 

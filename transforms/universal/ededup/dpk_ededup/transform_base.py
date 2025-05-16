@@ -34,10 +34,13 @@ doc_column_name_key = "doc_column"
 int_column_name_key = "doc_id_column"
 use_snapshot_key = "use_snapshot"
 snapshot_directory_key = "snapshot_directory"
+add_removed_column_key = "add_removed_column"
 doc_column_name_cli_param = f"{cli_prefix}{doc_column_name_key}"
 int_column_name_cli_param = f"{cli_prefix}{int_column_name_key}"
 use_snapshot_cli_param = f"{cli_prefix}{use_snapshot_key}"
 snapshot_directory_cli_param = f"{cli_prefix}{snapshot_directory_key}"
+add_removed_column_cli_param = f"{cli_prefix}{add_removed_column_key}"
+
 
 
 class HashFilter:
@@ -128,6 +131,7 @@ class EdedupTransformBase(AbstractTableTransform):
         super().__init__(config)
         self.doc_column = config.get(doc_column_name_key, "contents")
         self.doc_id_column = config.get(int_column_name_key, "document_id")
+        self.add_removed_column = config.get(add_removed_column_key, True)
 
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
         """
@@ -175,7 +179,7 @@ class EdedupTransformBase(AbstractTableTransform):
         # Create output table
         out_table = table.filter(mask)
         # populate removed columns
-        if out_table.num_rows > 0:
+        if out_table.num_rows > 0 and self.add_removed_column:
             # we can only add removed if the file is not empty
             removed_column = [[]] * out_table.num_rows
             removed_column[0] = removed
@@ -223,6 +227,12 @@ class EdedupTransformConfigurationBase(TransformConfiguration):
             type=str,
             default="document_id",
             help="name of the column containing document id",
+        )
+        parser.add_argument(
+            f"--{add_removed_column_cli_param}",
+            type=lambda x: bool(str2bool(x)),
+            default=False,
+            help="flag to omit removed column with first row listing removed duplicated ids",
         )
         parser.add_argument(
             f"--{use_snapshot_cli_param}",

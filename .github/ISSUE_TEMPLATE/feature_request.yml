@@ -12,11 +12,11 @@ body:
       attributes:
           label: Search before asking
           description: >
-              Please make sure to search in the [issues](https://github.com/data-prep-kit/data-prep-lab/issues) first to see
+              Please make sure to search in the [issues](https://github.com/data-prep-kit/data-prep-kit/issues) first to see
               whether the same request was reported already.
           options:
               - label: >
-                    I searched the [issues](https://github.com/data-prep-kit/data-prep-lab/issues) and found no similar issues.
+                    I searched the [issues](https://github.com/data-prep-kit/data-prep-kit/issues) and found no similar issues.
                 required: true
 
     - type: dropdown
@@ -51,7 +51,7 @@ body:
             - transforms/html2parquet
             - transforms/lang_id
             - transforms/license_select
-            - transforms/pdf2parquet
+            - transforms/docling2parquet
             - transforms/pii_redactor
             - transforms/profiler
             - transforms/proglang_select

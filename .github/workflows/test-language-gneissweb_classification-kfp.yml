@@ -9,6 +9,7 @@ on:
         branches:
             - "dev"
             - "releases/**"
+            - "feature/**"
         tags:
             - "*"
         paths:
@@ -29,6 +30,7 @@ on:
             - "dev"
             - "releases/**"
             - "staging-*"
+            - "feature/**"
         paths:
             - ".make.*"
             - "scripts/k8s-setup/requirements.env"

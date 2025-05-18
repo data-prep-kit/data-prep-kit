@@ -35,22 +35,21 @@ The command above should say: 3.11
 **install data prep toolkit**
 
 ```shell
-pip3 install 'data-prep-toolkit-transforms[ray,all]'
+pip install 'data-prep-toolkit-transforms[ray,all]'
 ```
 the command above install the complete library with all the tansforms. In certain situations, it may be desirable to install a specific transform with or without the ray runtime. In that case, the command can specify the name of the transform in the \[extra\] value such as:
 
-To install the lang_id transform, use the following command:
+To install the lang_id transform (lang_id transform is used for identifying the language of the content ), use the following command:
 
 ```shell
-pip3 install 'data-prep-toolkit-transforms[lang_id]' 
+pip install 'data-prep-toolkit-transforms[lang_id]' 
 ```
 
 to install the lang_id transform with the ray runtime, use the following command:
 
 ```shell
-pip3 install 'data-prep-toolkit-transforms[ray,lang_id]' 
+pip install 'data-prep-toolkit-transforms[ray,lang_id]' 
 ```
-
 
 
 ## Setting up Jupyter lab for local experimentation with transform notebooks <a name = "jupyter"></a>
@@ -87,4 +86,3 @@ python -m ipykernel install --user --name=data-prep-kit --display-name "dataprep
 ## Creating transforms
 
 * [Tutorial](contribute-your-own-transform.md) - shows how to use the library to add a new transform.
-

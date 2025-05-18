@@ -3,3 +3,13 @@ C++
 C
 Go
 Java
+JavaScript
+C++
+C
+Go
+Java
+JavaScript
+C++
+C
+Go
+Java

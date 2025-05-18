@@ -12,14 +12,13 @@
 
 import os
 import pyarrow as pa
-from dpk_lang_id.lang_models import KIND_FASTTEXT, LangModelFactory
 from dpk_lang_id.nlp import get_lang_ds_pa
-
+from data_processing.utils import load_model
+from dpk_lang_id.lang_models import FastTextModel
 
 def test_language_identification():
-    nlp_langid = LangModelFactory.create_model(
-        KIND_FASTTEXT, "facebook/fasttext-language-identification", os.environ.get('HF_READ_ACCESS_TOKEN', "PUT YOUR OWN HUGGINGFACE CREDENTIAL")
-    )
+    model = load_model("facebook/fasttext-language-identification", "fasttext", os.environ.get('HF_READ_ACCESS_TOKEN', os.environ.get('HF_TOKEN')))
+    nlp_langid = FastTextModel(model)
     documents = pa.array(
         [
             "Der Tell Sabi Abyad („Hügel des weißen Jungen“) ist eine historische "

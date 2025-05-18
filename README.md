@@ -37,7 +37,7 @@ Data Prep Kit can readily scale from a commodity laptop all the way to data cent
 The latest version of the Data Prep Kit is available on PyPi for Python 3.10, 3.11 and 3.12. It can be installed using: 
 
 ```bash
-pip install  'data-prep-toolkit-transforms[all]'
+pip install 'data-prep-toolkit-transforms[all]'
 ```
 
 This will install all available transforms. 
@@ -94,7 +94,7 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 | [Tokenization2Arrow](transforms/universal/tokenization2arrow/README.md)                         | :white_check_mark: | :white_check_mark: | 
 | [Repetition removal](transforms/universal/rep_removal/README.md)                         | :white_check_mark: | :white_check_mark: |                   |  |
 | [Bloom filter](transforms/universal/bloom/README.md)                         | :white_check_mark: |  |                    |  |
-| [Collapse](transforms/universal/collapse/README.md)                         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| [Collapse(column concatenation)](transforms/universal/collapse/README.md)                         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Blocklist](transforms/universal/blocklist/README.md)                         | :white_check_mark: |  :white_check_mark: |                    | :white_check_mark: |
 **Language-only**                                                                    |                    |                    |                    |                    |
 | [Language identification](transforms/language/lang_id/README.md)              | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
@@ -107,7 +107,7 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 | [Readability scores](transforms/language/readability/README.md)          | :white_check_mark: | :white_check_mark: |                    |  |
 | [Extreme tokenized annotation](transforms/language/extreme_tokenized/README.md)          | :white_check_mark: | :white_check_mark: |                    |  |
 | [ML Filter](transforms/language/ml_filter/README.md)                         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
-| [Enrichment](transforms/language/enrichment/README.md)                         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| [ML Enrichment(quality annotation)](transforms/language/enrichment/README.md)                         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 **Code-only**                                                                         |                    |                     |             |                    |
 | [Programming language annotation](transforms/code/proglang_select/README.md)  | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Code quality annotation](transforms/code/code_quality/README.md)             | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |

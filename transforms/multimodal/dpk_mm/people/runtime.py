@@ -13,8 +13,9 @@
 import time
 
 from data_processing.runtime.pure_python import PythonTransformLauncher
-from data_processing.runtime.pure_python.runtime_configuration import (
+from data_processing.runtime.pure_python import (
     PythonTransformRuntimeConfiguration,
+    Transform
 )
 from data_processing.utils import get_logger
 
@@ -36,6 +37,11 @@ class PeoplePythonTransformConfiguration(PythonTransformRuntimeConfiguration):
         :param base_configuration - base configuration class
         """
         super().__init__(transform_config=PeopleTransformConfiguration())
+
+
+class People(Transform):
+    def __init__(self, **kwargs):
+        super().__init__(PeoplePythonTransformConfiguration, **kwargs)
 
 
 if __name__ == "__main__":

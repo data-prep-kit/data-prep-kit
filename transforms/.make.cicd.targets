@@ -8,13 +8,13 @@ include $(REPOROOT)/transforms/.make.transforms
 
 ######################################################################
 ## Default setting for TRANSFORM_RUNTIME entry point: 
-# python -m dpk_html2parquet.ray.transform --help
+# python -m dpk_html2parquet.ray.runtime --help
 # or
-# python -m dpk_html2parquet.transform_python --help
+# python -m dpk_html2parquet.runtime --help
 #
-TRANSFORM_PYTHON_SRC?="-m dpk_$(TRANSFORM_NAME).transform_python"
-TRANSFORM_RAY_SRC?="-m dpk_$(TRANSFORM_NAME).ray.transform"
-TRANSFORM_SPARK_SRC?="-m dpk_$(TRANSFORM_NAME).spark.transform"
+TRANSFORM_PYTHON_SRC?="-m dpk_$(TRANSFORM_NAME).runtime"
+TRANSFORM_RAY_SRC?="-m dpk_$(TRANSFORM_NAME).ray.runtime"
+TRANSFORM_SPARK_SRC?="-m dpk_$(TRANSFORM_NAME).spark.runtime"
 
 
 venv::	.defaults.create-venv

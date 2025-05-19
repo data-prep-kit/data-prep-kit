@@ -13,6 +13,8 @@ TRANSFORM_NAME=$(shell basename `pwd`)
 
 ################################################################################
 
+TRANSFORM_PYTHON_SRC="-m dpk_$(TRANSFORM_NAME).runtime"
+TRANSFORM_RAY_SRC="-m dpk_$(TRANSFORM_NAME).ray.runtime"
 
 publish:
 	@echo "Skip... do nothing! pushing CI/CD over a cliff with OSError on text_encoder "

@@ -17,7 +17,7 @@ from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
-from dpk_html2parquet.transform_python import Html2ParquetPythonTransformConfiguration
+from dpk_html2parquet.runtime import Html2ParquetPythonTransformConfiguration
 
 class TestPythonHtml2ParquetTransform(AbstractTransformLauncherTest):
     """

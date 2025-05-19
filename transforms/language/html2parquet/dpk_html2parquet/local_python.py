@@ -16,7 +16,7 @@ import sys
 
 from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.utils import ParamsUtils
-from dpk_html2parquet.transform_python import Html2ParquetPythonTransformConfiguration
+from dpk_html2parquet.runtime import Html2ParquetPythonTransformConfiguration
 
 
 # create parameters

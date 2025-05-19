@@ -14,7 +14,7 @@ import os
 from data_processing.runtime import AbstractTransformLauncher
 from data_processing_spark.runtime.spark import SparkTransformLauncher
 from dpk_filter.test_support import AbstractPythonFilterTransformTest
-from dpk_filter.spark.transform import FilterSparkTransformConfiguration
+from dpk_filter.spark.runtime import FilterSparkTransformConfiguration
 
 
 class TestSparkFilterTransform1(AbstractPythonFilterTransformTest):

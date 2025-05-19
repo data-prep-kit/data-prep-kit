@@ -9,23 +9,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ################################################################################
+
 import sys
 
-from data_processing_ray.runtime.ray import Transform
-
+from data_processing.runtime.pure_python import (
+    PythonTransformRuntimeConfiguration,
+    Transform,
+)
 from data_processing.utils import get_logger
-from dpk_collapse.transform import CollapseTransformConfiguration
+from dpk_html2parquet.transform import Html2ParquetTransformConfiguration
 
 
 logger = get_logger(__name__)
 
 
+class Html2ParquetPythonTransformConfiguration(PythonTransformRuntimeConfiguration):
+    """
+    Class used with UT test and PythonLauncher
+    """
+    def __init__(self):
+        super().__init__(transform_config=Html2ParquetTransformConfiguration())
 
-# Class used by the notebooks to ingest binary files and create parquet files
-class Collapse (Transform):
+
+class Html2Parquet(Transform):
+    """
+    Class used by the notebooks to ingest binary files and create parquet files
+    """
     def __init__(self, **kwargs):
-        super().__init__(CollapseTransformConfiguration(), **kwargs)
+        super().__init__(Html2ParquetTransformConfiguration(), **kwargs)
 
 
 if __name__ == "__main__":
-    Transform.launch(CollapseTransformConfiguration())
+    Transform.launch(Html2ParquetTransformConfiguration())

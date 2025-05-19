@@ -10,31 +10,38 @@
 # limitations under the License.
 ################################################################################
 
-from data_processing.utils import get_logger
-from data_processing_ray.runtime.ray import RayTransformLauncher
-from data_processing_ray.runtime.ray.runtime_configuration import (
-    RayTransformRuntimeConfiguration,
-)
-from dpk_hap.transform import HAPTransformConfiguration
 
+from data_processing.utils import get_logger
+from data_processing_ray.runtime.ray import (
+    RayTransformRuntimeConfiguration,
+    Transform,
+)
+
+from dpk_html2parquet.transform import Html2ParquetTransformConfiguration
 
 logger = get_logger(__name__)
 
 
-class HAPRayTransformConfiguration(RayTransformRuntimeConfiguration):
+class Html2ParquetRayTransformConfiguration(RayTransformRuntimeConfiguration):
     """
-    Implements the RayTransformConfiguration for HAP as required by the RayTransformLauncher.
+    Used with Unit Test
     """
-
     def __init__(self):
-        """
-        Initialization
-        :param base_configuration - base configuration class
-        """
-        super().__init__(transform_config=HAPTransformConfiguration())
+        super().__init__(transform_config=Html2ParquetTransformConfiguration())
+
+
+
+class HTML2Parquet(Transform):
+    """
+    used with API from notebook or python script
+    """
+    def __init__(self, **kwargs):
+        super().__init__(Html2ParquetTransformConfiguration(), **kwargs)
 
 
 if __name__ == "__main__":
-    launcher = RayTransformLauncher(HAPRayTransformConfiguration())
-    logger.info("Launching hap transform")
-    launcher.launch()
+    """
+    Used with Command line invokcation
+    """
+    Transform.launch(Html2ParquetTransformConfiguration())
+

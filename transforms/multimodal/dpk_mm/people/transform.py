@@ -28,6 +28,10 @@ import time
 import random
 import os
 
+from data_processing.utils import get_logger
+logger = get_logger(__name__)
+
+
 shortname = "people"
 cli_prefix = f"{shortname}_"
 model_path_key = "model_path"
@@ -140,8 +144,7 @@ class PeopleTransform(AbstractMultimodalTransform):
             ct += 1
 
         res_list = self.fb.run_face_blur_objectlist(im_list, self.threshold, self.batch_size)
-        #print(f"{len(im_list) = }")
-        #print(f"{len(res_list) = }")
+        logger.debug(f"{res_list}")
         assert len(res_list)==len(im_list)
 
         ct = 0

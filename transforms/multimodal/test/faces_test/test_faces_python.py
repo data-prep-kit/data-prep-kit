@@ -33,6 +33,6 @@ class TestRayProtoTransform(AbstractTransformLauncherTest):
         launcher = PythonTransformLauncher(FacesPythonTransformConfiguration())
         fixtures.append(
             (launcher, {},
-                basedir + "/test-data/j2p/expected", basedir + "/test-data/faces/expected")
+                basedir + "/test-data/input", basedir + "/test-data/faces/expected")
         )
         return fixtures

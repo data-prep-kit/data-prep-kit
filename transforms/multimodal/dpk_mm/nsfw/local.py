@@ -21,7 +21,6 @@ from dpk_mm.nsfw.runtime import NsfwPythonTransformConfiguration
 # create parameters
 # When we have real test data we should switch to this
 input_folder = os.path.abspath(
-    # TODO os.path.join(os.path.dirname(__file__), "..", "..", "test-data", "nsfw", "input")
     os.path.join(os.path.dirname(__file__), "..", "..", "test-data", "j2p", "expected")
 )
 # For your own local files

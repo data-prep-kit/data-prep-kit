@@ -13,8 +13,9 @@
 import time
 
 from data_processing.runtime.pure_python import PythonTransformLauncher
-from data_processing.runtime.pure_python.runtime_configuration import (
+from data_processing.runtime.pure_python import (
     PythonTransformRuntimeConfiguration,
+    Transform
 )
 from data_processing.utils import get_logger
 from dpk_mm.nsfw.transform import NsfwTransformConfiguration
@@ -36,6 +37,11 @@ class NsfwPythonTransformConfiguration(PythonTransformRuntimeConfiguration):
         :param base_configuration - base configuration class
         """
         super().__init__(transform_config=NsfwTransformConfiguration())
+
+
+class NSFW(Transform):
+    def __init__(self, **kwargs):
+        super().__init__(NsfwTransformConfiguration(), **kwargs)
 
 
 if __name__ == "__main__":

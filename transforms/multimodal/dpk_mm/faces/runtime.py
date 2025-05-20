@@ -38,9 +38,10 @@ class FacesPythonTransformConfiguration(PythonTransformRuntimeConfiguration):
         """
         super().__init__(transform_config=FacesTransformConfiguration())
 
+
 class Faces(Transform):
     def __init__(self, **kwargs):
-        super().__init__(FacesPythonTransformConfiguration, **kwargs)
+        super().__init__(FacesTransformConfiguration(), **kwargs)
 
 
 if __name__ == "__main__":

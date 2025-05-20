@@ -43,13 +43,13 @@ generate-test-data: venv
 	- rm -fr test-data/nsfw/expected
 	source venv/bin/activate && \
 	$(PYTHON) -m dpk_mm.faces.runtime \
-        --data_local_config "{ 'input_folder' : 'test-data/j2p/expected', 'output_folder' : 'test-data/faces/expected'}"
+        --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'test-data/faces/expected'}"
 	source venv/bin/activate && \
 	$(PYTHON) -m dpk_mm.people.runtime \
-        --data_local_config "{ 'input_folder' : 'test-data/j2p/expected', 'output_folder' : 'test-data/people/expected'}"
+        --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'test-data/people/expected'}"
 	source venv/bin/activate && \
 	$(PYTHON) -m dpk_mm.nsfw.runtime \
-        --data_local_config "{ 'input_folder' : 'test-data/j2p/expected', 'output_folder' : 'test-data/nsfw/expected'}"
+        --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'test-data/nsfw/expected'}"
 
 faces_test: venv
 	@# Help: Run pytest on the test directory inside the venv 

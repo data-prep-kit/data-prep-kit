@@ -34,6 +34,6 @@ class TestRayProtoTransform(AbstractTransformLauncherTest):
         config = {}
         fixtures.append(
             (launcher, config,
-                basedir + "/test-data/j2p/expected", basedir + "/test-data/people/expected")
+                basedir + "/test-data/input", basedir + "/test-data/people/expected")
         )
         return fixtures

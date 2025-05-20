@@ -40,7 +40,7 @@
     "result_doc_count": 5
   },
   "source": {
-    "name": "/Users/touma/data-prep-kit-pkg/transforms/multimodal/test-data/j2p/expected",
+    "name": "/Users/touma/data-prep-kit-pkg/transforms/multimodal/test-data/input",
     "type": "path"
   },
   "target": {

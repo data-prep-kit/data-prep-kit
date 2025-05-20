@@ -41,7 +41,7 @@ class PeoplePythonTransformConfiguration(PythonTransformRuntimeConfiguration):
 
 class People(Transform):
     def __init__(self, **kwargs):
-        super().__init__(PeoplePythonTransformConfiguration, **kwargs)
+        super().__init__(PeopleTransformConfiguration(), **kwargs)
 
 
 if __name__ == "__main__":

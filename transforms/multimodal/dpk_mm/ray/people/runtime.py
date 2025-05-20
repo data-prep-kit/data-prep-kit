@@ -13,8 +13,9 @@ import sys
 
 from data_processing.utils import get_logger
 from data_processing_ray.runtime.ray import RayTransformLauncher
-from data_processing_ray.runtime.ray.runtime_configuration import (
+from data_processing_ray.runtime.ray import (
     RayTransformRuntimeConfiguration,
+    Transform
 )
 
 from dpk_mm.people.transform import PeopleTransformConfiguration
@@ -35,6 +36,12 @@ class PeopleRayTransformConfiguration(RayTransformRuntimeConfiguration):
         :param base_configuration - base configuration class
         """
         super().__init__(transform_config=PeopleTransformConfiguration())
+
+
+
+class People(Transform):
+    def __init__(self, **kwargs):
+        super().__init__(PeopleTransformConfiguration(), **kwargs)
 
 
 if __name__ == "__main__":

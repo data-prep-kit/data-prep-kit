@@ -12,8 +12,9 @@
 
 from data_processing.utils import get_logger
 from data_processing_ray.runtime.ray import RayTransformLauncher
-from data_processing_ray.runtime.ray.runtime_configuration import (
+from data_processing_ray.runtime.ray import (
     RayTransformRuntimeConfiguration,
+    Transform,
 )
 from dpk_mm.nsfw.transform import NsfwTransformConfiguration
 
@@ -33,6 +34,12 @@ class NsfwRayTransformConfiguration(RayTransformRuntimeConfiguration):
         :param base_configuration - base configuration class
         """
         super().__init__(transform_config=NsfwTransformConfiguration())
+
+
+
+class NSFW(Transform):
+    def __init__(self, **kwargs):
+        super().__init__(NsfwTransformConfiguration(), **kwargs)
 
 
 if __name__ == "__main__":

@@ -306,7 +306,7 @@ class AbstractMultimodalTransformConfiguration(TransformConfiguration):
         """
         """
 
-        name = self.get_name()
+#        name = self.get_name()
         parser.add_argument(
             f"--{self.cli_prefix}{batch_size_key}",
             type=int,

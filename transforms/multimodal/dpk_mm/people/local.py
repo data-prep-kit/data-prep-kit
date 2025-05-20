@@ -20,7 +20,7 @@ from dpk_mm.people.runtime import PeoplePythonTransformConfiguration
 
 # create parameters
 # When we have real test data we should switch to this
-input_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "test-data", "j2p", "expected"))
+input_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "test-data", "input"))
 #input_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "input"))
 # for test.parquet in proto/python dir
 #input_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))

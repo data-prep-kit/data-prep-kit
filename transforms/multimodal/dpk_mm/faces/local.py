@@ -20,7 +20,7 @@ from dpk_mm.faces.runtime import FacesPythonTransformConfiguration
 
 # create parameters
 # When we have real test data we should switch to this
-input_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "test-data", "j2p", "expected"))
+input_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "test-data", "input"))
 output_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "output"))
 local_conf = {
     "input_folder": input_folder,

@@ -443,6 +443,10 @@ endif
 	@# Help: Run pytest on the test directory inside the venv 
 	source venv/bin/activate;       \
 	export PYTHONPATH=../src:../: ;  \
+	export BUILD_DATE=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ') ; \
+	export TRANSFORM_PATH=$(shell git rev-parse --show-prefix) ; \
+	export GIT_URL=$(shell git config --get remote.origin.url) ; \
+	export GIT_COMMIT=$(shell git log -1 --format=%h) ; \
 	cd test; $(PYTEST) .
 
 # This is small convenience and the image itself must already be created.

@@ -98,7 +98,7 @@ def get_transform_config(
     # Create the command line and parse it.
     if "python" in argv[0]:
         argv = argv[1:0]
-    args = parser.parse_args(argv)
+    args, _ = parser.parse_known_args(argv)
     dargs = vars(args)
 
     transform_configuration.apply_input_params(args)

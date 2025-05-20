@@ -33,7 +33,7 @@ if __name__ == "__main__":
     parser.add_argument("-ep", "--exec_params", type=str, default="{}")
     parser.add_argument("-esn", "--exec_script_name", default="transformer_launcher.py", type=str)
 
-    args = parser.parse_args()
+    args, _ = parser.parse_known_args()
     cluster_name = KFPUtils.runtime_name(
         ray_name=args.ray_name,
         run_id=args.run_id,

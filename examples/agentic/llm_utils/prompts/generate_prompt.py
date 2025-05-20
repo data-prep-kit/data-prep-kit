@@ -62,7 +62,7 @@ def main():
     )
     # The rest of the arguments
 
-    args = parser.parse_args()
+    args, _ = parser.parse_known_args()
 
     try:
         results = execute_workflow(args)
@@ -169,7 +169,7 @@ def main():
         help="Filter query for the workflow.",
     )
 
-    args = parser.parse_args()
+    args, _ = parser.parse_known_args()
     args.data_type = "s3"
     args.access_key = os.environ.get('ACCESS_KEY')
     args.secret_key = os.environ.get('SECRET_KEY')

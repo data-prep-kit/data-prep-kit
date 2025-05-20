@@ -86,7 +86,7 @@ if __name__ == "__main__":
     parser.add_argument("-su", "--server_url", default="", type=str)
     parser.add_argument("-ap", "--additional_params", default="{}", type=str)
 
-    args = parser.parse_args()
+    args, _ = parser.parse_known_args()
 
     cluster_name = KFPUtils.runtime_name(
         ray_name=args.ray_name,

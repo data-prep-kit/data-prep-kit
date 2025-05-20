@@ -59,7 +59,7 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--config_file", type=str, default="")
     parser.add_argument("-od", "--output_dir_file", type=str, default="")
 
-    args = parser.parse_args()
+    args, _ = parser.parse_known_args()
     # open configuration file
     with open(args.config_file, "r") as file:
         pipeline_definitions = yaml.safe_load(file)

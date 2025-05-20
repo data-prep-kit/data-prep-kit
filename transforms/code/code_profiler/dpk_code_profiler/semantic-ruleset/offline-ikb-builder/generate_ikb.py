@@ -101,7 +101,7 @@ if __name__ == "__main__":
         default=os.getenv("MODEL_ID", "meta-llama/llama-3-70b-instruct"),
     )
 
-    args = parser.parse_args()
+    args, _ = parser.parse_known_args()
     concepts = getStringFromCSV(args.cmap_file)
     input_examples = getStringFromCSV(args.input_examples_file)
     output_examples = getStringFromCSV(args.output_examples_file)

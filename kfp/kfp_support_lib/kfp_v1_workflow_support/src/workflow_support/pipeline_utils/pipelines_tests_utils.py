@@ -60,7 +60,7 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--pipeline_package_path", type=str, default="")
     parser.add_argument("-o", "--overwrite", type=str, default="True")
 
-    args = parser.parse_args()
+    args, _ = parser.parse_known_args()
     match args.command:
         case "upload":
             file_name = os.path.basename(args.pipeline_package_path)

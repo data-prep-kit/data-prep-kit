@@ -75,7 +75,7 @@ class AbstractDataAccessFactoryTests:
         daf = DataAccessFactory()
         parser = ArgumentParser()
         daf.add_input_params(parser)
-        args = parser.parse_args()
+        args, _ = parser.parse_known_args()
         daf.apply_input_params(args)
         data_access = daf.create_data_access()
         files, metadata, _ = data_access.get_files_to_process()

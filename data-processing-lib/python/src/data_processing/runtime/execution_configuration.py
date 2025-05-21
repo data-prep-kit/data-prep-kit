@@ -76,11 +76,13 @@ class TransformExecutionConfiguration(CLIArgumentProvider):
             "job type": "pure python",
             "job id": captured["job_id"],
         }
-        self.code_location = {"github": os.environ["GIT_URL"],
-                              "build-date": os.environ["BUILD_DATE"],
-                              "commit_hash": os.environ["GIT_COMMIT"],
-                              "path": os.environ["TRANSFORM_PATH"]
+        wf_code_location = captured.get("code_location", {})
+        self.code_location = {"github": os.environ.get("GIT_URL", wf_code_location.get('github', "UNDEFINED")),
+                              "build-date": os.environ.get("BUILD_DATE", "UNDEFINED"),
+                              "commit_hash": os.environ.get("GIT_COMMIT",  wf_code_location.get('commit_hash', "UNDEFINED")),
+                              "path": os.environ.get("TRANSFORM_PATH",  wf_code_location.get('path', "UNDEFINED"))
                               }
+
 
         # print parameters
         logger.info(f"pipeline id {self.pipeline_id}")

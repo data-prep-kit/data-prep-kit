@@ -27,7 +27,7 @@ conda activate data-prep-kit
 
 # install the following in 'data-prep-kit' environment
 cd examples/pdf-processing-1
-pip3 install  -r requirements.txt
+pip install -r requirements.txt
 
 # start jupyter and run the notebooks with this jupyter
 jupyter lab
@@ -51,5 +51,3 @@ If you encounter any errors loading libraries, try creating a custom kernel and 
 python -m ipykernel install --user --name=data-prep-kit --display-name "dataprepkit"
 # and select this kernel within jupyter notebook
 ```
-
-

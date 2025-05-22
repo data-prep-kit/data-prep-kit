@@ -15,7 +15,6 @@ from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
 from data_processing_ray.runtime.ray import RayTransformLauncher
-from dpk_lang_id.lang_models import KIND_FASTTEXT
 from dpk_lang_id.ray.transform import LangIdentificationRayTransformConfiguration
 from dpk_lang_id.transform import (
     content_column_name_cli_param,
@@ -38,7 +37,7 @@ class TestRayLangIdentificationTransform(AbstractTransformLauncherTest):
         basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))
         config = {
             model_credential_cli_param: os.environ.get('HF_READ_ACCESS_TOKEN', "PUT YOUR OWN HUGGINGFACE CREDENTIAL"),
-            model_kind_cli_param: KIND_FASTTEXT,
+            model_kind_cli_param: 'fasttext',
             model_url_cli_param: "facebook/fasttext-language-identification",
             content_column_name_cli_param: "text",
             output_lang_column_name_cli_param: "ft_lang",

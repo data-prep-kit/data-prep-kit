@@ -12,6 +12,7 @@
 
 import argparse
 import ast
+import os
 
 from data_processing.utils import CLIArgumentProvider, ParamsUtils, get_logger
 
@@ -75,7 +76,16 @@ class TransformExecutionConfiguration(CLIArgumentProvider):
             "job type": "pure python",
             "job id": captured["job_id"],
         }
-        self.code_location = captured["code_location"]
+        wf_code_location = captured.get("code_location", {})
+        if wf_code_location is None:
+            wf_code_location = {}
+        self.code_location = {"github": os.environ.get("GIT_URL", wf_code_location.get('github', "UNDEFINED")),
+                              "build-date": os.environ.get("BUILD_DATE", "UNDEFINED"),
+                              "commit_hash": os.environ.get("GIT_COMMIT", wf_code_location.get('commit_hash', "UNDEFINED")),
+                              "path": os.environ.get("TRANSFORM_PATH", wf_code_location.get('path', "UNDEFINED"))
+                              }
+
+
         # print parameters
         logger.info(f"pipeline id {self.pipeline_id}")
         if self.print_params:

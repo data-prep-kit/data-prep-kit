@@ -23,11 +23,13 @@ models/yolov8n-face.pt:
 	@echo Downloading $@
 	mkdir -p models
 	curl -L --output models/yolov8n-face.pt https://github.com/touma-I/large-files/raw/refs/heads/main/models/yolov8n-face.pt
+#	curl -L --output models/yolov8n-face.pt https://huggingface.co/arnabdhar/YOLOv8-Face-Detection/resolve/main/model.pt
 
 models/yolov8m_200e.pt:
 	@echo Downloading $@
 	mkdir -p models
-	curl -L --output models/yolov8m_200e.pt https://github.com/touma-I/large-files/raw/refs/heads/main/models/yolov8m_200e.pt
+	curl -L --output models/yolov8m_200e.pt https://huggingface.co/ZiqianLiu/yolov8_face/resolve/4b1db35121179d189754a3bf0b4a86aa44c03eef/yolov8m_200e.pt
+
 
 models/yolov8m-seg.pt:
 	@echo Downloading $@

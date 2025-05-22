@@ -45,15 +45,9 @@ params = {
     "runtime_pipeline_id": "pipeline_id",
     "runtime_job_id": "job_id",
     "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
-    # People config
-    #"people_mode": "count",
-    #"people_model_path": os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "models", "yolov8m-seg.pt")),
-    #"people_model_path": os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "models", "yolov8n-face.pt")),
-    #"people_model_path": "yolov8m-seg.pt",
 
     "people_mode": "blur",
     "people_model_path": os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "models", "yolov8m_200e.pt"))
-    #"people_model_path": "yolov8m_200e.pt"
 
 }
 if __name__ == "__main__":

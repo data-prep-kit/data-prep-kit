@@ -10,305 +10,312 @@
 # limitations under the License.
 ################################################################################
 
-# Collection of code data specific annotations and its heuristics are borrowed from:
-# CodeParrot  https://github.com/huggingface/transformers/tree/main/examples/research_projects/codeparrot#preprocessing
-# BigCode Dataset https://github.com/bigcode-project/bigcode-dataset/tree/main/preprocessing
-#
-# Code specific heuristics like alpha numeric, char token ratio implementations & others are taken from CodeParrot and BigCode Dataset
-# preprocessing scripts and modified according to data-prep-kit specific framework.
-
-CODE_QUALITY_PARAMS = "code_quality"
 import os
-from argparse import ArgumentParser, Namespace
+from typing import Any
 
 import numpy as np
 import pyarrow as pa
-from bs4 import BeautifulSoup
-from data_processing.transform import AbstractTableTransform, TransformConfiguration
+import sqlglot
+from dpk_code_quality.code_complexity_metrics import create_complexity_metrics
 from data_processing.utils import TransformUtils
-from transformers import AutoTokenizer
+from dpk_code_quality.transform_base import CodeQualityBaseTransform
+
+from sqlglot import Dialects
+from tree_sitter import Parser
+from tree_sitter_languages import get_language
+
+import tempfile
+import subprocess
 
 
-
+CODE_QUALITY_PARAMS = "code_quality_params"
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
+# Collection of code data specific annotations
+# Inspired from:
+# Codeparrot  https://github.com/huggingface/transformers/tree/main/examples/research_projects/codeparrot
+# Starcoder https://github.com/bigcode-project/bigcode-dataset/tree/main/preprocessing
 
-def is_xml(data, lang):
-    """
-    Check if input data is xml content
-    """
-    if lang.lower() != "xslt" and "<?xml version=" in data[:100]:
+code_complexity_metrics_key = "code_complexity_metrics"
+has_sqlglot_key = "has_sqlglot"
+has_ast_key = "has_ast"
+has_syntax_checker_bash_key = "has_syntax_checker_bash"
+syntax_bash_path_key = "syntax_bash_path"
+set_sqlglot_all_dialects_key = "set_sqlglot_all_dialects"
+is_openshift_k8_yaml_key = "is_openshift_k8_yaml"
+is_ansible_yaml_key = "is_ansible_yaml"
+
+def traverse_tree (tree):
+    cursor = tree.walk()
+    visited_children = False
+    while True:
+        if not visited_children:
+            yield cursor.node
+            if not cursor.goto_first_child():
+                visited_children = True
+        elif cursor.goto_next_sibling():
+            visited_children = False
+        elif not cursor.goto_parent():
+            break
+
+def node_text(source, node):
+    return source[node.start_byte:node.end_byte]
+
+def bad_function_body (body):
+    t = body.strip()
+    if ((len(t) < 7) and \
+        (len(t) == 0 or t == "pass" or t == "return")):
         return True
     return False
 
+def find_empty_functions (script, traverse):
+    discard = []
+    good_function_flag = True
+    for n in traverse:
+        if (n.type == "function_definition"):
+            body_node = n.child_by_field_name("body")
+            body_text = node_text (script, body_node).decode('utf8')
+            if (bad_function_body (body_text)):
+                if (n.parent.type == "decorated_definition"):
+                    good_function_flag = True
+                else:
+                    good_function_flag = False
+    return good_function_flag
 
-def is_html(data, lang):
+def ast_no_error(node):
+    if True in [child.type == "ERROR" for child in node.children]:
+        flag = False
+    else:
+        flag = True
+    return flag
+
+
+def has_ast(data, language):
     """
-    Check if input data is HTML files based on displayed text VS code ratio
+    Check if input code has valid ast, returns True/False
     """
-    if lang.lower() == "html":
-        html = data
+    supported_languages = [
+        "python",
+        "java",
+    ]
+    
+    '''
+    supported_languages = [
+        "python",
+        "java",
+        "javascript",
+        "c",
+        "cpp",
+        "php",
+        "c_sharp",
+        "go",
+        "sql",
+        "typescript",
+        "ruby",
+        "rust",
+    ]'''
+
+    if language == "C++":
+        arg_lang = "cpp"
+    elif language == "C-sharp":
+        arg_lang = "c_sharp"
+    else:
+        arg_lang = language.lower()
+
+    try:
+        if arg_lang in supported_languages:
+           parser = Parser()
+           lang = get_language(arg_lang)
+
+           parser.set_language(lang)
+           tree = parser.parse(data.encode())
+           astflag = ast_no_error(tree.root_node)
+
+           if astflag == True and arg_lang == 'python':
+               try:
+                   traverse = traverse_tree(tree)
+                   badfunctionflag = find_empty_functions (data.encode('utf8'), traverse)
+                   return badfunctionflag
+               except Exception as e1:
+                   print(f"Empty function check failed with exception: {e1}")
+                   return astflag
+           else:
+               return  astflag
+        
+        else:
+           return True
+    except Exception as e2:
+        print(f"ast parser failed with exception: {e2}")
+        return True 
+
+
+def add_code_complexity(data, lang):
+    """
+    Check if input code is python, get complexity metrics
+    """
+    try:
+        if lang.lower() == "python":
+            new_dict = create_complexity_metrics(data)
+        else:
+            new_dict = {}
+    except:
+        new_dict = {}
+
+    return new_dict
+
+
+def is_sqlglot_parseable(data, language, sqlglot_dialect_list):
+    """
+    Validate that the content is valid SQL using a parser.
+
+    Only supoprts "sql" as language right now.
+
+    :param data: The data as a string.
+    :param language: The language as a string.
+    :sqlglot_dialect_list: A list of strings specifying sqlglot dialtects.
+    """
+    if language.lower() == "sql":
+        # Iterate over all set dialects
+        for dialect in sqlglot_dialect_list:
+            try:
+                parsed_data_elements = sqlglot.parse(data, dialect=dialect)
+                if len(parsed_data_elements) == 1 and parsed_data_elements[0] == None:
+                    # Only a comment without SQL code
+                    return False
+                # Extracts the SQL statements
+                _ = [element.sql() for element in parsed_data_elements if element is not None]
+                return True
+            except Exception:
+                pass
+    return True
+
+def is_openshift_k8_yaml(content, language):
+    if language.lower() == "unknown" or language.lower() == "yaml":
+        if validation_tools.kubeconform_k8s_check(content) or validation_tools.kubeconform_openshift_check(content) or validation_tools.kubeconform_crd_check(content):
+            return True
+    return False
+
+def syntax_checker_bash(data, language, tmp_dir):
+    """
+    Validate that the bash content is syntactically correct using shellcheck
+    """
+    if language.lower()=="shell" and data.startswith("#!") and ("bash" in data.split("\n")[0] or "/sh" in data.split("\n")[0]):
         try:
-            soup = BeautifulSoup(html, features="html.parser")
+            # Write data to a temporary file.
+            tmp = tempfile.NamedTemporaryFile(dir=tmp_dir)
+            with open(tmp.name, 'w') as f:
+                f.write(data)
+            
+            # Run shellcheck command
+            cmd = f"shellcheck -e SC2068 {tmp.name}"
+            try:
+                output = subprocess.run(cmd, capture_output=True, text=True, shell=True)
+                tmp.close()
+                if output.stderr=="" and '(error)' not in output.stdout:
+                    return True 
+                else:
+                    return False
+            except:
+                tmp.close()      
+                           
         except:
             return True
+    return True
 
-        # kill all script and style elements
-        for script in soup(["script", "style"]):
-            script.extract()  # rip it out
-
-        # get text
-        text = soup.get_text()
-        ratio = len(text) / len(html)
-        if ratio > 0.2 and len(text) > 100:
+def is_ansible_yaml(content, language):
+    if language.lower() == "unknown" or language.lower() == "yaml":
+        if validation_tools.validate_ansible(content):
             return True
     return False
 
-
-# CODEPARROT FILTERS
-def calculate_line_stats(data, lines_max=7):
-    """
-    Calculates mean and max line length of file
-    """
-    line_lengths = np.array([len(line) for line in data.splitlines()])
-    if line_lengths.shape[0] < lines_max:
-        lines_max = line_lengths.shape[0]
-    longest_lines = np.sort(line_lengths)[::-1][:lines_max]
-    return {
-        "line_mean": np.mean(line_lengths),
-        "line_max": np.max(line_lengths),
-        "avg_longest_lines": np.mean(longest_lines),
-        "num_lines": line_lengths.shape[0],
-    }
-
-
-def calculate_alpha_stats(data):
-    """
-    Calculates mean alpha numeric of input data
-    """
-    alphanum_frac = np.mean([c.isalnum() for c in data])
-    return {"alphanum_frac": alphanum_frac}
-
-
-def calculate_char_token_ratio(data, tokenizer):
-    """
-    Compute character/token ratio of the file with tokenizer.
-    """
-    input_ids = tokenizer(data, truncation=False)["input_ids"]
-    ratio = len(data) / len(input_ids)
-    return {"char_token_ratio": ratio}
-
-
-def is_autogenerated(data, scan_width=5):
-    """
-    Check if file is autogenerated by looking for keywords in the first few lines of the file.
-    """
-    keywords = ["auto-generated", "autogenerated", "automatically generated"]
-    lines = data.splitlines()
-    for _, line in zip(range(scan_width), lines):
-        for keyword in keywords:
-            if keyword in line.lower():
-                return True
-    else:
-        return False
-
-
-def is_config_or_test(data, scan_width=5, coeff=0.2):
-    """
-    Check if file is a configuration file or a unit test by :
-    1- looking for keywords in the first few lines of the file.
-    2- counting number of occurrences of the words 'config' and 'test' with respect to number of lines.
-    """
-    keywords = ["unit tests", "test file", "configuration file"]
-    lines = data.splitlines()
-    count_config = 0
-    count_test = 0
-    # first test
-    for _, line in zip(range(scan_width), lines):
-        for keyword in keywords:
-            if keyword in line.lower():
-                return True
-    # second test
-    nlines = data.count("\n")
-    threshold = int(coeff * nlines)
-    for line in lines:
-        count_config += line.lower().count("config")
-        count_test += line.lower().count("test")
-        if count_config > threshold or count_test > threshold:
-            return True
-    return False
-
-
-def has_no_keywords(data, language):
-    """
-    Check if a python file has none of the keywords for: funcion, class, for loop, while loop.
-    """
-    if language.lower() == "python":
-        keywords = ["def ", "class ", "for ", "while "]
-        lines = data.splitlines()
-        for line in lines:
-            for keyword in keywords:
-                if keyword in line.lower():
-                    return False
-        return True
-    return False
-
-
-def has_few_assignments(data, language, minimum=4):
-    """
-    Check if file uses symbol '=' less than `minimum` times.
-    """
-    langs_to_inspect = [
-        "java",
-        "python",
-        "c",
-        "c++",
-        "c#",
-        "go",
-        "javascript",
-        "go",
-        "ruby",
-        "perl",
-        "swift",
-        "rust",
-        "r",
-        "matlab",
-    ]
-
-    if language.lower() in langs_to_inspect:
-        lines = data.splitlines()
-        counter = 0
-        for line in lines:
-            counter += line.lower().count("=")
-            if counter > minimum:
-                return False
-        return True
-    return False
-
-
-class CodeQualityTransform(AbstractTableTransform):
+class CodeQualityTransform(CodeQualityBaseTransform):
     """
     Defines Code Quality specific annotation for code data. Some of the methods inspired from CodeParrot and StarCoder.
     """
 
-    def __init__(self, config: dict):
-        super().__init__(config)
 
-        self.code_quality = config.get(CODE_QUALITY_PARAMS) 
-        if not self.code_quality["hf_token"]:
-            self.code_quality["hf_token"]=os.getenv("HF_READ_ACCESS_TOKEN")
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            self.code_quality["tokenizer"], use_auth_token=self.code_quality["hf_token"]
-        )
-
-    def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict]:
+    def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
         """
-        Chain all preprocessing steps into one function
+        Chain all preprocessing steps into one function to not fill cache.
         """
+        table, metadata = super().transform(table, file_name)
+        table = table[0]
 
-        TransformUtils.validate_columns(
-            table, [self.code_quality["contents_column_name"], self.code_quality["language_column_name"]]
-        )
-
-        line_mean_values = []
-        line_max_values = []
-        no_lines_values = []
-        avg_longest_lines_values = []
-        alphanum_frac_values = []
-        char_token_ratio_values = []
-        is_autogenerated_values = []
-        is_config_or_test_values = []
-        has_no_keywords_values = []
-        has_few_assignments_values = []
-        is_xml_values = []
-        is_html_values = []
+        if not (
+            self.code_quality[code_complexity_metrics_key]
+            or self.code_quality[has_sqlglot_key]
+            or self.code_quality[has_ast_key]
+            or self.code_quality[has_syntax_checker_bash_key]
+            or self.code_quality[is_openshift_k8_yaml_key]
+            or self.code_quality[is_ansible_yaml_key]
+        ):
+            return [table], metadata
 
         contents = table.column(self.code_quality["contents_column_name"]).to_pylist()
         languages = table.column(self.code_quality["language_column_name"]).to_pylist()
+        logical_loc = []
+        halstead_volume = []
+        cyclomatic_complexity = []
+        percent_lines_of_comment = []
+        maintanability_index = []
+        is_sqlglot_parseable_values = []
+        has_ast_values = []
+        syntactic_correctness_bash = []
+        is_openshift_k8_yaml_values = []
+        is_ansible_yaml_values = []
 
         # loop over rows and compute filter stats
-        for i, c in enumerate(contents):
-            # compute lines statistics
-            stats = calculate_line_stats(c)
-            line_mean_values.append(stats["line_mean"])
-            line_max_values.append(stats["line_max"])
-            no_lines_values.append(stats["num_lines"])
-            avg_longest_lines_values.append(stats["avg_longest_lines"])
+        if self.code_quality[code_complexity_metrics_key]:
+            for c, l in zip(contents, languages):
+                temp_dict = add_code_complexity(c, l)
+                if temp_dict != {}:
+                    logical_loc.append(temp_dict["logical_loc"])
+                    halstead_volume.append(temp_dict["halstead_volume"])
+                    cyclomatic_complexity.append(temp_dict["cyclomatic_complexity"])
+                    percent_lines_of_comment.append(temp_dict["percent_lines_of_comment"])
+                    maintanability_index.append(temp_dict["maintanability_index"])
+                else:
+                    logical_loc.append(-999)
+                    halstead_volume.append(-999)
+                    cyclomatic_complexity.append(-999)
+                    percent_lines_of_comment.append(-999)
+                    maintanability_index.append(-999)
+            table = TransformUtils.add_column(table, "logical_loc", content=logical_loc)
+            table = TransformUtils.add_column(table, "halstead_volume", content=halstead_volume)
+            table = TransformUtils.add_column(table, "cyclomatic_complexity", content=cyclomatic_complexity)
+            table = TransformUtils.add_column(table, "percent_lines_of_comment", content=percent_lines_of_comment)
+            table = TransformUtils.add_column(table, "maintanability_index", content=maintanability_index)
 
-            alphanum_frac_values.append(calculate_alpha_stats(c)["alphanum_frac"])
-            char_token_ratio_values.append(calculate_char_token_ratio(c, self.tokenizer)["char_token_ratio"])
+        if self.code_quality[has_sqlglot_key]:
+            sqlglot_dialect_list = [""]
+            if self.code_quality[set_sqlglot_all_dialects_key]:
+                sqlglot_dialect_list = list(Dialects)
+            for c, l in zip(contents, languages):
+                # compute lines statisticszw
+                is_sqlglot_parseable_values.append(
+                    is_sqlglot_parseable(c, l, sqlglot_dialect_list=sqlglot_dialect_list)
+                )
+            table = TransformUtils.add_column(table, "is_sqlglot_parseable", content=is_sqlglot_parseable_values)
 
-            is_autogenerated_values.append(is_autogenerated(c))
-            is_config_or_test_values.append(is_config_or_test(c))
-            has_no_keywords_values.append(has_no_keywords(c, languages[i]))
-            has_few_assignments_values.append(has_few_assignments(c, languages[i]))
-            is_xml_values.append(is_xml(c, languages[i]))
-            is_html_values.append(is_html(c, languages[i]))
+        if self.code_quality[has_ast_key]:
+            for c, l in zip(contents, languages):
+                has_ast_values.append(has_ast(c, l))
+            table = TransformUtils.add_column(table, "has_ast", content=has_ast_values)
 
-        table = TransformUtils.add_column(table=table, name="line_mean", content=line_mean_values)
-        table = TransformUtils.add_column(table=table, name="line_max", content=line_max_values)
-        table = TransformUtils.add_column(table=table, name="total_num_lines", content=no_lines_values)
-        table = TransformUtils.add_column(table=table, name="avg_longest_lines", content=avg_longest_lines_values)
-        table = TransformUtils.add_column(table=table, name="alphanum_frac", content=alphanum_frac_values)
-        table = TransformUtils.add_column(table=table, name="char_token_ratio", content=char_token_ratio_values)
-        table = TransformUtils.add_column(table=table, name="autogenerated", content=is_autogenerated_values)
-        table = TransformUtils.add_column(table=table, name="config_or_test", content=is_config_or_test_values)
-        table = TransformUtils.add_column(table=table, name="has_no_keywords", content=has_no_keywords_values)
-        table = TransformUtils.add_column(table=table, name="has_few_assignments", content=has_few_assignments_values)
-        table = TransformUtils.add_column(table=table, name="is_xml", content=is_xml_values)
-        table = TransformUtils.add_column(table=table, name="is_html", content=is_html_values)
-
+        if self.code_quality[has_syntax_checker_bash_key]:
+            for c, l in zip(contents, languages):
+                syntactic_correctness_bash.append(syntax_checker_bash(c, l, self.code_quality[syntax_bash_path_key]))
+            table = TransformUtils.add_column(table, "is_syntactically_correct_bash", content=syntactic_correctness_bash)
+            
+        if self.code_quality[is_openshift_k8_yaml_key]:
+            for c, l in zip(contents, languages):
+                is_openshift_k8_yaml_values.append(is_openshift_k8_yaml(c, l))
+            table = TransformUtils.add_column(table, "is_openshift_k8_yaml", content=is_openshift_k8_yaml_values)
+        
+        if self.code_quality[is_ansible_yaml_key]:
+            for c, l in zip(contents, languages):
+                is_ansible_yaml_values.append(is_ansible_yaml(c, l))
+            table = TransformUtils.add_column(table, "is_ansible_yaml", content=is_ansible_yaml_values)
+        
         return [table], {}
 
-
-class CodeQualityTransformConfiguration(TransformConfiguration):
-    def __init__(self):
-        super().__init__(name="code_quality", transform_class=CodeQualityTransform)
-
-    def add_input_params(self, parser: ArgumentParser) -> None:
-        parser.add_argument(
-            "--cq_contents_column_name",
-            required=False,
-            type=str,
-            dest="contents_column_name",
-            default="contents",
-            help="Name of the column holds the data to process",
-        )
-        parser.add_argument(
-            "--cq_language_column_name",
-            required=False,
-            type=str,
-            dest="language_column_name",
-            default="language",
-            help="Name of the column holds the programming language details.",
-        )
-        parser.add_argument(
-            "--cq_tokenizer",
-            required=False,
-            type=str,
-            dest="tokenizer",
-            default="codeparrot/codeparrot",
-            help="Name or path to the tokenizer.",
-        )
-        parser.add_argument(
-            "--cq_hf_token",
-            required=False,
-            type=str,
-            dest="hf_token",
-            default="",
-            help="Huggingface auth token to download and use the tokenizer.",
-        )
-
-    def apply_input_params(self, args: Namespace) -> bool:
-        dargs = vars(args)
-
-        self.params = {
-            CODE_QUALITY_PARAMS: {
-                "contents_column_name": dargs.get("contents_column_name"),
-                "language_column_name": dargs.get("language_column_name"),
-                "tokenizer": dargs.get("tokenizer"),
-                "hf_token": dargs.get("hf_token"),
-            }
-        }
-
-        return True

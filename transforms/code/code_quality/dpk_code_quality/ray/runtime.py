@@ -12,7 +12,7 @@
 
 import os
 
-from dpk_code_quality.transform import CodeQualityTransformConfiguration
+from dpk_code_quality.configuration import CodeQualityConfiguration
 from data_processing_ray.runtime.ray import RayTransformLauncher
 from data_processing_ray.runtime.ray import (
     RayTransformRuntimeConfiguration,
@@ -21,7 +21,7 @@ from data_processing_ray.runtime.ray import (
 
 class CodeQualityRayTransformConfiguration(RayTransformRuntimeConfiguration):
     def __init__(self):
-        super().__init__(transform_config=CodeQualityTransformConfiguration())
+        super().__init__(transform_config=CodeQualityConfiguration())
 
 
 if __name__ == "__main__":
@@ -31,6 +31,6 @@ if __name__ == "__main__":
 
 class CodeQuality(Transform):
     def __init__(self, **kwargs):
-        super().__init__(CodeQualityTransformConfiguration(), **kwargs)
+        super().__init__(CodeQualityConfiguration(), **kwargs)
         
 

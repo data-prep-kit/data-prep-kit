@@ -42,9 +42,10 @@ ENV PYTHONPATH /home/dpk
 # Put these at the end since they seem to upset the docker cache.
 ARG BUILD_DATE
 ARG GIT_COMMIT
-ARG TRANSFORM_NAME
-ENV GIT_URL github.com/data-prep-kit/data-prep-kit
-ENV TRANSFORM_PATH transforms/language/$(TRANSFORM_NAME}
+ARG TRANSFORM_PATH
+ARG GIT_URL
+ENV GIT_URL $GIT_URL
+ENV TRANSFORM_PATH $TRANSFORM_PATH
 ENV BUILD_DATE $BUILD_DATE
 ENV GIT_COMMIT $GIT_COMMIT
 LABEL build-date=$BUILD_DATE

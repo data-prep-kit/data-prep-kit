@@ -27,6 +27,8 @@ RUN  pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}[ray]
 
 COPY --chmod=775 --chown=ray:root dpk_${TRANSFORM_NAME}/ dpk_${TRANSFORM_NAME}/
 
+COPY models models
+
 ARG EXTRA_INDEX_URL
 COPY --chown=ray:root requirements*.txt .
 RUN pip install --no-cache-dir -r requirements.txt

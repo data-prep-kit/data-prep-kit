@@ -228,6 +228,8 @@ __check_defined = \
 		--build-arg TRANSFORM_NAME=$(TRANSFORM_NAME)  		\
 		--build-arg DPK_WHEEL_FILE_NAME=$(DPK_WHEEL_FILE_NAME) \
 		--build-arg BUILD_DATE=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')  	\
+		--build-arg TRANSFORM_PATH=$(shell git rev-parse --show-prefix) \
+		--build-arg GIT_URL=$(shell git config --get remote.origin.url) \
 		--build-arg GIT_COMMIT=$(shell git log -1 --format=%h) . 
 	$(DOCKER) tag $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_VERSION) $(DOCKER_REGISTRY_ENDPOINT)/$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_VERSION)
 
@@ -445,7 +447,11 @@ endif
 .defaults.test-src:: venv
 	@# Help: Run pytest on the test directory inside the venv 
 	source venv/bin/activate;       \
-	export PYTHONPATH=../src:../: ;  \
+	export PYTHONPATH=../src:../: ; \
+	export BUILD_DATE=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ') ; \
+	export TRANSFORM_PATH=$(shell git rev-parse --show-prefix) ; \
+	export GIT_URL=$(shell git config --get remote.origin.url) ; \
+	export GIT_COMMIT=$(shell git log -1 --format=%h) ; \
 	cd test; $(PYTEST) .
 
 # This is small convenience and the image itself must already be created.

@@ -1,10 +1,10 @@
 ## Multimedia/Multimodal Transforms
 There is an initial set of 3 transforms: `Faces`, `People` and `NSFW`. Each one is using a model that should be downloaded to the local machine as a pre-requisite. 
-Asssuming that the transforms would be run in a virtual environment after cloning the repo, and that you are in the `transforms/multimodal` directory, running the following command:
+Asssuming that the transforms would be run in a virtual environment after cloning the repo, and that you are in the `transforms/multimodal` directory, running the command:
 ```shell
 make models
 ```
-will create the `models` subdirectory and downloads the 3 models; `yolov8m_200e.pt`,	`yolov8m-seg.pt`, and `	yolov8n-face.pt` into this subdirectory. 
+will create the `models` subdirectory and will download the 3 models; `yolov8m_200e.pt`, `yolov8m-seg.pt`, and `	yolov8n-face.pt` into this subdirectory. 
 
 ## Faces 
 
@@ -17,7 +17,7 @@ The table below provides the parameters that users can adjust to control the beh
 
 | Parameter    | Default | Description                                                                                                           |
 |--------------|------|-----------------------------------------------------------------------------------------------------------------------|
-| `model_path`      |`models/yolov8n-face.pt`    | The model to use for detecting faces. It assumes that the model was downloaded to a local folder. |
+| `model_path`      |`models/yolov8n-face.pt`    | The model to use for detecting faces. |
                                                             
 
 ### output
@@ -29,7 +29,7 @@ The table below provides the parameters that users can adjust to control the beh
 
 ## People
 
-This transform identifies number of faces in the image and enables the blurring of faces.
+This transform identifies the number of faces in the image and enables the blurring of faces.
 
 
 ### User-Configurable Parameters
@@ -41,7 +41,7 @@ The table below provides the parameters that users can adjust to control the beh
 | `mode`       | `blur`                          | Controls whether it is counting people or faces or detects and blurs faces. Allowed values are `count` and `blur`. |
 | `threshold`  | `0.6`                           | The minimum score required to declare a face or people detection.                                                  |
 | `batch_size` | `50`                            | The size of the batch of images to provide to the model.                                                           |
-| `model_path` | `models/"models/yolov8m-seg.pt` | The model to use for detecting faces or people.                                                                    |
+| `model_path` | `models/yolov8m-200e.pt` if `mode` is `blur` and `models/yolov8m-seg.pt` if `mode` is `count` | The models to use for detecting faces and blurring them or counting faces.                                                                  |
 
 ### output
 

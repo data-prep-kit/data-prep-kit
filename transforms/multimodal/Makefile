@@ -22,8 +22,8 @@ models: models/yolov8m_200e.pt models/yolov8m-seg.pt models/yolov8n-face.pt
 models/yolov8n-face.pt:
 	@echo Downloading $@
 	mkdir -p models
-	curl -L --output models/yolov8n-face.pt https://github.com/touma-I/large-files/raw/refs/heads/main/models/yolov8n-face.pt
-#	curl -L --output models/yolov8n-face.pt https://huggingface.co/arnabdhar/YOLOv8-Face-Detection/resolve/main/model.pt
+#	curl -L --output models/yolov8n-face.pt https://github.com/touma-I/large-files/raw/refs/heads/main/models/yolov8n-face.pt
+	curl -L --output models/yolov8n-face.pt https://github.com/lindevs/yolov8-face/releases/latest/download/yolov8n-face-lindevs.pt
 
 models/yolov8m_200e.pt:
 	@echo Downloading $@
@@ -34,8 +34,8 @@ models/yolov8m_200e.pt:
 models/yolov8m-seg.pt:
 	@echo Downloading $@
 	mkdir -p models
-	curl -L --output models/yolov8m-seg.pt https://github.com/touma-I/large-files/raw/refs/heads/main/models/yolov8m-seg.pt
-
+#	curl -L --output models/yolov8m-seg.pt https://github.com/touma-I/large-files/raw/refs/heads/main/models/yolov8m-seg.pt
+	curl -L --output models/yolov8m-seg.pt https://huggingface.co/thejagstudio/textilev1Plain/resolve/69cc72e30cb576392ce6113ef41aa3779d656dfc/yolov8m-seg.pt
 
 venv:: models
 

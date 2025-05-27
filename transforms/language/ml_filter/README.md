@@ -10,7 +10,7 @@ testing and IDE set up.
 - Cezar Pendus (cpendus@us.ibm.com)
 
 ## Summary 
-This transform filters the data using conditions specified in a corresponding yaml file. Here is a sample [yaml file](./test-data/input/cleansing-config.yaml).
+This transform filters the data using conditions specified in a corresponding yaml file. Here is a sample [yaml file](./cleansing-config.yaml).
 
 The input table must contain all the values specified in the filtering conditions, as well as a language identifier (`lang`).
 The language identifier column name can be set with --filter_lang_column_name.

@@ -10,3 +10,5 @@ python-dotenv
 pypdf
 replicate
 black==24.10.0
+#Transitive dependency ibm-cos-sdk-core 2.14.0 is downgrading package to 2.32.2, restore it to 2.32.3
+requests==2.32.3

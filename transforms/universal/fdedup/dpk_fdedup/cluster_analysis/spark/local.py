@@ -28,14 +28,14 @@ local_conf = {
     "input_folder": input_folder,
     "output_folder": output_folder,
 }
-code_location = {"github": "github", "commit_hash": "12345", "path": "path"}
+# code_location = {"github": "github", "commit_hash": "12345", "path": "path"}
 params = {
     # Data access. Only required parameters are specified
     "data_local_config": ParamsUtils.convert_to_ast(local_conf),
     # execution info
     "runtime_pipeline_id": "pipeline_id",
     "runtime_job_id": "job_id",
-    "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
+    # "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
     "cluster_num_bands": 14,
     "cluster_num_segments": 2,
     "cluster_jaccard_similarity_threshold": 0.7,

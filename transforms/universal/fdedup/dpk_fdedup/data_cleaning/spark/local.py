@@ -40,7 +40,7 @@ duplicate_location = os.path.abspath(
         "docs_to_remove_consolidated.parquet",
     )
 )
-code_location = {"github": "github", "commit_hash": "12345", "path": "path"}
+# code_location = {"github": "github", "commit_hash": "12345", "path": "path"}
 params = {
     # Data access. Only required parameters are specified
     "data_local_config": ParamsUtils.convert_to_ast(local_conf),
@@ -49,7 +49,7 @@ params = {
     # execution info
     "runtime_pipeline_id": "pipeline_id",
     "runtime_job_id": "job_id",
-    "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
+    # "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
 }
 
 if __name__ == "__main__":

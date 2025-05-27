@@ -30,7 +30,7 @@ local_conf = {
     "input_folder": input_folder,
     "output_folder": output_folder,
 }
-code_location = {"github": "github", "commit_hash": "12345", "path": "path"}
+# code_location = {"github": "github", "commit_hash": "12345", "path": "path"}
 filter_criteria = [
     "docq_total_words > 100 AND docq_total_words < 200",
     "ibmkenlm_docq_perplex_score < 230",
@@ -49,7 +49,7 @@ params = {
     # execution info
     "runtime_pipeline_id": "pipeline_id",
     "runtime_job_id": "job_id",
-    "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
+    # "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
 }
 if __name__ == "__main__":
     # Set the simulated command line args

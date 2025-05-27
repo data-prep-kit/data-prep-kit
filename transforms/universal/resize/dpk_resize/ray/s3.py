@@ -33,7 +33,7 @@ s3_conf = {
     "output_folder": "test/resize/output",
 }
 worker_options = {"num_cpus": 0.8}
-code_location = {"github": "github", "commit_hash": "12345", "path": "path"}
+# code_location = {"github": "github", "commit_hash": "12345", "path": "path"}
 params = {
     # where to run
     "run_locally": True,
@@ -46,7 +46,7 @@ params = {
     "runtime_pipeline_id": "pipeline_id",
     "runtime_job_id": "job_id",
     "runtime_creation_delay": 0,
-    "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
+    # "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
     # resize config
     "resize_max_mbytes_per_table": 1,
     #    "resize_max_rows_per_table": 150

@@ -47,6 +47,7 @@ def compute_exec_params_func(
     data_num_samples: int,
     runtime_pipeline_id: str,
     runtime_job_id: str,
+    runtime_code_location: dict,
     noop_sleep_sec: int,
 ) -> dict:
     from runtime_utils import KFPUtils
@@ -59,6 +60,7 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
+        "runtime_code_location": str(runtime_code_location),
         "noop_sleep_sec": noop_sleep_sec,
     }
 
@@ -104,6 +106,7 @@ def noop(
     # orchestrator
     runtime_actor_options: dict = {'num_cpus': 0.8},
     runtime_pipeline_id: str = "pipeline_id",
+    runtime_code_location: dict = {'github': 'github', 'commit_hash': '12345', 'path': 'path'},
     # noop parameters
     noop_sleep_sec: int = 10,
     # additional parameters
@@ -142,6 +145,7 @@ def noop(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
+    :param runtime_code_location - code location
     :param noop_sleep_sec - noop sleep time
     :return: None
     """
@@ -169,6 +173,7 @@ def noop(
             data_num_samples=data_num_samples,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
+            runtime_code_location=runtime_code_location,
             noop_sleep_sec=noop_sleep_sec,
         )
         ComponentUtils.add_settings_to_component(compute_exec_params, ONE_HOUR_SEC * 2)

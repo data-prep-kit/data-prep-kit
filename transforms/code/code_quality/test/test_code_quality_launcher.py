@@ -18,7 +18,6 @@ from data_processing.test_support.launch.transform_test import (
 )
 from data_processing_ray.runtime.ray import RayTransformLauncher
 
-
 class TestCodeQualityTransform(AbstractTransformLauncherTest):
     """
     Extends the super-class to define the test data for the tests defined there.
@@ -31,9 +30,12 @@ class TestCodeQualityTransform(AbstractTransformLauncherTest):
             "cq_contents_column_name": "contents",
             "cq_language_column_name": "language",
             "cq_tokenizer": "codeparrot/codeparrot",
+            "cq_calculate_complexity": True,
+            "cq_has_ast": True,
+            "cq_sqlglot": True,
         }
         basedir = "../test-data"
         basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))
         launcher = RayTransformLauncher(CodeQualityRayTransformConfiguration())
-        fixtures = [(launcher, cli, basedir + "/input_base", basedir + "/expected_base")]
+        fixtures = [(launcher, cli, basedir + "/input", basedir + "/expected")]
         return fixtures

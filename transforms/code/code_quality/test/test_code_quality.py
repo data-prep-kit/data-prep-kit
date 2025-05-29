@@ -30,6 +30,6 @@ class TestCodeQualityTransform(AbstractTransformLauncherTest):
         }
         launcher = PythonTransformLauncher(CodeQualityRuntime())
         fixtures.append((launcher, transform_config, 
-                         basedir + "/input", 
-                         basedir + "/expected"))
+                         basedir + "/input_base", 
+                         basedir + "/expected_base"))
         return fixtures

@@ -34,6 +34,11 @@ This module adds the following fields into the output file:
        <li>has_few_assignments</li>
        <li>is_xml</li>
        <li>is_html</li>
+       <li>top_word_percent</li>
+       <li>top_two_words_percent</li>
+       <li>alpha_percent</li>
+       <li>max_encoded_data_length</li>
+       <li>encoded_data_percent</li>
 </ul>
 
 It uses a tokenizer to collect metrics specific to token ratio.  It is designed to download the tokenizer from the [Huggingface](https://huggingface.co/) if the input tokenizer is not found in the local cache. By default, it uses [codeparrot/codeparrot](https://huggingface.co/codeparrot/codeparrot) tokenizer.

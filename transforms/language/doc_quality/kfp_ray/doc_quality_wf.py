@@ -48,7 +48,6 @@ def compute_exec_params_func(
     data_num_samples: int,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     docq_text_lang: str,
     docq_doc_content_column: str,
     docq_bad_word_filepath: str,
@@ -63,7 +62,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "docq_text_lang": docq_text_lang,
         "docq_doc_content_column": docq_doc_content_column,
         "docq_bad_word_filepath": docq_bad_word_filepath,
@@ -125,7 +123,6 @@ def doc_quality(
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # doc_quality parameters
     docq_text_lang: str = "en",
     docq_doc_content_column: str = "contents",
@@ -166,7 +163,6 @@ def doc_quality(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :param docq_text_lang - language used in the text content
     :param docq_doc_content_column - column contains document content
     :param docq_bad_word_filepath - a path to bad word file
@@ -199,7 +195,6 @@ def doc_quality(
             data_num_samples=data_num_samples,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             docq_text_lang=docq_text_lang,
             docq_doc_content_column=docq_doc_content_column,
             docq_bad_word_filepath=docq_bad_word_filepath,

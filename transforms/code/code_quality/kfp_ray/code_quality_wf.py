@@ -60,7 +60,6 @@ def compute_exec_params_func(
     data_num_samples: int,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     cq_contents_column_name: str,
     cq_language_column_name: str,
     cq_tokenizer: str,
@@ -75,7 +74,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "cq_contents_column_name": cq_contents_column_name,
         "cq_language_column_name": cq_language_column_name,
         "cq_tokenizer": cq_tokenizer,
@@ -134,7 +132,6 @@ def code_quality(
     # orchestrator
     runtime_actor_options: dict = {'num_cpus': 0.8},
     runtime_pipeline_id: str = "runtime_pipeline_id",
-    runtime_code_location: dict = {'github': 'github', 'commit_hash': '12345', 'path': 'path'},
     # code quality parameters
     cq_contents_column_name: str = "contents",
     cq_language_column_name: str = "language",
@@ -204,7 +201,6 @@ def code_quality(
             data_num_samples=data_num_samples,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             cq_contents_column_name=cq_contents_column_name,
             cq_language_column_name=cq_language_column_name,
             cq_tokenizer=cq_tokenizer,

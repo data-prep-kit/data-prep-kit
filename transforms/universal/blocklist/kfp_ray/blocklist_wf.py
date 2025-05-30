@@ -50,7 +50,6 @@ def compute_exec_params_func(
     data_files_to_use: str,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     blocklist_blocked_domain_list_path: str,
     blocklist_annotation_column_name: str,
     blocklist_source_url_column_name: str,
@@ -68,7 +67,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "blocklist_blocked_domain_list_path": blocklist_blocked_domain_list_path,
         "blocklist_annotation_column_name": blocklist_annotation_column_name,
         "blocklist_source_url_column_name": blocklist_source_url_column_name,
@@ -127,7 +125,6 @@ def blocklist(
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # blocklist parameters
     blocklist_blocked_domain_list_path: str = "test/blocklist/domains/arjel",
     blocklist_annotation_column_name: str = "blocklisted",
@@ -165,7 +162,6 @@ def blocklist(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :param blocked_domain_list_path - S3 url to blocked domain lists
     :param annotation_column_name - annotation column
     :param source_url_column_name - source document url column
@@ -200,7 +196,6 @@ def blocklist(
             data_files_to_use=data_files_to_use,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             blocklist_blocked_domain_list_path=blocklist_blocked_domain_list_path,
             blocklist_annotation_column_name=blocklist_annotation_column_name,
             blocklist_source_url_column_name=blocklist_source_url_column_name,

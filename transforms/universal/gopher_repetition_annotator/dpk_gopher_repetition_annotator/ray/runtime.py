@@ -43,3 +43,7 @@ class GopherRepetitionAnnotator:
         launcher = RayTransformLauncher(GopherRepetitionAnnotatorRayTransformConfiguration())
         return_code = launcher.launch()
         return return_code
+
+if __name__ == "__main__":
+    launcher = RayTransformLauncher(GopherRepetitionAnnotatorRayTransformConfiguration())
+    launcher.launch()

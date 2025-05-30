@@ -48,7 +48,6 @@ def compute_exec_params_func(
     data_files_to_use: str,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     gopher_repetition_contents_column_name: str,
     gopher_repetition_dup_line_frac_cname: str,
     gopher_repetition_dup_para_frac_cname: str,
@@ -78,7 +77,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "gopher_repetition_contents_column_name": gopher_repetition_contents_column_name,
         "gopher_repetition_dup_line_frac_cname": gopher_repetition_dup_line_frac_cname,
         "gopher_repetition_dup_para_frac_cname": gopher_repetition_dup_para_frac_cname,
@@ -148,7 +146,6 @@ def gopher_repetition_annotator(
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # gopher_repetition_annotator parameters
     gopher_repetition_contents_column_name: str = "contents",
     gopher_repetition_dup_line_frac_cname: str = "dup_line_frac",
@@ -200,7 +197,6 @@ def gopher_repetition_annotator(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :return: None
     """
     # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
@@ -232,7 +228,6 @@ def gopher_repetition_annotator(
             data_files_to_use=data_files_to_use,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             gopher_repetition_contents_column_name=gopher_repetition_contents_column_name,
             gopher_repetition_dup_line_frac_cname=gopher_repetition_dup_line_frac_cname,
             gopher_repetition_dup_para_frac_cname=gopher_repetition_dup_para_frac_cname,

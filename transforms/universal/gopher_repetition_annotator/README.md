@@ -26,3 +26,22 @@ This annotator follows the [Datatrove reference implementation](https://github.c
     duplicate 9-gram character fraction     0.11
     duplicate 10-gram character fraction    0.10
 ```
+
+## Configuration and command line Options
+
+configuration for values are as follows:
+
+* _gra_contents_column_name_ - name of the column holding the document text
+* _gra_dup_line_frac_cname_ -  name of the output table column storing the duplicate line fraction
+* _gra_dup_para_frac_cname_ - name of the output table column storing the duplicate paragraph fraction"""
+* _gra_dup_line_char_frac_cname_ - name of the output table column storing the duplicate line character fraction
+* _gra_dup_para_char_frac_cname_ - name of the output table column storing the duplicate paragraph character fraction
+* _gra_top_2_grams_cname_ - name of the output table column storing the fraction of characters in the most frequent 2-grams
+* _gra_top_3_grams_cname_ - name of the output table column storing the fraction of characters in the most frequent 3-grams
+* _gra_top_4_grams_cname_ - name of the output table column storing the fraction of characters in the most frequent 4-grams
+* _gra_dup_5_grams_cname_ - name of the output table column storing the fraction of characters contained within all duplicate 5-grams
+* _gra_dup_6_grams_cname_ - name of the output table column storing the fraction of characters contained within all duplicate 6-grams
+* _gra_dup_7_grams_cname_ - name of the output table column storing the fraction of characters contained within all duplicate 7-grams
+* _gra_dup_8_grams_cname_ - name of the output table column storing the fraction of characters contained within all duplicate 8-grams
+* _gra_dup_9_grams_cname_ - name of the output table column storing the fraction of characters contained within all duplicate 9-grams
+* _gra_dup_10_grams_cname_ - name of the output table column storing the fraction of characters contained within all duplicate 10-grams

@@ -21,7 +21,7 @@ from data_processing.transform import AbstractTableTransform, TransformConfigura
 from data_processing.utils import CLIArgumentProvider, TransformUtils, get_logger
 from typing import Any
 
-short_name = "agr"
+short_name = "gra"
 cli_prefix = short_name + "_"
 
 # configuration keys

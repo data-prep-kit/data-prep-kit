@@ -22,15 +22,16 @@ from workflow_support.compile_utils import (
     ONE_WEEK_SEC,
     ComponentUtils,
 )
-
-
-task_image = "quay.io/dataprep1/data-prep-kit/annotator-fineweb-quality-ray:latest"
-
 # The secret name containing the s3 credentials.
 S3_SECRET = "s3-secret"  # pragma: allowlist secret
 
 # the name of the job script
-EXEC_SCRIPT_NAME: str = "-m dpk_fineweb_quality_annotator.ray.transform"
+EXEC_SCRIPT_NAME: str = "-m dpk_fineweb_quality_annotator.ray.runtime"
+PREFIX: str = ""
+
+
+task_image = "quay.io/dataprep1/data-prep-kit/fineweb-quality-annotator-ray:latest"
+
 # components
 base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing_v2:latest"
 
@@ -51,10 +52,12 @@ def compute_exec_params_func(
     data_files_to_use: str,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
-    blocklist_blocked_domain_list_path: str,
-    blocklist_annotation_column_name: str,
-    blocklist_source_url_column_name: str,
+    fineweb_quality_contents_column_name: str,
+    fineweb_quality_clean_contents_column_name: str,
+    fineweb_quality_dup_line_char_frac_cname: str,
+    fineweb_quality_new_line_ratio_cname: str,
+    fineweb_quality_short_line_frac_cname: str,
+    fineweb_quality_short_line_length: int,
 ) -> dict:
     from runtime_utils import KFPUtils
 
@@ -69,10 +72,12 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
-        "blocklist_blocked_domain_list_path": blocklist_blocked_domain_list_path,
-        "blocklist_annotation_column_name": blocklist_annotation_column_name,
-        "blocklist_source_url_column_name": blocklist_source_url_column_name,
+        "fineweb_quality_contents_column_name": fineweb_quality_contents_column_name,
+        "fineweb_quality_clean_contents_column_name": fineweb_quality_clean_contents_column_name,
+        "fineweb_quality_dup_line_char_frac_cname": fineweb_quality_dup_line_char_frac_cname,
+        "fineweb_quality_new_line_ratio_cname": fineweb_quality_new_line_ratio_cname,
+        "fineweb_quality_short_line_frac_cname": fineweb_quality_short_line_frac_cname,
+        "fineweb_quality_short_line_length": fineweb_quality_short_line_length,
     }
 
 
@@ -94,16 +99,16 @@ execute_ray_jobs_op = comp.load_component_from_file(component_spec_path + "execu
 # clean up Ray
 cleanup_ray_op = comp.load_component_from_file(component_spec_path + "deleteRayClusterComponent.yaml")
 # Task name is part of the pipeline name, the ray cluster name and the job name in DMF.
-TASK_NAME: str = "FineWebQualityAnnotator"
+TASK_NAME: str = "fineweb_quality_annotator"
 
 
 @dsl.pipeline(
     name=TASK_NAME + "-ray-pipeline",
-    description="Pipeline for annotator-fineweb-quality",
+    description="Pipeline for fineweb_quality_annotator Task",
 )
 def fineweb_quality_annotator(
     # Ray cluster
-    ray_name: str = "annotator-fineweb-quality-kfp-ray",  # name of Ray cluster
+    ray_name: str = "fineweb_quality_annotator-kfp-ray",  # name of Ray cluster
     ray_run_id_KFPv2: str = "",  # Ray cluster unique ID used only in KFP v2
     # Add image_pull_secret and image_pull_policy to ray workers if needed
     ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
@@ -119,7 +124,7 @@ def fineweb_quality_annotator(
     # data access
     data_s3_config: str = "{'input_folder': 'test/fineweb_quality_annotator/input/', 'output_folder': 'test/fineweb_quality_annotator/output/'}",
     data_s3_access_secret: str = S3_SECRET,
-    data_max_files: int = 2,
+    data_max_files: int = -1,
     data_num_samples: int = -1,
     data_checkpointing: bool = False,
     data_data_sets: str = "",
@@ -127,9 +132,13 @@ def fineweb_quality_annotator(
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # fineweb_quality_annotator parameters
     fineweb_quality_contents_column_name: str = "text",
+    fineweb_quality_clean_contents_column_name: str = "frac_line_punct",
+    fineweb_quality_dup_line_char_frac_cname: str = "dup_line_char_frac",
+    fineweb_quality_new_line_ratio_cname: str = "new_line_ratio",
+    fineweb_quality_short_line_frac_cname: str = "short_line_frac",
+    fineweb_quality_short_line_length: int = 30,
     # additional parameters
     additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
 ):
@@ -163,10 +172,6 @@ def fineweb_quality_annotator(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
-    :param blocked_domain_list_path - S3 url to blocked domain lists
-    :param annotation_column_name - annotation column
-    :param source_url_column_name - source document url column
     :return: None
     """
     # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
@@ -200,9 +205,14 @@ def fineweb_quality_annotator(
             data_files_to_use=data_files_to_use,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             fineweb_quality_contents_column_name=fineweb_quality_contents_column_name,
+            fineweb_quality_clean_contents_column_name=fineweb_quality_clean_contents_column_name,
+            fineweb_quality_dup_line_char_frac_cname=fineweb_quality_dup_line_char_frac_cname,
+            fineweb_quality_new_line_ratio_cname=fineweb_quality_new_line_ratio_cname,
+            fineweb_quality_short_line_frac_cname=fineweb_quality_short_line_frac_cname,
+            fineweb_quality_short_line_length=fineweb_quality_short_line_length,
         )
+
         ComponentUtils.add_settings_to_component(compute_exec_params, ONE_HOUR_SEC * 2)
         # start Ray cluster
         ray_cluster = create_ray_op(
@@ -215,6 +225,7 @@ def fineweb_quality_annotator(
         )
         ComponentUtils.add_settings_to_component(ray_cluster, ONE_HOUR_SEC * 2)
         ray_cluster.after(compute_exec_params)
+
         # Execute job
         execute_job = execute_ray_jobs_op(
             ray_name=ray_name,
@@ -231,10 +242,11 @@ def fineweb_quality_annotator(
 
             # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
             # As a workaround, the secret name is hard coded.
-            env2key = ComponentUtils.set_secret_key_to_env(prefix="jjj")
+            env2key = ComponentUtils.set_secret_key_to_env()
             kubernetes.use_secret_as_env(task=execute_job, secret_name=S3_SECRET, secret_key_to_env=env2key)
         else:
             ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
+        
         execute_job.after(ray_cluster)
 
 

@@ -18,7 +18,7 @@ from typing import Any
 
 import pyarrow as pa
 import pyarrow.parquet as pq
-from data_processing.data_access import DataAccess
+from data_access import DataAccess
 from data_processing.utils import get_logger
 
 
@@ -37,6 +37,7 @@ class DataAccessLocal(DataAccess):
         checkpoint: bool = False,
         m_files: int = -1,
         n_samples: int = -1,
+        batch_size: int = -1,
         files_to_use: list[str] = [".parquet"],
         files_to_checkpoint: list[str] = [".parquet"],
     ):
@@ -50,7 +51,7 @@ class DataAccessLocal(DataAccess):
         :param files_to_use: files extensions of files to include
         :param files_to_checkpoint: files extensions of files to use for checkpointing
         """
-        super().__init__(d_sets=d_sets, checkpoint=checkpoint, m_files=m_files, n_samples=n_samples,
+        super().__init__(d_sets=d_sets, checkpoint=checkpoint, m_files=m_files, n_samples=n_samples, batch_size=batch_size,
                          files_to_use=files_to_use, files_to_checkpoint=files_to_checkpoint)
         if local_config is None:
             self.input_folder = None
@@ -65,6 +66,7 @@ class DataAccessLocal(DataAccess):
         logger.debug(f"Local checkpoint: {self.checkpoint}")
         logger.debug(f"Local m_files: {self.m_files}")
         logger.debug(f"Local n_samples: {self.n_samples}")
+        logger.debug(f"Local batch_size: {self.batch_size}")
         logger.debug(f"Local files_to_use: {self.files_to_use}")
         logger.debug(f"Local files_to_checkpoint: {self.files_to_checkpoint}")
 

@@ -11,7 +11,6 @@
 ################################################################################
 
 import random
-import os
 from typing import Any
 import pyarrow as pa
 from data_processing.utils import KB, MB, GB, TransformUtils, get_logger

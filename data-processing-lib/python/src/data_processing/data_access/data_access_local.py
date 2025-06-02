@@ -18,7 +18,7 @@ from typing import Any
 
 import pyarrow as pa
 import pyarrow.parquet as pq
-from data_access import DataAccess
+from data_processing.data_access import DataAccess
 from data_processing.utils import get_logger
 
 

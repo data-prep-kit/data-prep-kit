@@ -15,8 +15,9 @@ import json
 from typing import Any
 
 import pyarrow
-from data_access import DataAccess
-from arrow_s3 import ArrowS3
+#from data_access import DataAccess
+#from arrow_s3 import ArrowS3
+from data_processing.data_access import ArrowS3, DataAccess
 from data_processing.utils import TransformUtils
 
 

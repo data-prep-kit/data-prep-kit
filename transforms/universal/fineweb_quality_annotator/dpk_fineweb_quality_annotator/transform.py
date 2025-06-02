@@ -90,7 +90,7 @@ afwq_data_access_key = "data_access"
 """ Key holds the data access for reading domain files.  If not present, then block_data_factory_key is expected"""
 
 
-class AnnotatorFineWebQualityTransform(AbstractTableTransform):
+class FineWebQualityAnnotatorTransform(AbstractTableTransform):
     """This annotator applies heuristic rules described in page 7 of the
     [FineWeb Datasets paper](https://arxiv.org/pdf/2406.17557).
     It follows the [Datatrove reference implementation]
@@ -197,7 +197,7 @@ class AnnotatorFineWebQualityTransform(AbstractTableTransform):
         return [res_table], metadata
 
 
-class AnnotatorFineWebQualityConfiguration(TransformConfiguration):
+class FineWebQualityAnnotatorConfiguration(TransformConfiguration):
     """
     Provides support for configuring and using the associated Transform class include
     configuration with CLI args and combining of metadata.
@@ -206,7 +206,7 @@ class AnnotatorFineWebQualityConfiguration(TransformConfiguration):
     def __init__(self):
         super().__init__(
             name=short_name,
-            transform_class=AnnotatorFineWebQualityTransform,
+            transform_class=FineWebQualityAnnotatorTransform,
             remove_from_metadata=[afwq_data_access_key],
         )
         self.daf = None
@@ -283,6 +283,6 @@ class AnnotatorFineWebQualityConfiguration(TransformConfiguration):
 
 
 if __name__ == "__main__":
-    launcher = PythonTransformLauncher(AnnotatorFineWebQualityConfiguration())
+    launcher = PythonTransformLauncher(FineWebQualityAnnotatorConfiguration())
     logger.info("Launching FineWeb Quality Annotator transform")
     launcher.launch()

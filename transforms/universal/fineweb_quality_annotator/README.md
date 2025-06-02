@@ -1,4 +1,4 @@
-# Fineweb Quality Annotator
+# FineWeb Quality Annotator
 
 Please see the set of [transform project conventions](../../../README.md) for details on general project conventions transform configuration, testing and IDE set up.
 

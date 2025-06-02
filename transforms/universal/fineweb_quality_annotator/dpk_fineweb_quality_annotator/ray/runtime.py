@@ -12,20 +12,23 @@
 
 import sys
 
-from data_processing.runtime.pure_python import (
-    PythonTransformLauncher,
-    PythonTransformRuntimeConfiguration,
+from data_processing.utils import ParamsUtils, get_logger
+from data_processing_ray.runtime.ray import RayTransformLauncher
+from data_processing_ray.runtime.ray.runtime_configuration import (
+    RayTransformRuntimeConfiguration,
 )
-from data_processing.utils import ParamsUtils
-from dpk_annotator_fineweb_quality.transform import AnnotatorFineWebQualityConfiguration
+from dpk_fineweb_quality_annotator.transform import FineWebQualityAnnotatorConfiguration
 
 
-class AnnotatorFinewebQualityPythonConfiguration(PythonTransformRuntimeConfiguration):
+logger = get_logger(__name__)
+
+
+class FineWebQualityAnnotatorRayConfiguration(RayTransformRuntimeConfiguration):
     def __init__(self):
-        super().__init__(transform_config=AnnotatorFineWebQualityConfiguration())
+        super().__init__(transform_config=FineWebQualityAnnotatorConfiguration())
 
 
-class AnnotatorFinewebQuality:
+class FineWebQualityAnnotator:
     def __init__(self, **kwargs):
         self.params = {}
         for key in kwargs:
@@ -49,13 +52,13 @@ class AnnotatorFinewebQuality:
     def transform(self):
         sys.argv = ParamsUtils.dict_to_req(d=(self.params))
         # create launcher
-        launcher = PythonTransformLauncher(AnnotatorFinewebQualityPythonConfiguration())
+        launcher = RayTransformLauncher(FineWebQualityAnnotatorRayConfiguration())
         # launch
         return_code = launcher.launch()
         return return_code
 
 
 if __name__ == "__main__":
-    launcher = PythonTransformLauncher(AnnotatorFinewebQualityPythonConfiguration())
-    logger.info("Launching AnnotatorFinewebQuality Python based transform")
+    launcher = RayTransformLauncher(FineWebQualityAnnotatorRayConfiguration())
+    logger.info("Launching FineWebQualityAnnotator Ray based transform")
     launcher.launch()

@@ -30,7 +30,7 @@ task_image = "quay.io/dataprep1/data-prep-kit/annotator-fineweb-quality-ray:late
 S3_SECRET = "s3-secret"  # pragma: allowlist secret
 
 # the name of the job script
-EXEC_SCRIPT_NAME: str = "-m dpk_annotator_fineweb_quality.ray.transform"
+EXEC_SCRIPT_NAME: str = "-m dpk_fineweb_quality_annotator.ray.transform"
 # components
 base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing_v2:latest"
 
@@ -94,14 +94,14 @@ execute_ray_jobs_op = comp.load_component_from_file(component_spec_path + "execu
 # clean up Ray
 cleanup_ray_op = comp.load_component_from_file(component_spec_path + "deleteRayClusterComponent.yaml")
 # Task name is part of the pipeline name, the ray cluster name and the job name in DMF.
-TASK_NAME: str = "AnnotatorFinewebQuality"
+TASK_NAME: str = "FineWebQualityAnnotator"
 
 
 @dsl.pipeline(
     name=TASK_NAME + "-ray-pipeline",
     description="Pipeline for annotator-fineweb-quality",
 )
-def annotator_fineweb_quality(
+def fineweb_quality_annotator(
     # Ray cluster
     ray_name: str = "annotator-fineweb-quality-kfp-ray",  # name of Ray cluster
     ray_run_id_KFPv2: str = "",  # Ray cluster unique ID used only in KFP v2
@@ -117,7 +117,7 @@ def annotator_fineweb_quality(
     },
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
-    data_s3_config: str = "{'input_folder': 'test/annotator_fineweb_quality/input/', 'output_folder': 'test/annotator_fineweb_quality/output/'}",
+    data_s3_config: str = "{'input_folder': 'test/fineweb_quality_annotator/input/', 'output_folder': 'test/fineweb_quality_annotator/output/'}",
     data_s3_access_secret: str = S3_SECRET,
     data_max_files: int = 2,
     data_num_samples: int = -1,
@@ -128,7 +128,7 @@ def annotator_fineweb_quality(
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
     runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
-    # annotator_fineweb_quality parameters
+    # fineweb_quality_annotator parameters
     fineweb_quality_contents_column_name: str = "text",
     # additional parameters
     additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
@@ -240,4 +240,4 @@ def annotator_fineweb_quality(
 
 if __name__ == "__main__":
     # Compiling the pipeline
-    compiler.Compiler().compile(annotator_fineweb_quality, __file__.replace(".py", ".yaml"))
+    compiler.Compiler().compile(fineweb_quality_annotator, __file__.replace(".py", ".yaml"))

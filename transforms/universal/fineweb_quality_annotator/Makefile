@@ -13,7 +13,13 @@ TRANSFORM_NAME=$(shell basename `pwd`)
 
 ################################################################################
 
-TRANSFORM_PYTHON_SRC="-m dpk_$(TRANSFORM_NAME).transform_python"
-TRANSFORM_RAY_SRC="-m dpk_$(TRANSFORM_NAME).ray.transform"
+TRANSFORM_PYTHON_SRC="-m dpk_$(TRANSFORM_NAME).runtime"
+TRANSFORM_RAY_SRC="-m dpk_$(TRANSFORM_NAME).ray.runtime"
 
 
+run-python-cli-sample:
+	make venv
+	source venv/bin/activate && \
+	rm -rf output && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
+		--data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"

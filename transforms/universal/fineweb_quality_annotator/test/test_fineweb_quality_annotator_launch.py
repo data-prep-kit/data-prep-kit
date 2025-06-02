@@ -17,7 +17,7 @@ from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
-from dpk_annotator_fineweb_quality.transform import AnnotatorFineWebQualityConfiguration
+from dpk_fineweb_quality_annotator import FineWebQualityAnnotatorPythonConfiguration
 
 
 class TestFineWebQualityAnnotatorTransform(AbstractTransformLauncherTest):
@@ -29,6 +29,6 @@ class TestFineWebQualityAnnotatorTransform(AbstractTransformLauncherTest):
     def get_test_transform_fixtures(self) -> list[tuple]:
         basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../test-data"))
         config = {}
-        launcher = PythonTransformLauncher(AnnotatorFineWebQualityConfiguration(), DataAccessFactory())
+        launcher = PythonTransformLauncher(FineWebQualityAnnotatorPythonConfiguration(), DataAccessFactory())
         fixtures = [(launcher, config, basedir + "/input", basedir + "/expected")]
         return fixtures

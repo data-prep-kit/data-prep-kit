@@ -48,7 +48,6 @@ def compute_exec_params_func(
     data_checkpointing: bool,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     model_name_or_path: str,
     annotation_column: str,
     doc_text_column: str,
@@ -67,7 +66,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "model_name_or_path": model_name_or_path,
         "annotation_column": annotation_column,
         "doc_text_column": doc_text_column,
@@ -127,7 +125,6 @@ def hap(
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # hap parameters
     model_name_or_path: str = "ibm-granite/granite-guardian-hap-38m",
     annotation_column: str = "hap_score",
@@ -171,7 +168,6 @@ def hap(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :param model_name_or_path - # HAP model path
     :param annotation_column - # hap score for each document
     :param doc_text_column - # The column name that contains the document text
@@ -207,7 +203,6 @@ def hap(
             data_checkpointing=data_checkpointing,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             model_name_or_path=model_name_or_path,
             annotation_column=annotation_column,
             doc_text_column=doc_text_column,

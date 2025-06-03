@@ -39,7 +39,7 @@ task_image = "quay.io/dataprep1/data-prep-kit/gneissweb_classification-ray:lates
 EXEC_SCRIPT_NAME: str = "-m dpk_gneissweb_classification.ray.transform"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing_v2:latest"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)
@@ -55,7 +55,6 @@ def compute_exec_params_func(
     data_checkpointing: bool,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     gcls_model_file_name: str,
     gcls_model_url: str,
     gcls_content_column_name: str,
@@ -73,7 +72,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "gcls_model_file_name": gcls_model_file_name,
         "gcls_model_url": gcls_model_url,
         "gcls_content_column_name": gcls_content_column_name,
@@ -142,7 +140,6 @@ def gneissweb_classification(
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # gneissweb_classification parameters
     gcls_model_url: str = "ibm-granite/GneissWeb.Quality_annotator",
     gcls_model_file_name: str = "fasttext_gneissweb_quality_annotator.bin",
@@ -185,7 +182,6 @@ def gneissweb_classification(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :param gcls_model_file_name - filename of model
     :param gcls_model_url - url that model locates. For fasttext, this will be repo name of the model
     :param gcls_content_column_name - Column name to get content
@@ -222,7 +218,6 @@ def gneissweb_classification(
             data_checkpointing=data_checkpointing,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             gcls_model_file_name=gcls_model_file_name,
             gcls_model_url=gcls_model_url,
             gcls_content_column_name=gcls_content_column_name,

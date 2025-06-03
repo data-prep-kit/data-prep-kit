@@ -16,8 +16,8 @@ ARG DPK_WHEEL_FILE_NAME
 # set up environment required to install and use huggingface and fasttext
 USER root
 RUN sudo apt update && sudo apt install gcc g++ -y
-RUN mkdir -p /home/ray/.cache/huggingface/hub && chmod -R 777 /home/ray/.cache/huggingface/hub
 USER ray
+RUN mkdir -p /home/ray/.cache/huggingface/hub && chmod -R 777 /home/ray/.cache/huggingface/hub
 
 # Copy and install data processing libraries 
 # These are expected to be placed in the docker context before this is run (see the make image).
@@ -42,5 +42,11 @@ ENV PYTHONPATH /home/ray
 # Put these at the end since they seem to upset the docker cache.
 ARG BUILD_DATE
 ARG GIT_COMMIT
+ARG TRANSFORM_PATH
+ARG GIT_URL
+ENV GIT_URL $GIT_URL
+ENV TRANSFORM_PATH $TRANSFORM_PATH
+ENV BUILD_DATE $BUILD_DATE
+ENV GIT_COMMIT $GIT_COMMIT
 LABEL build-date=$BUILD_DATE
 LABEL git-commit=$GIT_COMMIT

@@ -20,7 +20,7 @@ from dpk_license_select.transform import (
     LICENSE_COLUMN_NAME_CLI_KEY,
     LICENSES_FILE_CLI_KEY,
 )
-from dpk_license_select.transform_python import (
+from dpk_license_select.runtime import (
     LicenseSelectPythonTransformConfiguration,
 )
 

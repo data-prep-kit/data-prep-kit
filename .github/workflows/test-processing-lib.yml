@@ -6,6 +6,7 @@ on:
         branches:
             - "dev"
             - "releases/**"
+            - "feature/**"
         tags:
             - "*"
         paths:
@@ -19,6 +20,7 @@ on:
         branches:
             - "dev"
             - "releases/**"
+            - "feature/**"
         paths:
             # Note: the transform workflows are expected to trigger when data-processing-lib/** changes
             - ".make.*"

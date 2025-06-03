@@ -27,7 +27,7 @@ from workflow_support.compile_utils import (
 S3_SECRET = "s3-secret"
 
 # the name of the job script
-EXEC_SCRIPT_NAME: str = "-m dpk_code2parquet.ray.transform"
+EXEC_SCRIPT_NAME: str = "-m dpk_code2parquet.ray.runtime"
 
 task_image = "quay.io/dataprep1/data-prep-kit/code2parquet-ray:latest"
 

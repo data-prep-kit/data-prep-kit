@@ -60,7 +60,7 @@ def is_html(data, lang):
 
         # get text
         text = soup.get_text()
-        ratio = len(text) / len(html)
+        ratio = (len(text) / len(html)) if len(html) > 0 else 0
         if ratio > 0.2 and len(text) > 100:
             return True
     return False
@@ -72,6 +72,13 @@ def calculate_line_stats(data, lines_max=7):
     Calculates mean and max line length of file
     """
     line_lengths = np.array([len(line) for line in data.splitlines()])
+    if line_lengths.shape[0] == 0:
+        return {
+            "line_mean": 0,
+            "line_max": 0,
+            "avg_longest_lines": 0,
+            "num_lines": 0,
+        }
     if line_lengths.shape[0] < lines_max:
         lines_max = line_lengths.shape[0]
     longest_lines = np.sort(line_lengths)[::-1][:lines_max]
@@ -87,7 +94,7 @@ def calculate_alpha_stats(data):
     """
     Calculates mean alpha numeric of input data
     """
-    alphanum_frac = np.mean([c.isalnum() for c in data])
+    alphanum_frac = np.mean([c.isalnum() for c in data]) if len(data) > 0 else 0
     return {"alphanum_frac": alphanum_frac}
 
 
@@ -96,7 +103,7 @@ def calculate_char_token_ratio(data, tokenizer):
     Compute character/token ratio of the file with tokenizer.
     """
     input_ids = tokenizer(data, truncation=False)["input_ids"]
-    ratio = len(data) / len(input_ids)
+    ratio = (len(data) / len(input_ids)) if len(input_ids) > 0 else 0
     return {"char_token_ratio": ratio}
 
 
@@ -212,7 +219,7 @@ def top_most_frequent_word_percent(data):
 def alphabetic_percent(data):
     total_chars = len(data)
     alphabetic_chars_count = sum(1 for char in data if char.isalpha())
-    alphabetic_percent = (alphabetic_chars_count / total_chars) * 100 if total_chars > 0 else 0
+    alphabetic_percent = ((alphabetic_chars_count / total_chars) * 100) if total_chars > 0 else 0
     return alphabetic_percent
 
 
@@ -241,7 +248,7 @@ def encoded_data_stats(data):
         if max_encoded_data_length < match_length:
             max_encoded_data_length = match_length
 
-    encoded_data_percent = total_matched_length / len(data)
+    encoded_data_percent = (total_matched_length / len(data)) if len(data) > 0 else 0
     return max_encoded_data_length, encoded_data_percent
 
 

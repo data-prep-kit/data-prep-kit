@@ -190,11 +190,11 @@ pip install -r requirements.txt
 
 > Dependencies include `prefect`, `pyyaml`, and any libraries used in custom transforms.
 
-### 2. Define Your Workflow
+### 4. Define Your Workflow
 
 Create a `.yaml` or `.json` file that describes your flow. Use the example above as a reference.
 
-### 3. Run the Script
+### 5. Run the Script
 
 ```bash
 python orchestrator/abstract_orchestrator.py /path/to/your/flow.yaml

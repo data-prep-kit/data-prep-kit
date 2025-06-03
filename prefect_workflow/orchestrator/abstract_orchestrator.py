@@ -15,26 +15,16 @@ import sys
 from pathlib import Path
 import timeit
 import asyncio
-from concurrent.futures import ThreadPoolExecutor, wait
 from prefect import task, flow
 from data_processing.utils import get_logger
-#from data_processing.data_access import DataAccess, DataAccessLocal, DataAccessS3
+from data_processing.data_access import DataAccess, DataAccessLocal, DataAccessS3
+from data_processing.data_access.data_access_memory import DataAccessMemory
+from data_processing.transform.transform_factory import create_transform_from_file
 
-#import data_processing's transforms to get factory
-factory_path = Path(__file__).resolve().parents[2] / "data-processing-lib/python/src/data_processing/transform"
-da_path = Path(__file__).resolve().parents[2] / "data-processing-lib/python/src/data_processing/data_access"
 prefect_path = Path(__file__).resolve().parents[2] / "prefect_workflow/utils"
-sys.path.append(str(factory_path))
-sys.path.append(str(da_path))
 sys.path.append(str(prefect_path))
 
-
 from workflow_validator import load_workflow_config, validate_workflow_config
-from transform_factory import create_transform_from_file
-from data_access_s3 import DataAccessS3
-from data_access_local import DataAccessLocal
-from data_access_memory import DataAccessMemory
-from data_access import DataAccess
 
 
 @task(name="execute_step", task_run_name="{name}")

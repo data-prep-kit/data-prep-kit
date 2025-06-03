@@ -69,7 +69,6 @@ flow:
         content_column_name: contents
         model_kind: fasttext
         model_url: facebook/fasttext-language-identification
-        model_credential: ""
         output_lang_column_name: fasttext_label
         output_score_column_name: fasttext_prob
       input_edges: []
@@ -113,7 +112,6 @@ flow:
             "content_column_name": "contents",
             "model_kind": "fasttext",
             "model_url": "facebook/fasttext-language-identification",
-            "model_credential": "",
             "output_lang_column_name": "fasttext_dclm_oh_eli5_label",
             "output_score_column_name": "fasttext_dclm_oh_eli5_prob"
         },
@@ -150,7 +148,41 @@ flow:
 
 ## 🚀 Getting Started
 
-### 1. Install Dependencies
+### 1. Create and Activate a Virtual Environment (Recommended)
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+```
+
+---
+
+### 2. Install DPK Dependencies
+
+Make sure you’re in the root of the repository.
+
+#### 📦 2.1 Install the Core Library (from `data-processing-lib/`)
+
+```bash
+cd data-processing-lib
+pip install .
+```
+
+#### 📦 2.2 Install Transform Modules (from `transforms/` with extras)
+
+```bash
+cd ../transforms
+pip install ".[all]"
+```
+
+> 💡 If you get a `SyntaxError: invalid decimal literal`, it may be due to a conflict with the `uuid` package (which is built into Python and **should not be installed** as a separate package). To resolve:
+>
+> ```bash
+> pip uninstall uuid
+> ```
+
+
+### 3. Install Prefect Dependencies
 
 ```bash
 pip install -r requirements.txt

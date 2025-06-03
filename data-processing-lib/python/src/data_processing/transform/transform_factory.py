@@ -12,7 +12,7 @@
 
 import importlib
 import importlib.util
-from transform_registry import FILE_TRANSFORM_REGISTRY, MODULE_TRANSFORM_REGISTRY
+from data_processing.transform import FILE_TRANSFORM_REGISTRY, MODULE_TRANSFORM_REGISTRY
 
 def create_transform_from_file(transform_name: str, params: dict = None):
     if transform_name not in FILE_TRANSFORM_REGISTRY:

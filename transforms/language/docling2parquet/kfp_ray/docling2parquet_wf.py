@@ -48,7 +48,6 @@ def compute_exec_params_func(
     data_files_to_use: str,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     docling2parquet_batch_size: int,
     docling2parquet_do_table_structure: bool,
     docling2parquet_do_ocr: bool,
@@ -66,7 +65,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "docling2parquet_batch_size": docling2parquet_batch_size,
         "docling2parquet_do_table_structure": docling2parquet_do_table_structure,
         "docling2parquet_do_ocr": docling2parquet_do_ocr,
@@ -126,7 +124,6 @@ def docling2parquet(
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 4},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # docling2parquet parameters
     docling2parquet_batch_size: int = -1,
     docling2parquet_do_table_structure: bool = True,
@@ -169,7 +166,6 @@ def docling2parquet(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :param docling2parquet_batch_size - how many inputs to batch into one output table
     :param docling2parquet_do_table_structure - run table structure model
     :param docling2parquet_do_ocr - run ocr model
@@ -204,7 +200,6 @@ def docling2parquet(
             data_files_to_use=data_files_to_use,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             docling2parquet_batch_size=docling2parquet_batch_size,
             docling2parquet_do_table_structure=docling2parquet_do_table_structure,
             docling2parquet_do_ocr=docling2parquet_do_ocr,

@@ -47,7 +47,6 @@ def compute_exec_params_func(
     data_checkpointing: bool,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     rep_removal_contents_column_name: str,
     rep_removal_dedup_level_name: str,
     rep_removal_length_thresh: int,
@@ -67,7 +66,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "rep_removal_contents_column_name": rep_removal_contents_column_name,
         "rep_removal_dedup_level_name": rep_removal_dedup_level_name,
         "rep_removal_length_thresh": str(rep_removal_length_thresh),
@@ -129,7 +127,6 @@ def rep_removal(
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # rep_removal parameters
     rep_removal_contents_column_name: str = "text",
     rep_removal_dedup_level_name: str = "parquet",
@@ -174,7 +171,6 @@ def rep_removal(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :param rep_removal_contents_column_name - Name of the column holding the document text
     :param rep_removal_dedup_level_name - Name of the type of file to process.
     :param rep_removal_length_thresh - Length threshold for processing
@@ -213,7 +209,6 @@ def rep_removal(
             data_checkpointing=data_checkpointing,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             rep_removal_contents_column_name=rep_removal_contents_column_name,
             rep_removal_dedup_level_name=rep_removal_dedup_level_name,
             rep_removal_length_thresh=rep_removal_length_thresh,

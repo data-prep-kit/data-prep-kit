@@ -48,7 +48,6 @@ def compute_exec_params_func(
     data_checkpointing: bool,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     data_files_to_use: str,
     html2parquet_output_format: str,
 ) -> dict:
@@ -63,7 +62,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "data_files_to_use": data_files_to_use,
         "html2parquet_output_format": html2parquet_output_format,
     }
@@ -119,7 +117,6 @@ def html2parquet(
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # html2parquet parameters
     data_files_to_use: str = "['.html', '.zip']",
     html2parquet_output_format: str = "markdown",
@@ -159,7 +156,6 @@ def html2parquet(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :param data_files_to_use - # file extensions to use for processing
     :param html2parquet_output_format - # Output format for the contents column.
     :return: None
@@ -191,7 +187,6 @@ def html2parquet(
             data_checkpointing=data_checkpointing,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             data_files_to_use=data_files_to_use,
             html2parquet_output_format=html2parquet_output_format,
         )

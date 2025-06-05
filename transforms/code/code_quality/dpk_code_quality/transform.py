@@ -74,9 +74,9 @@ def calculate_line_stats(data, lines_max=7):
     line_lengths = np.array([len(line) for line in data.splitlines()])
     if line_lengths.shape[0] == 0:
         return {
-            "line_mean": 0,
+            "line_mean": 0.0,
             "line_max": 0,
-            "avg_longest_lines": 0,
+            "avg_longest_lines": 0.0,
             "num_lines": 0,
         }
     if line_lengths.shape[0] < lines_max:
@@ -94,16 +94,16 @@ def calculate_alpha_stats(data):
     """
     Calculates mean alpha numeric of input data
     """
-    alphanum_frac = np.mean([c.isalnum() for c in data]) if len(data) > 0 else 0
+    alphanum_frac = np.mean([c.isalnum() for c in data]) if len(data) > 0 else 0.0
     return {"alphanum_frac": alphanum_frac}
 
 
-def calculate_char_token_ratio(data, tokenizer):
+def calculate_char_token_ratio(data, tokenizer) -> dict[str, float]:
     """
     Compute character/token ratio of the file with tokenizer.
     """
     input_ids = tokenizer(data, truncation=False)["input_ids"]
-    ratio = (len(data) / len(input_ids)) if len(input_ids) > 0 else 0
+    ratio:float = (len(data) / len(input_ids)) if len(input_ids) > 0 else 0.0
     return {"char_token_ratio": ratio}
 
 
@@ -195,32 +195,32 @@ def has_few_assignments(data, language, minimum=4):
 
 
 # metrics inspired from OLMOE https://huggingface.co/datasets/allenai/OLMoE-mix-0924
-def top_most_frequent_word_percent(data):
+def top_most_frequent_word_percent(data) -> tuple[float, float]:
     # Convert to lowercase and remove punctuation
     words = re.findall(r"\b\w+\b", data.lower())
 
     total_words = len(words)
     if total_words == 0:
-        return 0, 0
+        return 0.0, 0.0
 
     word_counts = Counter(words)
     most_common = word_counts.most_common(2)
     _, top_word_count = most_common[0]
-    top_word_percent = (top_word_count / total_words) * 100
+    top_word_percent: float = (top_word_count / total_words) * 100.0
 
-    top_two_words_percent = 0
+    top_two_words_percent: float= 0.0
     if len(most_common) >= 2:
         _, second_top_word_count = most_common[1]
-        top_two_words_percent = ((top_word_count + second_top_word_count) / total_words) * 100
+        top_two_words_percent = ((top_word_count + second_top_word_count) / total_words) * 100.0
 
     return top_word_percent, top_two_words_percent
 
 
-def alphabetic_percent(data):
+def alphabetic_percent(data) -> float:
     total_chars = len(data)
     alphabetic_chars_count = sum(1 for char in data if char.isalpha())
-    alphabetic_percent = ((alphabetic_chars_count / total_chars) * 100) if total_chars > 0 else 0
-    return alphabetic_percent
+    _alphabetic_percent:float = ((alphabetic_chars_count / total_chars) * 100.0) if total_chars > 0 else 0.0
+    return _alphabetic_percent
 
 
 def encoded_data_stats(data):

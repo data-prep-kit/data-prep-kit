@@ -17,8 +17,7 @@ import pandas as pd
 import pyarrow as pa
 import torch
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import GB, TransformUtils, get_logger
-from transformers import AutoModelForSequenceClassification, AutoTokenizer
+from data_processing.utils import GB, TransformUtils, get_logger, load_model
 
 logger = get_logger(__name__)
 
@@ -39,8 +38,8 @@ class HAPTransform(AbstractTableTransform):
         self.doc_text_column = config.get("doc_text_column", "contents")
         self.max_length = config.get("max_length", 512)
         self.batch_size = config.get("batch_size", 128)
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name_or_path)
-        self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name_or_path).to(device)
+        self.tokenizer = load_model(self.model_name_or_path, "tokenizer")
+        self.model = load_model(self.model_name_or_path, "sequence").to(device)
 
     def _apply_model(self, data: list, batch_size: int) -> list[float]:
         num_batches = len(data) // batch_size

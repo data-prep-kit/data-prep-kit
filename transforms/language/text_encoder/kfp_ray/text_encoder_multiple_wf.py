@@ -47,7 +47,6 @@ def compute_exec_params_func(
     data_num_samples: int,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     text_encoder_model_name: str,
     text_encoder_content_column_name: str,
     text_encoder_output_embeddings_column_name: str,
@@ -62,7 +61,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "text_encoder_model_name": text_encoder_model_name,
         "text_encoder_content_column_name": text_encoder_content_column_name,
         "text_encoder_output_embeddings_column_name": text_encoder_output_embeddings_column_name,
@@ -110,7 +108,6 @@ def text_encoder(
     # orchestrator
     runtime_actor_options: dict = {'num_cpus': 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {'github': 'github', 'commit_hash': '12345', 'path': 'path'},
     # text_encoder parameters
     text_encoder_model_name: str = "BAAI/bge-small-en-v1.5",
     text_encoder_content_column_name: str = "contents",
@@ -151,7 +148,6 @@ def text_encoder(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :param text_encoder_model_name - model to use for encoding
     :param text_encoder_content_column_name - column name with content
     :param text_encoder_output_embeddings_column_name - name of the output column
@@ -181,7 +177,6 @@ def text_encoder(
             data_num_samples=data_num_samples,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             text_encoder_model_name=text_encoder_model_name,
             text_encoder_content_column_name=text_encoder_content_column_name,
             text_encoder_output_embeddings_column_name=text_encoder_output_embeddings_column_name,

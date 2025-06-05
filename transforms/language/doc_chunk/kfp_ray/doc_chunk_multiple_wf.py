@@ -47,7 +47,6 @@ def compute_exec_params_func(
     data_num_samples: int,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     doc_chunk_chunking_type: str,
     doc_chunk_content_column_name: str,
     doc_chunk_output_chunk_column_name: str,
@@ -63,7 +62,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "doc_chunk_chunking_type": doc_chunk_chunking_type,
         "doc_chunk_content_column_name": doc_chunk_content_column_name,
         "doc_chunk_output_chunk_column_name": doc_chunk_output_chunk_column_name,
@@ -119,7 +117,6 @@ def doc_chunk(
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # doc_chunk parameters
     doc_chunk_chunking_type: str = "dl_json",
     doc_chunk_content_column_name: str = "contents",
@@ -161,7 +158,6 @@ def doc_chunk(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :param doc_chunk_chunking_type - chunking type to apply
     :param doc_chunk_content_column_name - column name to get content
     :param doc_chunk_output_chunk_column_name - column name to store the chunks
@@ -194,7 +190,6 @@ def doc_chunk(
             data_num_samples=data_num_samples,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             doc_chunk_chunking_type=doc_chunk_chunking_type,
             doc_chunk_content_column_name=doc_chunk_content_column_name,
             doc_chunk_output_chunk_column_name=doc_chunk_output_chunk_column_name,

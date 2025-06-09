@@ -18,8 +18,8 @@ import pyarrow as pa
 import ast
 
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import CLIArgumentProvider, TransformUtils
-from dpk_gneissweb_classification.classification_models import ClassificationModelFactory, ClassificationModel
+from data_processing.utils import CLIArgumentProvider, TransformUtils, load_model
+from dpk_gneissweb_classification.classification_models import FastTextModel, ClassificationModel
 from dpk_gneissweb_classification.nlp import get_label_ds_pa
 from dpk_gneissweb_classification.nlp_parallel import get_label_ds_pa_parallel
 
@@ -96,7 +96,9 @@ class ClassificationTransform(AbstractTableTransform):
         self.logger.debug(f"Transforming one table with {len(table)} rows")
         for url, file_name, label_column_name, score_column_name in zip(self.model_url, self.model_file_name,self.output_label_column_name,self.output_score_column_name):
             if self.n_processes <= 1:
-                nlp_classfication = ClassificationModelFactory.create_model(url=url, file_name=file_name, credential=self.model_credential)
+                model = load_model(url, 'fasttext', self.model_credential, model_filename=file_name)
+                nlp_classfication = FastTextModel(model, url)
+
             else:
                 # Suppress memory consumption as the main process does not actually use this model when multiprocessing
                 nlp_classfication = None

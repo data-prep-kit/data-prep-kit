@@ -50,7 +50,6 @@ def compute_exec_params_func(
     data_files_to_use: str,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     code2parquet_supported_langs_file: str,
     code2parquet_domain: str,
     code2parquet_snapshot: str,
@@ -67,7 +66,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "code2parquet_supported_langs_file": code2parquet_supported_langs_file,
         "code2parquet_domain": code2parquet_domain,
         "code2parquet_snapshot": code2parquet_snapshot,
@@ -125,7 +123,6 @@ def code2parquet(
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # code to parquet
     code2parquet_supported_langs_file: str = "test/code2parquet/languages/lang_extensions.json",
     code2parquet_detect_programming_lang: bool = True,
@@ -169,7 +166,6 @@ def code2parquet(
     :param data_files_to_use - file extensions to use for processing
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :param code2parquet_supported_langs_file - file to store allowed languages
     :param code2parquet_detect_programming_lang - detect programming language flag
     :param code2parquet_domain: domain
@@ -207,7 +203,6 @@ def code2parquet(
             data_files_to_use=data_files_to_use,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             code2parquet_supported_langs_file=code2parquet_supported_langs_file,
             code2parquet_domain=code2parquet_domain,
             code2parquet_snapshot=code2parquet_snapshot,

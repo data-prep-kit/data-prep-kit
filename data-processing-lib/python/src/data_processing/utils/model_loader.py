@@ -18,7 +18,7 @@ from data_processing.utils.model_loader_registry import MODEL_LOADERS
 logger = get_logger(__name__)
 
 
-def load_model(model_path_or_url: str, model_type: str, token: str = None):
+def load_model(model_path_or_url: str, model_type: str, token: str = None, **kwargs):
     """
     Load a model using a registered model loader type (plugin-style).
     """
@@ -77,7 +77,7 @@ def load_model(model_path_or_url: str, model_type: str, token: str = None):
 
         # dispatch to registered loader
         loader_fn = MODEL_LOADERS[model_type]
-        model = loader_fn(model_path, token=token)
+        model = loader_fn(model_path, token=token, **kwargs)
         return model
 
     except Exception as e:

@@ -19,15 +19,15 @@
 
 CODE_QUALITY_PARAMS = "code_quality"
 import os
+import re
 from argparse import ArgumentParser, Namespace
+from collections import Counter
 
 import numpy as np
 import pyarrow as pa
 from bs4 import BeautifulSoup
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import TransformUtils
-from transformers import AutoTokenizer
-
+from data_processing.utils import TransformUtils, load_model
 
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -186,6 +186,64 @@ def has_few_assignments(data, language, minimum=4):
     return False
 
 
+# metrics inspired from OLMOE https://huggingface.co/datasets/allenai/OLMoE-mix-0924
+def top_most_frequent_word_percent(data):
+    # Convert to lowercase and remove punctuation
+    words = re.findall(r"\b\w+\b", data.lower())
+
+    total_words = len(words)
+    if total_words == 0:
+        return 0, 0
+
+    word_counts = Counter(words)
+    most_common = word_counts.most_common(2)
+    _, top_word_count = most_common[0]
+    top_word_percent = (top_word_count / total_words) * 100
+
+    top_two_words_percent = 0
+    if len(most_common) >= 2:
+        _, second_top_word_count = most_common[1]
+        top_two_words_percent = ((top_word_count + second_top_word_count) / total_words) * 100
+
+    return top_word_percent, top_two_words_percent
+
+
+def alphabetic_percent(data):
+    total_chars = len(data)
+    alphabetic_chars_count = sum(1 for char in data if char.isalpha())
+    alphabetic_percent = (alphabetic_chars_count / total_chars) * 100 if total_chars > 0 else 0
+    return alphabetic_percent
+
+
+def encoded_data_stats(data):
+    base64_regex = re.compile(r"[a-zA-Z0-9+/\n=]{64,}")
+    hex_regex = re.compile(r"(?:\b(?:0x|\\x)?[0-9a-fA-F]{2}(?:,|\b\s*)){8,}")
+    unicode_regex = re.compile(r"(?:\\u[0-9a-fA-F]{4}){8,}")
+
+    total_matched_length = 0
+    max_encoded_data_length = 0
+    for match in base64_regex.finditer(data):
+        match_length = len(match.group())
+        total_matched_length += match_length
+        if max_encoded_data_length < match_length:
+            max_encoded_data_length = match_length
+
+    for match in hex_regex.finditer(data):
+        match_length = len(match.group())
+        total_matched_length += match_length
+        if max_encoded_data_length < match_length:
+            max_encoded_data_length = match_length
+
+    for match in unicode_regex.finditer(data):
+        match_length = len(match.group())
+        total_matched_length += match_length
+        if max_encoded_data_length < match_length:
+            max_encoded_data_length = match_length
+
+    encoded_data_percent = total_matched_length / len(data)
+    return max_encoded_data_length, encoded_data_percent
+
+
 class CodeQualityTransform(AbstractTableTransform):
     """
     Defines Code Quality specific annotation for code data. Some of the methods inspired from CodeParrot and StarCoder.
@@ -194,12 +252,10 @@ class CodeQualityTransform(AbstractTableTransform):
     def __init__(self, config: dict):
         super().__init__(config)
 
-        self.code_quality = config.get(CODE_QUALITY_PARAMS) 
+        self.code_quality = config.get(CODE_QUALITY_PARAMS)
         if not self.code_quality["hf_token"]:
-            self.code_quality["hf_token"]=os.getenv("HF_READ_ACCESS_TOKEN")
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            self.code_quality["tokenizer"], use_auth_token=self.code_quality["hf_token"]
-        )
+            self.code_quality["hf_token"] = os.getenv("HF_READ_ACCESS_TOKEN")
+        self.tokenizer = load_model(self.code_quality["tokenizer"], 'tokenizer', self.code_quality["hf_token"])
 
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict]:
         """
@@ -222,6 +278,11 @@ class CodeQualityTransform(AbstractTableTransform):
         has_few_assignments_values = []
         is_xml_values = []
         is_html_values = []
+        top_word_percents = []
+        top_two_words_percents = []
+        alphabetic_percents = []
+        max_encoded_data_lengths = []
+        encoded_data_percents = []
 
         contents = table.column(self.code_quality["contents_column_name"]).to_pylist()
         languages = table.column(self.code_quality["language_column_name"]).to_pylist()
@@ -245,6 +306,16 @@ class CodeQualityTransform(AbstractTableTransform):
             is_xml_values.append(is_xml(c, languages[i]))
             is_html_values.append(is_html(c, languages[i]))
 
+            top_word_percent, top_two_words_percent = top_most_frequent_word_percent(c)
+            top_word_percents.append(top_word_percent)
+            top_two_words_percents.append(top_two_words_percent)
+
+            alphabetic_percents.append(alphabetic_percent(c))
+
+            max_encoded_data_length, encoded_data_percent = encoded_data_stats(c)
+            max_encoded_data_lengths.append(max_encoded_data_length)
+            encoded_data_percents.append(encoded_data_percent)
+
         table = TransformUtils.add_column(table=table, name="line_mean", content=line_mean_values)
         table = TransformUtils.add_column(table=table, name="line_max", content=line_max_values)
         table = TransformUtils.add_column(table=table, name="total_num_lines", content=no_lines_values)
@@ -257,6 +328,13 @@ class CodeQualityTransform(AbstractTableTransform):
         table = TransformUtils.add_column(table=table, name="has_few_assignments", content=has_few_assignments_values)
         table = TransformUtils.add_column(table=table, name="is_xml", content=is_xml_values)
         table = TransformUtils.add_column(table=table, name="is_html", content=is_html_values)
+        table = TransformUtils.add_column(table=table, name="top_word_percent", content=top_word_percents)
+        table = TransformUtils.add_column(table=table, name="top_two_words_percent", content=top_two_words_percents)
+        table = TransformUtils.add_column(table=table, name="alpha_percent", content=alphabetic_percents)
+        table = TransformUtils.add_column(
+            table=table, name="max_encoded_data_length", content=max_encoded_data_lengths
+        )
+        table = TransformUtils.add_column(table=table, name="encoded_data_percent", content=encoded_data_percents)
 
         return [table], {}
 

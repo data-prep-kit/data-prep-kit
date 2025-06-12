@@ -7,10 +7,8 @@ from pathlib import Path
 
 def get_comment_prefix(file_extension):
     """Return the comment prefix based on file extension."""
-    if file_extension in ['.py', '.sh', '.yaml', '.yml']:
+    if file_extension == '.py':
         return '#'
-    elif file_extension in ['.js', '.ts', '.java', '.c', '.cpp', '.h', '.hpp']:
-        return '//'
     return None
 
 def has_spdx_identifier(content):
@@ -60,13 +58,13 @@ def main():
     # Get the root directory of the project
     root_dir = Path(__file__).parent.parent
 
-    # File extensions to process
-    extensions = ['.py', '.js', '.ts', '.java', '.c', '.cpp', '.h', '.hpp', '.sh', '.yaml', '.yml']
+    # Only process Python files
+    extension = '.py'
 
     # Walk through all directories
     for root, _, files in os.walk(root_dir):
         for file in files:
-            if any(file.endswith(ext) for ext in extensions):
+            if file.endswith(extension):
                 file_path = os.path.join(root, file)
                 add_spdx_identifier(file_path)
 

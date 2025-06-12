@@ -1,3 +1,5 @@
-pyspark>=3.5.2
+## Latest release of pyspark 4.0.0 does not work with current default version of JAVA in Ubuntu-22.04
+## limit to 3.5.5 until we upgrade the github verification and validation workflow to newer JAVA release
+pyspark>=3.5.2,<=3.5.5
 psutil>=6.0.0
 PyYAML>=6.0.2

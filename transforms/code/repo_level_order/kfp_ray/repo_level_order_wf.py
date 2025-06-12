@@ -48,7 +48,6 @@ def compute_exec_params_func(
     data_num_samples: int,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     repo_lvl_stage_one_only: bool,
     repo_lvl_grouping_column: str,
     repo_lvl_store_type: str,
@@ -70,7 +69,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "repo_lvl_grouping_column": repo_lvl_grouping_column,
         "repo_lvl_store_type": repo_lvl_store_type,
         "repo_lvl_store_backend_dir": repo_lvl_store_backend_dir,
@@ -133,7 +131,6 @@ def repo_level_order(
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # repo_level_order parameters
     repo_lvl_stage_one_only: bool = False,
     repo_lvl_grouping_column: str = "repo_name",
@@ -181,7 +178,6 @@ def repo_level_order(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :param repo_lvl_stage_one_only - # If this flag is set, transform only builds the repo grouping and doesn't write output
     :param repo_lvl_grouping_column - # The name of the column which has repo name
     :param repo_lvl_store_type - # Intermediate store to hold repo grouping info. Should be one of (ray, s3, local). s3 and local are persistent, ray is ephemeral
@@ -220,7 +216,6 @@ def repo_level_order(
             data_num_samples=data_num_samples,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             repo_lvl_stage_one_only=repo_lvl_stage_one_only,
             repo_lvl_grouping_column=repo_lvl_grouping_column,
             repo_lvl_store_type=repo_lvl_store_type,

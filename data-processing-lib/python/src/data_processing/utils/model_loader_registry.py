@@ -12,7 +12,7 @@
 import os
 import fasttext
 from huggingface_hub import hf_hub_download
-from transformers import AutoModel, AutoTokenizer
+from transformers import AutoModel, AutoTokenizer, AutoModelForSequenceClassification
 
 MODEL_LOADERS = {}
 
@@ -25,19 +25,24 @@ def register_model_loader(model_type: str):
 
 
 @register_model_loader("transformers")
-def load_transformers_model(model_path: str, token: str = None):
-    model = AutoModel.from_pretrained(model_path, token=token)
+def load_transformers_model(model_path: str, token: str = None, **kwargs):
+    model = AutoModel.from_pretrained(model_path, token=token, **kwargs)
     return model
 
 
 @register_model_loader("tokenizer")
-def load_transformers_model(model_path: str, token: str = None):
-    tokenizer = AutoTokenizer.from_pretrained(model_path, token=token)
+def load_transformers_model(model_path: str, token: str = None, **kwargs):
+    tokenizer = AutoTokenizer.from_pretrained(model_path, token=token, **kwargs)
     return tokenizer
+
+@register_model_loader("sequence")
+def load_transformers_model(model_path: str, token: str = None, **kwargs):
+    model = AutoModelForSequenceClassification.from_pretrained(model_path, token=token, **kwargs)
+    return model
 
 
 @register_model_loader("fasttext")
-def load_fasttext_model(model_path: str, token: str = None):
+def load_fasttext_model(model_path: str, token: str = None, **kwargs):
     if os.path.isfile(model_path):
         model_path = model_path
 
@@ -53,8 +58,9 @@ def load_fasttext_model(model_path: str, token: str = None):
             raise FileNotFoundError(f"No .bin file found in : {model_path}")
 
     else:
-        # assume hugging face repo and download model.bin
-        model_path = hf_hub_download(repo_id=model_path, filename="model.bin", token=token)
+        # assume hugging face repo and download .bin
+        filename = kwargs.get("model_filename", "model.bin")
+        model_path = hf_hub_download(repo_id=model_path, filename=filename, token=token)
 
     model = fasttext.load_model(model_path)
     return model

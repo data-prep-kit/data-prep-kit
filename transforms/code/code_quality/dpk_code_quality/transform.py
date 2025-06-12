@@ -27,8 +27,7 @@ import numpy as np
 import pyarrow as pa
 from bs4 import BeautifulSoup
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import TransformUtils
-from transformers import AutoTokenizer
+from data_processing.utils import TransformUtils, load_model
 
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -256,9 +255,7 @@ class CodeQualityTransform(AbstractTableTransform):
         self.code_quality = config.get(CODE_QUALITY_PARAMS)
         if not self.code_quality["hf_token"]:
             self.code_quality["hf_token"] = os.getenv("HF_READ_ACCESS_TOKEN")
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            self.code_quality["tokenizer"], use_auth_token=self.code_quality["hf_token"]
-        )
+        self.tokenizer = load_model(self.code_quality["tokenizer"], 'tokenizer', self.code_quality["hf_token"])
 
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict]:
         """

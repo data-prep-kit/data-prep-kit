@@ -15,7 +15,6 @@ import pyarrow as pa
 from data_processing.test_support.transform.table_transform_test import (
     AbstractTableTransformTest,
 )
-from dpk_lang_id.lang_models import KIND_FASTTEXT
 from dpk_lang_id.transform import LangIdentificationTransform
 
 
@@ -28,7 +27,7 @@ class TestLangIdentificationTransform(AbstractTableTransformTest):
     def get_test_transform_fixtures(self) -> list[tuple]:
         config = {
             "model_credential": os.environ.get('HF_READ_ACCESS_TOKEN', "PUT YOUR OWN HUGGINGFACE CREDENTIAL"),
-            "model_kind": KIND_FASTTEXT,
+            "model_kind": 'fasttext',
             "model_url": "facebook/fasttext-language-identification",
             "content_column_name": "contents",
             "output_lang_column_name": "l",

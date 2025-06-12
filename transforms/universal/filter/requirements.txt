@@ -1,2 +1,4 @@
-duckdb>=0.10.1
+## Latest release duckdb==1.3.0 is breaking Unit Test.
+## Will need to regenerate expected files with new release before we use latest
+duckdb>=0.10.1,<=1.2.2
 pandas>=2.2.0

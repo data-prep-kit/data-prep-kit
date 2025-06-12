@@ -18,10 +18,11 @@ Libraries need to be added to venv:
 import time
 from argparse import ArgumentParser, Namespace
 from typing import Any
-
+import os
 import pyarrow as pa
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from dpk_tokenization.utils import is_valid_argument_string, load_tokenizer, split_text
+from data_processing.utils import load_model
+from dpk_tokenization.utils import is_valid_argument_string, split_text, string_to_kwargs
 
 
 CHUNK_CHECKPOINT_INTERVAL = 100
@@ -53,8 +54,14 @@ class TokenizationTransform(AbstractTableTransform):
         for k, v in config.items():
             self.logger.debug(f"{k:20s}: {v}")
 
-        # overwrite tokenizer:
-        self.tokenizer = load_tokenizer(tokenizer_name=self.tokenizer, tokenizer_args=self.tokenizer_args)
+        # overwrite tokenizer
+        if self.tokenizer_args is not None:
+            kwargs = string_to_kwargs(self.tokenizer_args)
+            self.tokenizer = load_model(self.tokenizer, 'tokenizer', os.environ.get("HF_READ_ACCESS_TOKEN"), **kwargs)
+
+        else:
+            self.tokenizer = load_model(self.tokenizer, 'tokenizer', os.environ.get("HF_READ_ACCESS_TOKEN"))
+
 
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
         """

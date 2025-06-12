@@ -44,7 +44,6 @@ def compute_exec_params_func(
     data_checkpointing: bool,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     ml_filter_column_prefix: str,
     ml_filter_lang_column_name: str,
     ml_filter_config: str,
@@ -61,7 +60,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "ml_filter_column_prefix": ml_filter_column_prefix,
         "ml_filter_lang_column_name": ml_filter_lang_column_name,
         "ml_filter_config": ml_filter_config,
@@ -119,7 +117,6 @@ def ml_filter(
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # ml_filter parameters
     ml_filter_column_prefix: str = "e_",
     ml_filter_lang_column_name: str = "lang",
@@ -161,7 +158,6 @@ def ml_filter(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :param ml_filter_column_prefix - Prefix for to all columns referenced in the conditions table
     :param ml_filter_lang_column_name - Name of the column with the language identifier
     :param ml_filter_config - File name for the condition table (yaml)
@@ -197,7 +193,6 @@ def ml_filter(
             data_checkpointing=data_checkpointing,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             ml_filter_column_prefix=ml_filter_column_prefix,
             ml_filter_lang_column_name=ml_filter_lang_column_name,
             ml_filter_config=ml_filter_config,

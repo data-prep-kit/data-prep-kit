@@ -49,7 +49,6 @@ def compute_exec_params_func(
     data_num_samples: int,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     lc_license_column_name: str,
     lc_licenses_file: str,
 ) -> dict:
@@ -63,7 +62,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "lc_license_column_name": lc_license_column_name,
         "lc_licenses_file": lc_licenses_file,
     }
@@ -117,7 +115,6 @@ def license_select(
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.7},
     runtime_pipeline_id: str = "runtime_pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # license select parameters
     lc_license_column_name: str = "license",
     lc_licenses_file: str = "test/license_select/sample_approved_licenses.json",
@@ -185,7 +182,6 @@ def license_select(
             data_num_samples=data_num_samples,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             lc_license_column_name=lc_license_column_name,
             lc_licenses_file=lc_licenses_file,
         )

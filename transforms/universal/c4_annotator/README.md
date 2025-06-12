@@ -58,7 +58,7 @@ Additionally, a set of data access-specific arguments are provided that enable
 the specification of the location of domain list files, so that these
 files could be stored in the local file system or in S3 storage, for example.
 The arguments are as follows (and generally match the TransformLauncher's 
-data access arguments but with the `blocklist_' prefix).
+data access arguments but with the `c4a_' prefix).
 
 * _c4a_local_config_ - specifies the input and outout folders, although these are not used by the transform.
 * _c4a_s3_config_ - specifies the input and output paths in s3.

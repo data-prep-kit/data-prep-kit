@@ -39,6 +39,8 @@ component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT
 
 _EN_BADWORDS_URL = "https://raw.githubusercontent.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words/25e679f03d96baa721cde20db9944649e8d0a844/en"
 
+CRLF_CONST: str = "\n"
+
 # compute execution parameters. Here different transforms might need different implementations. As
 # a result, instead of creating a component we are creating it in place here.
 def compute_exec_params_func(
@@ -192,7 +194,7 @@ def c4_annotator(
     filter_policy: bool = True,
     min_paragraphs: int = 3,
     min_paragraph_len: int = 200,
-    paragraph_delimiter: str = "\n",
+    paragraph_delimiter: str = CRLF_CONST,
     ldnoobw_url: str = _EN_BADWORDS_URL,
     filter_badwords: bool = False,
     badwords_keep_fraction: float = 0.0,

@@ -1,4 +1,3 @@
-# SPDX-License-Identifier: Apache-2.0
 debug=$1
 dbg_suffix=.dev7
 # Assume this file is in the reporoot/scripts directory

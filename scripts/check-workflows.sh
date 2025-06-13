@@ -1,5 +1,4 @@
 #!/bin/bash
-# SPDX-License-Identifier: Apache-2.0
 usage() {
 cat << EOF
 Check that each transform in transforms/<category>/<transform> has a corresponding 

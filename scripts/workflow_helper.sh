@@ -1,5 +1,4 @@
 #!/bin/bash
-# SPDX-License-Identifier: Apache-2.0
 
 
 # This ensures that the script exits immediately if any command

@@ -1,4 +1,3 @@
-# SPDX-License-Identifier: Apache-2.0
 ## Build a dev wheel ready to publish to pypi by merging one or more fork/branch into the latest dev branch
 ## This allows for the new code to go through functional, integration and regression testing before being merged to mainbranch
 ## Recommend using a clone from a fork (Running this from the main repo is not recommended)

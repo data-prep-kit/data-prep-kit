@@ -1,4 +1,3 @@
-# SPDX-License-Identifier: Apache-2.0
 name: Test Data Processing libs and (Optionally) Push base DPK images
 
 on:

@@ -1,4 +1,3 @@
-# SPDX-License-Identifier: Apache-2.0
 name: Build, Test, and upload Transform images to quay.io
 
 on:

@@ -1,4 +1,3 @@
-# SPDX-License-Identifier: Apache-2.0
 spark.app.name: ${APP_NAME}
 spark.driver.memory: ${DRIVER_MEMORY}
 spark.executor.instances: ${NUM_EXECUTORS}

@@ -1,4 +1,3 @@
-# SPDX-License-Identifier: Apache-2.0
 site_name: "Data Prep Kit"
 docs_dir: .
 site_dir: ../site

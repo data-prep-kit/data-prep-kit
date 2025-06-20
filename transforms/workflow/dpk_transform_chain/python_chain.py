@@ -35,7 +35,7 @@ class Orchestrator:
                         table = table_list[0]
                     else:
                         self.logger.info("Transform returned empty, skipping.")
-                        return
+                        continue
 
                 output_path = os.path.join(self.data_access.get_output_folder(), os.path.basename(file_path))
                 self.data_access.save_table(output_path, table)

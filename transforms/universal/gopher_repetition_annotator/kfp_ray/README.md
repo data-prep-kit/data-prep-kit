@@ -1,9 +1,9 @@
-# Programming Language Select Ray-base KubeFlow Pipeline Transformation 
+# Gopher Repetition Annotator Ray-base KubeFlow Pipeline Transformation 
 
 
 ## Summary 
-This project allows execution of the [gopher_repetition_annotator Ray transform](../ray) as a 
-[KubeFlow Pipeline](https://www.kubeflow.org/docs/components/pipelines/overview/)
+This project allows execution of the [gopher_repetition_annotator Ray transform](../dpk_gopher_repetition_annotator/ray/runtime.py) as a 
+[KubeFlow Pipeline](https://www.kubeflow.org/docs/components/pipelines/overview/).
 
 The detail pipeline is presented in the [Simplest Transform pipeline tutorial](../../../../kfp/doc/simple_transform_pipeline.md) 
 

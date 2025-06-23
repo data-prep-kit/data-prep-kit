@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 generate_prompt_str = """
 Create a Python script that implements the following workflow plan. Each step in the plan follows this JSON structure:
 {step_template}

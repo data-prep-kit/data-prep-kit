@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 from data_processing.data_access.arrow_s3 import ArrowS3
 from data_processing.data_access.data_access import DataAccess
 from data_processing.data_access.data_access_local import DataAccessLocal

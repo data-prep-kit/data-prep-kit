@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 from data_processing_ray.runtime.ray.ray_utils import RayUtils
 from data_processing_ray.runtime.ray.transform_statistics import TransformStatisticsRay
 from data_processing_ray.runtime.ray.transform_runtime import DefaultRayTransformRuntime

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 from python_apiserver_client.params.templates import (
     TolerationOperation,
     TolerationEffect,

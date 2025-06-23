@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 from llama_index.core.tools.tool_spec.base import BaseToolSpec
 
 

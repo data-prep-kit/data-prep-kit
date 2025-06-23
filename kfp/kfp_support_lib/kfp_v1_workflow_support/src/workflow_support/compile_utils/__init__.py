@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 from workflow_support.compile_utils.component import (
     DEFAULT_KFP_COMPONENT_SPEC_PATH,
     ONE_HOUR_SEC,

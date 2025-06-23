@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 from data_processing.transform.abstract_transform import AbstractTransform
 from data_processing.transform.folder_transform import AbstractFolderTransform
 from data_processing.transform.binary_transform import AbstractBinaryTransform

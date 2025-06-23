@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 from data_processing.runtime.pure_python.transform_runtime import DefaultPythonTransformRuntime
 from data_processing.runtime.pure_python.runtime_configuration import PythonTransformRuntimeConfiguration
 from data_processing.runtime.pure_python.execution_configuration import PythonTransformExecutionConfiguration

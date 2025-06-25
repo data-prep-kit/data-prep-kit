@@ -13,8 +13,8 @@ venv::
 	$(PYTHON) -m pip install -e "$(REPOROOT)/transforms[lang_id, doc_quality]"; \
 	## When running on Ubuntu as part of the github workflow, it is failing to install the extras
 	## Hence adding the specific requirements here for lang_id and doc_quality
-	$(PYTHON) -m pip install -r "$(REPOROOT)/transforms/language/lang_id/requirements.txt; \
-	$(PYTHON) -m pip install -r "$(REPOROOT)/transforms/language/doc_quality/requirements.txt; \
+	$(PYTHON) -m pip install -r $(REPOROOT)/transforms/language/lang_id/requirements.txt; \
+	$(PYTHON) -m pip install -r $(REPOROOT)/transforms/language/doc_quality/requirements.txt; \
 	$(PYTHON) -m pip install pytest
 
 test-src: venv

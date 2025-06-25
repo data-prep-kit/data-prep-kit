@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # from https://github.ibm.com/mc-connectors/connector/blob/main/gin/common/ai_platforms/callbacks.py
 
 from typing import Dict, Any, List

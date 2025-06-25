@@ -29,6 +29,33 @@ run-cli-sample:
 	make venv
 	source venv/bin/activate && \
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).transform_python \
-             --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
-				--data_files_to_use "['.pdf','.zip']"
+             --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'expected_json'}"  \
+				--data_files_to_use "['.pdf','.zip','.xml']"
 
+generate-expected:
+	make venv
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).transform_python \
+			 --data_files_to_use "['.pdf','.docx','.pptx','.xml','.zip']" \
+			 --docling2parquet_double_precision 0 \
+             --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'test-data/expected'}"
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).transform_python \
+			 --data_files_to_use "['.pdf','.docx','.pptx','.xml','.zip']" \
+			 --docling2parquet_double_precision 0 \
+             --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'test-data/expected_batch'}"  \
+             --docling2parquet_batch_size 10
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).transform_python \
+			 --data_files_to_use "['.pdf','.docx','.pptx','.xml','.zip']" \
+			 --docling2parquet_double_precision 0 \
+             --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'test-data/expected_md_no_table_no_ocr'}"  \
+             --docling2parquet_contents_type "text/markdown" \
+			 --docling2parquet_do_ocr False \
+			 --docling2parquet_do_table_structure False
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).transform_python \
+			 --data_files_to_use "['.pdf','.docx','.pptx','.xml','.zip']" \
+			 --docling2parquet_double_precision 0 \
+             --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'test-data/expected_json'}"  \
+             --docling2parquet_contents_type "application/json"

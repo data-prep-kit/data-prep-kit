@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -16,6 +17,8 @@ import traceback
 from typing import Any
 
 import pyarrow
+#from data_access import DataAccess
+#from arrow_s3 import ArrowS3
 from data_processing.data_access import ArrowS3, DataAccess
 from data_processing.utils import DPKConfig, TransformUtils, get_logger
 
@@ -91,6 +94,7 @@ class DataAccessS3(DataAccess):
         checkpoint: bool = False,
         m_files: int = -1,
         n_samples: int = -1,
+        batch_size: int = -1,
         files_to_use: list[str] = [".parquet"],
         files_to_checkpoint: list[str] = [".parquet"],
     ):
@@ -110,6 +114,7 @@ class DataAccessS3(DataAccess):
             checkpoint=checkpoint,
             m_files=m_files,
             n_samples=n_samples,
+            batch_size=batch_size,
             files_to_use=files_to_use,
             files_to_checkpoint=files_to_checkpoint,
         )

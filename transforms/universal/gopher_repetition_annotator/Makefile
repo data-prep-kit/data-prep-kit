@@ -13,8 +13,6 @@ TRANSFORM_NAME=$(shell basename `pwd`)
 
 ################################################################################
 
-# Developers should adapt this according to their implementation if they do not follow the proposed template
-# We continue to refine this. The current settings are based on current template
 TRANSFORM_PYTHON_SRC="-m dpk_$(TRANSFORM_NAME).runtime"
 TRANSFORM_RAY_SRC="-m dpk_$(TRANSFORM_NAME).ray.runtime"
 
@@ -24,3 +22,17 @@ run-python-cli-sample:
 	rm -rf output && \
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
 		--data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"
+
+run-ray-cli-with-all-params:
+	make venv
+	source venv/bin/activate && \
+	rm -rf output && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.runtime \
+	--run_locally=True \
+	--data_checkpointing=False --data_files_to_use="['.parquet']" --data_max_files=2 --data_num_samples=-1 \
+	--data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}" \
+	--gra_contents_column_name="contents" --gra_dup_10_grams_cname="top_10_grams" --gra_dup_5_grams_cname="top_5_grams" \
+	--gra_dup_6_grams_cname="top_6_grams" --gra_dup_7_grams_cname="top_7_grams" --gra_dup_8_grams_cname="top_8_grams" --gra_dup_9_grams_cname="top_9_grams" \
+	--gra_dup_line_char_frac_cname="dup_line_char_frac" --gra_dup_line_frac_cname="dup_line_frac" --gra_dup_para_char_frac_cname="dup_para_char_frac" \
+	--gra_dup_para_frac_cname="dup_para_frac" --gra_top_2_grams_cname="top_2_grams" --gra_top_3_grams_cname="top_3_grams" \
+	--gra_top_4_grams_cname="top_4_grams"

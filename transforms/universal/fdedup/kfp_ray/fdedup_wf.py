@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -143,7 +144,6 @@ def fuzzydedup(
     data_num_samples: int = -1,
     # orchestrator
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # columns used
     fdedup_contents_column: str = "contents",
     fdedup_document_id_column: str = "int_id_column",
@@ -195,7 +195,6 @@ def fuzzydedup(
     :param data_max_files - max files to process
     :param data_num_samples - num samples to process
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :param fdedup_contents_column - document column name
     :param fdedup_document_id_column - integer document id column name
     :param fdedup_num_permutations - number of permutations
@@ -271,7 +270,6 @@ def fuzzydedup(
             data_num_samples=data_num_samples,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             doc_column=fdedup_contents_column,
             id_column=fdedup_document_id_column,
             num_permutations=fdedup_num_permutations,
@@ -315,7 +313,6 @@ def fuzzydedup(
             data_num_samples=data_num_samples,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             num_bands=fdedup_num_bands,
             threshold=fdedup_jaccard_similarity_threshold,
             num_segments=fdedup_num_segments,
@@ -346,7 +343,6 @@ def fuzzydedup(
             data_num_samples=data_num_samples,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
         )
         ComponentUtils.add_settings_to_component(compute_get_duplicate_list_exec_params, ONE_HOUR_SEC * 2)
         compute_get_duplicate_list_exec_params.after(execute_cluster_analysis_job)
@@ -374,7 +370,6 @@ def fuzzydedup(
             data_num_samples=data_num_samples,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             id_column=fdedup_document_id_column,
             operation_mode=fdedup_operation_mode,
         )

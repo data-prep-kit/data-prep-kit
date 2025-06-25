@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 tools_json = '''
 [
     {"name": "exact_dedup", "description": "Exact data deduplication is used to identify (and remove) redundant records.",

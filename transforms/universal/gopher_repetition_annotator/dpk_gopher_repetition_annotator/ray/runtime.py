@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -43,3 +44,7 @@ class GopherRepetitionAnnotator:
         launcher = RayTransformLauncher(GopherRepetitionAnnotatorRayTransformConfiguration())
         return_code = launcher.launch()
         return return_code
+
+if __name__ == "__main__":
+    launcher = RayTransformLauncher(GopherRepetitionAnnotatorRayTransformConfiguration())
+    launcher.launch()

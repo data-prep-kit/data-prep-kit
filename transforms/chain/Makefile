@@ -15,7 +15,9 @@ venv::
 	## Hence adding the specific requirements here for lang_id and doc_quality
 	$(PYTHON) -m pip install -r $(REPOROOT)/transforms/language/lang_id/requirements.txt; \
 	$(PYTHON) -m pip install -r $(REPOROOT)/transforms/language/doc_quality/requirements.txt; \
-	$(PYTHON) -m pip install pytest
+	$(PYTHON) -m pip install pytest; \
+	$(PYTHON) -m pip list;
+
 
 test-src: venv
 	source venv/bin/activate; \

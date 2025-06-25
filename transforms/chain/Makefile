@@ -14,6 +14,7 @@ venv::
 	pip install pytest
 
 test-src: venv
-	@source venv/bin/activate; \
+	source venv/bin/activate; \
+	pip list; \
 	pytest test
 

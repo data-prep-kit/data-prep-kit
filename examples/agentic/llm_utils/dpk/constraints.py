@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # constraints = "constraint: If a plan has 'exact_dedup' and 'fuzzy_dedup' steps then 'exact_dedup' must run before 'fuzzy_dedup'.\n"
 constraints = ""
 constraints = constraints + "constraint: If the 'exact_dedup' tool is needed then it must run as the first step or immediately after 'Pdf2Parquet'.\n"

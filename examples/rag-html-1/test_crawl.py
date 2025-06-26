@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 from dpk_connector import crawl, shutdown
 
 

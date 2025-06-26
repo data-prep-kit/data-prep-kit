@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -97,7 +98,6 @@ def ededup(
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # ededup
     ededup_hash_cpu: float = 0.5,
     ededup_doc_column: str = "contents",
@@ -141,7 +141,6 @@ def ededup(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :param ededup_hash_cpu - number of CPUs per hash
     :param ededup_doc_column - key for accessing data
     :param ededup_use_snapshot - flag to start from existing snapshot
@@ -175,7 +174,6 @@ def ededup(
             data_num_samples=data_num_samples,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             ededup_doc_column=ededup_doc_column,
             ededup_hash_cpu=ededup_hash_cpu,
             ededup_use_snapshot=ededup_use_snapshot,

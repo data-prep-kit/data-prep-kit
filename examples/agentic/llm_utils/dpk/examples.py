@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 example_task = '''
 For example, If the required task was Filter the parquet files to include only english documents. The the plan should be the following:
 {"step_name": "Step #1 language identification", "tool_name": "language_id", "tool_input": [{"in_folder": "user_input", "out_folder": "user_input"}], "step_ev": "Ev1"}

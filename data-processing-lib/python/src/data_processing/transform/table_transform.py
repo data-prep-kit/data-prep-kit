@@ -14,7 +14,6 @@
 from typing import Any
 
 import pyarrow as pa
-from pyspark.sql import DataFrame
 from data_processing.transform import AbstractBinaryTransform
 from data_processing.utils import TransformUtils
 
@@ -66,7 +65,7 @@ class AbstractTableTransform(AbstractBinaryTransform):
             out_tables=out_tables, stats=stats | {"source_doc_count": table.num_rows}
         )
 
-    def transform(self, table: pa.Table | DataFrame, file_name: str = None) -> tuple[list[pa.Table | DataFrame], dict[str, Any]]:
+    def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
         """
         Converts input table into an output table.
         If there is an error, an exception must be raised - exit()ing is not generally allowed.

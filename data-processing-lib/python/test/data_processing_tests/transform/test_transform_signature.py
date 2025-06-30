@@ -73,7 +73,18 @@ class DocQualitySparkTransform(DocQualityTransform):
         super().__init__(config)
 
     def transform(self, table: DataFrame, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
-        return super().transform(pa.Table.from_pandas(table.toPandas()))
+        return super().transform(pa.Table.from_pandas(table.toPandas()), file_name)
+
+
+class DataSiftDocQualityTransform(DocQualityTransform):
+    def __init__(self, config: dict[str, Any]):
+        super().__init__(config)
+
+    def transform(self, table: pa.Table | DataFrame, file_name: str = None) -> tuple[list[pa.Table | DataFrame], dict[str, Any]]:
+        if isinstance(table, DataFrame):
+            table_list, meta = super().transform(pa.Table.from_pandas(table.toPandas()), file_name)
+            return [spark.createDataFrame(table_list[0].to_pandas(), file_name)], meta
+        return super().transform(table, file_name)
 
 
 class TestTransformSparkSignature(AbstractTableTransformTest):

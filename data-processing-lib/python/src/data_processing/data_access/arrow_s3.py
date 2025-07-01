@@ -184,7 +184,7 @@ class ArrowS3:
         # convert to bytes
         data = TransformUtils.convert_arrow_to_binary(table=table)
         if data is None:
-            return -1, None
+            return -1, None, 0
         # save bytes
         res, retries = self.save_file(key, data)
         return len(data), res, retries

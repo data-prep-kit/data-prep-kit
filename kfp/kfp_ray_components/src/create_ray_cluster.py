@@ -21,6 +21,7 @@ def start_ray_cluster(
     name: str,  # name of Ray cluster
     ray_head_options: str,  # ray head configuration
     ray_worker_options: str,  # ray worker configuration
+    other_secrets: str, # additional secrets that transforms can use
     server_url: str,  # url of api server
     additional_params: str,  # additional parameters for
 ) -> None:
@@ -39,9 +40,25 @@ def start_ray_cluster(
     if ns == "":
         print(f"Failed to get namespace")
         sys.exit(1)
+    shared_secrets = {}
+    if other_secrets:
+         other_secrets_obj = KFPUtils.load_from_json(other_secrets.replace("'", '"'))
+         for secret_name, env2value in other_secrets_obj.items():
+             shared_secrets = shared_secrets | KFPUtils.secret_2_environment(secret_name, env2value)
+    # add S3 credentials
+    shared_secrets["values"] = KFPUtils.credentials_dict()
     # Convert input
     head_options = KFPUtils.load_from_json(ray_head_options.replace("'", '"'))
     worker_node = KFPUtils.load_from_json(ray_worker_options.replace("'", '"'))
+    if shared_secrets:
+         if head_options.get("environment"):
+             head_options["environment"] = shared_secrets | head_options.get("environment")
+         else:
+             head_options["environment"] = shared_secrets
+         if worker_node.get("environment"):
+             worker_node["environment"] = shared_secrets | worker_node.get("environment")
+         else:
+             worker_node["environment"] = shared_secrets
     head_node = head_options | {
         "ray_start_params": {"metrics-export-port": "8080", "num-cpus": "0", "dashboard-host": "0.0.0.0"}
     }
@@ -84,6 +101,7 @@ if __name__ == "__main__":
     parser.add_argument("-id", "--run_id", type=str, default="")
     parser.add_argument("-ho", "--ray_head_options", default="{}", type=str)
     parser.add_argument("-wo", "--ray_worker_options", default="{}", type=str)
+    parser.add_argument("-os", "--other_secrets", default="{}", type=str)
     parser.add_argument("-su", "--server_url", default="", type=str)
     parser.add_argument("-ap", "--additional_params", default="{}", type=str)
 
@@ -98,6 +116,7 @@ if __name__ == "__main__":
         name=cluster_name,
         ray_head_options=args.ray_head_options,
         ray_worker_options=args.ray_worker_options,
+        other_secrets=args.other_secrets,
         server_url=args.server_url,
         additional_params=args.additional_params,
     )

@@ -1,4 +1,3 @@
-# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -13,17 +12,17 @@
 
 import os
 
-from data_processing.data_access import DataAccessS3
+from data_processing.data_access import DataAccessFactory, DataAccessS3, DPKConfigS3
 from moto import mock_aws
 
 
-s3_cred = {
-    "access_key": "access",
-    "secret_key": "secret",
-    "region": "us-east-1",
-}
+DPKConfigS3.set_env_var("S3_ACCESS_KEY", "access")
+DPKConfigS3.set_env_var("S3_SECRET_KEY", "secret")
+DPKConfigS3.set_env_var("S3_REGION", "us-east-1")
+
 
 s3_conf = {
+     "da_class": "data_processing.data_access.DataAccessS3",
     "input_folder": "test/table_read_write/input/",
     "output_folder": "test/table_read_write/output/",
 }
@@ -49,7 +48,10 @@ def test_table_read_write():
     """
     with mock_aws():
         # create data access
-        d_a = DataAccessS3(config=s3_conf | s3_cred, d_sets=None, checkpoint=False, m_files=-1)
+        input_location = "test/table_read_write/input/"
+        daf=DataAccessFactory()
+        daf.apply_input_params({'data_config':s3_conf})
+        d_a = daf.create_data_access()
         # populate bucket
         input_location = "test/table_read_write/input/"
         _create_and_populate_bucket(d_a=d_a, input_location=input_location, n_files=1)
@@ -82,7 +84,9 @@ def test_get_folder():
     """
     with mock_aws():
         # create data access
-        d_a = DataAccessS3(config=s3_cred, d_sets=None, checkpoint=False, m_files=-1)
+        daf=DataAccessFactory()
+        daf.apply_input_params({'data_config':s3_conf})
+        d_a = daf.create_data_access()
         # populate bucket
         input_location = "test/table_read_write/input/"
         _create_and_populate_bucket(d_a=d_a, input_location=input_location, n_files=3)
@@ -99,7 +103,9 @@ def test_files_to_process():
     """
     with mock_aws():
         # create data access
-        d_a = DataAccessS3(config=s3_conf | s3_cred, d_sets=None, checkpoint=False, m_files=-1)
+        daf=DataAccessFactory()
+        daf.apply_input_params({'data_config':s3_conf})
+        d_a = daf.create_data_access()
         # populate bucket
         _create_and_populate_bucket(d_a=d_a, input_location=f"{s3_conf['input_folder']}dataset=d1/", n_files=4)
         _create_and_populate_bucket(d_a=d_a, input_location=f"{s3_conf['input_folder']}dataset=d2/", n_files=4)

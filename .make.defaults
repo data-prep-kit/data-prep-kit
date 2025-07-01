@@ -49,7 +49,7 @@ DOCKER_REGISTRY_ENDPOINT?=$(DOCKER_HOSTNAME)/$(DOCKER_NAMESPACE)
 DOCKER_LOCAL_IMAGE=$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_VERSION)
 DOCKER_SPARK_BASE_IMAGE_NAME=data-prep-kit-spark-$(SPARK_VERSION)
 DOCKER_SPARK_BASE_IMAGE=$(DOCKER_SPARK_BASE_IMAGE_NAME):$(DOCKER_IMAGE_VERSION)
-RAY_BASE_IMAGE?=docker.io/rayproject/ray:${RAY}-py310
+RAY_BASE_IMAGE?=docker.io/rayproject/ray:${RAY}-py312
 # Deprecated in favor of DOCKER_REMOTE_IMAGE
 DOCKER_IMAGE?=$(DOCKER_REMOTE_IMAGE)
 KIND_CLUSTER_NAME=dataprep
@@ -329,8 +329,13 @@ __check_defined = \
 	@source venv/bin/activate;				      	\
 	if [ ! -z "$(EXTRA_INDEX_URL)" ]; then				\
 		extra_url='--extra-index-url $(EXTRA_INDEX_URL)';	\
+		if [ -e $(PYTHON_PROJECT_BUILD_DIR)/requirements-private.txt ]; then \
+		    echo "$(PYTHON_PROJECT_BUILD_DIR)/requirements-private.txt" ;\
+		    pip install $$extra_url -r $(PYTHON_PROJECT_BUILD_DIR)/requirements-private.txt; \
+        fi; \
 	fi;								\
 	if [ -e $(PYTHON_PROJECT_BUILD_DIR)/requirements.txt ]; then \
+		echo "installing $(PYTHON_PROJECT_BUILD_DIR)/requirements.txt" ;\
 		pip install -r  $(PYTHON_PROJECT_BUILD_DIR)/requirements.txt; \
 	fi; \
 	if [ -e $(PYTHON_PROJECT_BUILD_DIR)/pyproject.toml ]; then \
@@ -524,6 +529,9 @@ endif
 	@source venv/bin/activate;					\
 	if [ ! -z "$(EXTRA_INDEX_URL)" ]; then				\
 		extra_url='--extra-index-url $(EXTRA_INDEX_URL)';	\
+		if [ -e requirements-private.txt ]; then \
+		    pip install $$extra_url -r requirements-private.txt; \
+        fi; \
 	fi;								\
 	if [ -e requirements.txt ]; then				\
 		echo Installing requirements from requirements.txt;	\

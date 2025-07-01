@@ -88,14 +88,21 @@ class DataAccessLocal(DataAccess):
                          files_to_use=files_to_use, files_to_checkpoint=files_to_checkpoint)
 
         ######
+        ## data_config = {'input_folder': str= 'path to input folder',
+        ##               'output_folder': str='path to output folder',
+        ##              'cache' : bool = True | False}
         ## Calling DataAccessLocal.validate_config should have caught this in a production setting
         ## but we still allow the class to be created with no configuration defined. Why ?
+        self.tables = {}
+
         if config is None:
             self.input_folder = None
             self.output_folder = None
+            self.cache = False
         else:
             self.input_folder = os.path.abspath(config["input_folder"])
             self.output_folder = os.path.abspath(config["output_folder"])
+            self.cache = config.get('cache', False)
         ######
 
         logger.debug(f"Local input folder: {self.input_folder}")
@@ -162,6 +169,10 @@ class DataAccessLocal(DataAccess):
         Returns:
             pyarrow.Table: PyArrow table if read successfully, None otherwise.
         """
+        # if the table exists in memory, use it for faster access
+        if self.tables.get(path):
+            logger.debug('Table found in memory') 
+            return self.tables[path], 0
 
         try:
             table = pq.read_table(path)
@@ -186,6 +197,10 @@ class DataAccessLocal(DataAccess):
                     - size (int): The size of the file (bytes).
                 If saving fails, file_info will be None.
         """
+        #save the table in memory for faster access
+        if self.cache:
+           self.tables[path] = table
+
         # Get table size in memory
         size_in_memory = table.nbytes
         try:

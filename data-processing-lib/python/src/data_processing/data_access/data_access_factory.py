@@ -87,7 +87,7 @@ class DataAccessFactory(DataAccessFactoryBase):
                 "package[.module].classname",
                 "Class name that implements the desired data access",
             ],
-            "other attributes": [
+            "kwargs": [
                 "class-defined-attributes",
                 "Attributes that are required by the data access class referenced in da_class",
             ],

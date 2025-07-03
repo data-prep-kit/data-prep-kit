@@ -18,19 +18,36 @@ import sys
 from typing import Any
 
 from data_processing.utils import get_logger
-
+from python_apiserver_client.params import (
+    EnvironmentVariables,
+    EnvVarFrom,
+    EnvVarSource,
+)
 
 logger = get_logger(__name__)
+
+
+S3_ACCESS_SECRET: str = "s3_access"
+
+S3_ACCESS_KEY: str = "S3_ACCESS_KEY"
+S3_SECRET_KEY: str = "S3_SECRET_KEY"
+S3_ENDPOINT: str = "S3_ENDPOINT"
+
 
 
 class KFPUtils:
     """
     Helper utilities for KFP implementations
     """
+    @staticmethod
+    def get_s3_env_2_key():
+        return {S3_ACCESS_KEY: "s3-key", S3_SECRET_KEY: "s3-secret", S3_ENDPOINT: "s3-endpoint"}
 
     @staticmethod
     def credentials(
-        access_key: str = "S3_KEY", secret_key: str = "S3_SECRET", endpoint: str = "ENDPOINT"
+        access_key: str = S3_ACCESS_KEY,
+        secret_key: str = S3_SECRET_KEY,
+        endpoint: str = S3_ENDPOINT
     ) -> tuple[str, str, str]:
         """
         Get credentials from the environment
@@ -45,6 +62,11 @@ class KFPUtils:
         if s3_key is None or s3_secret is None or s3_endpoint is None:
             logger.warning("Failed to load s3 credentials")
         return s3_key, s3_secret, s3_endpoint
+
+    @staticmethod
+    def credentials_dict():
+        s3_access_key, s3_secret_key, s3_endpoint = KFPUtils.credentials()
+        return {S3_ACCESS_KEY: s3_access_key, S3_SECRET_KEY: s3_secret_key, S3_ENDPOINT:s3_endpoint }
 
     @staticmethod
     def get_namespace() -> str:
@@ -166,3 +188,17 @@ class KFPUtils:
             sys.exit(1)
 
         return str(n_actors)
+
+    @staticmethod
+    def secret_2_environment(secret_name: str, env2key: dict[str, str]):
+        if secret_name is None or len(secret_name) == 0:
+            logger.warning("secret name is not define")
+            return {}
+        if env2key is None or len(env2key) == 0:
+            logger.warning(f"{secret_name=}: there is no env2key definition, skip")
+            return {}
+        var_s = {}
+        for env_name, secret_key in env2key.items():
+            env_v = EnvVarFrom(source=EnvVarSource.SECRET, name=secret_name, key=secret_key)
+            var_s[env_name] = env_v
+        return EnvironmentVariables(from_ref=var_s).to_dict()

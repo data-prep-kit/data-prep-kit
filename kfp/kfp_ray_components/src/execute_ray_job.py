@@ -33,11 +33,11 @@ if __name__ == "__main__":
     # convert exec params to dictionary
     exec_params = KFPUtils.load_from_json(args.exec_params)
     # get and build S3 credentials
-    access_key, secret_key, url = KFPUtils.credentials()
-    # add s3 credentials to exec params
-    exec_params["data_s3_cred"] = (
-        "{'access_key': '" + access_key + "', 'secret_key': '" + secret_key + "', 'url': '" + url + "'}"
-    )
+#    access_key, secret_key, url = KFPUtils.credentials()
+#    # add s3 credentials to exec params
+#    exec_params["data_s3_cred"] = (
+#        "{'access_key': '" + access_key + "', 'secret_key': '" + secret_key + "', 'url': '" + url + "'}"
+#    )
     # Execute Ray jobs
     execute_ray_jobs(
         name=cluster_name,

@@ -23,3 +23,5 @@ test-src: venv
 	source venv/bin/activate; \
 	pytest test
 
+set-versions:
+	echo "Do nothing"

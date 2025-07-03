@@ -33,11 +33,9 @@ venv::
 	rm -r dist venv || true
 	rm -rf src/*egg-info || true
 	rm makeenv || true
-	$(PYTHON) -m venv venv
-	source venv/bin/activate; 	\
-	pip install --upgrade pip;	\
-	pip install -e ../ ;		\
-	pip install pytest pytest-cov moto==5.0.5 markupsafe==2.0.1
+	$(MAKE) .defaults.python-lib-src-venv
+	source venv/bin/activate && pip install -r ../requirements-dev.txt
+
 
 image:: 
 	@# Help: Placeholder does nothing for now.

@@ -101,6 +101,14 @@ class AbstractTableTransform(AbstractBinaryTransform):
         """
         return [], {}
 
+    def enforce_folder_boundary(self):
+        """
+        This is supporting method for transformers, that implement buffering of tables, and triggers
+        a call to flush the buffer prior to switching to a new folder if so required
+        :return: true if the runtime should call the flush method before processing the next folder
+        """
+        return False
+
     def _check_and_convert_tables(
         self, out_tables: list[pa.Table], stats: dict[str, Any]
     ) -> tuple[list[tuple[bytes, str]], dict[str, Any]]:

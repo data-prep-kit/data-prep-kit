@@ -45,7 +45,18 @@ from docling.datamodel.pipeline_options import (
     TesseractCliOcrOptions,
     TesseractOcrOptions,
 )
-from docling.document_converter import DocumentConverter, InputFormat, PdfFormatOption
+from docling.datamodel.pipeline_options_asr_model import (
+    InlineAsrNativeWhisperOptions,
+)
+from docling.datamodel.asr_model_specs import (
+    WHISPER_TINY,
+    WHISPER_SMALL,
+    WHISPER_MEDIUM,
+    WHISPER_BASE,
+    WHISPER_LARGE,
+    WHISPER_TURBO,
+)
+from docling.document_converter import DocumentConverter, InputFormat, PdfFormatOption, AudioFormatOption
 from docling.models.base_ocr_model import OcrOptions
 
 
@@ -63,6 +74,8 @@ docling2parquet_ocr_engine_key = f"ocr_engine"
 docling2parquet_bitmap_area_threshold_key = f"bitmap_area_threshold"
 docling2parquet_pdf_backend_key = f"pdf_backend"
 docling2parquet_double_precision_key = f"double_precision"
+docling2parquet_asr_model_key = f"asr_model"
+docling2parquet_do_asr_key = f"do_asr"
 
 
 class docling2parquet_contents_types(str, enum.Enum):
@@ -92,6 +105,18 @@ class docling2parquet_ocr_engine(str, enum.Enum):
         return str(self.value)
 
 
+class docling2parquet_asr_model(str, enum.Enum):
+    WHISPER_TINY = "whisper_tiny"
+    WHISPER_SMALL = "whisper_small"
+    WHISPER_MEDIUM = "whisper_medium"
+    WHISPER_BASE = "whisper_base"
+    WHISPER_LARGE = "whisper_large"
+    WHISPER_TURBO = "whisper_turbo"
+
+    def __str__(self):
+        return str(self.value)
+
+
 docling2parquet_batch_size_default = -1
 docling2parquet_contents_type_default = docling2parquet_contents_types.MARKDOWN
 docling2parquet_do_table_structure_default = True
@@ -100,6 +125,8 @@ docling2parquet_bitmap_area_threshold_default = 0.10
 docling2parquet_ocr_engine_default = docling2parquet_ocr_engine.EASYOCR
 docling2parquet_pdf_backend_default = docling2parquet_pdf_backend.PYPDFIUM2
 docling2parquet_double_precision_default = 8
+docling2parquet_asr_model_default = docling2parquet_asr_model.WHISPER_TINY
+docling2parquet_do_asr_default = True
 
 docling2parquet_batch_size_cli_param = f"{cli_prefix}{docling2parquet_batch_size_key}"
 docling2parquet_artifacts_path_cli_param = f"{cli_prefix}{docling2parquet_artifacts_path_key}"
@@ -116,6 +143,8 @@ docling2parquet_pdf_backend_cli_param = f"{cli_prefix}{docling2parquet_pdf_backe
 docling2parquet_double_precision_cli_param = (
     f"{cli_prefix}{docling2parquet_double_precision_key}"
 )
+docling2parquet_asr_model_cli_param = f"{cli_prefix}{docling2parquet_asr_model_key}"
+docling2parquet_do_asr_cli_param = f"{cli_prefix}{docling2parquet_do_asr_key}"
 
 
 class Docling2ParquetTransform(AbstractBinaryTransform):
@@ -161,8 +190,16 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
         self.double_precision = config.get(
             docling2parquet_double_precision_key, docling2parquet_double_precision_default
         )
+        self.asr_model_name = config.get(
+            docling2parquet_asr_model_key, docling2parquet_asr_model_default
+        )
+        if not isinstance(self.asr_model_name, docling2parquet_asr_model):
+            self.asr_model_name = docling2parquet_asr_model[self.asr_model_name]
+        self.do_asr = config.get(docling2parquet_do_asr_key, docling2parquet_do_asr_default)
 
         logger.info("Initializing models")
+        format_options = {}
+        # PDF format options
         pipeline_options = PdfPipelineOptions(
             artifacts_path=self.artifacts_path,
             do_table_structure=self.do_table_structure,
@@ -170,7 +207,21 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
             ocr_options=self._get_ocr_engine(self.ocr_engine_name),
         )
         pipeline_options.ocr_options.bitmap_area_threshold = self.bitmap_area_threshold
-
+        format_options[InputFormat.PDF] = PdfFormatOption(
+            pipeline_options=pipeline_options,
+            backend=self._get_pdf_backend(self.pdf_backend_name),
+        )
+        # Audio format options (ASR)
+        if self.do_asr:
+            from docling.datamodel.pipeline_options import AsrPipelineOptions
+            asr_options = self._get_asr_model(self.asr_model_name)
+            asr_pipeline_options = AsrPipelineOptions(
+                artifacts_path=self.artifacts_path,
+                asr_options=asr_options,
+            )
+            format_options[InputFormat.AUDIO] = AudioFormatOption(
+                pipeline_options=asr_pipeline_options
+            )
         lock = MultiLock("dpk_docling2parquet_init")
         try:
             logger.debug(
@@ -179,15 +230,10 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
             locked = lock.acquire()
             logger.debug(f"Lock {lock.lock_filename} acquired.")
 
-            self._converter = DocumentConverter(
-                format_options={
-                    InputFormat.PDF: PdfFormatOption(
-                        pipeline_options=pipeline_options,
-                        backend=self._get_pdf_backend(self.pdf_backend_name),
-                    )
-                }
-            )
+            self._converter = DocumentConverter(format_options=format_options)
             self._converter.initialize_pipeline(InputFormat.PDF)
+            if self.do_asr:
+                self._converter.initialize_pipeline(InputFormat.AUDIO)
         finally:
             lock.release()
             logger.debug(f"Lock {lock.lock_filename} released.")
@@ -203,6 +249,21 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
             return TesseractOcrOptions()
 
         raise RuntimeError(f"Unknown OCR engine `{engine_name}`")
+
+    def _get_asr_model(self, model_name: docling2parquet_asr_model) -> InlineAsrNativeWhisperOptions:
+        if model_name == docling2parquet_asr_model.WHISPER_TINY:
+            return WHISPER_TINY
+        elif model_name == docling2parquet_asr_model.WHISPER_SMALL:
+            return WHISPER_SMALL
+        elif model_name == docling2parquet_asr_model.WHISPER_MEDIUM:
+            return WHISPER_MEDIUM
+        elif model_name == docling2parquet_asr_model.WHISPER_BASE:
+            return WHISPER_BASE
+        elif model_name == docling2parquet_asr_model.WHISPER_LARGE:
+            return WHISPER_LARGE
+        elif model_name == docling2parquet_asr_model.WHISPER_TURBO:
+            return WHISPER_TURBO
+        raise RuntimeError(f"Unknown ASR model `{model_name}`")
 
     def _get_pdf_backend(self, backend_name: docling2parquet_pdf_backend):
         if backend_name == docling2parquet_pdf_backend.DLPARSE_V1:
@@ -497,6 +558,19 @@ class Docling2ParquetTransformConfiguration(TransformConfiguration):
             required=False,
             help="If set, all floating points (e.g. bounding boxes) are rounded to this precision. For tests it is advised to use 0.",
             default=docling2parquet_double_precision_default,
+        )
+        parser.add_argument(
+            f"--{docling2parquet_asr_model_cli_param}",
+            type=docling2parquet_asr_model,
+            choices=list(docling2parquet_asr_model),
+            help="The ASR model to use.",
+            default=docling2parquet_asr_model.WHISPER_TINY,
+        )
+        parser.add_argument(
+            f"--{docling2parquet_do_asr_cli_param}",
+            type=str2bool,
+            help="If true, audio transcription will be performed on audio files.",
+            default=docling2parquet_do_asr_default,
         )
 
     def apply_input_params(self, args: Namespace) -> bool:

@@ -72,12 +72,13 @@ jobs:
                   KFP_BLACK_LIST=$(./scripts/check-workflows.sh -show-kfp-black-list)
                   if [ -e "transforms/code/code_profiler/Makefile" -a -e "transforms/code/code_profiler/kfp_ray/Makefile" ]; then
                      transform=$(basename "transforms/code/code_profiler")
-                     if echo ${KFP_BLACK_LIST} | grep -qv ${transform}; then
-                        $PWD/scripts/workflow_helper.sh install-tools
-                        $PWD/scripts/workflow_helper.sh test-workflow transforms/code/code_profiler   
-                     else
+                  ### image too big, do not attempt a full test, build only
+                  ###  if echo ${KFP_BLACK_LIST} | grep -qv ${transform}; then
+                  ###      $PWD/scripts/workflow_helper.sh install-tools
+                  ###      $PWD/scripts/workflow_helper.sh test-workflow transforms/code/code_profiler
+                  ###   else
                         $PWD/scripts/workflow_helper.sh build-workflow transforms/code/code_profiler
-                     fi              
+                  ###   fi
                   else
                      echo "Skipping transforms/code/code_profiler kfp test for lack of Makefile and/or kfp_ray/Makefile"
                    fi
@@ -109,12 +110,13 @@ jobs:
                   KFP_BLACK_LIST=$(./scripts/check-workflows.sh -show-kfp-black-list)
                   if [ -e "transforms/code/code_profiler/Makefile" -a -e "transforms/code/code_profiler/kfp_ray/Makefile" ]; then
                      transform=$(basename "transforms/code/code_profiler")
-                     if echo ${KFP_BLACK_LIST} | grep -qv ${transform}; then
-                        $PWD/scripts/workflow_helper.sh install-tools
-                        $PWD/scripts/workflow_helper.sh test-workflow transforms/code/code_profiler   
-                     else
+                    ## image too big, do not attempt a full test, build only
+                    ## if echo ${KFP_BLACK_LIST} | grep -qv ${transform}; then
+                    ##    $PWD/scripts/workflow_helper.sh install-tools
+                    ##    $PWD/scripts/workflow_helper.sh test-workflow transforms/code/code_profiler
+                    ## else
                         $PWD/scripts/workflow_helper.sh build-workflow transforms/code/code_profiler
-                     fi              
+                    ## fi
                   else
                      echo "Skipping transforms/code/code_profiler kfp test for lack of Makefile and/or kfp_ray/Makefile"
                    fi

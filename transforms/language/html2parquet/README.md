@@ -51,7 +51,7 @@ The table below provides the parameters that users can adjust to control the beh
 
 | Parameter         | Default    | Description                                                                 |
 |-------------------|------------|-----------------------------------------------------------------------------|
-| `output_format`    | `markdown` | Specifies the format of the extracted content. Options: `markdown`, `txt`.  |
+| `output_format`    | `markdown` | Specifies the format of the extracted content. Options: `markdown`, `txt`, `json`.  |
 | `favor_precision`  | `True`     | Prefers less content but more accurate extraction. Options: `True`, `False`. |
 | `favor_recall`     | `True`     | Extracts more content when uncertain. Options: `True`, `False`.              |
 

@@ -7,5 +7,6 @@ mmh3
 psutil
 polars>=1.9.0
 transformers
-fasttext-wheel
+fasttext-wheel ; sys_platform=='darwin' or sys_platform=="win32"
+fasttext ; sys_platform=='linux'
 huggingface-hub >= 0.21.4, <1.0.0

@@ -7,6 +7,9 @@ mmh3
 psutil
 polars>=1.9.0
 transformers
+## install fast-text for the platforms that we have tested with
+## for all other platforms, require that the user install fasttext
 fasttext-wheel ; sys_platform=='darwin' or sys_platform=="win32"
-fasttext ; sys_platform=='linux'
+fasttext-wheel ; sys_platform=="linux" and platform_release=="6.12.13-200.fc41.aarch64"
+fasttext-wheel ; sys_platform=="linux" and platform_release=="ubuntu"
 huggingface-hub >= 0.21.4, <1.0.0

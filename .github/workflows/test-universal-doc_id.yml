@@ -48,6 +48,13 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
+    check_platform:
+        runs-on: ubuntu-22.04
+        steps:
+            - id: platform
+              run: |
+               python3 -c "import platform; print (platform.uname())"
+
     check_if_push_image:
         # check whether the Docker images should be pushed to the remote repository
         # The images are pushed if it is a merge to dev branch or a new tag is created.

@@ -1,3 +1,4 @@
+## Added comment line to trigger verification for all transforms in PR: https://github.com/data-prep-kit/data-prep-kit/pull/1367
 # Include the common rules.
 # Use "make help" to see them.
 include ${REPOROOT}/.make.defaults

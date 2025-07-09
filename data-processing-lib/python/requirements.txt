@@ -7,5 +7,10 @@ mmh3
 psutil
 polars>=1.9.0
 transformers
-fasttext-wheel
+## install fasttext-wheel or fasttext for the platforms that we have tested with including docker image we build
+fasttext-wheel ; sys_platform=='darwin' or sys_platform=="win32"
+fasttext-wheel ; sys_platform=="linux" and platform_release=="6.12.13-200.fc41.aarch64"
+fasttext-wheel ; sys_platform=="linux" and platform_release=="6.8.0-1030-azure"
+## for all other platforms, require fasttext and pre-installed by the user with gcc as required
+#fasttext ; sys_platform=="linux" and platform_release!="6.12.13-200.fc41.aarch64" and platform_release!="6.8.0-1030-azure"
 huggingface-hub >= 0.21.4, <1.0.0

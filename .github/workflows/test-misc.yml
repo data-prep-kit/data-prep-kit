@@ -32,6 +32,14 @@ on:
             - "**/.dockerignore"
 
 jobs:
+    view_platform:
+        runs-on: ubuntu-22.04
+        steps:
+            - id: platform
+              run: |
+               python --version
+               python -c "import platform; print (platform.uname())"
+
     check-transform-test-workflows:
         runs-on: ubuntu-22.04
         steps:

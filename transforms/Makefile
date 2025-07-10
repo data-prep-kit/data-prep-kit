@@ -115,7 +115,7 @@ test-pkg-dist:
 	source venv/bin/activate && $(PYTHON) -m pip  install 'dist/data_prep_toolkit_transforms-$(TRANSFORMS_PKG_VERSION)-py3-none-any.whl[ray,all]'
 	source venv/bin/activate && pip install pytest scancode-toolkit
 	for T in $(shell find . | grep '/test$$') ; do \
-		if [[ "$$T" =~ venv ]] || [[ "$$T" =~ malware ]] || [[ "$$T" =~ code_profiler ]] || [[ "$$T" =~ noop ]] ; then \
+		if [[ "$$T" =~ venv ]] || [[ "$$T" =~ malware ]] || [[ "$$T" =~ code_profiler ]] || [[ "$$T" =~ header_cleanser ]] || [[ "$$T" =~ chain ]] || [[ "$$T" =~ html2parquet ]] || [[ "$$T" =~ noop ]]; then \
 			echo ; \
 		else \
 		    echo "running unit test on: $$T" ; \

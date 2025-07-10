@@ -32,6 +32,10 @@ RUN rm requirements.txt
 # components
 COPY --chmod=775 --chown=ray:root ./src /pipelines/component/src
 
+# Add component specs to image: Used now for compiling workflows
+COPY --chmod=775 --chown=ray:root *.yaml /pipelines/component/
+ENV KFP_COMPONENT_SPEC_PATH=/pipelines/component/
+
 # Set environment
 ENV KFP_v2=$KFP_v2
 

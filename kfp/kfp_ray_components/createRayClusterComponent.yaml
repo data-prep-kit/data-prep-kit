@@ -6,6 +6,7 @@ inputs:
     - { name: run_id, type: String, description: "The KFP Run ID" }
     - { name: ray_head_options, type: JsonObject, default: "{}", description: "ray head configuration" }
     - { name: ray_worker_options, type: JsonObject, default: "{}", description: "ray worker configuration" }
+    - { name: other_secrets, type: JsonObject, default: "{}", description: "secrets, except S3 secret, that transformers need" }
     - { name: server_url, type: String, default: "", description: "url of api server" }
     - { name: additional_params, type: String, default: "{}", description: "additional parameters" }
 
@@ -29,6 +30,8 @@ implementation:
                 { inputValue: ray_head_options },
                 --ray_worker_options,
                 { inputValue: ray_worker_options },
+                --other_secrets,
+                { inputValue: other_secrets },
                 --server_url,
                 { inputValue: server_url },
                 --additional_params,

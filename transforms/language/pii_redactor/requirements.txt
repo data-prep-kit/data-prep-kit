@@ -1,3 +1,5 @@
+# Later versions of numpy is ausing error with:
+# AttributeError: module 'numpy' has no attribute 'AxisError'
 numpy < 1.29.0
 # Force upgrade to pydantic 2.8.1 as pydantic 2.5.0 is causing error with python 3.12
 #TypeError: ForwardRef._evaluate() missing 1 required keyword-only argument: 'recursive_guard'

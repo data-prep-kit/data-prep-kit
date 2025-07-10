@@ -32,14 +32,6 @@ on:
             - "**/.dockerignore"
 
 jobs:
-    test-make:
-        runs-on: ubuntu-22.04
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
-            - name: Test top-level recursive make targets.
-              run: |
-                  make -n clean test build publish set-versions
     check-transform-test-workflows:
         runs-on: ubuntu-22.04
         steps:

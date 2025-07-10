@@ -41,7 +41,7 @@ for i in $(find transforms  -maxdepth 2 -mindepth 2 -type d | grep -v venv); do
 	echo KFP workflow for $transform is not expected. 
     fi
     for workflow in $workflows; do
-	if [ ! -e $workflow ]; then 
+	if [ ! -e $workflow ] && [ -e transforms/$category/$transform/Makefile ]; then 
 	    echo Missing $workflow for transform $category/$transform 
 	    echo Fix this by running make in the .github/workflows directory
 	    exit 1

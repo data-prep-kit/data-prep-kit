@@ -53,6 +53,9 @@ class TransformStatisticsRay(TransformStatistics):
         :return: None
         """
         for key, val in stats.items():
+            if isinstance(val, list):
+                self.stats[key]=self.stats.get(key, [])+ val
+                continue
             self.stats[key] = self.stats.get(key, 0) + val
             if val > 0:
                 if key == "source_files":

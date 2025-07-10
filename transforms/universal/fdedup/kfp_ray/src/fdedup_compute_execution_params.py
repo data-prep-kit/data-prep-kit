@@ -97,7 +97,6 @@ def signature_calc_compute_execution_params(
     data_num_samples: int,  # num samples to process
     runtime_pipeline_id: str,  # pipeline id
     runtime_job_id: str,  # job id
-    runtime_code_location: dict,  # code location
     doc_column: str,  # document column name
     id_column: str,  # integer document id column name
     num_permutations: int,  # number of permutations
@@ -120,7 +119,6 @@ def signature_calc_compute_execution_params(
     :param data_num_samples: num samples to process
     :param runtime_pipeline_id: pipeline id
     :param runtime_job_id: job id
-    :param runtime_code_location: code location
     :param doc_column: document column name
     :param id_column: integer document id column name
     :param num_permutations: number of permutations
@@ -144,7 +142,6 @@ def signature_calc_compute_execution_params(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "minhash_contents_column": doc_column,
         "minhash_document_id_column": id_column,
         "minhash_num_permutations": num_permutations,
@@ -168,7 +165,6 @@ def cluster_analysis_compute_execution_params(
     data_num_samples: int,  # num samples to process
     runtime_pipeline_id: str,  # pipeline id
     runtime_job_id: str,  # job id
-    runtime_code_location: dict,  # code location
     num_bands: int,  # number of bands
     threshold: float,  # threshold,
     num_segments: int,  # number of segments
@@ -184,7 +180,6 @@ def cluster_analysis_compute_execution_params(
     :param data_num_samples: num samples to process
     :param runtime_pipeline_id: pipeline id
     :param runtime_job_id: job id
-    :param runtime_code_location: code location
     :param num_bands: number of bands
     :param threshold: threshold,
     :param num_segments: number of segments
@@ -209,7 +204,6 @@ def cluster_analysis_compute_execution_params(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "cluster_num_bands": num_bands,
         "cluster_jaccard_similarity_threshold": threshold,
         "cluster_num_segments": num_segments,
@@ -225,7 +219,6 @@ def get_duplicate_list_compute_execution_params(
     data_num_samples: int,  # num samples to process
     runtime_pipeline_id: str,  # pipeline id
     runtime_job_id: str,  # job id
-    runtime_code_location: dict,  # code location
 ) -> dict:
     """
     Compute fuzzy dedup execution parameters for get duplicate list step
@@ -237,7 +230,6 @@ def get_duplicate_list_compute_execution_params(
     :param data_num_samples: num samples to process
     :param runtime_pipeline_id: pipeline id
     :param runtime_job_id: job id
-    :param runtime_code_location: code location
     :return: a dictionary with a Ray Job execution parameters
     """
     import json
@@ -261,7 +253,6 @@ def get_duplicate_list_compute_execution_params(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "fdlist_docs_to_remove": duplicate_docids_folder,
         "fdlist_consolidated_filename": duplicate_list_location,
     }
@@ -276,7 +267,6 @@ def data_cleaning_compute_execution_params(
     data_num_samples: int,  # num samples to process
     runtime_pipeline_id: str,  # pipeline id
     runtime_job_id: str,  # job id
-    runtime_code_location: dict,  # code location
     id_column: str,  # integer document id column name
     operation_mode: str,  # filter (non-)duplicates or annotate
 ) -> dict:
@@ -290,7 +280,6 @@ def data_cleaning_compute_execution_params(
     :param data_num_samples: num samples to process
     :param runtime_pipeline_id: pipeline id
     :param runtime_job_id: job id
-    :param runtime_code_location: code location
     :param id_column: integer document id column name
     :param operation_mode: filter (non-)duplicates or annotate
     :return: a dictionary with a Ray Job execution parameters
@@ -320,7 +309,6 @@ def data_cleaning_compute_execution_params(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "fdclean_document_id_column": id_column,
         "fdclean_duplicate_list_location": duplicate_list_location,
         "fdclean_operation_mode": operation_mode,

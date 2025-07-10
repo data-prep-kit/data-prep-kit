@@ -1,6 +1,6 @@
 [project]
 name = "data_prep_toolkit_transforms"
-version = "1.1.2.dev0"
+version = "1.1.3.dev0"
 requires-python = ">=3.10,<3.13"
 keywords = ["transforms", "data preprocessing", "data preparation", "llm", "generative", "ai", "fine-tuning", "llmapps" ]
 description = "Data Preparation Toolkit Transforms using Ray"
@@ -24,6 +24,8 @@ file = ["requirements.txt"]
 dev = { file = ["requirements-dev.txt"]}
 ray = { file = ["requirements-ray.txt"]}
 all = { file = [
+"workflow/requirements.txt",
+
 "code/proglang_select/requirements.txt",
 "code/header_cleanser/requirements.txt",
 "code/license_select/requirements.txt",
@@ -43,6 +45,9 @@ all = { file = [
 "language/extreme_tokenized/requirements.txt",
 "language/readability/requirements.txt",
 "language/gneissweb_classification/requirements.txt",
+"language/ml_filter/requirements.txt",
+"language/enrichment/requirements.txt",
+
 
 ##### Cannot have html2parquet until we solve
 ## docling-ibm-models 1.1.7 depends on lxml<5.0.0 and >=4.9.1
@@ -62,7 +67,9 @@ all = { file = [
 "universal/rep_removal/requirements.txt",
 "universal/tokenization2arrow/requirements.txt",
 "universal/collapse/requirements.txt",
-"universal/blocklist/requirements.txt"
+"universal/blocklist/requirements.txt",
+"universal/fineweb_quality_annotator/requirements.txt",
+"universal/gopher_repetition_annotator/requirements.txt"
 ]}
 
 language = { file = [
@@ -125,7 +132,9 @@ code = { file = [
 "universal/rep_removal/requirements.txt",
 "universal/tokenization2arrow/requirements.txt",
 "universal/collapse/requirements.txt",
-"universal/blocklist/requirements.txt"
+"universal/blocklist/requirements.txt",
+"universal/fineweb_quality_annotator/requirements.txt",
+"universal/gopher_repetition_annotator/requirements.txt"
 
 ]}
 
@@ -144,24 +153,24 @@ gneissweb = { file = [
 # pyproject.toml must be in a parent and cannot be in sibling
 # i.e. Cannot access '../code/proglang_select/python/..
 
-proglang_select = { file = ["code/proglang_select/requirements.txt"]} 
+proglang_select = { file = ["code/proglang_select/requirements.txt"]}
 header_cleanser = {file =  ["code/header_cleanser/requirements.txt"]}
-license_select = { file = ["code/license_select/requirements.txt"]} 
-code_quality = { file = ["code/code_quality/requirements.txt"]} 
+license_select = { file = ["code/license_select/requirements.txt"]}
+code_quality = { file = ["code/code_quality/requirements.txt"]}
 code2parquet = {file =  ["code/code2parquet/requirements.txt"]}
 malware = {file =  ["code/code2parquet/requirements.txt"]}
-code_profiler = { file = ["code/code_profiler/requirements.txt"]} 
+code_profiler = { file = ["code/code_profiler/requirements.txt"]}
 repo_level_order = { file= ["code/repo_level_order/requirements.txt"]}
 
-profiler = { file = ["universal/profiler/requirements.txt"]} 
-resize = { file = ["universal/resize/requirements.txt"]} 
+profiler = { file = ["universal/profiler/requirements.txt"]}
+resize = { file = ["universal/resize/requirements.txt"]}
 doc_chunk = { file = ["language/doc_chunk/requirements.txt"]}
 doc_quality = { file = ["language/doc_quality/requirements.txt"]}
 html2parquet = { file = ["language/html2parquet/requirements.txt"]}
 lang_id = { file = ["language/lang_id/requirements.txt"]}
 docling2parquet = { file = ["language/docling2parquet/requirements.txt"]}
 text_encoder = { file = ["language/text_encoder/requirements.txt"]}
-pii_redactor = { file = ["language/pii_redactor/requirements.txt"]} 
+pii_redactor = { file = ["language/pii_redactor/requirements.txt"]}
 similarity = { file = ["language/similarity/requirements.txt"]}
 extreme_tokenized = { file = ["language/extreme_tokenized/requirements.txt"]}
 readability = { file = ["language/readability/requirements.txt"]}
@@ -172,14 +181,16 @@ filter = { file = ["universal/filter/requirements.txt"]}
 doc_id = { file = ["universal/doc_id/requirements.txt"]}
 hap = { file = ["universal/hap/requirements.txt"]}
 bloom = { file = ["universal/bloom/requirements.txt"]}
-ededup = { file = ["universal/ededup/requirements.txt"]} 
-fdedup = { file = ["universal/fdedup/requirements.txt"]} 
-tokenization = { file = ["universal/tokenization/requirements.txt"]} 
+ededup = { file = ["universal/ededup/requirements.txt"]}
+fdedup = { file = ["universal/fdedup/requirements.txt"]}
+tokenization = { file = ["universal/tokenization/requirements.txt"]}
 web2parquet = { file = ["universal/web2parquet/requirements.txt"]}
 rep_removal = { file = ["universal/rep_removal/requirements.txt"]}
 tokenization2arrow = { file = ["universal/tokenization2arrow/requirements.txt"]}
 collapse = { file = ["universal/collapse/requirements.txt"]}
 blocklist = { file = ["universal/blocklist/requirements.txt"]}
+gopher_repetition_annotator = { file = ["universal/gopher_repetition_annotator/requirements.txt"]}
+fineweb_quality_annotator = { file = ["universal/fineweb_quality_annotator/requirements.txt"]}
 
 
 [tool.setuptools.package-dir]
@@ -207,6 +218,8 @@ dpk_profiler = "universal/profiler/dpk_profiler"
 dpk_resize = "universal/resize/dpk_resize"
 dpk_collapse = "universal/collapse/dpk_collapse"
 dpk_blocklist = "universal/blocklist/dpk_blocklist"
+dpk_fineweb_quality_annotator = "universal/fineweb_quality_annotator/dpk_fineweb_quality_annotator"
+dpk_gopher_repetition_annotator = "universal/gopher_repetition_annotator/dpk_gopher_repetition_annotator"
 dpk_gneissweb_classification = "language/gneissweb_classification/dpk_gneissweb_classification"
 dpk_rep_removal = "universal/rep_removal/dpk_rep_removal"
 dpk_tokenization2arrow = "universal/tokenization2arrow/dpk_tokenization2arrow"
@@ -218,7 +231,7 @@ dpk_code_quality = "code/code_quality/dpk_code_quality"
 dpk_code2parquet = "code/code2parquet/dpk_code2parquet"
 dpk_malware = "code/malware/dpk_malware"
 dpk_repo_level_order = "code/repo_level_order/dpk_repo_level_order"
-
+dpk_transform_chain = "chain/dpk_transform_chain"
 
 [tool.setuptools.package-data]
 #"*" = ["*.txt"]

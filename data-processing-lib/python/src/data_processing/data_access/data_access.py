@@ -13,7 +13,6 @@
 
 import random
 from typing import Any
-
 import pyarrow as pa
 from data_processing.utils import KB, MB, GB, TransformUtils, get_logger
 
@@ -22,12 +21,14 @@ class DataAccess:
     """
     Base class for data access (interface), defining all the methods
     """
+
     def __init__(
             self,
             d_sets: list[str],
             checkpoint: bool,
             m_files: int,
             n_samples: int,
+            batch_size: int,
             files_to_use: list[str],
             files_to_checkpoint: list[str],
     ):
@@ -37,6 +38,7 @@ class DataAccess:
         :param checkpoint: flag to return only files that do not exist in the output directory
         :param m_files: max amount of files to return
         :param n_samples: amount of files to randomly sample
+        :param batch_size: batch size to use
         :param files_to_use: files extensions of files to include
         :param files_to_checkpoint: files extensions of files to use for checkpointing
         """
@@ -46,6 +48,8 @@ class DataAccess:
         self.n_samples = n_samples
         self.files_to_use = files_to_use
         self.files_to_checkpoint = files_to_checkpoint
+        self.batch_size = batch_size
+        self._files_cached = None  # records files to process for batching
         self.logger = get_logger(__name__)
 
     def get_output_folder(self) -> str:
@@ -155,6 +159,34 @@ class DataAccess:
                 cm_files=self.m_files,
             )
         return path_list, profile, retries
+
+    def get_batches_to_process(self, batch_size=None):
+        """
+        Get batch files to process
+        :return: list of batch files and a dictionary of the batch files profile:
+        "total_batch_size"
+        """
+        if self._files_cached is None:
+            self._files_cached, _, _, = self.get_files_to_process()
+            if len(self._files_cached) == 0:
+                self.logger.warning("No files to process, returning empty generator")
+                return
+
+        files = self._files_cached
+
+        bs = self.batch_size if batch_size is None else batch_size
+
+        if bs == 0 or bs < -1:
+            raise ValueError("batch_size must be positive integer or -1 for full batch")
+
+        if bs == -1:
+            self.logger.info(f"Processing all {len(files)} files in one batch")
+            yield files
+            return
+
+        self.logger.info(f"Processing {len(files)} files in batches of {bs}")
+        for i in range(0, len(files), bs):
+            yield files[i:i + bs]
 
     def _get_folders_to_use(self) -> tuple[list[str], int]:
         """
@@ -308,7 +340,7 @@ class DataAccess:
         raise NotImplementedError("Subclasses should implement this!")
 
     def get_folder_files(
-        self, path: str, extensions: list[str] = None, return_data: bool = True
+            self, path: str, extensions: list[str] = None, return_data: bool = True
     ) -> tuple[dict[str, bytes], int]:
         """
         Get a list of byte content of files. The path here is an absolute path and can be anywhere.
@@ -319,6 +351,7 @@ class DataAccess:
                             directory is returned (False)
         :return: A dictionary of file names/binary content will be returned
         """
+
         def _get_file_content(name: str, dt: bool) -> tuple[bytes, int]:
             """
             return file content

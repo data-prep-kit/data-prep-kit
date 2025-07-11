@@ -24,6 +24,10 @@ This is a simple transformer that is resizing the input tables to a specified si
 
 Tables can be either split into smaller sizes or aggregated into larger sizes.
 
+If the files being processed by this transform are distributed accross multiple folders, there are considerations to be taken into account. As a simple example, let's assume the input files are in folders A and B. In an older implementation, the transform would continue the resizing of files from folder B, after folder A, as if they were in folder A. In the current implementation, the resizing of files from each folder is independent of the resizing from the files from the other folders. Let's assume we have a 200-row file 1 in folder A and a 200-row file 2 in folder B and the resizing specifies output files of maximum size 150 rows, so we will end up with 2 output files of 1_1 (size: 150 rows) and 1_2 (size: 50 rows) from folder A and output files of 2_1 (size: 150 rows) and 2_2 (size: 50 rows) from folder B. 
+
+This gets more complicated when the ray implementation of this transform distributues processing files across mutiple ray working nodes. For the files in each folder, the ray workers will parallel-process the files in that folder across mutiple nodes, however, the independence of processing files across folders is preserved. 
+
 ## Building
 
 A [docker file](Dockerfile.python) that can be used for building docker image. You can use
@@ -34,7 +38,7 @@ make build
 
 ## Configuration and command line Options
 
-The set of dictionary keys holding [ResizeTransform](dpk_resize/transform.py)
+The set of dictionary keys holding [Resize Transform](dpk_resize/transform.py)
 configuration for values are as follows:
 
 * _max_rows_per_table_ - specifies max documents per table

@@ -13,13 +13,8 @@ on:
         tags:
             - "*"
         paths:
-            - ".make.*"
-            - "transforms/.make.transforms"
             - "transforms/language/docling2parquet/**"
-            - "data-processing-lib/**"
             - "!transforms/language/docling2parquet/**/kfp_ray/**" # This is/will be tested in separate workflow
-            - "!data-processing-lib/**/test/**"
-            - "!data-processing-lib/**/test-data/**"
             - "!**.md"
             - "!**/doc/**"
             - "!**/images/**"
@@ -30,13 +25,8 @@ on:
             - "releases/**"
             - "feature/**"
         paths:
-            - ".make.*"
-            - "transforms/.make.transforms"
             - "transforms/language/docling2parquet/**"
-            - "data-processing-lib/**"
             - "!transforms/language/docling2parquet/**/kfp_ray/**" # This is/will be tested in separate workflow
-            - "!data-processing-lib/**/test/**"
-            - "!data-processing-lib/**/test-data/**"
             - "!**.md"
             - "!**/doc/**"
             - "!**/images/**"

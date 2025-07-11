@@ -52,7 +52,6 @@ def compute_exec_params_func(
     data_files_to_use: str,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     doc_id_doc_column: str,
     doc_id_hash_column: str,
     doc_id_int_column: str,
@@ -71,7 +70,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "doc_id_doc_column": doc_id_doc_column,
         "doc_id_hash_column": doc_id_hash_column,
         "doc_id_int_column": doc_id_int_column,
@@ -122,6 +120,7 @@ def doc_id(
     # data access
     data_s3_config: str = "{'input_folder': 'test/doc_id/input/', 'output_folder': 'test/doc_id/output/'}",
     data_s3_access_secret: str = S3_SECRET,
+    other_secrets: dict = {},
     data_max_files: int = -1,
     data_num_samples: int = -1,
     data_checkpointing: bool = False,
@@ -130,7 +129,6 @@ def doc_id(
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # doc id parameters
     doc_id_doc_column: str = "contents",
     doc_id_hash_column: str = "hash_column",
@@ -172,7 +170,6 @@ def doc_id(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :param doc_id_doc_column - document column
     :param doc_id_hash_column - hash id column
     :param doc_id_int_column - integer id column
@@ -208,7 +205,6 @@ def doc_id(
             data_files_to_use=data_files_to_use,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             doc_id_doc_column=doc_id_doc_column,
             doc_id_hash_column=doc_id_hash_column,
             doc_id_int_column=doc_id_int_column,
@@ -222,9 +218,19 @@ def doc_id(
             ray_head_options=ray_head_options,
             ray_worker_options=ray_worker_options,
             server_url=server_url,
+            other_secrets=other_secrets,
             additional_params=additional_params,
         )
         ComponentUtils.add_settings_to_component(ray_cluster, ONE_HOUR_SEC * 2)
+        if os.getenv("KFPv2", "0") == "1":
+            from kfp import kubernetes
+
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=ray_cluster, secret_name=S3_SECRET, secret_key_to_env=env2key)
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(ray_cluster, data_s3_access_secret)
         ray_cluster.after(compute_exec_params)
         # Execute job
         execute_job = execute_ray_jobs_op(

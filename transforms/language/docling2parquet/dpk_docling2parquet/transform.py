@@ -276,6 +276,8 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
             mime = "text/html"
         elif ext == ".md":
             mime = "text/markdown"
+        elif ext == ".csv":
+            mime = "text/csv"
         else:
             mime = None
         

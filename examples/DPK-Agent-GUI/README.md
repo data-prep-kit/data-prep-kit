@@ -1,18 +1,17 @@
 # DPK Planning Agent GUI
 
-This is a Gradio-based web interface to generate, edit, and run data pipelines using the Data Prep Kit (DPK) transform launcher via LangGraph `StateGraph`. It falls back to a demo mode when the DPK library is unavailable.
-
+This is a [Gradio](https://www.gradio.app/)-based web interface to generate, edit, and run data pipelines using the Data Prep Kit (DPK) transform launcher via LangGraph `StateGraph`. It falls back to a demo mode when the DPK library is unavailable.
 ## Features
 
 * **Pipeline Generation:** Generate YAML pipelines from natural language prompts.
 * **Pipeline Editing:** Apply edit instructions to existing pipeline YAML.
-* **Pipeline Execution:** Run pipelines via the DPK launcher and displays console output.
+* **Pipeline Execution:** Run pipelines via the DPK launcher and display console output.
 * **Demo Mode:** If the DPK launcher script is not found, the app simulates pipeline generation and execution.
 
 ## Prerequisites
 
 * **Operating System:** macOS, Linux, or Windows
-* **Python:** 3.8 or newer
+* **Python:** 3.10 or newer
 * **Git:** Required to clone this repository and the DPK repository
 
 ## Installation
@@ -51,7 +50,7 @@ pip install -r requirements.txt
 **Note:** You can install the Data Prep Kit via PyPI (when available), by running:
 
 ```bash
-pip install data-prep-kit
+pip install data-prep-toolkit-transforms[language]
 ```
 
 ## Repository Structure

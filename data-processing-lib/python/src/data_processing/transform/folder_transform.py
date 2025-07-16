@@ -11,6 +11,7 @@
 # limitations under the License.
 ################################################################################
 
+from abc import abstractmethod
 from typing import Any
 from data_processing.transform import AbstractTransform
 

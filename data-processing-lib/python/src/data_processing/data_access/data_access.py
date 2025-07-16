@@ -11,13 +11,14 @@
 # limitations under the License.
 ################################################################################
 
+from abc import ABC, abstractmethod
 import random
 from typing import Any
 import pyarrow as pa
 from data_processing.utils import KB, MB, GB, TransformUtils, get_logger
 
 
-class DataAccess:
+class DataAccess(ABC):
     """
     Base class for data access (interface), defining all the methods
     """
@@ -52,19 +53,21 @@ class DataAccess:
         self._files_cached = None  # records files to process for batching
         self.logger = get_logger(__name__)
 
+    @abstractmethod
     def get_output_folder(self) -> str:
         """
         Get output folder as a string
         :return: output_folder
         """
-        raise NotImplementedError("Subclasses should implement this!")
+    pass
 
+    @abstractmethod
     def get_input_folder(self) -> str:
         """
         Get input folder as a string
         :return: input_folder
         """
-        raise NotImplementedError("Subclasses should implement this!")
+        pass
 
     def get_random_file_set(self, n_samples: int, files: list[str]) -> list[str]:
         """
@@ -188,12 +191,13 @@ class DataAccess:
         for i in range(0, len(files), bs):
             yield files[i:i + bs]
 
+    @abstractmethod
     def _get_folders_to_use(self) -> tuple[list[str], int]:
         """
         convert data sets to a list of folders to use
         :return: list of folders and retries
         """
-        raise NotImplementedError("Subclasses should implement this!")
+        pass
 
     def _get_files_folder(
             self,
@@ -312,14 +316,16 @@ class DataAccess:
             retries,
         )
 
+    @staticmethod
     def _list_files_folder(self, path: str) -> tuple[list[dict[str, Any]], int]:
         """
         Get files for a given folder and all sub folders
         :param path: path
         :return: List of files
         """
-        raise NotImplementedError("Subclasses should implement this!")
+        pass
 
+    @abstractmethod
     def get_table(self, path: str) -> tuple[pa.table, int]:
         """
         Get pyArrow table for a given path
@@ -327,8 +333,9 @@ class DataAccess:
         :return: pyArrow table or None, if the table read failed and number of operation retries.
                  Retries are performed on operation failures and are typically due to the resource overload.
         """
-        raise NotImplementedError("Subclasses should implement this!")
+        pass
 
+    @abstractmethod
     def get_file(self, path: str) -> tuple[bytes, int]:
         """
         Get file as a byte array
@@ -337,7 +344,7 @@ class DataAccess:
                  Retries are performed on operation failures and are typically due to the resource overload.
 
         """
-        raise NotImplementedError("Subclasses should implement this!")
+       pass
 
     def get_folder_files(
             self, path: str, extensions: list[str] = None, return_data: bool = True
@@ -374,6 +381,7 @@ class DataAccess:
             result[f_name] = b
         return result, retries
 
+    @abstractmethod
     def save_file(self, path: str, data: bytes) -> tuple[dict[str, Any], int]:
         """
         Save byte array to the file
@@ -384,7 +392,7 @@ class DataAccess:
         in the case of failure dict is None and number of operation retries
         Retries are performed on operation failures and are typically due to the resource overload.
         """
-        raise NotImplementedError("Subclasses should implement this!")
+        pass
 
     def get_output_location(self, path: str) -> str:
         """
@@ -397,6 +405,7 @@ class DataAccess:
             return None
         return path.replace(self.get_input_folder(), self.get_output_folder())
 
+    @abstractmethod
     def save_table(self, path: str, table: pa.Table) -> tuple[int, dict[str, Any], int]:
         """
         Save table to a given location
@@ -407,8 +416,9 @@ class DataAccess:
         in the case of failure dict is None and number of operation retries.
         Retries are performed on operation failures and are typically due to the resource overload.
         """
-        raise NotImplementedError("Subclasses should implement this!")
+        pass
 
+    @abstractmethod
     def save_job_metadata(self, metadata: dict[str, Any]) -> tuple[dict[str, Any], int]:
         """
         Save job metadata
@@ -428,7 +438,7 @@ class DataAccess:
         in the case of failure dict is None and number of operation retries.
         Retries are performed on operation failures and are typically due to the resource overload.
         """
-        raise NotImplementedError("Subclasses should implement this!")
+       pass
 
     def sample_input_data(self, n_samples: int = 10) -> tuple[dict[str, Any], int]:
         """

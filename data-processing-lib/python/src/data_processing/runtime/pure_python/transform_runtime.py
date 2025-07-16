@@ -11,13 +11,14 @@
 # limitations under the License.
 ################################################################################
 
+from abc import abstractmethod, ABC
 from typing import Any
 
 from data_processing.data_access import DataAccessFactoryBase, DataAccess
 from data_processing.transform import TransformStatistics
 
 
-class DefaultPythonTransformRuntime:
+class DefaultPythonTransformRuntime(ABC):
     """
     Transformer runtime used by processor to to create Transform specific environment
     """
@@ -29,13 +30,14 @@ class DefaultPythonTransformRuntime:
         """
         self.params = params
 
+    @abstractmethod
     def get_folders(self, data_access: DataAccess) -> list[str]:
         """
         Get folders to process
         :param data_access: data access
         :return: list of folders to process
         """
-        raise NotImplemented()
+        pass
 
     def get_transform_config(
         self, data_access_factory: DataAccessFactoryBase, statistics: TransformStatistics, files: list[str]

@@ -29,6 +29,7 @@ class AbstractFolderTransform(AbstractTransform):
         """
         self.config = config
 
+    @abstractmethod
     def transform(self, folder_name: str) -> tuple[list[tuple[bytes, str]], dict[str, Any]]:
         """
         Converts input folder into o or more output files.
@@ -38,4 +39,4 @@ class AbstractFolderTransform(AbstractTransform):
                 to metadata.  Each element of the return list, is a tuple of the transformed bytes and a string
                 holding the file name to use.
         """
-        raise NotImplemented()
+        pass

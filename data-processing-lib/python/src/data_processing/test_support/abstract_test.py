@@ -10,10 +10,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ################################################################################
-
 import os
 import shutil
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from filecmp import dircmp
 
 import pyarrow as pa
@@ -52,7 +51,7 @@ def get_files_in_folder(dir: str, ext: str, return_data: bool = True) -> dict[st
     return files
 
 
-class AbstractTest:
+class AbstractTest(ABC):
     """
     This class enables a test convention for pytest in which sub-classes define the tests and a method to install
     the pytest test fixtures for the tests.  This class's primary responsibility is to use the pytest hook
@@ -74,7 +73,7 @@ class AbstractTest:
 
     @abstractmethod
     def _install_test_fixtures(self, metafunc):
-        raise NotImplemented("Sub-class must implemented this to install the fixtures for its tests.")
+        pass
 
     @classmethod
     def validate_expected_tables(cls, table_list: list[pa.Table], expected_table_list: list[pa.Table]):

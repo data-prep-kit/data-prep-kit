@@ -11,6 +11,7 @@
 # limitations under the License.
 ################################################################################
 
+from abc import abstractmethod
 from typing import Tuple
 
 from data_processing.test_support.abstract_test import AbstractTest
@@ -74,6 +75,7 @@ class AbstractBinaryTransformTest(AbstractTest):
         AbstractBinaryTransformTest.validate_expected_files(all_files_list, expected_binary_list)
         AbstractBinaryTransformTest.validate_expected_metadata_lists(all_metadata_list, expected_metadata_list)
 
+    @abstractmethod
     def get_test_transform_fixtures(self) -> list[Tuple]:
         """
         Get the test data for the test_transform() test.
@@ -83,4 +85,4 @@ class AbstractBinaryTransformTest(AbstractTest):
             Item 2: The expected list of output file(s) for transformation of the input.
             Item 3: the expected metadata for transformation of the input.
         """
-        raise NotImplemented()
+        pass

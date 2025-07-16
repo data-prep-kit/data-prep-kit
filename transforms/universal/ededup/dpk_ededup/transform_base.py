@@ -11,6 +11,7 @@
 # limitations under the License.
 ################################################################################
 
+from abc import abstractmethod
 import pickle
 from argparse import ArgumentParser, Namespace
 from typing import Any
@@ -180,13 +181,14 @@ class EdedupTransformBase(AbstractTableTransform):
         stats = {"source_documents": table.num_rows, "result_documents": out_table.num_rows, "removed_documents": removed}
         return [out_table], stats
 
+    @abstractmethod
     def _process_cached_hashes(self, hd: dict[str, str]) -> list[str]:
         """
         check hashes uniqueness with the distributed cache of hashes
         :param hd: dictionary of hash to document
         :return: unique documents
         """
-        raise NotImplementedError
+        pass
 
 
 class EdedupTransformConfigurationBase(TransformConfiguration):

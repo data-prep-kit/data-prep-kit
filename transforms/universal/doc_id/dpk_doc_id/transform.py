@@ -11,6 +11,7 @@
 # limitations under the License.
 ################################################################################
 
+from abc import abstractmethod
 from argparse import ArgumentParser, Namespace
 from typing import Any
 

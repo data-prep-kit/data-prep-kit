@@ -11,14 +11,13 @@
 # limitations under the License.
 ################################################################################
 
-from abc import ABC, abstractmethod
 from typing import Any
 
 from data_processing.data_access import DataAccessFactoryBase, DataAccess
 from data_processing.transform import TransformStatistics
 
 
-class DefaultSparkTransformRuntime(ABC):
+class DefaultSparkTransformRuntime:
     """
     Transformer runtime used by processor to to create Transform specific environment
     """
@@ -30,14 +29,13 @@ class DefaultSparkTransformRuntime(ABC):
         """
         self.params = params
 
-    @abstractmethod
     def get_folders(self, data_access: DataAccess) -> list[str]:
         """
         Get folders to process
         :param data_access: data access
         :return: list of folders to process
         """
-        pass
+        raise NotImplemented()
 
     def get_transform_config(
         self, partition: int, data_access_factory: DataAccessFactoryBase, statistics: TransformStatistics

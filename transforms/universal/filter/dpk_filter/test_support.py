@@ -44,9 +44,8 @@ class AbstractPythonFilterTransformTest(AbstractTransformLauncherTest):
         """
         return (PythonTransformLauncher(FilterPythonTransformConfiguration()), {})
 
-    @abstractclassmethod
     def _get_test_file_directory(self) -> str:
-        pass
+        raise NotImplemented
 
     def get_test_transform_fixtures(self) -> list[tuple]:
         fixtures = []

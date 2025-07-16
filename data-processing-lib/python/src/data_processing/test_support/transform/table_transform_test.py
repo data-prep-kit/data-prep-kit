@@ -11,7 +11,6 @@
 # limitations under the License.
 ################################################################################
 
-from abc import abstractmethod
 from typing import Tuple
 
 import pyarrow as pa
@@ -78,7 +77,6 @@ class AbstractTableTransformTest(AbstractTest):
         AbstractTableTransformTest.validate_expected_tables(all_table_list, expected_table_list)
         AbstractTableTransformTest.validate_expected_metadata_lists(all_metadata_list, expected_metadata_list)
 
-    @abstractmethod
     def get_test_transform_fixtures(self) -> list[Tuple]:
         """
         Get the test data for the test_transform() test.
@@ -88,4 +86,4 @@ class AbstractTableTransformTest(AbstractTest):
             Item 2: The expected list of output tables for transformation of the input.
             Item 3: the expected metadata for transformation of the input.
         """
-        pass
+        raise NotImplemented()

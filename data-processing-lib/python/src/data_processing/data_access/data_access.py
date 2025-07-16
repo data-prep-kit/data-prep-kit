@@ -344,7 +344,7 @@ class DataAccess(ABC):
                  Retries are performed on operation failures and are typically due to the resource overload.
 
         """
-    	pass
+        pass
 
     def get_folder_files(
             self, path: str, extensions: list[str] = None, return_data: bool = True

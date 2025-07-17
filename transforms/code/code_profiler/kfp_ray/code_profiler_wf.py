@@ -15,32 +15,28 @@ import os
 import kfp.compiler as compiler
 import kfp.components as comp
 import kfp.dsl as dsl
-
+#from kubernetes import client as k8s_client
 from workflow_support.compile_utils import (
     DEFAULT_KFP_COMPONENT_SPEC_PATH,
     ONE_HOUR_SEC,
     ONE_WEEK_SEC,
     ComponentUtils,
 )
-from python_apiserver_client.params import (
-        EnvironmentVariables,
-        EnvVarFrom,
-        EnvVarSource,
-)
 
-task_image = "quay.io/dataprep1/data-prep-kit/noop-ray:latest"
+
+task_image = "quay.io/dataprep1/data-prep-kit/code_profiler-ray:latest"
 
 # The secret name containing the s3 credentials.
-S3_SECRET = "s3-secret"
+S3_SECRET = "s3-secret"  # pragma: allowlist secret
 
 # the name of the job script
-EXEC_SCRIPT_NAME: str = "-m dpk_noop.ray.runtime"
-
+EXEC_SCRIPT_NAME: str = "-m dpk_code_profiler.ray.transform"
 # components
 base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)
+
 
 # compute execution parameters. Here different transforms might need different implementations. As
 # a result, instead of creating a component we are creating it in place here.
@@ -51,9 +47,12 @@ def compute_exec_params_func(
     data_max_files: int,
     data_num_samples: int,
     data_checkpointing: bool,
+    data_data_sets: str,
+    data_files_to_use: str,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    noop_sleep_sec: int,
+    contents: str,
+    programming_language: str,
 ) -> dict:
     from runtime_utils import KFPUtils
 
@@ -62,11 +61,14 @@ def compute_exec_params_func(
         "data_max_files": data_max_files,
         "data_num_samples": data_num_samples,
         "data_checkpointing": data_checkpointing,
+        "data_data_sets": data_data_sets.strip(),
+        "data_files_to_use": data_files_to_use,
         "runtime_num_workers": KFPUtils.default_compute_execution_params(str(worker_options), str(actor_options)),
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "noop_sleep_sec": noop_sleep_sec,
+        "contents": contents,
+        "programming_language": programming_language, 
     }
 
 
@@ -87,54 +89,56 @@ create_ray_op = comp.load_component_from_file(component_spec_path + "createRayCl
 execute_ray_jobs_op = comp.load_component_from_file(component_spec_path + "executeRayJobComponent.yaml")
 # clean up Ray
 cleanup_ray_op = comp.load_component_from_file(component_spec_path + "deleteRayClusterComponent.yaml")
-
 # Task name is part of the pipeline name, the ray cluster name and the job name in DMF.
-TASK_NAME: str = "noop"
+TASK_NAME: str = "code_profiler"
+
 
 @dsl.pipeline(
     name=TASK_NAME + "-ray-pipeline",
-    description="Pipeline for noop task",
+    description="Pipeline for code_profiler",
 )
-def noop(
+def code_profiler(
     # Ray cluster
-    ray_name: str = "noop-kfp-ray",  # name of Ray cluster
-    ray_run_id_KFPv2: str = "",
-    # Add image_pull_secret, image_pull_policy and tolerations to ray options if needed
+    ray_name: str = "code_profiler-kfp-ray",  # name of Ray cluster
+    ray_run_id_KFPv2: str = "",   # Ray cluster unique ID used only in KFP v2
+    # Add image_pull_secret and image_pull_policy to ray workers if needed
     ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
-    ray_worker_options: dict = {"replicas": 2,
-                                "max_replicas": 2,
-                                "min_replicas": 2,
-                                "cpu": 2,
-                                "memory": 4,
-                                "image": task_image,
-},
-
+    ray_worker_options: dict = {
+        "replicas": 2,
+        "max_replicas": 2,
+        "min_replicas": 2,
+        "cpu": 2,
+        "memory": 4,
+        "image": task_image,
+    },
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
-    data_s3_config: str = "{'input_folder': 'test/noop/input/', 'output_folder': 'test/noop/output/'}",
-    data_s3_access_secret: str = "s3-secret",
+    data_s3_config: str = "{'input_folder': 'test/code_profiler/input/', 'output_folder': 'test/code_profiler/output/'}",
+    data_s3_access_secret: str = S3_SECRET,
     other_secrets: dict = {},
-    data_max_files: int = -1,
+    data_max_files: int = 2,
     data_num_samples: int = -1,
     data_checkpointing: bool = False,
+    data_data_sets: str = "",
+    data_files_to_use: str = "['.parquet']",
     # orchestrator
-    runtime_actor_options: dict = {'num_cpus': 0.8},
+    runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    # noop parameters
-    noop_sleep_sec: int = 10,
+    # code_profiler parameters
+    contents: str = "contents",
+    programming_language: str = "programming_language",
+   
     # additional parameters
     additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
 ):
     """
-    Pipeline to execute noop transform
+    Pipeline to execute code_profiler transform
     :param ray_name: name of the Ray cluster
-    :param ray_run_id_KFPv2: a unique string id used for the Ray cluster, applicable only in KFP v2.
     :param ray_head_options: head node options, containing the following:
         cpu - number of cpus
         memory - memory
         image - image to use
         image_pull_secret - image pull secret
-        tolerations - (optional) tolerations for the ray pods
     :param ray_worker_options: worker node options (we here are using only 1 worker pool), containing the following:
         replicas - number of replicas to create
         max_replicas - max number of replicas
@@ -143,7 +147,6 @@ def noop(
         memory - memory
         image - image to use
         image_pull_secret - image pull secret
-        tolerations - (optional) tolerations for the ray pods
     :param server_url - server url
     :param additional_params: additional (support) parameters, containing the following:
         wait_interval - wait interval for API server, sec
@@ -158,7 +161,8 @@ def noop(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param noop_sleep_sec - noop sleep time
+    :param contents - contents column
+    :param programming_language - programming language column
     :return: None
     """
     # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
@@ -171,7 +175,7 @@ def noop(
         run_id = ray_run_id_KFPv2
     else:
         run_id = dsl.RUN_ID_PLACEHOLDER
-    # create clean_up task
+     # create clean_up task
     clean_up_task = cleanup_ray_op(
         ray_name=ray_name, run_id=run_id, server_url=server_url, additional_params=additional_params
     )
@@ -186,11 +190,13 @@ def noop(
             data_max_files=data_max_files,
             data_num_samples=data_num_samples,
             data_checkpointing=data_checkpointing,
+            data_data_sets=data_data_sets,
+            data_files_to_use=data_files_to_use,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            noop_sleep_sec=noop_sleep_sec,
+            contents=contents,
+            programming_language=programming_language,
         )
-
         ComponentUtils.add_settings_to_component(compute_exec_params, ONE_HOUR_SEC * 2)
         # start Ray cluster
         ray_cluster = create_ray_op(
@@ -213,28 +219,32 @@ def noop(
         else:
             ComponentUtils.set_s3_env_vars_to_component(ray_cluster, data_s3_access_secret)
         ray_cluster.after(compute_exec_params)
-
         # Execute job
         execute_job = execute_ray_jobs_op(
             ray_name=ray_name,
             run_id=run_id,
             additional_params=additional_params,
+            # note that the parameters below are specific for NOOP transform
             exec_params=compute_exec_params.output,
             exec_script_name=EXEC_SCRIPT_NAME,
             server_url=server_url,
         )
+
         ComponentUtils.add_settings_to_component(execute_job, ONE_WEEK_SEC)
         if os.getenv("KFPv2", "0") == "1":
             from kfp import kubernetes
             
             # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
             # As a workaround, the secret name is hard coded.
-            env2key = ComponentUtils.set_secret_key_to_env()
+            env2key = ComponentUtils.set_secret_key_to_env(prefix="jjj")
             kubernetes.use_secret_as_env(task=execute_job, secret_name=S3_SECRET, secret_key_to_env=env2key)
         else:
             ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
         execute_job.after(ray_cluster)
 
+   
+
+
 if __name__ == "__main__":
     # Compiling the pipeline
-    compiler.Compiler().compile(noop, __file__.replace(".py", ".yaml"))
+    compiler.Compiler().compile(code_profiler, __file__.replace(".py", ".yaml"))

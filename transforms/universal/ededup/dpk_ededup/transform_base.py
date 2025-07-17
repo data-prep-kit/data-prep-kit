@@ -11,6 +11,7 @@
 # limitations under the License.
 ################################################################################
 
+from abc import abstractmethod
 import pickle
 from argparse import ArgumentParser, Namespace
 from typing import Any
@@ -35,12 +36,10 @@ doc_column_name_key = "doc_column"
 int_column_name_key = "doc_id_column"
 use_snapshot_key = "use_snapshot"
 snapshot_directory_key = "snapshot_directory"
-add_removed_column_key = "add_removed_column"
 doc_column_name_cli_param = f"{cli_prefix}{doc_column_name_key}"
 int_column_name_cli_param = f"{cli_prefix}{int_column_name_key}"
 use_snapshot_cli_param = f"{cli_prefix}{use_snapshot_key}"
 snapshot_directory_cli_param = f"{cli_prefix}{snapshot_directory_key}"
-add_removed_column_cli_param = f"{cli_prefix}{add_removed_column_key}"
 
 
 
@@ -132,7 +131,6 @@ class EdedupTransformBase(AbstractTableTransform):
         super().__init__(config)
         self.doc_column = config.get(doc_column_name_key, "contents")
         self.doc_id_column = config.get(int_column_name_key, "document_id")
-        self.add_removed_column = config.get(add_removed_column_key, True)
 
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
         """
@@ -179,23 +177,18 @@ class EdedupTransformBase(AbstractTableTransform):
             index += 1
         # Create output table
         out_table = table.filter(mask)
-        # populate removed columns
-        if out_table.num_rows > 0 and self.add_removed_column:
-            # we can only add removed if the file is not empty
-            removed_column = [[]] * out_table.num_rows
-            removed_column[0] = removed
-            out_table = TransformUtils.add_column(table=out_table, name="removed", content=removed_column)
         # report statistics
-        stats = {"source_documents": table.num_rows, "result_documents": out_table.num_rows}
+        stats = {"source_documents": table.num_rows, "result_documents": out_table.num_rows, "removed_documents": removed}
         return [out_table], stats
 
+    @abstractmethod
     def _process_cached_hashes(self, hd: dict[str, str]) -> list[str]:
         """
         check hashes uniqueness with the distributed cache of hashes
         :param hd: dictionary of hash to document
         :return: unique documents
         """
-        raise NotImplementedError
+        pass
 
 
 class EdedupTransformConfigurationBase(TransformConfiguration):
@@ -228,12 +221,6 @@ class EdedupTransformConfigurationBase(TransformConfiguration):
             type=str,
             default="document_id",
             help="name of the column containing document id",
-        )
-        parser.add_argument(
-            f"--{add_removed_column_cli_param}",
-            type=lambda x: bool(str2bool(x)),
-            default=False,
-            help="flag to omit removed column with first row listing removed duplicated ids",
         )
         parser.add_argument(
             f"--{use_snapshot_cli_param}",

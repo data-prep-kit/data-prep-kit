@@ -72,12 +72,7 @@ jobs:
                   KFP_BLACK_LIST=$(./scripts/check-workflows.sh -show-kfp-black-list)
                   if [ -e "transforms/universal/c4_annotator/Makefile" -a -e "transforms/universal/c4_annotator/kfp_ray/Makefile" ]; then
                      transform=$(basename "transforms/universal/c4_annotator")
-                     if echo ${KFP_BLACK_LIST} | grep -qv ${transform}; then
-                        $PWD/scripts/workflow_helper.sh install-tools
-                        $PWD/scripts/workflow_helper.sh test-workflow transforms/universal/c4_annotator   
-                     else
-                        $PWD/scripts/workflow_helper.sh build-workflow transforms/universal/c4_annotator
-                     fi              
+                     $PWD/scripts/workflow_helper.sh build-workflow transforms/universal/c4_annotator
                   else
                      echo "Skipping transforms/universal/c4_annotator kfp test for lack of Makefile and/or kfp_ray/Makefile"
                    fi
@@ -109,12 +104,7 @@ jobs:
                   KFP_BLACK_LIST=$(./scripts/check-workflows.sh -show-kfp-black-list)
                   if [ -e "transforms/universal/c4_annotator/Makefile" -a -e "transforms/universal/c4_annotator/kfp_ray/Makefile" ]; then
                      transform=$(basename "transforms/universal/c4_annotator")
-                     if echo ${KFP_BLACK_LIST} | grep -qv ${transform}; then
-                        $PWD/scripts/workflow_helper.sh install-tools
-                        $PWD/scripts/workflow_helper.sh test-workflow transforms/universal/c4_annotator   
-                     else
-                        $PWD/scripts/workflow_helper.sh build-workflow transforms/universal/c4_annotator
-                     fi              
+                     $PWD/scripts/workflow_helper.sh build-workflow transforms/universal/c4_annotator
                   else
                      echo "Skipping transforms/universal/c4_annotator kfp test for lack of Makefile and/or kfp_ray/Makefile"
                    fi

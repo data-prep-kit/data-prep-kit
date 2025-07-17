@@ -28,7 +28,7 @@ Apply badwords filter from C4
 
 ## Configuration and command line Options
 
-The set of dictionary keys holding [AnnotatorC4Transform](src/c4a_transform.py) 
+The set of dictionary keys holding [AnnotatorC4Transform](dpk_c4_annotator/transform.py ) 
 configuration for values are as follows:
 
 * _c4a_contents_column_name_ - specifies the name of the column holding the document text

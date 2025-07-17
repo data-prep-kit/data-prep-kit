@@ -11,7 +11,13 @@
 # limitations under the License.
 ################################################################################
 
-class AbstractTransform:
+from abc import ABC, abstractmethod
+
+class AbstractTransform(ABC):
     """
     Base class for all transform types
     """
+
+    @abstractmethod
+    def __init__(self):
+        pass

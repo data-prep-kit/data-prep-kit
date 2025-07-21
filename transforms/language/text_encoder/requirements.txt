@@ -2,3 +2,7 @@ sentence-transformers>=2.2.2
 transformers>=4.35.2
 lancedb>=0.21.2
 pylance>=0.25.0
+hf-xet>=1.1.1
+datasets>=3.6.0
+spacy>=3.8.7
+elasticsearch>=9.0.0

@@ -73,3 +73,4 @@ if __name__ == "__main__":
     launcher = RayTransformLauncher(TextEncoderRayTransformConfiguration())
     logger.info("Launching text_encoder transform")
     launcher.launch()
+    

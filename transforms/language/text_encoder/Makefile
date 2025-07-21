@@ -23,17 +23,24 @@ ifeq ($(OS),Linux)
 	endif
 endif
 
-run-python-cli-sample:
+run-python-cli-sample :
 	make venv
 	source venv/bin/activate && \
 	rm -rf output && \
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
-			--data_local_config "{ 'input_folder' : 'test-data/ds01/input/', 'output_folder' : 'output/'}" \
+			--data_local_config "{ 'input_folder' : 'test-data/ds02/input/', 'output_folder' : 'output/'}" \
 			--text_encoder_lanceDB_data_uri "output/test.db/test.lance/"  \
 			--text_encoder_lanceDB_batch_size 10 \
 			--text_encoder_embedding_batch_size 5 \
 			--text_encoder_fragments_json_folder "output/fragments_json/" \
-			--text_encoder_dataset_name "test"
+			--text_encoder_dataset_name "test" && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).lance_commit \
+			--lancedb_storage_type "local" \
+			--lancedb_uri "output/test.db/" \
+			--lance_dataset_uri "output/test.db/test.lance/" \
+			--lancedb_table_name "test" \
+			--fragments_json_folder "output/fragments_json/" \
+			--lancedb_table_schema_folder "output/"
 
 
 run-ray-cli-sample:

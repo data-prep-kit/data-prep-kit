@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -16,7 +17,6 @@ from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
-from dpk_lang_id.lang_models import KIND_FASTTEXT
 from dpk_lang_id.transform_python import LangIdentificationPythonTransformConfiguration
 
 
@@ -29,7 +29,7 @@ class TestPythonLangIdentificationTransform(AbstractTransformLauncherTest):
     def get_test_transform_fixtures(self) -> list[tuple]:
         cli_params = {
             "lang_id_model_credential": os.environ.get('HF_READ_ACCESS_TOKEN', "PUT YOUR OWN HUGGINGFACE CREDENTIAL"),
-            "lang_id_model_kind": KIND_FASTTEXT,
+            "lang_id_model_kind": 'fasttext',
             "lang_id_model_url": "facebook/fasttext-language-identification",
             "lang_id_content_column_name": "text",
             "lang_id_output_lang_column_name": "ft_lang",

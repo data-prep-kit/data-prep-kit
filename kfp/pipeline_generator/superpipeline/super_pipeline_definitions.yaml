@@ -5,7 +5,7 @@ super_pipeline_metadata:
 super_pipeline_tasks:
     - name: "doc_id"
       pipeline_name: "doc_id_wf"
-      image: "quay.io/dataprep1/data-prep-kit/doc_id-ray:latest`"
+      image: "quay.io/dataprep1/data-prep-kit/doc_id-ray:latest"
     - name: "ededup"
       pipeline_name: "ededup_wf"
       image: "quay.io/dataprep1/data-prep-kit/ededup-ray:latest"

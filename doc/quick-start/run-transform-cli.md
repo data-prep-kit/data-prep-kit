@@ -1,7 +1,7 @@
 # Running a Transform from the Command Line 
 Here we address a simple use case of applying a single transform to a 
 set of parquet files. 
-We'll use the `pdf2parquet` transform as an example, but in general, this process
+We'll use the `docling2parquet` transform as an example, but in general, this process
 will work for any of the transforms contained in Data Prep Kit.
 Additionally, what follows uses the 
 [python runtime](../../data-processing-lib/doc/python-runtime.md)
@@ -22,39 +22,39 @@ pip install  'data-prep-toolkit-transforms[ray,all]'
 The above installs all available transforms and both the python and Ray runtimes. 
 
 NOTE: As of this writing, on linux systems there is an 
-[issue](https://github.com/IBM/data-prep-kit/issues/873) 
+[issue](https://github.com/data-prep-kit/data-prep-kit/issues/873) 
 installing `fasttext` for the `lang_id` transform. 
 A workaround is to
 [install using conda](quick-start.md#conda).
 Alternatively, you may choose to install only the transform(s) of interest (see below).
 
-When installing select transforms, users can specify the name of the transform in the pip command, rather than [all]. For example, use the following command to install only the pdf2parquet transform:
+When installing select transforms, users can specify the name of the transform in the pip command, rather than [all]. For example, use the following command to install only the docling2parquet transform:
 ```bash
-pip install 'data-prep-toolkit-transforms[pdf2parquet]'
+pip install 'data-prep-toolkit-transforms[docling2parquet]'
 ```
 As an alternative, installing in a conda environment
 can be found
 [here](quick-start.md#conda).
 
 ### Run a transform at the command line
-Here we run the `pdf2parquet` transform on its input data to 
+Here we run the `docling2parquet` transform on its input data to 
 import pdf content into rows of a parquet file.
 First, we load some data for the transform to run on using the following python code:
 ```python
 import urllib.request
 import shutil
 shutil.os.makedirs("input", exist_ok=True)
-urllib.request.urlretrieve("https://raw.githubusercontent.com/IBM/data-prep-kit/dev/transforms/language/pdf2parquet/test-data/input/archive1.zip", "input/archive1.zip")
-urllib.request.urlretrieve("https://raw.githubusercontent.com/IBM/data-prep-kit/dev/transforms/language/pdf2parquet/test-data/input/redp5110-ch1.pdf", "input/redp5110-ch1.pdf")
+urllib.request.urlretrieve("https://raw.githubusercontent.com/data-prep-kit/data-prep-kit/dev/transforms/language/docling2parquet/test-data/input/archive1.zip", "input/archive1.zip")
+urllib.request.urlretrieve("https://raw.githubusercontent.com/data-prep-kit/data-prep-kit/dev/transforms/language/docling2parquet/test-data/input/redp5110-ch1.pdf", "input/redp5110-ch1.pdf")
 ```
 ```shell 
 % ls input
 archive1.zip		redp5110-ch1.pdf
 ```
 
-Next we run `pdf2parquet` on the data in the `input` folder.
+Next we run `docling2parquet` on the data in the `input` folder.
 ```shell
-python -m dpk_pdf2parquet.transform_python \
+python -m dpk_docling2parquet.transform_python \
     --data_local_config "{ 'input_folder': 'input', 'output_folder': 'output'}" \
     --data_files_to_use "['.pdf', '.zip']" 
 ```

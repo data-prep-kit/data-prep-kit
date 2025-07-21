@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -22,7 +23,7 @@ from data_processing.utils import (
 from data_processing_ray.runtime.ray import RayTransformLauncher
 
 
-project = "https://github.com/IBM/data-prep-kit.git"
+project = "https://github.com/data-prep-kit/data-prep-kit.git"
 logger = get_logger(__name__)
 
 

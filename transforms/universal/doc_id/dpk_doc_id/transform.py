@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -10,6 +11,7 @@
 # limitations under the License.
 ################################################################################
 
+from abc import abstractmethod
 from argparse import ArgumentParser, Namespace
 from typing import Any
 
@@ -108,13 +110,14 @@ class DocIDTransformBase(AbstractTableTransform):
             table = TransformUtils.add_column(table=table, name=self.int_column, content=int_doc_ids)
         return [table], {}
 
+    @abstractmethod
     def _get_starting_id(self, n_rows: int) -> int:
         """
         Get starting Id
         :param n_rows - number of rows in the table
         :return: starting id for the table
         """
-        raise NotImplementedError
+        pass
 
 
 class DocIDTransformConfigurationBase(TransformConfiguration):

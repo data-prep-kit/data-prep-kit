@@ -17,7 +17,7 @@ if [ ! -d transforms ]; then
     echo Please run this script from the top of the repository
     exit 1
 fi
-KFP_BLACK_LIST="doc_chunk pdf2parquet pii_redactor text_encoder license_select repo_level_ordering header_cleanser fdedup hap"
+KFP_BLACK_LIST="doc_chunk docling2parquet pii_redactor text_encoder license_select repo_level_ordering header_cleanser fdedup hap rep_removal gneissweb_classification tokenization2arrow ml_filter enrichment"
 while [ $# -ne 0 ]; do
    case $1 in
         -show-kfp-black-list)    echo $KFP_BLACK_LIST; exit 0;
@@ -41,7 +41,7 @@ for i in $(find transforms  -maxdepth 2 -mindepth 2 -type d | grep -v venv); do
 	echo KFP workflow for $transform is not expected. 
     fi
     for workflow in $workflows; do
-	if [ ! -e $workflow ]; then 
+	if [ ! -e $workflow ] && [ -e transforms/$category/$transform/Makefile ]; then 
 	    echo Missing $workflow for transform $category/$transform 
 	    echo Fix this by running make in the .github/workflows directory
 	    exit 1

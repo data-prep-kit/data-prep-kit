@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 planner_prompt_str1 = """
 Create a data pipeline to accomplish a given task: {task}. Please create a detailed execution plan using only the tools listed below while adhering to the specified constraints.
 

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -11,37 +12,41 @@
 ################################################################################
 
 import os
+import json
 import kfp.compiler as compiler
 import kfp.components as comp
 import kfp.dsl as dsl
 from workflow_support.compile_utils import ONE_WEEK_SEC
 
+from python_apiserver_client.params import (
+        EnvironmentVariables,
+        EnvVarFrom,
+        EnvVarSource,
+)
 
-# empty comment to triigger pre-commit
+ORCH_HOST = "http://ml-pipeline:8888"
+
 # Components
-# For every sub workflow we need a separate components, that knows about this subworkflow.
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", "../../../../../kfp/kfp_ray_components/")
-run_code_to_parquet_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
-run_code_quality_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
-run_malware_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
-run_license_select_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
-run_header_cleanser_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
-run_proglang_select_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
-run_doc_id_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
-run_exact_dedup_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
-run_fuzzy_dedup_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
-run_tokenization_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
+run_op = comp.load_component_from_file(component_spec_path + "executeSubWorkflowComponent.yaml")
 
 code_to_parquet_image = "quay.io/dataprep1/data-prep-kit/code2parquet-ray:latest"
 proglang_select_image = "quay.io/dataprep1/data-prep-kit/proglang_select-ray:latest"
 code_quality_image = "quay.io/dataprep1/data-prep-kit/code_quality-ray:latest"
 malware_image = "quay.io/dataprep1/data-prep-kit/malware-ray:latest"
-license_select_image = "quay.io/dataprep1/data-prep-kit/license_select-ray:latest"
-header_cleanser_image = "quay.io/dataprep1/data-prep-kit/header-cleanser-ray:latest"
 doc_id_image = "quay.io/dataprep1/data-prep-kit/doc_id-ray:latest"
 ededup_image = "quay.io/dataprep1/data-prep-kit/ededup-ray:latest"
 fdedup_image = "quay.io/dataprep1/data-prep-kit/fdedup-ray:latest"
 tokenizer_image = "quay.io/dataprep1/data-prep-kit/tokenization-ray:latest"
+
+
+# The name of the secret that holds the HugginFace token
+HF_SECRET = "hf-secret"
+# The secret key that holds the HugginFace token
+HF_SECRET_KEY = "hf-token"
+
+env_v = EnvVarFrom(source=EnvVarSource.SECRET, name=HF_SECRET, key=HF_SECRET_KEY)
+envs = EnvironmentVariables(from_ref={"HF_READ_ACCESS_TOKEN": env_v})
 
 
 # Pipeline to invoke execution on remote resource
@@ -54,8 +59,6 @@ def sample_code_ray_orchestrator(
     p1_orch_code_to_parquet_name: str = "code2parquet_wf",
     p1_orch_code_quality_name: str = "code_quality_wf",
     p1_orch_malware_name: str = "malware_wf",
-    p1_orch_license_select_name: str = "license_select_wf",
-    p1_orch_header_cleanser_name: str = "header_cleanser_wf",
     p1_orch_proglang_select_name: str = "proglang_select_wf",
     p1_orch_doc_id_name: str = "doc_id_wf",
     p1_orch_exact_dedup_name: str = "ededup_wf",
@@ -89,138 +92,86 @@ def sample_code_ray_orchestrator(
     + '"}, "ray_head_options": {"image": "'
     + code_to_parquet_image
     + '"}}',
-    # Exact dedup step parameters
-    p4_name: str = "ededup",
+    # Document ID step parameters
+    p4_name: str = "doc_id",
     p4_skip: bool = False,
-    p4_ededup_doc_column: str = "contents",
-    p4_ededup_hash_cpu: float = 0.5,
-    p4_ededup_use_snapshot: bool = False,
-    p4_ededup_snapshot_directory: str = None,  # data sampling
-    p4_ededup_n_samples: int = 10,
+    # doc id parameters
+    p4_doc_id_doc_column: str = "contents",
+    p4_doc_id_hash_column: str = "hash_column",
+    p4_doc_id_int_column: str = "int_id_column",
+    p4_doc_id_start_id: int = 0,
     # overriding parameters
     p4_overriding_params: str = '{"ray_worker_options": {"image": "'
-    + ededup_image
+    + doc_id_image
     + '"}, "ray_head_options": {"image": "'
-    + ededup_image
+    + doc_id_image
     + '"}}',
-    # Document ID step parameters
-    p5_name: str = "doc_id",
+    # Exact dedup step parameters
+    p5_name: str = "ededup",
     p5_skip: bool = False,
-    # doc id parameters
-    p5_doc_id_doc_column: str = "contents",
-    p5_doc_id_hash_column: str = "hash_column",
-    p5_doc_id_int_column: str = "int_id_column",
-    p5_doc_id_start_id: int = 0,
+    p5_ededup_doc_column: str = "contents",
+    p5_ededup_hash_cpu: float = 0.5,
+    p5_ededup_use_snapshot: bool = False,
+    p5_ededup_snapshot_directory: str = None,  # data sampling
+    p5_ededup_n_samples: int = 10,
     # overriding parameters
     p5_overriding_params: str = '{"ray_worker_options": {"image": "'
-    + doc_id_image
+    + ededup_image
     + '"}, "ray_head_options": {"image": "'
-    + doc_id_image
+    + ededup_image
     + '"}}',
-    # Fuzzy dedup step parameters
-    p6_name: str = "fdedup",
+
+    # proglang_select step parameters
+    p6_name: str = "proglang_select",
     p6_skip: bool = False,
-    # columns used
-    p6_fdedup_doc_column: str = "contents",
-    p6_fdedup_id_column: str = "int_id_column",
-    p6_fdedup_cluster_column: str = "cluster",
-    # orchestrator
-    # infrastructure
-    p6_fdedup_bucket_cpu: float = 0.5,
-    p6_fdedup_doc_cpu: float = 0.5,
-    p6_fdedup_mhash_cpu: float = 0.5,
-    # fuzzy parameters
-    p6_fdedup_num_permutations: int = 64,
-    p6_fdedup_threshold: float = 0.8,
-    p6_fdedup_shingles_size: int = 5,
-    p6_fdedup_delimiters: str = " ",
-    # random delay between reads
-    p6_fdedup_random_delay_limit: int = 5,
-    # snapshotting
-    p6_fdedup_snapshot_delay: int = 1,
-    p6_fdedup_use_doc_snapshot: bool = False,
-    p6_fdedup_use_bucket_snapshot: bool = False,
-    # data sampling
-    p6_fdedup_n_samples: int = 10,
+    p6_proglang_select_allowed_langs_file: str = "test/proglang_select/languages/allowed-code-languages.txt",
+    p6_proglang_select_language_column: str = "programming_language",
+    p6_proglang_select_s3_access_secret: str = "s3-secret",
     # overriding parameters
     p6_overriding_params: str = '{"ray_worker_options": {"image": "'
-    + fdedup_image
-    + '"}, "ray_head_options": {"image": "'
-    + fdedup_image
-    + '"}}',
-    # proglang_select step parameters
-    p7_name: str = "proglang_select",
-    p7_skip: bool = False,
-    p7_proglang_select_allowed_langs_file: str = "test/proglang_select/languages/allowed-code-languages.txt",
-    p7_proglang_select_language_column: str = "programming_language",
-    p7_proglang_select_s3_access_secret: str = "s3-secret",
-    # overriding parameters
-    p7_overriding_params: str = '{"ray_worker_options": {"image": "'
     + proglang_select_image
     + '"}, "ray_head_options": {"image": "'
     + proglang_select_image
     + '"}}',
     # Code quality step parameters
-    p8_name: str = "code_quality",
+    p7_name: str = "code_quality",
+    p7_skip: bool = False,
+    p7_cq_contents_column_name: str = "contents",
+    p7_cq_language_column_name: str = "programming_language",
+    p7_cq_tokenizer: str = "codeparrot/codeparrot",
+    # orchestrator
+    # overriding parameters
+    p7_overriding_params: str = '{"ray_worker_options": {"image": "'
+    + code_quality_image
+    + '", "environment": "'
+    + json.dumps(envs.to_dict())
+    + '"}, "ray_head_options": {"image": "'
+    + code_quality_image
+    + '", "environment": "'
+    + json.dumps(envs.to_dict())
+    + '"}}',
+    # malware step parameters
+    p8_name: str = "malware",
     p8_skip: bool = False,
-    p8_cq_contents_column_name: str = "contents",
-    p8_cq_language_column_name: str = "programming_language",
-    p8_cq_tokenizer: str = "codeparrot/codeparrot",
-    p8_cq_hf_token: str = "None",
+    p8_malware_input_column: str = "contents",
+    p8_malware_output_column: str = "virus_detection",
     # orchestrator
     # overriding parameters
     p8_overriding_params: str = '{"ray_worker_options": {"image": "'
-    + code_quality_image
-    + '"}, "ray_head_options": {"image": "'
-    + code_quality_image
-    + '"}}',
-    # malware step parameters
-    p9_name: str = "malware",
-    p9_skip: bool = False,
-    p9_malware_input_column: str = "contents",
-    p9_malware_output_column: str = "virus_detection",
-    # orchestrator
-    # overriding parameters
-    p9_overriding_params: str = '{"ray_worker_options": {"image": "'
     + malware_image
     + '"}, "ray_head_options": {"image": "'
     + malware_image
-    + '"}}',
-    # license check step parameters
-    p10_name: str = "license_select",
-    p10_skip: bool = False,
-    p10_lc_license_column_name: str = "license",
-    p10_lc_licenses_file: str = "test/license_select/sample_approved_licenses.json",
-    # orchestrator
-    # overriding parameters
-    p10_overriding_params: str = '{"ray_worker_options": {"image": "'
-    + license_select_image
-    + '"}, "ray_head_options": {"image": "'
-    + license_select_image
-    + '"}}',
-    # header cleanser step parameters
-    p11_name: str = "header_cleanser",
-    p11_skip: bool = False,
-    p11_header_cleanser_contents_column_name: str = "contents",
-    p11_header_cleanser_license: bool = True,
-    p11_header_cleanser_copyright: bool = True,
-    # orchestrator
-    # overriding parameters
-    p11_overriding_params: str = '{"ray_worker_options": {"image": "'
-    + header_cleanser_image
-    + '"}, "ray_head_options": {"image": "'
-    + header_cleanser_image
     + '"}}',
     # tokenization parameters
-    p12_name: str = "tokenization",
-    p12_skip: bool = False,
-    p12_tkn_tokenizer: str = "hf-internal-testing/llama-tokenizer",
-    p12_tkn_doc_id_column: str = "document_id",
-    p12_tkn_doc_content_column: str = "contents",
-    p12_tkn_text_lang: str = "en",
-    p12_tkn_tokenizer_args: str = "cache_dir=/tmp/hf",
-    p12_tkn_chunk_size: int = 0,
-    p12_overriding_params: str = '{"ray_worker_options": {"image": "'
+    p9_name: str = "tokenization",
+    p9_skip: bool = False,
+    p9_tkn_tokenizer: str = "hf-internal-testing/llama-tokenizer",
+    p9_tkn_doc_id_column: str = "document_id",
+    p9_tkn_doc_content_column: str = "contents",
+    p9_tkn_text_lang: str = "en",
+    p9_tkn_tokenizer_args: str = "cache_dir=/tmp/hf",
+    p9_tkn_chunk_size: int = 0,
+    p9_overriding_params: str = '{"ray_worker_options": {"image": "'
     + tokenizer_image
     + '"}, "ray_head_options": {"image": "'
     + tokenizer_image
@@ -229,100 +180,91 @@ def sample_code_ray_orchestrator(
 
     # get all arguments
     args = locals()
-    orch_host = "http://ml-pipeline:8888"
 
-    def _set_component(op: dsl.BaseOp, displaied_name: str, prev_op: dsl.BaseOp = None):
+    def _create_component(
+            pipeline_name: str,
+            displayed_name: str,
+            prefix="",
+            input_folder="",
+            prev_op: dsl.BaseOp = None,
+    ):
+        component = run_op(
+            name=pipeline_name, prefix=prefix, params=args, host=ORCH_HOST, input_folder=input_folder
+        )
         # set the sub component UI name
-        op.set_display_name(displaied_name)
+        component.set_display_name(displayed_name)
 
         # Add pod labels
-        op.add_pod_label("app", "ml-pipeline").add_pod_label("component", "code-pipelines")
+        component.add_pod_label("app", "ml-pipeline").add_pod_label("component", "data-science-pipelines")
         # No cashing
-        op.execution_options.caching_strategy.max_cache_staleness = "P0D"
+        component.execution_options.caching_strategy.max_cache_staleness = "P0D"
         # image pull policy
-        op.set_image_pull_policy("Always")
-        # Set the timeout for each task to one week (in seconds)
-        op.set_timeout(ONE_WEEK_SEC)
+        component.set_image_pull_policy("Always")
         if prev_op is not None:
-            op.after(prev_op)
+            component.after(prev_op)
+        return component
 
     # code to parquet deduplication
-    code_to_parquet = run_code_to_parquet_op(
-        name=p1_orch_code_to_parquet_name,
+    code_to_parquet = _create_component(
+        pipeline_name=p1_orch_code_to_parquet_name,
+        displayed_name="code to parquet",
         prefix="p3_",
-        params=args,
-        host=orch_host,
         input_folder=p2_pipeline_input_parent_path,
     )
-    _set_component(code_to_parquet, "code to parquet")
+
+    # document ID
+    doc_id = _create_component(
+        pipeline_name=p1_orch_doc_id_name,
+        displayed_name="doc ID",
+        prefix="p4_",
+        input_folder=code_to_parquet.output,
+        prev_op=code_to_parquet
+    )
 
     # exact deduplication
-    exact_dedup = run_exact_dedup_op(
-        name=p1_orch_exact_dedup_name,
-        prefix="p4_",
-        params=args,
-        host=orch_host,
-        input_folder=code_to_parquet.output,
+    exact_dedup = _create_component(
+        pipeline_name=p1_orch_exact_dedup_name,
+        displayed_name="exact dedup",
+        prefix="p5_",
+        input_folder=doc_id.output,
+        prev_op=doc_id
     )
-    _set_component(exact_dedup, "exact dedup", code_to_parquet)
-    # document ID
-    doc_id = run_doc_id_op(
-        name=p1_orch_doc_id_name, prefix="p5_", params=args, host=orch_host, input_folder=exact_dedup.output
-    )
-    _set_component(doc_id, "doc ID", exact_dedup)
-    # fuzzy deduplication
-    fuzzy_dedup = run_fuzzy_dedup_op(
-        name=p1_orch_fuzzy_dedup_name, prefix="p6_", params=args, host=orch_host, input_folder=doc_id.output
-    )
-    _set_component(fuzzy_dedup, "fuzzy dedup", doc_id)
 
     # proglang_select
-    proglang_select = run_proglang_select_op(
-        name=p1_orch_proglang_select_name,
-        prefix="p7_",
-        params=args,
-        host=orch_host,
-        input_folder=fuzzy_dedup.output,
+    proglang_select = _create_component(
+        pipeline_name=p1_orch_proglang_select_name,
+        displayed_name="proglang select",
+        prefix="p6_",
+        input_folder=exact_dedup.output,
+        prev_op=exact_dedup,
     )
-    _set_component(proglang_select, "proglang_select", fuzzy_dedup)
 
     # code_quality
-    code_quality = run_code_quality_op(
-        name=p1_orch_code_quality_name, prefix="p8_", params=args, host=orch_host, input_folder=proglang_select.output
+    code_quality = _create_component(
+        pipeline_name=p1_orch_code_quality_name,
+        displayed_name="code_quality",
+        prefix="p7_",
+        input_folder=proglang_select.output,
+        prev_op=proglang_select,
     )
-    _set_component(code_quality, "code_quality", proglang_select)
 
     # malware
-    malware = run_malware_op(
-        name=p1_orch_malware_name, prefix="p9_", params=args, host=orch_host, input_folder=code_quality.output
+    malware = _create_component(
+        pipeline_name=p1_orch_malware_name,
+        displayed_name="malware",
+        prefix="p8_",
+        input_folder=code_quality.output,
+        prev_op=code_quality,
     )
-    _set_component(malware, "malware", code_quality)
-
-    # license check
-    license_select = run_license_select_op(
-        name=p1_orch_license_select_name, prefix="p10_", params=args, host=orch_host, input_folder=malware.output
-    )
-    _set_component(license_select, "license_select", malware)
-
-    # header cleanser
-    header_cleanser = run_header_cleanser_op(
-        name=p1_orch_header_cleanser_name,
-        prefix="p11_",
-        params=args,
-        host=orch_host,
-        input_folder=license_select.output,
-    )
-    _set_component(header_cleanser, "header_cleanser", license_select)
 
     # tokenization
-    tokenization = run_tokenization_op(
-        name=p1_orch_tokenization_wf_name,
-        prefix="p12_",
-        params=args,
-        host=orch_host,
-        input_folder=header_cleanser.output,
+    tokenization = _create_component(
+        pipeline_name=p1_orch_tokenization_wf_name,
+        displayed_name="tokenization",
+        prefix="p9_",
+        input_folder=malware.output,
+        prev_op=malware,
     )
-    _set_component(tokenization, "tokenization", header_cleanser)
 
     # Configure the pipeline level to one week (in seconds)
     dsl.get_pipeline_conf().set_timeout(ONE_WEEK_SEC)

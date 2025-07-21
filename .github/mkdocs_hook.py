@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -21,7 +22,7 @@ import mkdocs.plugins
 
 log = logging.getLogger("mkdocs")
 
-GITHUB_REPO = os.getenv("REPO_URL", "https://github.com/IBM/data-prep-lab")
+GITHUB_REPO = os.getenv("REPO_URL", "https://github.com/data-prep-kit/data-prep-kit")
 GITHUB_BRANCH = os.getenv("REPO_BRANCH", "dev")
 GITHUB_VIEW_FILE = "blob"
 GITHUB_VIEW_TREE = "tree"

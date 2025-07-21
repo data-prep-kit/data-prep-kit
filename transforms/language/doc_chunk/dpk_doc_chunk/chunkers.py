@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -21,9 +22,10 @@ from docling_core.transforms.chunker import HierarchicalChunker, DocMeta
 
 
 class ChunkingExecutor(metaclass=ABCMeta):
+
     @abstractmethod
     def chunk(self, content: str) -> Iterator[dict]:
-        raise NotImplemented("The chunk() method must be implemented")
+        pass
 
 
 class DLJsonChunker(ChunkingExecutor):

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -32,9 +33,8 @@ class NoopModel(ClassificationModel):
 
 
 class FastTextModel(ClassificationModel):
-    def __init__(self, url, file_name, credential):
-        model_path = hf_hub_download(repo_id=url, filename=file_name, token=credential)
-        self.nlp = fasttext.load_model(model_path)
+    def __init__(self, model, url):
+        self.nlp = model
         self.url = url
 
     def detect_label(self, text: str) -> tuple[str, float]:
@@ -56,8 +56,3 @@ class FastTextModel(ClassificationModel):
             )  # replace newline to avoid ERROR: predict processes one line at a time (remove '\n') skipping the file
             return label[0].replace("__label__", ""), math.floor(score[0] * 1000) / 1000
 
-
-class ClassificationModelFactory:
-    @staticmethod
-    def create_model( url: str, file_name:str, credential: str) -> ClassificationModel:
-        return FastTextModel(url, file_name, credential)

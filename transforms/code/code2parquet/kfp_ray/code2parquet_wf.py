@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -23,8 +24,11 @@ from workflow_support.compile_utils import (
 )
 
 
+# The secret name containing the s3 credentials.
+S3_SECRET = "s3-secret"
+
 # the name of the job script
-EXEC_SCRIPT_NAME: str = "code2parquet_transform_ray.py"
+EXEC_SCRIPT_NAME: str = "-m dpk_code2parquet.ray.runtime"
 
 task_image = "quay.io/dataprep1/data-prep-kit/code2parquet-ray:latest"
 
@@ -47,7 +51,6 @@ def compute_exec_params_func(
     data_files_to_use: str,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     code2parquet_supported_langs_file: str,
     code2parquet_domain: str,
     code2parquet_snapshot: str,
@@ -64,7 +67,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "code2parquet_supported_langs_file": code2parquet_supported_langs_file,
         "code2parquet_domain": code2parquet_domain,
         "code2parquet_snapshot": code2parquet_snapshot,
@@ -101,27 +103,34 @@ PREFIX: str = "code2parquet"
 )
 def code2parquet(
     ray_name: str = "code2parquet-kfp-ray",  # name of Ray cluster
-    ray_run_id_KFPv2: str = "",   # Ray cluster unique ID used only in KFP v2
+    ray_run_id_KFPv2: str = "",  # Ray cluster unique ID used only in KFP v2
     # Add image_pull_secret and image_pull_policy to ray workers if needed
     ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
-    ray_worker_options: dict = {"replicas": 2, "max_replicas": 2, "min_replicas": 2, "cpu": 2, "memory": 4, "image": task_image},
+    ray_worker_options: dict = {
+        "replicas": 2,
+        "max_replicas": 2,
+        "min_replicas": 2,
+        "cpu": 2,
+        "memory": 4,
+        "image": task_image,
+    },
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
     data_s3_config: str = "{'input_folder': 'test/code2parquet/input', 'output_folder': 'test/code2parquet/output/'}",
-    data_s3_access_secret: str = "s3-secret",
+    data_s3_access_secret: str = S3_SECRET,
+    other_secrets: dict = {},
     data_max_files: int = -1,
     data_num_samples: int = -1,
     data_files_to_use: str = "['.zip']",
     # orchestrator
-    runtime_actor_options: dict = {'num_cpus': 0.8},
+    runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {'github': 'github', 'commit_hash': '12345', 'path': 'path'},
     # code to parquet
     code2parquet_supported_langs_file: str = "test/code2parquet/languages/lang_extensions.json",
     code2parquet_detect_programming_lang: bool = True,
     code2parquet_domain: str = "code",
     code2parquet_snapshot: str = "github",
-    code2parquet_s3_access_secret: str = "s3-secret",
+    code2parquet_s3_access_secret: str = S3_SECRET,
     # additional parameters
     additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
 ) -> None:
@@ -159,7 +168,6 @@ def code2parquet(
     :param data_files_to_use - file extensions to use for processing
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :param code2parquet_supported_langs_file - file to store allowed languages
     :param code2parquet_detect_programming_lang - detect programming language flag
     :param code2parquet_domain: domain
@@ -173,13 +181,17 @@ def code2parquet(
     # https://github.com/kubeflow/pipelines/issues/10187. Therefore, meantime the user is requested to insert
     # a unique string created at run creation time.
     if os.getenv("KFPv2", "0") == "1":
-        print("WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
-              "same version of the same pipeline !!!")
+        print(
+            "WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
+            "same version of the same pipeline !!!"
+        )
         run_id = ray_run_id_KFPv2
     else:
         run_id = dsl.RUN_ID_PLACEHOLDER
     # create clean_up task
-    clean_up_task = cleanup_ray_op(ray_name=ray_name, run_id=run_id, server_url=server_url, additional_params=additional_params)
+    clean_up_task = cleanup_ray_op(
+        ray_name=ray_name, run_id=run_id, server_url=server_url, additional_params=additional_params
+    )
     ComponentUtils.add_settings_to_component(clean_up_task, ONE_HOUR_SEC * 2)
     # pipeline definition
     with dsl.ExitHandler(clean_up_task):
@@ -193,7 +205,6 @@ def code2parquet(
             data_files_to_use=data_files_to_use,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             code2parquet_supported_langs_file=code2parquet_supported_langs_file,
             code2parquet_domain=code2parquet_domain,
             code2parquet_snapshot=code2parquet_snapshot,
@@ -207,9 +218,20 @@ def code2parquet(
             ray_head_options=ray_head_options,
             ray_worker_options=ray_worker_options,
             server_url=server_url,
+            other_secrets=other_secrets,
             additional_params=additional_params,
         )
         ComponentUtils.add_settings_to_component(ray_cluster, ONE_HOUR_SEC * 2)
+        if os.getenv("KFPv2", "0") == "1":
+            from kfp import kubernetes
+
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=ray_cluster, secret_name=S3_SECRET, secret_key_to_env=env2key)
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(ray_cluster, data_s3_access_secret)
+            ComponentUtils.set_s3_env_vars_to_component(ray_cluster, code2parquet_s3_access_secret, prefix=PREFIX)
         ray_cluster.after(compute_exec_params)
         # Execute job
         execute_job = execute_ray_jobs_op(
@@ -223,8 +245,20 @@ def code2parquet(
             prefix=PREFIX,
         )
         ComponentUtils.add_settings_to_component(execute_job, ONE_WEEK_SEC)
-        ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
-        ComponentUtils.set_s3_env_vars_to_component(execute_job, code2parquet_s3_access_secret, prefix=PREFIX)
+        if os.getenv("KFPv2", "0") == "1":
+            from kfp import kubernetes
+
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env(prefix=PREFIX)
+            kubernetes.use_secret_as_env(task=execute_job, secret_name=S3_SECRET, secret_key_to_env=env2key)
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=execute_job, secret_name=S3_SECRET, secret_key_to_env=env2key)
+
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
+            ComponentUtils.set_s3_env_vars_to_component(execute_job, code2parquet_s3_access_secret, prefix=PREFIX)
+
         execute_job.after(ray_cluster)
 
 

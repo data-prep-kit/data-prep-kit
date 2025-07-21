@@ -15,7 +15,7 @@ This transform is chunking documents. It supports multiple _chunker modules_ (se
 
 When using documents converted to JSON, the transform leverages the [Docling Core](https://github.com/DS4SD/docling-core) `HierarchicalChunker`
 to chunk according to the document layout segmentation, i.e. respecting the original document components as paragraphs, tables, enumerations, etc.
-It relies on documents converted with the Docling library in the [pdf2parquet transform](../pdf2parquet/README.md) using the option `contents_type: "application/json"`,
+It relies on documents converted with the Docling library in the [docling2parquet transform](../docling2parquet/README.md) using the option `contents_type: "application/json"`,
 which provides the required JSON structure.
 
 When using documents converted to Markdown, the transform leverages the [Llama Index](https://docs.llamaindex.ai/en/stable/module_guides/loading/node_parsers/modules/#markdownnodeparser) `MarkdownNodeParser`, which is relying on its internal Markdown splitting logic.
@@ -63,11 +63,11 @@ The transform can be tuned with the following parameters.
 
 ### Launched Command Line Options 
 
-When invoking the CLI, the parameters must be set as `--doc_chunk_<name>`, e.g. `--doc_chunk_column_name_key=myoutput`.
+When invoking the CLI, the parameters must be set as `--doc_chunk_<name>`, e.g., `--doc_chunk_column_name=myoutput`.
 
 ### Code example
 
-See a sample [notebook](doc_chunk.ipynb)
+See a sample [notebook](./doc_chunk-python.ipynb)
 
 ### Transforming data using the transform image
 
@@ -106,6 +106,10 @@ chunk documents configuration and command line options are the same as for the b
 In addition to those available to the transform as defined above,
 the set of 
 [launcher options](../../../data-processing-lib/doc/launcher-options.md) are available.
+
+### Code example
+
+See a sample [Ray notebook](./doc_chunk-ray.ipynb)
 
 ### Transforming data using the transform image
 

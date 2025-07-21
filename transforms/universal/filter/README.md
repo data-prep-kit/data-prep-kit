@@ -9,15 +9,19 @@ testing and IDE set up.
 Filtering cleans up data by:
  * Removing the rows that do not meet a specific set of criteria.
  * Dropping the columns that are no longer needed (e.g., annotation columns, used for filtering rows).
+ * If the data have been tokenized and the corresponding arrow folder is available, the .arrow and associated meta files, such as .docs and .docs.ids, are also filtered.
 
 ## Configuration and command line Options
 
-The set of dictionary keys holding [FilterTransform](dpk_filter/transform_python.py) 
+The set of dictionary keys holding [FilterTransform](dpk_filter/transform.py) 
 configuration for values are as follows:
 
 * _filter_criteria_list_ - specifies the list of row filter criteria (in SQL WHERE clause format). Each filter criterion is a string. The default value of this parameter is `[]` (an empty list, meaning that all the rows in the input table will be kept). 
 * _filter_logical_operator_ - specifies the logical operator that joins filter criteria (`AND` or `OR`). The default value of this parameter is `AND`.
 * _filter_columns_to_drop_ - the list with the names of the columns to drop after row filtering is complete. The default value of this parameter is `[]` (an empty list, meaning that all the columns in the input table will be kept)
+* _filter_input_arrow_folder_ - specifies the file path to the folder that holds the input .arrow files. The default value of this parameter is `None` (No input arrow folder path is specified) In that case, only the parquet files in the `input_folder` will be filtered.
+* _filter_output_arrow_folder_ - specifies the file path to the folder that will hold the filtered .arrow files. The default value of this parameter is `None`. Note that if the _filter_input_arrow_folder_ is not None, then the _filter_output_arrow_folder_ is required.
+* _filter_doc_id_column_name_ - specifies the column name for unique document IDs in the parquet file. This column name must match what is used in the input parquet.
 
 ## Example
 Consider a table with eight text documents, where each row has additional info about that document (date acquired, source URL, etc.), and a set of quality signals for that document.  
@@ -178,47 +182,51 @@ You can run the [python-only implementation](dpk_filter/local.py) or the [ray-ba
 
 #### Running as ray-based application
 ```
-make venv
-source venv/bin/activate
-(venv) cma:src$ python -m dpk_filter.ray.transform
-12:48:01 INFO - Running locally
-12:48:01 INFO - Using local configuration with: input_folder - /home/cma/de/data-prep-kit/transforms/universal/filter/test-data/input output_folder - /home/cma/de/data-prep-kit/transforms/universal/filter/output
-12:48:01 INFO - Not using data sets, checkpointing False, max files -1
-12:48:01 INFO - number of workers 5 worker options {'num_cpus': 0.8}
-12:48:01 INFO - pipeline id pipeline_id; number workers 5
-12:48:01 INFO - job details {'job category': 'preprocessing', 'job name': 'filter', 'job type': 'ray', 'job id': 'job_id'}
-12:48:01 INFO - code location {'github': 'github', 'commit_hash': '12345', 'path': 'path'}
-12:48:01 INFO - actor creation delay 0
-2024-03-31 12:48:03,390	INFO worker.py:1715 -- Started a local Ray instance. View the dashboard at 127.0.0.1:8265 
-(orchestrate pid=308034) 12:48:04 INFO - orchestrator started at 2024-03-31 12:48:04
-(orchestrate pid=308034) 12:48:04 INFO - Number of files is 1, source profile {'max_file_size': 0.15915775299072266, 'min_file_size': 0.15915775299072266, 'total_file_size': 0.15915775299072266}
-(orchestrate pid=308034) 12:48:04 INFO - Cluster resources: {'cpus': 20, 'gpus': 0, 'memory': 31.60095291212201, 'object_store': 15.800476455129683}
-(orchestrate pid=308034) 12:48:04 INFO - Number of workers - 5 with {'num_cpus': 0.8} each
-(orchestrate pid=308034) 12:48:04 INFO - Completed 0 files in 5.312760670979818e-06 min. Waiting for completion
-(orchestrate pid=308034) 12:48:06 INFO - Completed processing in 0.022701112429300944 min
-12:48:16 INFO - Completed execution in 0.24697633584340414 min, execution result 0
+make run-ray-cli-sample
+13:23:24 INFO - Launching filtering
+13:23:24 INFO - pipeline id pipeline_id
+13:23:24 INFO - code location None
+13:23:24 INFO - number of workers 1 worker options {'num_cpus': 0.8, 'max_restarts': -1}
+13:23:24 INFO - actor creation delay 0
+13:23:24 INFO - job details {'job category': 'preprocessing', 'job name': 'filter', 'job type': 'ray', 'job id': 'job_id'}
+13:23:24 INFO - data factory data_ is using local data access: input_folder - test-data/input output_folder - output
+13:23:24 INFO - data factory data_ max_files -1, n_sample -1
+13:23:24 INFO - data factory data_ Not using data sets, checkpointing False, max files -1, random samples -1, files to use ['.parquet'], files to checkpoint ['.parquet']
+13:23:24 INFO - Running locally
+2025-03-19 13:23:25,663	INFO worker.py:1777 -- Started a local Ray instance. View the dashboard at 127.0.0.1:8265 
+(orchestrate pid=28752) 13:23:26 INFO - orchestrator started at 2025-03-19 13:23:26
+(orchestrate pid=28752) 13:23:26 INFO - Number of files is 1, source profile {'max_file_size': 0.15915775299072266, 'min_file_size': 0.15915775299072266, 'total_file_size': 0.15915775299072266}
+(orchestrate pid=28752) 13:23:26 INFO - Cluster resources: {'cpus': 10, 'gpus': 0, 'memory': 26.107174683362246, 'object_store': 2.0}
+(orchestrate pid=28752) 13:23:26 INFO - Number of workers - 1 with {'num_cpus': 0.8, 'max_restarts': -1} each
+(orchestrate pid=28752) 13:23:27 INFO - Completed 0 files (0.0%)  in 0.0 min. Waiting for completion
+(orchestrate pid=28752) 13:23:27 INFO - Completed processing 1 files in 0.001 min
+(orchestrate pid=28752) 13:23:27 INFO - done flushing in 0.001 sec
+(RayTransformFileProcessor pid=28758) 13:23:27 WARNING - NOTE: no input_arrow_folder provided. Only parquet files are filtered.
+13:23:37 INFO - Completed execution in 0.221 min, execution result 0
 ```
 #### Running as pure python application
 <pre>
-make venv
-source venv/bin/activate
-(venv) % python -m dpk_filter.transform_python
-input table has 100 rows
-
-output table has 11 rows
-output metadata : {'total_docs_count': 100, 'total_bytes_count': 478602, 'total_columns_count': 25, "docs_filtered_by 'docq_total_words > 100 AND docq_total_words < 200'": 78, "bytes_filtered_by 'docq_total_words > 100 AND docq_total_words < 200'": 429191, "docs_filtered_by 'docq_perplex_score < 230'": 53, "bytes_filtered_by 'docq_perplex_score < 230'": 275911, 'docs_after_filter': 11, 'bytes_after_filter': 24061, 'columns_after_filter': 23}
-(venv) % deactivate
-
-ls output
-metadata.json	test1.parquet
-
+make run-python-cli-sample
+13:18:51 INFO - Launching filtering
+13:18:51 INFO - pipeline id pipeline_id
+13:18:51 INFO - code location None
+13:18:51 INFO - data factory data_ is using local data access: input_folder - test-data/input output_folder - output
+13:18:51 INFO - data factory data_ max_files -1, n_sample -1
+13:18:51 INFO - data factory data_ Not using data sets, checkpointing False, max files -1, random samples -1, files to use ['.parquet'], files to checkpoint ['.parquet']
+13:18:51 INFO - orchestrator filter started at 2025-03-19 13:18:51
+13:18:51 INFO - Number of files is 1, source profile {'max_file_size': 0.15915775299072266, 'min_file_size': 0.15915775299072266, 'total_file_size': 0.15915775299072266}
+13:18:51 WARNING - NOTE: no input_arrow_folder provided. Only parquet files are filtered.
+13:18:51 INFO - Completed 1 files (100.0%) in 0.0 min
+13:18:51 INFO - Done processing 1 files, waiting for flush() completion.
+13:18:51 INFO - done flushing in 0.0 sec
+13:18:51 INFO - Completed execution in 0.0 min, execution result 0
 </pre>
 
 #### Passing parameters through command-line-interface
 
 When running filtering on a local terminal, double quotes need to be escaped accordingly. For example, to find documents that are written in Java or Python programming languages, a SQL query using the `IN` keyword is needed in the `filter_criteria_list` argument. The example below shows how to properly pass this argument to the filter app:
 ```    
-python -m dpk_filter.ray.transform --filter_criteria_list "[\"language IN ('Java', 'Python')\"]" ...
+python -m dpk_filter.ray.runtime --filter_criteria_list "[\"language IN ('Java', 'Python')\"]" ...
 ```
 When filter runs from the command line, it needs to include the entire `filter_criteria_list` parameter within double quotes (`"`), so that the command line parser can determine where the parameter begins and ends. This, however, will conflict with the internal double quotes that are used to specify the conditions inside the list (`language IN ('Java', 'Python')`). To resolve this problem, the internal double quotes need to be escaped, as in the \"language IN ('Java', 'Python')\" notation.
 
@@ -249,7 +257,14 @@ the [launcher](../../../data-processing-lib/doc/launcher-options.md).
                         list of columns to drop after filtering, for example: ["column1", "column2"]
   --filter_logical_operator {AND,OR}
                         logical operator (AND or OR) that joins filter criteria
-
+  --filter_input_arrow_folder FILTER_INPUT_ARROW_FOLDER
+                        path to the folder containing the input arrow files, for example:
+                        "test-data/ds01/input/parquet"
+  --filter_output_arrow_folder FILTER_OUTPUT_ARROW_FOLDER
+                        path to the folder containing the output arrow files, for example:
+                        "output/arrow/"
+  --filter_doc_id_column_name FILTER_DOC_ID_COLUMN_NAME
+                        column name for unique document ID, for example, "document_id"
 ```
 ### Code example
 

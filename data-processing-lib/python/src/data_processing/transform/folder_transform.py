@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -10,6 +11,7 @@
 # limitations under the License.
 ################################################################################
 
+from abc import abstractmethod
 from typing import Any
 from data_processing.transform import AbstractTransform
 
@@ -28,6 +30,7 @@ class AbstractFolderTransform(AbstractTransform):
         """
         self.config = config
 
+    @abstractmethod
     def transform(self, folder_name: str) -> tuple[list[tuple[bytes, str]], dict[str, Any]]:
         """
         Converts input folder into o or more output files.
@@ -37,4 +40,4 @@ class AbstractFolderTransform(AbstractTransform):
                 to metadata.  Each element of the return list, is a tuple of the transformed bytes and a string
                 holding the file name to use.
         """
-        raise NotImplemented()
+        pass

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -24,11 +25,14 @@ from workflow_support.compile_utils import (
 
 task_image = "quay.io/dataprep1/data-prep-kit/html2parquet-ray:latest"
 
+# The secret name containing the s3 credentials.
+S3_SECRET = "s3-secret"
+
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_html2parquet.ray.transform"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:0.2.3"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)
@@ -45,7 +49,6 @@ def compute_exec_params_func(
     data_checkpointing: bool,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     data_files_to_use: str,
     html2parquet_output_format: str,
 ) -> dict:
@@ -60,7 +63,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "data_files_to_use": data_files_to_use,
         "html2parquet_output_format": html2parquet_output_format,
     }
@@ -109,14 +111,14 @@ def html2parquet(
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
     data_s3_config: str = "{'input_folder': 'test/html2parquet/input/', 'output_folder': 'test/html2parquet/output/'}",
-    data_s3_access_secret: str = "s3-secret",
+    data_s3_access_secret: str = S3_SECRET,
+    other_secrets: dict = {},
     data_max_files: int = -1,
     data_num_samples: int = -1,
     data_checkpointing: bool = False,
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # html2parquet parameters
     data_files_to_use: str = "['.html', '.zip']",
     html2parquet_output_format: str = "markdown",
@@ -156,7 +158,6 @@ def html2parquet(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :param data_files_to_use - # file extensions to use for processing
     :param html2parquet_output_format - # Output format for the contents column.
     :return: None
@@ -188,7 +189,6 @@ def html2parquet(
             data_checkpointing=data_checkpointing,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             data_files_to_use=data_files_to_use,
             html2parquet_output_format=html2parquet_output_format,
         )
@@ -201,9 +201,19 @@ def html2parquet(
             ray_head_options=ray_head_options,
             ray_worker_options=ray_worker_options,
             server_url=server_url,
+            other_secrets=other_secrets,
             additional_params=additional_params,
         )
         ComponentUtils.add_settings_to_component(ray_cluster, ONE_HOUR_SEC * 2)
+        if os.getenv("KFPv2", "0") == "1":     
+            from kfp import kubernetes
+            
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=ray_cluster, secret_name=S3_SECRET, secret_key_to_env=env2key)
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(ray_cluster, data_s3_access_secret)
         ray_cluster.after(compute_exec_params)
 
         # Execute job
@@ -216,7 +226,15 @@ def html2parquet(
             server_url=server_url,
         )
         ComponentUtils.add_settings_to_component(execute_job, ONE_WEEK_SEC)
-        ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
+        if os.getenv("KFPv2", "0") == "1":     
+            from kfp import kubernetes
+            
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=execute_job, secret_name=S3_SECRET, secret_key_to_env=env2key)
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
         execute_job.after(ray_cluster)
 
 

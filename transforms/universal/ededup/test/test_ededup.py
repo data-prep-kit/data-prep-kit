@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -18,7 +19,7 @@ from data_processing.test_support.transform import AbstractTableTransformTest
 from dpk_ededup.transform_base import (
     HashFilter,
     doc_column_name_key,
-    int_column_name_key,
+    int_column_name_key
 )
 from dpk_ededup.transform_python import EdedupTransform
 
@@ -33,8 +34,18 @@ class TestEdedupTransform(AbstractTableTransformTest):
         basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../test-data"))
         input_dir = os.path.join(basedir, "input")
         input_tables = get_tables_in_folder(input_dir)
-        expected_metadata_list = [{"result_documents": 3, "source_documents": 5}, {}]
-        config = {doc_column_name_key: "contents", int_column_name_key: "document_id", "filter": HashFilter({})}
+        expected_metadata_list = [{"result_documents": 3, 
+                                   "source_documents": 5,
+                                   "removed_documents": [
+                                        "c86996cf20920d0955a38580abb650b00d0e1df5f7bd98646669561fd89c1627",
+                                        "3e4d6c6c89dd166c88d79a6cbe3d90c8db2c9847fca19893409ec29434643c3d"
+                                      ]
+                                   }, {}]
+        config = {
+            doc_column_name_key: "contents", 
+            int_column_name_key: "document_id", 
+            "filter": HashFilter({})
+            }
         expected_tables = get_tables_in_folder(os.path.join(basedir, "expected"))
         return [
             (EdedupTransform(config), input_tables, expected_tables, expected_metadata_list),

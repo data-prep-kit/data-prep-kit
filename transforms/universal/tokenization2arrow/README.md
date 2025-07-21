@@ -11,7 +11,7 @@ testing and IDE set up.
 
 ## Summary
 
-<p align="Left"> Distributed tokenization module for data sets using any Hugging Face compatible tokenizer. This Tokenizer is built upon existing [DPK Tokenizer](https://github.com/IBM/data-prep-kit/tree/dev/transforms/universal/tokenization)
+<p align="Left"> Distributed tokenization module for data sets using any Hugging Face compatible tokenizer. This Tokenizer is built upon existing [DPK Tokenizer](https://github.com/data-prep-kit/data-prep-kit/tree/dev/transforms/universal/tokenization)
     <br>
 
 For every input .parquet file it generates .arrow and 2 metadata files ( in meta folder),

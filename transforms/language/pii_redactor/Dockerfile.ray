@@ -1,5 +1,4 @@
 ARG BASE_IMAGE=docker.io/rayproject/ray:2.24.0-py310
-
 FROM ${BASE_IMAGE}
 
 # see https://docs.openshift.com/container-platform/4.17/openshift_images/create-images.html#use-uid_create-images
@@ -32,5 +31,11 @@ ENV PYTHONPATH /home/ray
 # Put these at the end since they seem to upset the docker cache.
 ARG BUILD_DATE
 ARG GIT_COMMIT
+ARG TRANSFORM_PATH
+ARG GIT_URL
+ENV GIT_URL $GIT_URL
+ENV TRANSFORM_PATH $TRANSFORM_PATH
+ENV BUILD_DATE $BUILD_DATE
+ENV GIT_COMMIT $GIT_COMMIT
 LABEL build-date=$BUILD_DATE
 LABEL git-commit=$GIT_COMMIT

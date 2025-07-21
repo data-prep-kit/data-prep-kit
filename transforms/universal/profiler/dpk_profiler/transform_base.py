@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -10,6 +11,7 @@
 # limitations under the License.
 ################################################################################
 
+from abc import abstractmethod
 import csv
 import io
 import uuid
@@ -129,13 +131,14 @@ class ProfilerTransformBase(AbstractTableTransform):
         # return
         return [], {}
 
+    @abstractmethod
     def _submit_to_cache(self, words: dict[str, str]) -> None:
         """
         Submits
         :param words: dictionary of word occurrences in document
         :return: None
         """
-        raise NotImplementedError
+        pass
 
 
 class ProfilerTransformConfigurationBase(TransformConfiguration):

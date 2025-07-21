@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -21,16 +22,28 @@ from workflow_support.compile_utils import (
     ComponentUtils,
 )
 
+from python_apiserver_client.params import (
+        EnvironmentVariables,
+        EnvVarFrom,
+        EnvVarSource,
+)
+
+# The secret name containing the s3 credentials. 
+S3_SECRET = "s3-secret"
 
 # the name of the job script
-EXEC_SCRIPT_NAME: str = "code_quality_transform_ray.py"
+EXEC_SCRIPT_NAME: str = "-m dpk_code_quality.ray.runtime"
 PREFIX: str = ""
 
 task_image = "quay.io/dataprep1/data-prep-kit/code_quality-ray:latest"
-# Need to further investigate but for now:
-# When using None for the hf_token, the workflow works fine with v1 
-# but for v2, it fails with None and requires the string "None"
-HF_TOKEN= "None" if os.getenv("KFPv2", "0") == "1" else None
+
+# The name of the secret that holds the HuggingFace token
+HF_SECRET = "hf-secret"
+# The secret key that holds the HuggingFace token
+HF_SECRET_KEY = "hf-token"
+# HuggingFace environment variable
+HF_READ_ACCESS_TOKEN = "HF_READ_ACCESS_TOKEN"
+
 # components
 base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
@@ -48,11 +61,9 @@ def compute_exec_params_func(
     data_num_samples: int,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     cq_contents_column_name: str,
     cq_language_column_name: str,
     cq_tokenizer: str,
-    cq_hf_token: str,
 ) -> dict:
     from runtime_utils import KFPUtils
 
@@ -64,11 +75,9 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "cq_contents_column_name": cq_contents_column_name,
         "cq_language_column_name": cq_language_column_name,
         "cq_tokenizer": cq_tokenizer,
-        "cq_hf_token": cq_hf_token,
     }
 
 
@@ -94,6 +103,13 @@ cleanup_ray_op = comp.load_component_from_file(component_spec_path + "deleteRayC
 # Task name is part of the pipeline name, the ray cluster name and the job name in DMF.
 TASK_NAME: str = "code_quality"
 
+# HuggingFace token is exported as environment variables in Ray node pods.
+# Alternatively, the secret name can be passed to the KFP component,
+# which will set it as an environment variable in the Ray nodes.
+# In this option the secret name can be set at runtime
+# but is dependent on the KFP version.
+env_v = EnvVarFrom(source=EnvVarSource.SECRET, name=HF_SECRET, key=HF_SECRET_KEY)
+envs = EnvironmentVariables(from_ref={"HF_READ_ACCESS_TOKEN": env_v})
 
 # Pipeline to invoke execution on remote resource
 @dsl.pipeline(
@@ -105,23 +121,22 @@ def code_quality(
     ray_name: str = "code_quality-kfp-ray",  # name of Ray cluster
     ray_run_id_KFPv2: str = "",   # Ray cluster unique ID used only in KFP v2
     # Add image_pull_secret and image_pull_policy to ray workers if needed
-    ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
-    ray_worker_options: dict = {"replicas": 2, "max_replicas": 2, "min_replicas": 2, "cpu": 2, "memory": 4, "image": task_image},
+    ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image, "environment": envs.to_dict()},
+    ray_worker_options: dict = {"replicas": 2, "max_replicas": 2, "min_replicas": 2, "cpu": 2, "memory": 4, "image": task_image, "environment": envs.to_dict()},
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
     data_s3_config: str = "{'input_folder': 'test/code_quality/input/', 'output_folder': 'test/code_quality/output/'}",
-    data_s3_access_secret: str = "s3-secret",
+    data_s3_access_secret: str = S3_SECRET,
     data_max_files: int = -1,
     data_num_samples: int = -1,
+    other_secrets: dict = {HF_SECRET: {HF_READ_ACCESS_TOKEN: HF_SECRET_KEY}},
     # orchestrator
     runtime_actor_options: dict = {'num_cpus': 0.8},
     runtime_pipeline_id: str = "runtime_pipeline_id",
-    runtime_code_location: dict = {'github': 'github', 'commit_hash': '12345', 'path': 'path'},
     # code quality parameters
     cq_contents_column_name: str = "contents",
     cq_language_column_name: str = "language",
     cq_tokenizer: str = "codeparrot/codeparrot",
-    cq_hf_token: str = HF_TOKEN,
     # additional parameters
     additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
 ):
@@ -161,7 +176,6 @@ def code_quality(
     :param cq_contents_column_name - Name of the column holds the data to process
     :param cq_language_column_name - Name of the column holds the programming language details
     :param cq_tokenizer - Name or path to the tokenizer
-    :param cq_hf_token - Huggingface auth token to download and use the tokenizer
     :return: None
     """
     # In KFPv2 dsl.RUN_ID_PLACEHOLDER is deprecated and cannot be used since SDK 2.5.0. On another hand we cannot create
@@ -188,11 +202,9 @@ def code_quality(
             data_num_samples=data_num_samples,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             cq_contents_column_name=cq_contents_column_name,
             cq_language_column_name=cq_language_column_name,
             cq_tokenizer=cq_tokenizer,
-            cq_hf_token=cq_hf_token,
         )
 
         ComponentUtils.add_settings_to_component(compute_exec_params, ONE_HOUR_SEC * 2)
@@ -202,10 +214,20 @@ def code_quality(
             run_id=run_id,
             ray_head_options=ray_head_options,
             ray_worker_options=ray_worker_options,
+            other_secrets=other_secrets,
             server_url=server_url,
             additional_params=additional_params,
         )
         ComponentUtils.add_settings_to_component(ray_cluster, ONE_HOUR_SEC * 2)
+        if os.getenv("KFPv2", "0") == "1":
+            from kfp import kubernetes
+
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=ray_cluster, secret_name=S3_SECRET, secret_key_to_env=env2key)
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(ray_cluster, data_s3_access_secret)
         ray_cluster.after(compute_exec_params)
 
         # Execute job
@@ -219,7 +241,15 @@ def code_quality(
             server_url=server_url,
         )
         ComponentUtils.add_settings_to_component(execute_job, ONE_WEEK_SEC)
-        ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
+        if os.getenv("KFPv2", "0") == "1":     
+            from kfp import kubernetes
+            
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=execute_job, secret_name=S3_SECRET, secret_key_to_env=env2key)
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
 
         execute_job.after(ray_cluster)
 

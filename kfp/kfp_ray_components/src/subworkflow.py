@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -100,7 +101,6 @@ def invoke_sub_workflow(
         d.pop("output_parent_path", None)
         d.pop("parent_path_suffix", None)
         d.pop("skip", None)
-        d.pop("name", None)
         d.pop("overriding_params", None)
         return
 
@@ -131,9 +131,14 @@ def invoke_sub_workflow(
 
     # The output path includes all the tasks upstream.
     if s3_input_prefix.startswith(output_parent_path):
-        output_folder_prefix = s3_input_prefix + "_" + prm.get("name", "")
+        output_folder_prefix = s3_input_prefix
     else:
-        output_folder_prefix = output_parent_path + "_" + prm.get("name", "")
+        output_folder_prefix = output_parent_path
+    if output_folder_prefix.endswith("/"):
+        output_folder_prefix += prm.get("name", "")
+    else:
+        output_folder_prefix += "_" + prm.get("name", "")
+
     output_folder = output_folder_prefix + "/" + prm.get("parent_path_suffix", "")
 
     input_folder = input_folder.replace('"', "'")

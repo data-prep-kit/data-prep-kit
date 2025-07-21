@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -19,7 +20,6 @@ def ededup_compute_execution_params(
     data_num_samples: int,  # num samples to process
     runtime_pipeline_id: str,  # pipeline id
     runtime_job_id: str,  # job id
-    runtime_code_location: dict,  # code location
     ededup_doc_column: str,  # key for accessing data
     ededup_hash_cpu: float,  # number of CPUs per hash
     ededup_use_snapshot: bool,  # flag to start from snapshot
@@ -36,7 +36,6 @@ def ededup_compute_execution_params(
     :param data_num_samples - num samples to process
     :param runtime_pipeline_id - pipeline id
     :param runtime_job_id - job id, or just a unique string
-    :param runtime_code_location - code location
     :param ededup_doc_column - key for accessing data
     :param ededup_hash_cpu - number of CPUs per hash
     :param ededup_use_snapshot - flag to start from existing snapshot
@@ -73,7 +72,7 @@ def ededup_compute_execution_params(
         # S3 config is list. take the first element
         s3_config = s3_config[0]
     # because S3 is the only viable version for kfp-based implementation, we are here creating DataAccess S3 directly
-    data_access = DataAccessS3(s3_credentials=s3_creds, s3_config=s3_config, d_sets=None, checkpoint=False, m_files=-1)
+    data_access = DataAccessS3(config=s3_config | s3_creds, d_sets=None, checkpoint=False, m_files=-1)
     # sample input data
     sampling, _ = data_access.sample_input_data(n_samples=ededup_n_samples)
     avg_doc_size = sampling.get("average doc size KB")
@@ -122,7 +121,6 @@ def ededup_compute_execution_params(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "ededup_doc_column": ededup_doc_column,
         "ededup_hash_cpu": ededup_hash_cpu,
         "ededup_use_snapshot": ededup_use_snapshot,

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -17,8 +18,9 @@ import pandas as pd
 import pyarrow as pa
 import torch
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import GB, TransformUtils, get_logger
-from transformers import AutoModelForSequenceClassification, AutoTokenizer
+from data_processing.utils import GB, TransformUtils, get_logger, load_model
+
+logger = get_logger(__name__)
 
 
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
@@ -37,14 +39,14 @@ class HAPTransform(AbstractTableTransform):
         self.doc_text_column = config.get("doc_text_column", "contents")
         self.max_length = config.get("max_length", 512)
         self.batch_size = config.get("batch_size", 128)
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name_or_path)
-        self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name_or_path).to(device)
+        self.tokenizer = load_model(self.model_name_or_path, "tokenizer")
+        self.model = load_model(self.model_name_or_path, "sequence").to(device)
 
     def _apply_model(self, data: list, batch_size: int) -> list[float]:
         num_batches = len(data) // batch_size
         data_sent_scores = []
         for i in range(num_batches + 1):
-            print(f"Processing batch: {i}/{num_batches}")
+            logger.info(f"Processing batch: {i}/{num_batches}")
             start_idx = i * batch_size
             end_idx = min((i + 1) * batch_size, len(data))
             if start_idx >= end_idx:
@@ -95,14 +97,11 @@ class HAPTransform(AbstractTableTransform):
         assert len(df_doc_list) == len(df_doc_scores)
 
         self.df["hap_score"] = df_doc_scores
-        print(self.df)
+        logger.info(self.df)
 
         out_table = pa.Table.from_pandas(self.df)
         metadata = {}
         return [out_table], metadata
-
-
-logger = get_logger(__name__)
 
 
 class HAPTransformConfiguration(TransformConfiguration):

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -20,7 +21,7 @@ from transforms.universal.filter.dpk_filter.transform import (
     filter_criteria_cli_param,
     filter_logical_operator_cli_param,
 )
-from dpk_filter.transform_python import FilterPythonTransformConfiguration
+from dpk_filter.runtime import FilterPythonTransformConfiguration
 
 
 # create parameters

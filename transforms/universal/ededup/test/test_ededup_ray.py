@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -23,7 +24,7 @@ from dpk_ededup.ray.transform import (
 )
 from dpk_ededup.transform_base import (
     doc_column_name_cli_param,
-    int_column_name_cli_param,
+    int_column_name_cli_param
 )
 
 
@@ -42,7 +43,7 @@ class TestRayEdedupTransform(AbstractTransformLauncherTest):
             hash_cpu_cli_params: 0.5,
             num_hashes_cli_params: 2,
             doc_column_name_cli_param: "contents",
-            int_column_name_cli_param: "document_id",
+            int_column_name_cli_param: "document_id"
         }
         launcher = RayTransformLauncher(EdedupRayTransformRuntimeConfiguration())
         fixtures = [(launcher, config, basedir + "/input", basedir + "/expected")]

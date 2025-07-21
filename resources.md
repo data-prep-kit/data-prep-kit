@@ -1,7 +1,7 @@
 # New Features & Enhancements
 
-- We are working hard with your feedback and DPK 1.0.0 alpha has been released with simplified APIs for language transforms. Check out [this page](https://github.com/IBM/data-prep-kit/blob/725fdf65989432280a59fbfc98ad3c7cab85c23a/transforms/transforms-1.0-lang.ipynb) for example implementation of some of these transforms.
-- [HAP](https://github.com/IBM/data-prep-kit/blob/dev/examples/notebooks/hap/generate_hap_score_csv.ipynb) and [PII](https://github.com/IBM/data-prep-kit/blob/dev/examples/notebooks/PII/Run_your_first_PII_redactor_transform.ipynb) recipe notebooks contributed by our partners in GSI team are now merged.
+
+- DPK 1.1.0 has been released. For details on the new features and enhancements, please see [this](release-notes.md).
 
 # Data Prep Kit Resources
 
@@ -11,9 +11,31 @@
 2. [Granite Code Models: A Family of Open Foundation Models for Code Intelligence](https://arxiv.org/abs/2405.04324)
 3. [Scaling Granite Code Models to 128K Context](https://arxiv.org/abs/2407.13739)
 
+## Example Code
+
+Find example code in readme section of each tranform and some sample jupyter notebooks for getting started [**here**](examples/notebooks)
+
+## Blogs / Tutorials
+
+- [**Introducing the GneissWeb Dataset - built with Data Prep Kit**](https://research.ibm.com/blog/gneissweb-for-granite-training)
+- [**IBM Developer Learning Path: Get started with Data Prep Kit (DPK)**](https://developer.ibm.com/learningpaths/get-started-data-prep-kit/)
+- Blog on Ziliz [**"Introducing IBM Data Prep Kit for Streamlined LLM Workflows"**](https://zilliz.com/blog/ibm-data-prep-kit-for-streamlined-llm-workflows) by Yesha Shastri, Freelance Technical Writer in AI/ML
+- [**IBM Developer Blog**](https://developer.ibm.com/blogs/awb-unleash-potential-llms-data-prep-kit/) 
+- [**Introductory Blog on DPK**](https://www.linkedin.com/pulse/unleashing-potential-large-language-models-through-data-aanchal-goyal-fgtff)
+- [**DPK Header Cleanser Module Blog by external contributor**](https://www.linkedin.com/pulse/enhancing-data-quality-developing-header-cleansing-tool-kalathiya-i1ohc/?trackingId=6iAeBkBBRrOLijg3LTzIGA%3D%3D) 
+
+
+# Relevant online communities
+
+- [**Data Prep Kit Discord Channel**](https://discord.com/channels/1276554812359442504/1303454647427661866)
+- [**DPK is now listed in Github Awesome-LLM under LLM Data section**](https://github.com/Hannibal046/Awesome-LLM)
+- [**DPK is now up for access via IBM Skills Build Download**](https://academic.ibm.com/a2mt/downloads/artificial_intelligence#/)
+- [**DPK added to the Application Hub of “AI Sustainability Catalog”**](https://enterprise-neurosystem.github.io/Sustainability-Catalog/)
+
 
 ## 🎤 External Events and Showcase
 
+1. [**The AI Alliance Office Hours: “Introducing GneissWeb - a state-of-the-art LLM pre-training dataset”**](https://the-ai-alliance.github.io/office-hours/events/2025-03-06__gneissweb.html) - Mar 6, 2025 - [Slides](https://the-ai-alliance.github.io/office-hours/events/2025-03-06__gneissweb-dpk.pdf)
 1. [**Workshop at the AI for Connectivity Hackathon: “Preparing Data for LLM Applications with Docling & Data Prep Kit”**](https://www.linkedin.com/posts/sujeemaniyam_special-workshop-alert-were-excited-activity-7288285557149908992-0TH1?utm_source=share&utm_medium=member_desktop) - Jan 25, 2025
 
 2. **Talk on DPK** at [**IBM TechXchange**](https://ibmtechxchange-virtual-agents.bemyapp.com/) Agents day - Jan 23, 2025 - [Slides](https://docs.google.com/presentation/d/1u90TTW3GnvPnYX0BFrbdK_SG91jGaaDhCki3S6cLL94/edit?usp=sharing)
@@ -57,27 +79,8 @@
 
 
 
-## Example Code
-
-Find example code in readme section of each tranform and some sample jupyter notebooks for getting started [**here**](examples/notebooks)
-
-## Blogs / Tutorials
-
-- Blog on Ziliz [**"Introducing IBM Data Prep Kit for Streamlined LLM Workflows"**](https://zilliz.com/blog/ibm-data-prep-kit-for-streamlined-llm-workflows) by Yesha Shastri, Freelance Technical Writer in AI/ML
-- [**IBM Developer Blog**](https://developer.ibm.com/blogs/awb-unleash-potential-llms-data-prep-kit/) 
-- [**Introductory Blog on DPK**](https://www.linkedin.com/pulse/unleashing-potential-large-language-models-through-data-aanchal-goyal-fgtff)
-- [**DPK Header Cleanser Module Blog by external contributor**](https://www.linkedin.com/pulse/enhancing-data-quality-developing-header-cleansing-tool-kalathiya-i1ohc/?trackingId=6iAeBkBBRrOLijg3LTzIGA%3D%3D) 
-
-
-# Relevant online communities
-
-- [**Data Prep Kit Discord Channel**](https://discord.com/channels/1276554812359442504/1303454647427661866)
-- [**DPK is now listed in Github Awesome-LLM under LLM Data section**](https://github.com/Hannibal046/Awesome-LLM)
-- [**DPK is now up for access via IBM Skills Build Download**](https://academic.ibm.com/a2mt/downloads/artificial_intelligence#/)
-- [**DPK added to the Application Hub of “AI Sustainability Catalog”**](https://enterprise-neurosystem.github.io/Sustainability-Catalog/)
-
 ## We Want Your Feedback!
 
- Feel free to contribute to discussions or create a new one to share your [feedback](https://github.com/IBM/data-prep-kit/discussions)
+ Feel free to contribute to discussions or create a new one to share your [feedback](https://github.com/data-prep-kit/data-prep-kit/discussions)
 
 

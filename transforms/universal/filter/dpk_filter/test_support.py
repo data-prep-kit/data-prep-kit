@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -22,8 +23,11 @@ from dpk_filter.transform import (
     filter_criteria_cli_param,
     filter_logical_operator_cli_param,
     filter_logical_operator_default,
+    filter_doc_id_column_name_cli_param,
+    filter_input_arrow_folder_cli_param,
+    filter_output_arrow_folder_cli_param
 )
-from dpk_filter.transform_python import FilterPythonTransformConfiguration
+from dpk_filter.runtime import FilterPythonTransformConfiguration
 
 
 class AbstractPythonFilterTransformTest(AbstractTransformLauncherTest):
@@ -81,6 +85,31 @@ class AbstractPythonFilterTransformTest(AbstractTransformLauncherTest):
                 },
                 os.path.join(basedir, "input"),
                 os.path.join(basedir, "expected", "test-or"),
+            )
+        )
+
+        basedir = self._get_test_file_directory()
+        output_arrow_dir = os.path.join(basedir, "../output")
+        basedir = os.path.abspath(os.path.join(basedir, "../test-data/ds01"))
+
+        launcher, args = self._get_launcher()
+        fixtures.append(
+            (
+                launcher,
+                args
+                | {
+                    filter_criteria_cli_param: [
+                        "docq_total_words > 100 AND docq_total_words < 400",
+                        "ibmkenlm_docq_perplex_score < 250",
+                    ],
+                    filter_logical_operator_cli_param: filter_logical_operator_default,
+                    filter_columns_to_drop_cli_param: ["extra", "cluster"],
+                    filter_doc_id_column_name_cli_param: "document_id",
+			        filter_input_arrow_folder_cli_param: os.path.join(basedir, "input", "arrow"),
+			        filter_output_arrow_folder_cli_param: os.path.join(output_arrow_dir, "arrow")
+                },
+                os.path.join(basedir, "input", "parquet"),
+                os.path.join(basedir, "expected", "parquet"),
             )
         )
 

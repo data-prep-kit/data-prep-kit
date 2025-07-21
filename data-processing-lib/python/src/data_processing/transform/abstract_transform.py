@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -10,7 +11,13 @@
 # limitations under the License.
 ################################################################################
 
-class AbstractTransform:
+from abc import ABC, abstractmethod
+
+class AbstractTransform(ABC):
     """
     Base class for all transform types
     """
+
+    @abstractmethod
+    def __init__(self):
+        pass

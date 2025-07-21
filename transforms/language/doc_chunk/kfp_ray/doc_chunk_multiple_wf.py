@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -24,11 +25,14 @@ from workflow_support.compile_utils import (
 
 task_image = "quay.io/dataprep1/data-prep-kit/doc_chunk-ray:latest"
 
+# The secret name containing the s3 credentials.
+S3_SECRET = "s3-secret"
+
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_doc_chunk.ray.transform"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:0.2.3"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)
@@ -44,7 +48,6 @@ def compute_exec_params_func(
     data_num_samples: int,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     doc_chunk_chunking_type: str,
     doc_chunk_content_column_name: str,
     doc_chunk_output_chunk_column_name: str,
@@ -60,7 +63,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "doc_chunk_chunking_type": doc_chunk_chunking_type,
         "doc_chunk_content_column_name": doc_chunk_content_column_name,
         "doc_chunk_output_chunk_column_name": doc_chunk_output_chunk_column_name,
@@ -110,13 +112,12 @@ def doc_chunk(
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
     data_s3_config: str = "[{'input_folder': 'test/doc_chunk/input/', 'output_folder': 'test/doc_chunk/output/'}]",
-    data_s3_access_secret: str = "s3-secret",
+    data_s3_access_secret: str = S3_SECRET,
     data_max_files: int = -1,
     data_num_samples: int = -1,
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # doc_chunk parameters
     doc_chunk_chunking_type: str = "dl_json",
     doc_chunk_content_column_name: str = "contents",
@@ -158,7 +159,6 @@ def doc_chunk(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :param doc_chunk_chunking_type - chunking type to apply
     :param doc_chunk_content_column_name - column name to get content
     :param doc_chunk_output_chunk_column_name - column name to store the chunks
@@ -191,7 +191,6 @@ def doc_chunk(
             data_num_samples=data_num_samples,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             doc_chunk_chunking_type=doc_chunk_chunking_type,
             doc_chunk_content_column_name=doc_chunk_content_column_name,
             doc_chunk_output_chunk_column_name=doc_chunk_output_chunk_column_name,
@@ -220,7 +219,15 @@ def doc_chunk(
             server_url=server_url,
         )
         ComponentUtils.add_settings_to_component(execute_job, ONE_WEEK_SEC)
-        ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
+        if os.getenv("KFPv2", "0") == "1":     
+            from kfp import kubernetes
+            
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=execute_job, secret_name=S3_SECRET, secret_key_to_env=env2key)
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
         execute_job.after(ray_cluster)
 
 

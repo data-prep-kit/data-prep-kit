@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -24,7 +25,7 @@ from dpk_web2parquet.utils import *
 
 user_agent = "Mozilla/5.0 (X11; Linux i686; rv:125.0) Gecko/20100101 Firefox/125.0"
 
-logger = get_logger(__name__,"DEBUG")
+logger = get_logger(__name__)
 
 class Web2ParquetTransform(AbstractTableTransform):
     """

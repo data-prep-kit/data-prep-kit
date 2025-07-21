@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -26,6 +27,9 @@ from workflow_support.compile_utils import ONE_HOUR_SEC, ONE_WEEK_SEC, DEFAULT_K
 
 task_image = os.getenv("FDEDUP_IMAGE_LOCATION", "quay.io/dataprep1/data-prep-kit/fdedup-ray:latest")
 image_pull_secret = os.getenv("FDEDUP_IMAGE_PULL_SECRET", "my_secret")
+
+# The secret name containing the s3 credentials.
+S3_SECRET = "s3-secret"
 
 # the name of the job script
 SIGNATURE_CALC_EXEC_SCRIPT_NAME: str = "-m dpk_fdedup.signature_calc.ray.transform"
@@ -140,7 +144,6 @@ def fuzzydedup(
     data_num_samples: int = -1,
     # orchestrator
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # columns used
     fdedup_contents_column: str = "contents",
     fdedup_document_id_column: str = "int_id_column",
@@ -192,7 +195,6 @@ def fuzzydedup(
     :param data_max_files - max files to process
     :param data_num_samples - num samples to process
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :param fdedup_contents_column - document column name
     :param fdedup_document_id_column - integer document id column name
     :param fdedup_num_permutations - number of permutations
@@ -232,7 +234,15 @@ def fuzzydedup(
             n_samples=fdedup_n_samples,
         )
         ComponentUtils.add_settings_to_component(compute_common_exec_params, ONE_HOUR_SEC * 2)
-        ComponentUtils.set_s3_env_vars_to_component(compute_common_exec_params, data_s3_access_secret)
+        if os.getenv("KFPv2", "0") == "1":
+            from kfp import kubernetes
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=compute_common_exec_params, secret_name=S3_SECRET, secret_key_to_env=env2key)
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(compute_common_exec_params, data_s3_access_secret)
+
         fdedup_num_segments = compute_common_exec_params.outputs["num_segments"]
         runtime_num_actors = compute_common_exec_params.outputs["num_actors"]
         runtime_actor_cpus = compute_common_exec_params.outputs["actor_cpu"]
@@ -260,7 +270,6 @@ def fuzzydedup(
             data_num_samples=data_num_samples,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             doc_column=fdedup_contents_column,
             id_column=fdedup_document_id_column,
             num_permutations=fdedup_num_permutations,
@@ -304,7 +313,6 @@ def fuzzydedup(
             data_num_samples=data_num_samples,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             num_bands=fdedup_num_bands,
             threshold=fdedup_jaccard_similarity_threshold,
             num_segments=fdedup_num_segments,
@@ -335,7 +343,6 @@ def fuzzydedup(
             data_num_samples=data_num_samples,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
         )
         ComponentUtils.add_settings_to_component(compute_get_duplicate_list_exec_params, ONE_HOUR_SEC * 2)
         compute_get_duplicate_list_exec_params.after(execute_cluster_analysis_job)
@@ -363,7 +370,6 @@ def fuzzydedup(
             data_num_samples=data_num_samples,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             id_column=fdedup_document_id_column,
             operation_mode=fdedup_operation_mode,
         )

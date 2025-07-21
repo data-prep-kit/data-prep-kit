@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -16,20 +17,28 @@ from typing import Any, Union
 
 class DPKConfig:
     @staticmethod
-    def _get_first_env_var(env_var_list: list[str]) -> Union[str, None]:
+    def _get_first_env_var(env_var_list: list[str], default_value: str=None) -> Union[str, None]:
         for var in env_var_list:
             value = os.environ.get(var, None)
             if value is not None:
                 # print(f"Found env var {var}", flush=True)
                 return value
         # print(f"Did not find any of the following env vars {env_var_list}")
-        return None
+        return default_value
 
     HUGGING_FACE_TOKEN = _get_first_env_var(["DPK_HUGGING_FACE_TOKEN"])
     """ Set from DPK_HUGGING_FACE_TOKEN env var(s) """
     DEFAULT_LOG_LEVEL = os.environ.get("DPK_LOG_LEVEL", "INFO")
     """ Set from DPK_LOG_LEVEL env var(s) """
 
+
+    @staticmethod
+    def set_env_var(var: str, value: str, force: bool=True) -> str:
+        prev = os.environ.get(var, None)
+        if (prev is None) or force:
+            os.environ[var]=value
+            return value
+        return prev
 
 def add_if_missing(config: dict[str, Any], key: str, dflt: Any):
     """

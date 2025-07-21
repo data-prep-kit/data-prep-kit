@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -32,7 +33,10 @@ class TransformStatistics:
         :return: None
         """
         for key, val in stats.items():
-            self.stats[key] = self.stats.get(key, 0) + val
+            if isinstance(val, list):
+                self.stats[key]=self.stats.get(key, [])+ val
+            else:
+                self.stats[key] = self.stats.get(key, 0) + val
 
     def get_execution_stats(self) -> dict[str, Any]:
         """

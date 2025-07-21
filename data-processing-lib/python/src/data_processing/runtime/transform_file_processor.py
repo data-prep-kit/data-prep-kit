@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,7 @@
 import time
 import traceback
 from typing import Any
+import os
 
 from data_processing.data_access import DataAccessFactoryBase
 from data_processing.utils import TransformUtils, UnrecoverableException, get_logger
@@ -49,6 +51,15 @@ class AbstractTransformFileProcessor:
         self.transform_params = transform_parameters
         self.transform_params["data_access"] = self.data_access
         self.is_folder = is_folder
+        self.curr_folder = None
+
+    def flush_on_folder_boundary(self, f_name: str):
+        folder=os.path.dirname(f_name)
+        if self.curr_folder is not None and self.curr_folder != folder and self.transform.enforce_folder_boundary():
+            self.logger.debug(f"flushing on folder boundaries: {self.curr_folder} -> {folder}")
+            self.flush()
+        self.curr_folder=folder
+
 
     def process_file(self, f_name: str) -> None:
         """
@@ -60,6 +71,7 @@ class AbstractTransformFileProcessor:
         if self.data_access is None:
             self.logger.warning("No data_access found. Returning.")
             return
+
         t_start = time.time()
         if not self.is_folder:
             # Read source file only if we are processing file
@@ -75,6 +87,7 @@ class AbstractTransformFileProcessor:
         try:
             self.logger.debug(f"Begin transforming file {f_name}")
             if not self.is_folder:
+                self.flush_on_folder_boundary(f_name)
                 # execute local processing
                 out_files, stats = self.transform.transform_binary(file_name=f_name, byte_array=filedata)
                 name_extension = TransformUtils.get_file_extension(f_name)

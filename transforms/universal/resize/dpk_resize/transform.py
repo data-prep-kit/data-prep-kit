@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -23,6 +24,7 @@ from data_processing.utils import (
     get_logger,
 )
 
+logger = get_logger(__name__)
 
 max_rows_per_table_key = "max_rows_per_table"
 max_mbytes_per_table_key = "max_mbytes_per_table"
@@ -53,9 +55,10 @@ class ResizeTransform(AbstractTableTransform):
         disk_memory = config.get(size_type_key, size_type_default)
         if size_type_default in disk_memory:
             self.max_bytes_per_table *= LOCAL_TO_DISK
+        self.curr_file=None
 
-        self.logger.debug(f"max bytes = {self.max_bytes_per_table}")
-        self.logger.debug(f"max rows = {self.max_rows_per_table}")
+        logger.debug(f"max bytes = {self.max_bytes_per_table}")
+        logger.debug(f"max rows = {self.max_rows_per_table}")
         self.buffer = None
         if self.max_rows_per_table <= 0 and self.max_bytes_per_table <= 0:
             raise ValueError("Neither max rows per table nor max table size are defined")
@@ -69,21 +72,23 @@ class ResizeTransform(AbstractTableTransform):
         :param file_name: name of the file
         :return: resulting set of tables
         """
-        self.logger.debug(f"got new table with {table.num_rows} rows")
+        logger.debug(f"got new table with {table.num_rows} rows with filename: {file_name}")
+#        folder=os.path.dirname(file_name)
+        self.curr_file=file_name
         if self.buffer is not None:
             try:
-                self.logger.debug(
+                logger.debug(
                     f"concatenating buffer with {self.buffer.num_rows} rows to table with {table.num_rows} rows"
                 )
                 # table = pa.concat_tables([self.buffer, table], unicode_promote_options="permissive")
                 table = pa.concat_tables([self.buffer, table])
                 self.buffer = None
-                self.logger.debug(f"concatenated table has {table.num_rows} rows")
+                logger.debug(f"concatenated table has {table.num_rows} rows")
             except Exception as _:  # Can happen if schemas are different
                 # Raise unrecoverable error to stop the execution
-                self.logger.warning(f"table in {file_name} can't be merged with the buffer")
-                self.logger.warning(f"incoming table columns {table.schema.names} ")
-                self.logger.warning(f"buffer columns {self.buffer.schema.names}")
+                logger.warning(f"table in {file_name} can't be merged with the buffer")
+                logger.warning(f"incoming table columns {table.schema.names} ")
+                logger.warning(f"buffer columns {self.buffer.schema.names}")
                 raise UnrecoverableException()
 
         result = []
@@ -97,7 +102,7 @@ class ResizeTransform(AbstractTableTransform):
                 if length > self.max_rows_per_table:
                     length = self.max_rows_per_table
                 a_slice = table.slice(offset=start_row, length=length)
-                self.logger.debug(f"created table slice with {a_slice.num_rows} rows, starting with row {start_row}")
+                logger.debug(f"created table slice with {a_slice.num_rows} rows, starting with row {start_row}")
                 result.append(a_slice)
                 start_row = start_row + self.max_rows_per_table
                 rows_left = rows_left - self.max_rows_per_table
@@ -108,7 +113,7 @@ class ResizeTransform(AbstractTableTransform):
                 for n in range(table.num_rows):
                     current_size += table.slice(offset=n, length=1).nbytes
                     if current_size >= self.max_bytes_per_table:
-                        self.logger.debug(f"capturing slice, current_size={current_size}")
+                        logger.debug(f"capturing slice, current_size={current_size}")
                         # Reached the size
                         a_slice = table.slice(offset=start_row, length=(n - start_row))
                         result.append(a_slice)
@@ -116,22 +121,30 @@ class ResizeTransform(AbstractTableTransform):
                         current_size = 0.0
         if start_row < table.num_rows:
             # buffer remaining chunk for next call
-            self.logger.debug(f"Buffering table starting at row {start_row}")
+            logger.debug(f"Buffering table starting at row {start_row}")
             self.buffer = table.slice(offset=start_row, length=(table.num_rows - start_row))
-            self.logger.debug(f"buffered table has {self.buffer.num_rows} rows")
-        self.logger.debug(f"returning {len(result)} tables")
-        return result, {}
+            logger.debug(f"buffered table has {self.buffer.num_rows} rows")
+        logger.debug(f"returning {len(result)} tables")
+        return result, {"table_splits": [{self.curr_file: x.num_rows} for x in result]}
 
     def flush(self) -> tuple[list[pa.Table], dict[str, Any]]:
         result = []
         if self.buffer is not None:
-            self.logger.debug(f"flushing buffered table with {self.buffer.num_rows} rows of size {self.buffer.nbytes}")
+            logger.debug(f"flushing buffered table with {self.buffer.num_rows} rows of size {self.buffer.nbytes}")
             result.append(self.buffer)
             self.buffer = None
         else:
-            self.logger.debug(f"Empty buffer. nothing to flush.")
-        return result, {}
+            logger.debug(f"Empty buffer. nothing to flush.")
+        return result, {"table_splits": [{self.curr_file: x.num_rows} for x in result]}
 
+
+    def enforce_folder_boundary(self):
+        """
+        This is supporting method for transformers, that implement buffering of tables, and triggers
+        a call to flush the buffer prior to switching to a new folder if so required
+        :return: true if the runtime should call the flush method before processing the next folder
+        """
+        return True
 
 class ResizeTransformConfiguration(TransformConfiguration):
 
@@ -142,7 +155,6 @@ class ResizeTransformConfiguration(TransformConfiguration):
 
     def __init__(self):
         super().__init__(name=shortname, transform_class=ResizeTransform)
-        self.logger = get_logger(__name__)
 
     def add_input_params(self, parser: ArgumentParser) -> None:
         """
@@ -184,10 +196,10 @@ class ResizeTransformConfiguration(TransformConfiguration):
         self.params = self.params | captured
         # dargs = vars(args)
         if self.params.get(max_rows_per_table_key) <= 0 and self.params.get(max_mbytes_per_table_key) <= 0:
-            self.logger.info("Neither max documents per table nor max table size are defined")
+            logger.info("Neither max documents per table nor max table size are defined")
             return False
         if self.params.get(max_rows_per_table_key) > 0 and self.params.get(max_mbytes_per_table_key) > 0:
-            self.logger.info("Both max documents per table and max table size are defined. Only one should be present")
+            logger.info("Both max documents per table and max table size are defined. Only one should be present")
             return False
-        self.logger.info(f"Split file parameters are : {self.params}")
+        logger.info(f"Split file parameters are : {self.params}")
         return True

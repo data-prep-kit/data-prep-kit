@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -42,7 +43,6 @@ params = {
     "runtime_job_id": "job_id",
     "runtime_creation_delay": 0,
     "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
-    # pdf2parquet params
 }
 
 html2parquet_params = {}

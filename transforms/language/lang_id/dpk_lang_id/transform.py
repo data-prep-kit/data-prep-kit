@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -17,8 +18,8 @@ from typing import Any
 
 import pyarrow as pa
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import CLIArgumentProvider, TransformUtils
-from dpk_lang_id.lang_models import LangModelFactory
+from data_processing.utils import CLIArgumentProvider, TransformUtils, load_model
+from dpk_lang_id.lang_models import FastTextModel
 from dpk_lang_id.nlp import get_lang_ds_pa
 
 
@@ -58,9 +59,8 @@ class LangIdentificationTransform(AbstractTableTransform):
         # Make sure that the param name corresponds to the name used in apply_input_params method
         # of LangIdentificationTransformConfiguration class
         super().__init__(config)
-        self.nlp_langid = LangModelFactory.create_model(
-            config.get(model_kind_key), config.get(model_url_key), config.get(model_credential_key)
-        )
+        model = load_model(config.get(model_url_key), 'fasttext', config.get(model_credential_key))
+        self.nlp_langid = FastTextModel(model)
         self.content_column_name = config.get(content_column_name_key, default_content_column_name)
         self.output_lang_column_name = config.get(output_lang_column_name_key, default_output_lang_column_name)
         self.output_score_column_name = config.get(output_score_column_name_key, default_output_score_column_name)

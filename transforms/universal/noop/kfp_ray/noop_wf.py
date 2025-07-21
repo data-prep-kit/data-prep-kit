@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -21,9 +22,16 @@ from workflow_support.compile_utils import (
     ONE_WEEK_SEC,
     ComponentUtils,
 )
-
+from python_apiserver_client.params import (
+        EnvironmentVariables,
+        EnvVarFrom,
+        EnvVarSource,
+)
 
 task_image = "quay.io/dataprep1/data-prep-kit/noop-ray:latest"
+
+# The secret name containing the s3 credentials.
+S3_SECRET = "s3-secret"
 
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_noop.ray.runtime"
@@ -45,7 +53,6 @@ def compute_exec_params_func(
     data_checkpointing: bool,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     noop_sleep_sec: int,
 ) -> dict:
     from runtime_utils import KFPUtils
@@ -59,7 +66,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "noop_sleep_sec": noop_sleep_sec,
     }
 
@@ -85,7 +91,6 @@ cleanup_ray_op = comp.load_component_from_file(component_spec_path + "deleteRayC
 # Task name is part of the pipeline name, the ray cluster name and the job name in DMF.
 TASK_NAME: str = "noop"
 
-
 @dsl.pipeline(
     name=TASK_NAME + "-ray-pipeline",
     description="Pipeline for noop task",
@@ -96,18 +101,25 @@ def noop(
     ray_run_id_KFPv2: str = "",
     # Add image_pull_secret, image_pull_policy and tolerations to ray options if needed
     ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
-    ray_worker_options: dict = {"replicas": 2, "max_replicas": 2, "min_replicas": 2, "cpu": 2, "memory": 4, "image": task_image},
+    ray_worker_options: dict = {"replicas": 2,
+                                "max_replicas": 2,
+                                "min_replicas": 2,
+                                "cpu": 2,
+                                "memory": 4,
+                                "image": task_image,
+},
+
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
     data_s3_config: str = "{'input_folder': 'test/noop/input/', 'output_folder': 'test/noop/output/'}",
     data_s3_access_secret: str = "s3-secret",
+    other_secrets: dict = {},
     data_max_files: int = -1,
     data_num_samples: int = -1,
     data_checkpointing: bool = False,
     # orchestrator
     runtime_actor_options: dict = {'num_cpus': 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {'github': 'github', 'commit_hash': '12345', 'path': 'path'},
     # noop parameters
     noop_sleep_sec: int = 10,
     # additional parameters
@@ -146,7 +158,6 @@ def noop(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :param noop_sleep_sec - noop sleep time
     :return: None
     """
@@ -177,7 +188,6 @@ def noop(
             data_checkpointing=data_checkpointing,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             noop_sleep_sec=noop_sleep_sec,
         )
 
@@ -189,9 +199,19 @@ def noop(
             ray_head_options=ray_head_options,
             ray_worker_options=ray_worker_options,
             server_url=server_url,
+            other_secrets=other_secrets,
             additional_params=additional_params,
         )
         ComponentUtils.add_settings_to_component(ray_cluster, ONE_HOUR_SEC * 2)
+        if os.getenv("KFPv2", "0") == "1":
+            from kfp import kubernetes
+
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=ray_cluster, secret_name=S3_SECRET, secret_key_to_env=env2key)
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(ray_cluster, data_s3_access_secret)
         ray_cluster.after(compute_exec_params)
 
         # Execute job
@@ -204,7 +224,15 @@ def noop(
             server_url=server_url,
         )
         ComponentUtils.add_settings_to_component(execute_job, ONE_WEEK_SEC)
-        ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
+        if os.getenv("KFPv2", "0") == "1":
+            from kfp import kubernetes
+            
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=execute_job, secret_name=S3_SECRET, secret_key_to_env=env2key)
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
         execute_job.after(ray_cluster)
 
 if __name__ == "__main__":

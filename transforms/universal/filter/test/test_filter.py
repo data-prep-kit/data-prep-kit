@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -15,7 +16,7 @@ import os
 
 import pyarrow as pa
 import pyarrow.parquet as pq
-from data_processing.test_support.transform import AbstractTableTransformTest
+from data_processing.test_support.transform.table_transform_test import AbstractTableTransformTest
 from data_processing.transform import get_transform_config
 from dpk_filter.transform import (
     FilterTransform,

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -21,6 +22,9 @@ from workflow_support.compile_utils import (
     ComponentUtils,
 )
 
+
+# The secret name containing the s3 credentials.
+S3_SECRET = "s3-secret"
 
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_tokenization.ray.transform"
@@ -46,7 +50,6 @@ def compute_exec_params_func(
     data_num_samples: int,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     tkn_tokenizer: str,
     tkn_tokenizer_args: str,
     tkn_doc_id_column: str,
@@ -64,7 +67,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "tkn_tokenizer": tkn_tokenizer,
         "tkn_tokenizer_args": tkn_tokenizer_args,
         "tkn_doc_id_column": tkn_doc_id_column,
@@ -130,13 +132,13 @@ def tokenization(
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
     data_s3_config: str = "{'input_folder': 'test/tokenization/ds01/input/', 'output_folder': 'test/tokenization/ds01/output/'}",
-    data_s3_access_secret: str = "s3-secret",
+    data_s3_access_secret: str = S3_SECRET,
+    other_secrets: dict = {},
     data_max_files: int = -1,
     data_num_samples: int = -1,
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # tokenizer parameters
     tkn_tokenizer: str = "hf-internal-testing/llama-tokenizer",
     tkn_doc_id_column: str = "document_id",
@@ -180,7 +182,6 @@ def tokenization(
     :param data_num_samples - num samples to process
     :param runtime_actor_options - actor options
     :param runtime_pipeline_id - pipeline id
-    :param runtime_code_location - code location
     :param tkn_tokenizer - Tokenizer used for tokenization
     :param tkn_tokenizer_args - Arguments for tokenizer.
     :param tkn_doc_id_column - Column contains document id which values should be unique across dataset
@@ -215,7 +216,6 @@ def tokenization(
             data_num_samples=data_num_samples,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             tkn_tokenizer=tkn_tokenizer,
             tkn_tokenizer_args=tkn_tokenizer_args,
             tkn_doc_id_column=tkn_doc_id_column,
@@ -232,9 +232,19 @@ def tokenization(
             ray_head_options=ray_head_options,
             ray_worker_options=ray_worker_options,
             server_url=server_url,
+            other_secrets=other_secrets,
             additional_params=additional_params,
         )
         ComponentUtils.add_settings_to_component(ray_cluster, ONE_HOUR_SEC * 2)
+        if os.getenv("KFPv2", "0") == "1":
+            from kfp import kubernetes
+
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=ray_cluster, secret_name=S3_SECRET, secret_key_to_env=env2key)
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(ray_cluster, data_s3_access_secret)
         ray_cluster.after(compute_exec_params)
         # Execute job
         execute_job = execute_ray_jobs_op(
@@ -246,7 +256,15 @@ def tokenization(
             server_url=server_url,
         )
         ComponentUtils.add_settings_to_component(execute_job, ONE_WEEK_SEC)
-        ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
+        if os.getenv("KFPv2", "0") == "1":
+            from kfp import kubernetes
+            
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=execute_job, secret_name=S3_SECRET, secret_key_to_env=env2key)
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
         execute_job.after(ray_cluster)
 
 

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -35,6 +36,9 @@ HF_SECRET_KEY = "hf-token"
 
 task_image = "quay.io/dataprep1/data-prep-kit/lang_id-ray:latest"
 
+# The secret name containing the s3 credentials.
+S3_SECRET = "s3-secret"
+
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_lang_id.ray.transform"
 
@@ -55,7 +59,6 @@ def compute_exec_params_func(
     data_num_samples: int,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     lang_id_model_kind: str,
     lang_id_model_url: str,
     lang_id_content_column_name: str,
@@ -72,7 +75,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "lang_id_model_kind": lang_id_model_kind,
         "lang_id_model_url": lang_id_model_url,
         "lang_id_content_column_name": lang_id_content_column_name,
@@ -128,13 +130,12 @@ def lang_id(
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
     data_s3_config: str = "[{'input_folder': 'test/lang_id/input/', 'output_folder': 'test/lang_id/output/'}]",
-    data_s3_access_secret: str = "s3-secret",
+    data_s3_access_secret: str = S3_SECRET,
     data_max_files: int = -1,
     data_num_samples: int = -1,
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
-    runtime_code_location: dict = {"github": "github", "commit_hash": "12345", "path": "path"},
     # lang_id parameters
     lang_id_model_kind: str = "fasttext",
     lang_id_model_url: str = "facebook/fasttext-language-identification",
@@ -213,7 +214,6 @@ def lang_id(
             data_num_samples=data_num_samples,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             lang_id_model_kind=lang_id_model_kind,
             lang_id_model_url=lang_id_model_url,
             lang_id_content_column_name=lang_id_content_column_name,
@@ -243,7 +243,15 @@ def lang_id(
             server_url=server_url,
         )
         ComponentUtils.add_settings_to_component(execute_job, ONE_WEEK_SEC)
-        ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
+        if os.getenv("KFPv2", "0") == "1":     
+            from kfp import kubernetes
+            
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=execute_job, secret_name=S3_SECRET, secret_key_to_env=env2key)
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
         execute_job.after(ray_cluster)
 
 

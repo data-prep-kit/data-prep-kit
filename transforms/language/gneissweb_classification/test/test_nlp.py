@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -9,16 +10,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ################################################################################
-
+import os
 import pyarrow as pa
-from dpk_gneissweb_classification.classification_models import ClassificationModelFactory
+from dpk_gneissweb_classification.classification_models import FastTextModel
+from data_processing.utils import load_model
 from dpk_gneissweb_classification.nlp import get_label_ds_pa
 
 
 def test_classification():
-    nlp_langid = ClassificationModelFactory.create_model(
-      "ibm-granite/GneissWeb.Med_classifier", "fasttext_medical.bin","HF_READ_ACCESS_TOKEN"
-    )
+    token = os.environ.get('HF_READ_ACCESS_TOKEN', None)
+    url = "ibm-granite/GneissWeb.Med_classifier"
+    file_name = "fasttext_medical.bin"
+    model = load_model(url, 'fasttext', token, model_filename=file_name)
+    nlp_langid = FastTextModel(model, url)
 
     documents = pa.array(
         [

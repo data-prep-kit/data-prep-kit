@@ -18,15 +18,18 @@ license = { text = "Apache-2.0" }
 readme = { file = "README.md", content-type = "text/markdown" }
 authors = [{ name = "Hiroya Matsubara", email = "hmtbr@jp.ibm.com" }]
 dependencies = [
-    "scrapy>=2.11.2",
+    #lock to 2.12.0 as later versions has different requirements
+    #ERROR test/dpk_connector/core/test_sitemap_spider.py::test_parse - 
+    # RuntimeError: The installed reactor (twisted.internet.epollreactor.EPollReactor) does not match the requested one (twisted.internet.asyncioreactor.AsyncioSelectorReactor)
+    "scrapy==2.12.0",
     "pydantic>=2.8.1",
     "tldextract>=5.1.2",
 ]
 
 [project_urls]
-Repository = "https://github.com/IBM/data-prep-kit"
-Issues = "https://github.com/IBM/data-prep-kit/issues"
-Documentation = "https://ibm.github.io/data-prep-kit/"
+Repository = "https://github.com/data-prep-kit/data-prep-kit"
+Issues = "https://github.com/data-prep-kit/data-prep-kit/issues"
+Documentation = "https://data-prep-kit.github.io/data-prep-kit/"
 
 [build-system]
 requires = ["setuptools>=68.0.0", "wheel", "setuptools_scm[toml]>=7.1.0"]

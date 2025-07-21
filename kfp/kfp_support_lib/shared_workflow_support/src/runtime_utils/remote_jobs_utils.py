@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -402,8 +403,9 @@ class RayRemoteJobs:
         output_folder = output_folder if output_folder.endswith("/") else output_folder + "/"
         timestamp = time.strftime("%Y%m%d-%H%M%S")
         execution_log_path = f"{output_folder}execution_{timestamp}.log"
-        logger.info(f"saving execution log to {execution_log_path}")
-        data_access.save_file(path=execution_log_path, data=bytes(log, "UTF-8"))
+        logger.info(f"saving execution log to {execution_log_path}---Skipped")
+#        logger.info(f"saving execution log to {execution_log_path}")
+#        data_access.save_file(path=execution_log_path, data=bytes(log, "UTF-8"))
 
 
 def _execute_remote_job(
@@ -484,14 +486,15 @@ def execute_ray_jobs(
         exit(1)
     # get config value
     config_value = KFPUtils.load_from_json(e_params[config].replace("'", '"'))
-    s3_creds = KFPUtils.load_from_json(e_params["data_s3_cred"].replace("'", '"'))
+    #s3_creds = KFPUtils.load_from_json(e_params["data_s3_cred"].replace("'", '"'))
     if type(config_value) is not list:
         # single request
         return _execute_remote_job(
             name=name,
             ns=ns,
             script=exec_script_name,
-            data_access_params={f"{cli_prefix}s3_config": config_value, f"{cli_prefix}s3_cred": s3_creds},
+#            data_access_params={f"{cli_prefix}s3_config": config_value, f"{cli_prefix}s3_cred": s3_creds},
+            data_access_params={f"{cli_prefix}s3_config": config_value},
             params=e_params,
             additional_params=additional_params,
             remote_jobs=remote_jobs,
@@ -509,7 +512,8 @@ def execute_ray_jobs(
                 name=name,
                 ns=ns,
                 script=exec_script_name,
-                data_access_params={f"{cli_prefix}s3_config": conf, f"{cli_prefix}s3_cred": s3_creds},
+#                data_access_params={f"{cli_prefix}s3_config": conf, f"{cli_prefix}s3_cred": s3_creds},
+                data_access_params={f"{cli_prefix}s3_config": conf},
                 params=launch_params,
                 additional_params=additional_params,
                 remote_jobs=remote_jobs,

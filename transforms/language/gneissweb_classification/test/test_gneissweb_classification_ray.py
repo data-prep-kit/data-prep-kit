@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -35,7 +36,6 @@ class TestRayLangIdentificationTransform(AbstractTransformLauncherTest):
         basedir = "../test-data"
         basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))
         config = {
-            model_credential_cli_param: os.environ.get('HF_READ_ACCESS_TOKEN', "PUT YOUR OWN HUGGINGFACE CREDENTIAL"),
             model_file_name_cli_param: ["fasttext_medical.bin"],
             model_url_cli_param:["ibm-granite/GneissWeb.Med_classifier"],
             content_column_name_cli_param: "text",

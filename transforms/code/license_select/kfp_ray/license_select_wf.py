@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -23,8 +24,11 @@ from workflow_support.compile_utils import (
 )
 
 
+# The secret name containing the s3 credentials.
+S3_SECRET = "s3-secret"
+
 # the name of the job script
-EXEC_SCRIPT_NAME: str = "license_select_transform_ray.py"
+EXEC_SCRIPT_NAME: str = "-m dpk_license_select.ray.runtime"
 
 task_image = "quay.io/dataprep1/data-prep-kit/license_select-ray:latest"
 
@@ -46,7 +50,6 @@ def compute_exec_params_func(
     data_num_samples: int,
     runtime_pipeline_id: str,
     runtime_job_id: str,
-    runtime_code_location: dict,
     lc_license_column_name: str,
     lc_licenses_file: str,
 ) -> dict:
@@ -60,7 +63,6 @@ def compute_exec_params_func(
         "runtime_worker_options": str(actor_options),
         "runtime_pipeline_id": runtime_pipeline_id,
         "runtime_job_id": runtime_job_id,
-        "runtime_code_location": str(runtime_code_location),
         "lc_license_column_name": lc_license_column_name,
         "lc_licenses_file": lc_licenses_file,
     }
@@ -94,7 +96,7 @@ PREFIX: str = "license_select"
 )
 def license_select(
     ray_name: str = "license_select-kfp-ray",  # name of Ray cluster
-    ray_run_id_KFPv2: str = "",   # Ray cluster unique ID used only in KFP v2
+    ray_run_id_KFPv2: str = "",  # Ray cluster unique ID used only in KFP v2
     # Add image_pull_secret and image_pull_policy to ray workers if needed
     ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
     ray_worker_options: dict = {
@@ -108,13 +110,13 @@ def license_select(
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
     data_s3_config: str = "{'input_folder': 'test/license_select/input/', 'output_folder': 'test/license_select/output/'}",
-    data_s3_access_secret: str = "s3-secret",
+    data_s3_access_secret: str = S3_SECRET,
+    other_secrets: dict = {},
     data_max_files: int = -1,
     data_num_samples: int = -1,
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.7},
     runtime_pipeline_id: str = "runtime_pipeline_id",
-    runtime_code_location: dict = {'github': 'github', 'commit_hash': '12345', 'path': 'path'},
     # license select parameters
     lc_license_column_name: str = "license",
     lc_licenses_file: str = "test/license_select/sample_approved_licenses.json",
@@ -161,8 +163,10 @@ def license_select(
     # https://github.com/kubeflow/pipelines/issues/10187. Therefore, meantime the user is requested to insert
     # a unique string created at run creation time.
     if os.getenv("KFPv2", "0") == "1":
-        print("WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
-              "same version of the same pipeline !!!")
+        print(
+            "WARNING: the ray cluster name can be non-unique at runtime, please do not execute simultaneous Runs of the "
+            "same version of the same pipeline !!!"
+        )
         run_id = ray_run_id_KFPv2
     else:
         run_id = dsl.RUN_ID_PLACEHOLDER
@@ -180,7 +184,6 @@ def license_select(
             data_num_samples=data_num_samples,
             runtime_pipeline_id=runtime_pipeline_id,
             runtime_job_id=run_id,
-            runtime_code_location=runtime_code_location,
             lc_license_column_name=lc_license_column_name,
             lc_licenses_file=lc_licenses_file,
         )
@@ -192,6 +195,7 @@ def license_select(
             ray_head_options=ray_head_options,
             ray_worker_options=ray_worker_options,
             server_url=server_url,
+            other_secrets= other_secrets,
             additional_params=additional_params,
         )
         ComponentUtils.add_settings_to_component(ray_cluster, ONE_HOUR_SEC * 2)
@@ -207,7 +211,15 @@ def license_select(
             server_url=server_url,
         )
         ComponentUtils.add_settings_to_component(execute_job, ONE_WEEK_SEC)
-        ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
+        if os.getenv("KFPv2", "0") == "1":
+            from kfp import kubernetes
+
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=execute_job, secret_name=S3_SECRET, secret_key_to_env=env2key)
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
         execute_job.after(ray_cluster)
 
 

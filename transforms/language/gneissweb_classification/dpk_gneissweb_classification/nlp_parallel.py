@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -16,9 +17,8 @@ from functools import partial
 import pyarrow as pa
 import multiprocessing
 
-from data_processing.utils import TransformUtils, get_logger
-from dpk_gneissweb_classification.classification_models import ClassificationModel
-from dpk_gneissweb_classification.classification_models import ClassificationModelFactory
+from data_processing.utils import TransformUtils, get_logger, load_model
+from dpk_gneissweb_classification.classification_models import ClassificationModel, FastTextModel
 
 logger = get_logger(__name__)
 
@@ -26,7 +26,8 @@ global_model: ClassificationModel = None
 
 def init_global_model(url: str, file_name: str, credential: str):
     global global_model
-    global_model = ClassificationModelFactory.create_model(url, file_name, credential)
+    model = load_model(url, "fasttext", credential, model_filename=file_name)
+    global_model = FastTextModel(model, url)
     
     
 def _process(text_list):

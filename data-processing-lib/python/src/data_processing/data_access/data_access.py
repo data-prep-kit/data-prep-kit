@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 # (C) Copyright IBM Corp. 2024.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -10,23 +11,25 @@
 # limitations under the License.
 ################################################################################
 
+from abc import ABC, abstractmethod
 import random
 from typing import Any
-
 import pyarrow as pa
 from data_processing.utils import KB, MB, GB, TransformUtils, get_logger
 
 
-class DataAccess:
+class DataAccess(ABC):
     """
     Base class for data access (interface), defining all the methods
     """
+
     def __init__(
             self,
             d_sets: list[str],
             checkpoint: bool,
             m_files: int,
             n_samples: int,
+            batch_size: int,
             files_to_use: list[str],
             files_to_checkpoint: list[str],
     ):
@@ -36,6 +39,7 @@ class DataAccess:
         :param checkpoint: flag to return only files that do not exist in the output directory
         :param m_files: max amount of files to return
         :param n_samples: amount of files to randomly sample
+        :param batch_size: batch size to use
         :param files_to_use: files extensions of files to include
         :param files_to_checkpoint: files extensions of files to use for checkpointing
         """
@@ -45,21 +49,25 @@ class DataAccess:
         self.n_samples = n_samples
         self.files_to_use = files_to_use
         self.files_to_checkpoint = files_to_checkpoint
+        self.batch_size = batch_size
+        self._files_cached = None  # records files to process for batching
         self.logger = get_logger(__name__)
 
+    @abstractmethod
     def get_output_folder(self) -> str:
         """
         Get output folder as a string
         :return: output_folder
         """
-        raise NotImplementedError("Subclasses should implement this!")
+        pass
 
+    @abstractmethod
     def get_input_folder(self) -> str:
         """
         Get input folder as a string
         :return: input_folder
         """
-        raise NotImplementedError("Subclasses should implement this!")
+        pass
 
     def get_random_file_set(self, n_samples: int, files: list[str]) -> list[str]:
         """
@@ -155,12 +163,41 @@ class DataAccess:
             )
         return path_list, profile, retries
 
+    def get_batches_to_process(self, batch_size=None):
+        """
+        Get batch files to process
+        :return: list of batch files and a dictionary of the batch files profile:
+        "total_batch_size"
+        """
+        if self._files_cached is None:
+            self._files_cached, _, _, = self.get_files_to_process()
+            if len(self._files_cached) == 0:
+                self.logger.warning("No files to process, returning empty generator")
+                return
+
+        files = self._files_cached
+
+        bs = self.batch_size if batch_size is None else batch_size
+
+        if bs == 0 or bs < -1:
+            raise ValueError("batch_size must be positive integer or -1 for full batch")
+
+        if bs == -1:
+            self.logger.info(f"Processing all {len(files)} files in one batch")
+            yield files
+            return
+
+        self.logger.info(f"Processing {len(files)} files in batches of {bs}")
+        for i in range(0, len(files), bs):
+            yield files[i:i + bs]
+
+    @abstractmethod
     def _get_folders_to_use(self) -> tuple[list[str], int]:
         """
         convert data sets to a list of folders to use
         :return: list of folders and retries
         """
-        raise NotImplementedError("Subclasses should implement this!")
+        pass
 
     def _get_files_folder(
             self,
@@ -279,14 +316,16 @@ class DataAccess:
             retries,
         )
 
+    @staticmethod
     def _list_files_folder(self, path: str) -> tuple[list[dict[str, Any]], int]:
         """
         Get files for a given folder and all sub folders
         :param path: path
         :return: List of files
         """
-        raise NotImplementedError("Subclasses should implement this!")
+        pass
 
+    @abstractmethod
     def get_table(self, path: str) -> tuple[pa.table, int]:
         """
         Get pyArrow table for a given path
@@ -294,8 +333,9 @@ class DataAccess:
         :return: pyArrow table or None, if the table read failed and number of operation retries.
                  Retries are performed on operation failures and are typically due to the resource overload.
         """
-        raise NotImplementedError("Subclasses should implement this!")
+        pass
 
+    @abstractmethod
     def get_file(self, path: str) -> tuple[bytes, int]:
         """
         Get file as a byte array
@@ -304,10 +344,10 @@ class DataAccess:
                  Retries are performed on operation failures and are typically due to the resource overload.
 
         """
-        raise NotImplementedError("Subclasses should implement this!")
+        pass
 
     def get_folder_files(
-        self, path: str, extensions: list[str] = None, return_data: bool = True
+            self, path: str, extensions: list[str] = None, return_data: bool = True
     ) -> tuple[dict[str, bytes], int]:
         """
         Get a list of byte content of files. The path here is an absolute path and can be anywhere.
@@ -318,6 +358,7 @@ class DataAccess:
                             directory is returned (False)
         :return: A dictionary of file names/binary content will be returned
         """
+
         def _get_file_content(name: str, dt: bool) -> tuple[bytes, int]:
             """
             return file content
@@ -340,6 +381,7 @@ class DataAccess:
             result[f_name] = b
         return result, retries
 
+    @abstractmethod
     def save_file(self, path: str, data: bytes) -> tuple[dict[str, Any], int]:
         """
         Save byte array to the file
@@ -350,7 +392,7 @@ class DataAccess:
         in the case of failure dict is None and number of operation retries
         Retries are performed on operation failures and are typically due to the resource overload.
         """
-        raise NotImplementedError("Subclasses should implement this!")
+        pass
 
     def get_output_location(self, path: str) -> str:
         """
@@ -363,6 +405,7 @@ class DataAccess:
             return None
         return path.replace(self.get_input_folder(), self.get_output_folder())
 
+    @abstractmethod
     def save_table(self, path: str, table: pa.Table) -> tuple[int, dict[str, Any], int]:
         """
         Save table to a given location
@@ -373,8 +416,9 @@ class DataAccess:
         in the case of failure dict is None and number of operation retries.
         Retries are performed on operation failures and are typically due to the resource overload.
         """
-        raise NotImplementedError("Subclasses should implement this!")
+        pass
 
+    @abstractmethod
     def save_job_metadata(self, metadata: dict[str, Any]) -> tuple[dict[str, Any], int]:
         """
         Save job metadata
@@ -394,7 +438,7 @@ class DataAccess:
         in the case of failure dict is None and number of operation retries.
         Retries are performed on operation failures and are typically due to the resource overload.
         """
-        raise NotImplementedError("Subclasses should implement this!")
+        pass
 
     def sample_input_data(self, n_samples: int = 10) -> tuple[dict[str, Any], int]:
         """

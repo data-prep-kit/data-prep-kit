@@ -16,7 +16,7 @@ from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
-from dpk_text_encoder.transform_python import TextEncoderPythonTransformConfiguration
+from dpk_text_encoder.runtime import TextEncoderPythonTransformConfiguration
 
 
 class TestPythonTextEncoderTransform(AbstractTransformLauncherTest):

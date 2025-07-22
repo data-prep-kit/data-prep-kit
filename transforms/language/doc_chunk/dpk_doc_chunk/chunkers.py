@@ -22,9 +22,10 @@ from docling_core.transforms.chunker import HierarchicalChunker, DocMeta
 
 
 class ChunkingExecutor(metaclass=ABCMeta):
+
     @abstractmethod
     def chunk(self, content: str) -> Iterator[dict]:
-        raise NotImplemented("The chunk() method must be implemented")
+        pass
 
 
 class DLJsonChunker(ChunkingExecutor):

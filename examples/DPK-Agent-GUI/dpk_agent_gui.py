@@ -1,64 +1,39 @@
-import inspect
 import os
 import re
-import subprocess
-import sys
 import tempfile
 import traceback
+from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
-from typing import List, Optional, TypedDict
+from typing import Optional, TypedDict
 
 import gradio as gr
 from langgraph.graph import END, StateGraph
 
 
 DPK_AVAILABLE = False
-TRANSFORM_LAUNCHER_PATH = None
-PACKAGE_SRC_DIR = None
-
 try:
-    print("--- DPK Discovery (Subprocess Execution) ---")
-    script_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-
-    launcher_path = os.path.abspath(
-        os.path.join(
-            script_dir,
-            "..",
-            "..",
-            "data-processing-lib",
-            "python",
-            "src",
-            "data_processing",
-            "runtime",
-            "transform_launcher.py",
-        )
+    from data_processing.runtime.transform_launcher import (
+        TransformRuntimeConfiguration,
+        multi_launcher,
     )
 
-    package_src_dir = os.path.abspath(os.path.join(launcher_path, "..", "..", ".."))
+    DPK_AVAILABLE = True
+    print("SUCCESS: 'data-prep-toolkit-transforms' library found and imported.")
+except ImportError:
+    print("FAILURE: 'data-prep-toolkit-transforms' not found. Running in demo mode.")
+    print("         Install it with: pip install 'data-prep-toolkit-transforms[language]'")
 
-    print(f"Targeting launcher script: {launcher_path}")
-    print(f"Using package source for PYTHONPATH: {package_src_dir}")
+    def TransformRuntimeConfiguration(params):
+        pass
 
-    if os.path.isfile(launcher_path) and os.path.isdir(package_src_dir):
-        TRANSFORM_LAUNCHER_PATH = launcher_path
-        PACKAGE_SRC_DIR = package_src_dir
-        DPK_AVAILABLE = True
-        print("SUCCESS: DPK transform_launcher.py found and configured for subprocess execution.")
-    else:
-        print(f"FAILURE: The calculated launcher path or its source directory does not exist.")
-        if not os.path.isfile(launcher_path):
-            print(f"File not found: {launcher_path}")
-        if not os.path.isdir(package_src_dir):
-            print(f"Directory not found: {package_src_dir}")
-
-except Exception as e:
-    print(f"An unexpected error occurred during DPK discovery: {e}")
-
-print("---------------------------------------------")
+    def multi_launcher(params, launcher):
+        pass
 
 
-# langgraph
+# --- LangGraph State Definition ---
 class GraphState(TypedDict):
+    """Defines the state structure for the agent's workflow."""
+
     next_node: Optional[str]
     prompt: Optional[str]
     edit_instructions: Optional[str]
@@ -67,15 +42,13 @@ class GraphState(TypedDict):
     error: Optional[str]
 
 
-def _run_dpk_as_subprocess(args: List[str]) -> subprocess.CompletedProcess:
+# --- DPK Integration Functions ---
+def _call_dpk_plan(prompt: str) -> dict:
     if not DPK_AVAILABLE:
-        return subprocess.CompletedProcess(args, 1, stdout="", stderr="DPK is not available.")
+        return {"pipeline_yaml": f"# [DEMO] Generating pipeline for: {prompt}\n"}
 
-    if args[0] == "plan":
-        prompt = args[2]
-        # Use a regular expression to find a filename in quotes
+    try:
         match = re.search(r"['\"]([^'\"]+)['\"]", prompt)
-
         if match:
             filename = match.group(1)
             yaml_output = f"""# Pipeline generated to read the specified file.
@@ -87,21 +60,23 @@ transforms:
         else:
             yaml_output = f"""# Could not determine a filename from your prompt.
 # Please specify a filename in quotes, e.g., "Read 'file.txt'".
-# Using a default placeholder.
 transforms:
   - name: echo
     params:
       message_to_print: "Executing task for: {prompt}"
 """
-        return subprocess.CompletedProcess(args, 0, stdout=yaml_output, stderr="")
-    elif args[0] == "judge":
-        with open(args[2], "r") as f:
-            existing_yaml = f.read()
-        instructions = args[4]
+        return {"pipeline_yaml": yaml_output}
+    except Exception as e:
+        return {"error": f"# Unexpected error in DPK plan simulation: {e}\n{traceback.format_exc()}"}
 
+
+def _call_dpk_judge(existing_yaml: str, instructions: str) -> dict:
+    if not DPK_AVAILABLE:
+        return {"pipeline_yaml": existing_yaml.rstrip() + f"\n# [DEMO edit] {instructions.strip()}\n"}
+
+    try:
         edited_yaml = None
         new_file_match = re.search(r"to\s+(['\"]?)([\w\.-]+)\1", instructions)
-
         if new_file_match:
             new_filename = new_file_match.group(2)
             (updated_yaml, num_replacements) = re.subn(
@@ -113,63 +88,9 @@ transforms:
         if edited_yaml is None:
             edited_yaml = existing_yaml + f"\n# Edit instruction applied: {instructions}\n"
 
-        return subprocess.CompletedProcess(args, 0, stdout=edited_yaml, stderr="")
-    elif args[0] == "run":
-        config_path = args[2]
-
-        command_str = f'"{sys.executable}" "{TRANSFORM_LAUNCHER_PATH}" "{config_path}"'
-        print(f"Executing command via shell: {command_str}")
-
-        env = os.environ.copy()
-
-        current_pythonpath = env.get("PYTHONPATH", "")
-        new_pythonpath = f"{PACKAGE_SRC_DIR}{os.pathsep}{current_pythonpath}"
-        env["PYTHONPATH"] = new_pythonpath
-        print(f"Using PYTHONPATH: {new_pythonpath}")
-
-        try:
-            result = subprocess.run(command_str, shell=True, capture_output=True, text=True, check=False, env=env)
-            # diagnostics
-            print("--- Subprocess Result ---")
-            print(f"Return Code: {result.returncode}")
-            print(f"STDOUT (first 100 chars): {result.stdout[:100]}")
-            print(f"STDERR (first 100 chars): {result.stderr[:100]}")
-            print("--- End Subprocess Result ---")
-            return result
-        except Exception as e:
-            error_msg = f"Subprocess execution itself failed: {e}\n{traceback.format_exc()}"
-            print(error_msg)
-            return subprocess.CompletedProcess(args, 1, stdout="", stderr=error_msg)
-    else:
-        raise ValueError(f"Unknown command for _run_dpk_as_subprocess: {args[0]}")
-
-
-def _call_dpk_plan(prompt: str) -> dict:
-    if not DPK_AVAILABLE:
-        return {"pipeline_yaml": f"# [DEMO] Generating pipeline for: {prompt}\n"}
-    try:
-        result = _run_dpk_as_subprocess(["plan", "--prompt", prompt])
-        return {"pipeline_yaml": result.stdout}
-    except Exception as e:
-        return {"error": f"# Unexpected error in DPK plan simulation: {e}\n{traceback.format_exc()}"}
-
-
-def _call_dpk_judge(existing_yaml: str, instructions: str) -> dict:
-    if not DPK_AVAILABLE:
-        return {"pipeline_yaml": existing_yaml.rstrip() + f"\n# [DEMO edit] {instructions.strip()}\n"}
-
-    path = ""
-    try:
-        with tempfile.NamedTemporaryFile("w+", suffix=".yaml", delete=False) as f:
-            f.write(existing_yaml)
-            path = f.name
-        result = _run_dpk_as_subprocess(["judge", "--config", path, "--prompt", instructions])
-        return {"pipeline_yaml": result.stdout}
+        return {"pipeline_yaml": edited_yaml}
     except Exception as e:
         return {"error": f"# Unexpected error in DPK judge simulation: {e}\n{traceback.format_exc()}"}
-    finally:
-        if os.path.exists(path):
-            os.remove(path)
 
 
 def _call_dpk_run(pipeline_yaml: str) -> dict:
@@ -181,9 +102,16 @@ def _call_dpk_run(pipeline_yaml: str) -> dict:
         with tempfile.NamedTemporaryFile("w+", suffix=".yaml", delete=False) as f:
             f.write(pipeline_yaml)
             path = f.name
-        proc = _run_dpk_as_subprocess(["run", "--config", path])
-        # this formats the graph as a subprocess
-        output = f"--- STDOUT ---\n{proc.stdout}\n\n--- STDERR ---\n{proc.stderr}"
+
+        params = {"data-prep-kit_config": path}
+        launcher = TransformRuntimeConfiguration(params)
+
+        f_out = StringIO()
+        f_err = StringIO()
+        with redirect_stdout(f_out), redirect_stderr(f_err):
+            multi_launcher(params, launcher)
+
+        output = f"--- STDOUT ---\n{f_out.getvalue()}\n\n--- STDERR ---\n{f_err.getvalue()}"
         return {"run_output": output}
     except Exception as e:
         return {"error": f"# Error running pipeline: {e}\n{traceback.format_exc()}"}
@@ -192,7 +120,6 @@ def _call_dpk_run(pipeline_yaml: str) -> dict:
             os.remove(path)
 
 
-#  LangGraph Nodes
 def generate_node(state: GraphState) -> dict:
     return _call_dpk_plan(state.get("prompt", ""))
 
@@ -209,10 +136,9 @@ def router(state: GraphState) -> str:
     return state.get("next_node", "")
 
 
-# graph definitions
 workflow = StateGraph(GraphState)
-workflow.add_node("entry", lambda state: {**state})
 workflow.set_entry_point("entry")
+workflow.add_node("entry", lambda state: {**state})
 workflow.add_node("generate", generate_node)
 workflow.add_node("edit", edit_node)
 workflow.add_node("run", run_node)
@@ -223,7 +149,6 @@ workflow.add_edge("run", END)
 app = workflow.compile()
 
 
-# gradio interface
 def handle_generate(prompt: str) -> str:
     if not prompt.strip():
         return "# Please enter a pipeline description."
@@ -245,11 +170,10 @@ def handle_run(pipeline_yaml: str) -> str:
     return result.get("run_output") or result.get("error", "An unknown error occurred.")
 
 
-# gradio ui
 with gr.Blocks(title="DPK Planning Agent GUI", theme=gr.themes.Soft()) as demo:
     gr.Markdown("# DPK Planning Agent GUI")
     if not DPK_AVAILABLE:
-        gr.Warning("DPK library not found or failed to import. Running in demo mode.")
+        gr.Warning("DPK library not found. Running in demo mode. Functionality will be limited.")
     with gr.Row():
         with gr.Column(scale=2):
             gr.Markdown("### 1. Generate Pipeline")
@@ -275,7 +199,6 @@ with gr.Blocks(title="DPK Planning Agent GUI", theme=gr.themes.Soft()) as demo:
             )
             edit_btn = gr.Button("Apply Edit", variant="primary")
         with gr.Column(scale=3):
-            # the main box for running the pipeline
             yaml_box_2 = gr.Code(
                 label="2. Final Pipeline YAML (Edit Here Before Running)", language="yaml", interactive=True
             )
@@ -283,12 +206,10 @@ with gr.Blocks(title="DPK Planning Agent GUI", theme=gr.themes.Soft()) as demo:
         with gr.Column():
             gr.Markdown("### 3. Run Pipeline")
             run_btn = gr.Button("Run Final Pipeline", variant="stop")
-            # This output is connected to the 'Run Final Pipeline' button.
             run_out = gr.Code(label="Pipeline Console Output", language="shell", interactive=False)
 
-    # event handlers
     gen_btn.click(fn=handle_generate, inputs=prompt_in, outputs=yaml_box_1)
-    gen_btn.click(fn=lambda x: x, inputs=yaml_box_1, outputs=yaml_box_2)
+    gen_btn.click(fn=lambda x: x, inputs=yaml_box_1, outputs=yaml_box_2)  # Copy generated YAML to final box
     edit_btn.click(fn=handle_edit, inputs=[yaml_box_1, edit_in], outputs=yaml_box_2)
     run_btn.click(fn=handle_run, inputs=yaml_box_2, outputs=run_out)
     gr.ClearButton([prompt_in, yaml_box_1, edit_in, yaml_box_2, run_out], value="Clear All Fields")

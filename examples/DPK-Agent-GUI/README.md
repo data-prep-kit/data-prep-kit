@@ -1,112 +1,96 @@
 # DPK Planning Agent GUI
 
-This is a [Gradio](https://www.gradio.app/)-based web interface to generate, edit, and run data pipelines using the Data Prep Kit (DPK) transform launcher via LangGraph `StateGraph`. It falls back to a demo mode when the DPK library is unavailable.
-## Features
+A web interface built with Gradio to visually generate, edit, and execute data transformation pipelines using the `data-prep-toolkit-transforms` library.
 
-* **Pipeline Generation:** Generate YAML pipelines from natural language prompts.
-* **Pipeline Editing:** Apply edit instructions to existing pipeline YAML.
-* **Pipeline Execution:** Run pipelines via the DPK launcher and display console output.
-* **Demo Mode:** If the DPK launcher script is not found, the app simulates pipeline generation and execution.
+## Architecture
 
+This project follows a component-based design for modularity, maintainability, and clarity.
+
+### Core Design
+
+The system is structured around three main components that mirror user intentions:
+
+1. **Generate** – User provides a natural language prompt to generate a YAML pipeline.
+2. **Edit** – User gives modification instructions to update the YAML.
+3. **Run** – Final YAML is executed and outputs are captured.
+
+Each component is implemented as a pure function (e.g., `_call_dpk_plan`, `_call_dpk_judge`, `_call_dpk_run`) and integrated using a LangGraph `StateGraph`, which provides:
+
+- **Explicit state transitions**: Routing between generate, edit, and run via `router()`.
+- **Deterministic flow control**: Helps with debugging and extensibility.
+- **Built-in end states**: Ensures flow halts when a task is completed.
+
+### State Management
+
+`GraphState` is a typed dictionary defining all possible state variables shared across the nodes. This avoids ad-hoc state passing and enforces structure in the data pipeline.
+
+### Gradio UI
+
+The frontend is declaratively defined using Gradio's `Blocks` layout:
+
+- **Textbox + Button**: For user input (prompts or edit instructions).
+- **Code Components**: Display YAML and shell output interactively.
+- **Clear Button**: Resets all inputs and outputs.
+
+Three main UI sections correspond to the three states:
+
+- **Generate**: Prompt → YAML
+- **Edit**: YAML + Instructions → New YAML
+- **Run**: YAML → Execution logs
+
+### DPK Integration
+
+- Tries to import `data-prep-toolkit-transforms`. If unavailable, falls back to demo mode with fake output.
+- Uses `TransformRuntimeConfiguration` and `multi_launcher` to run YAML pipelines programmatically.
+- Writes pipeline YAML to a temporary file and launches it in-process.
+- Captures stdout and stderr for user visibility.
+
+### Fallback & Error Handling
+
+- Demo mode: If `data-prep-toolkit-transforms` is not installed, the app still runs in a limited, mock mode.
+- Full traceback returned in case of exception (visible in Gradio output).
+
+###  File Structure
+
+All logic is contained in a single Python script (`dpk_agent_gui.py`):
 ## Prerequisites
 
-* **Operating System:** macOS, Linux, or Windows
-* **Python:** 3.10 or newer
-* **Git:** Required to clone this repository and the DPK repository
+- **Python Version**: Python 3.12 is recommended. The core `data-prep-toolkit-transforms` package is compatible with versions 3.10–3.12.
 
 ## Installation
 
-Clone both this GUI repository and the Data Prep Kit repository:
+### Create and Activate a Virtual Environment
+
+Create a dedicated virtual environment using a compatible Python version (3.12 is recommended).
 
 ```bash
-# 1. Clone the GUI
-git clone https://github.com/<username>/dpk-planning-agent-gui.git
-cd dpk-planning-agent-gui
+# Create the environment using Python 3.12
+python3.12 -m venv venv
 
-# 2. Clone the Data Prep Kit (DPK) as a sibling directory
-cd ..
-git clone https://github.com/data-prep-kit/data-prep-kit.git
-cd dpk-planning-agent-gui
-```
-
-Create and activate a Python virtual environment:
-
-```bash
-python3 -m venv venv
+# Activate it
 # On macOS/Linux:
 source venv/bin/activate
 # On Windows:
-venv\Scripts\activate
-
-pip install --upgrade pip
+.\venv\Scripts\activate
 ```
 
-Install Python dependencies:
+### Install Dependencies
+
+With your virtual environment active, run the following command to install all necessary libraries:
 
 ```bash
-pip install -r requirements.txt
-```
-
-**Note:** You can install the Data Prep Kit via PyPI (when available), by running:
-
-```bash
-pip install data-prep-toolkit-transforms[language]
-```
-
-## Repository Structure
-
-```
- project-root/
- ├── dpk-planning-agent-gui/
- │   ├── dpk_planning_agent_gui.py       # Main application script
- │   ├── requirements.txt                # Python dependencies
- │   └── README.md                       # This file
- └── data-prep-kit/                      # Cloned Data Prep Kit repository
-    └── python/src/data_processing/
-        └── runtime/transform_launcher.py
+pip install "data-prep-toolkit-transforms[language]" gradio langgraph torch
 ```
 
 ## Usage
 
-1. Ensure the virtual environment is active:
+Make sure your virtual environment is active.
+
+Run the application script from your terminal:
 
 ```bash
-source venv/bin/activate
+python dpk_agent_gui.py
 ```
 
-2. Run the application:
+Then, open your web browser to the local URL provided in the console (e.g., `http://127.0.0.1:7860`).
 
-```bash
-python dpk_planning_agent_gui.py
-```
-
-3. Open your browser at the URL printed in the console (e.g., `http://localhost:7860`).
-4. Use the three-step interface:
-   1. **Generate Pipeline:** Enter a natural-language prompt to create a pipeline YAML.
-   2. **Edit Pipeline :** Apply modifications to the generated YAML.
-   3. **Run Pipeline:** Executes the final YAML and view standard output/error.
-
-## Configuration & Environment Variables
-
-* **DPK Discovery:** The script detects `transform_launcher.py` at `../data-prep-kit/python/src/data_processing/runtime/transform_launcher.py`. If your DPK is in a different path, set the `TRANSFORM_LAUNCHER_PATH` environment variable:
-
-```bash
-export TRANSFORM_LAUNCHER_PATH="/path/to/transform_launcher.py"
-```
-
-* **PYTHONPATH:** The app injects the DPK `PACKAGE_SRC_DIR` into `PYTHONPATH` for subprocess calls. No manual editing required.
-
-## Development
-
-* **Branching:** Create feature branches off `main` for new work.
-* **Testing:** Add unit tests for `_run_dpk_as_subprocess`, `handle_generate`, `handle_edit`, and `handle_run`.
-
-## Contributing
-
-Contributions are welcome! Please open issues or pull requests in this repository.
-
-**Note for Developers:** Update the `requirements.txt` file after installing new package by running:
-
-```bash
-pip freeze > requirements.txt
-```

@@ -11,6 +11,7 @@
 # limitations under the License.
 ################################################################################
 
+from abc import abstractmethod
 import csv
 import io
 import uuid
@@ -130,13 +131,14 @@ class ProfilerTransformBase(AbstractTableTransform):
         # return
         return [], {}
 
+    @abstractmethod
     def _submit_to_cache(self, words: dict[str, str]) -> None:
         """
         Submits
         :param words: dictionary of word occurrences in document
         :return: None
         """
-        raise NotImplementedError
+        pass
 
 
 class ProfilerTransformConfigurationBase(TransformConfiguration):

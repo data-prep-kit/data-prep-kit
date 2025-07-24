@@ -15,6 +15,20 @@ TRANSFORM_NAME=$(shell basename `pwd`)
 
 
 
+run-cli-python-sample: 
+	make venv
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).transform_python \
+                --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
+                --doc_id_int True
+
+run-cli-python-s3: 
+	make venv
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).transform_python \
+                --data_s3_config "{ 'input_folder' : 'cloud-object-storage-cos-standard-k1l/doc-id-test-data/input', 'output_folder' : 'cloud-object-storage-cos-standard-k1l/doc-id-output'}"  \
+                --doc_id_int True
+
 run-cli-spark-sample: 
 	make venv
 	source venv/bin/activate && \
@@ -28,3 +42,13 @@ run-cli-ray-sample:
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.transform \
                 --run_locally True --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
                 --doc_id_int True
+
+## Used for local testing of the image on MacOS
+run-docker-python-sample:
+	make DOCKER_PLATFORM=linux/arm64 image-python
+	mkdir -p ./output
+	$(DOCKER) run -v ./test-data:/test-data -v ./output:/output -it localhost/doc_id-python \
+                python -m dpk_$(TRANSFORM_NAME).transform_python \
+                --data_local_config "{ 'input_folder' : '/test-data/input', 'output_folder' : '/output'}"  \
+                --doc_id_int True
+

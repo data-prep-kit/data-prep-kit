@@ -93,10 +93,10 @@ class FilterTransform(AbstractTableTransform):
         self.doc_id_column_name = config.get(filter_doc_id_column_name_key, filter_doc_id_column_name_default)
 
         # ensure the path endswith("/") if they are not None
-        self.input_arrow_folder = config.get(filter_input_arrow_folder_key, None)
+        self.input_arrow_folder = config.get(filter_input_arrow_folder_key, "")
         if bool(self.input_arrow_folder.strip()):
             self.input_arrow_folder = self.input_arrow_folder if self.input_arrow_folder.endswith("/") else f"{self.input_arrow_folder}/"
-        self.output_arrow_folder = config.get(filter_output_arrow_folder_key, None)
+        self.output_arrow_folder = config.get(filter_output_arrow_folder_key, "")
         if bool(self.output_arrow_folder.strip()):
             self.output_arrow_folder = self.output_arrow_folder if self.output_arrow_folder.endswith("/") else f"{self.output_arrow_folder}/"
         

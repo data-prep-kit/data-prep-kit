@@ -132,7 +132,8 @@ def tokenization2arrow(
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
     data_s3_config: str = "{'input_folder': 'test/tokenization/ds01/input/', 'output_folder': 'test/tokenization/ds01/output/'}",
-    data_s3_access_secret: str = S3_SECRET,
+    data_s3_secret: str = S3_SECRET,
+    other_secrets: dict = {},
     data_max_files: int = -1,
     data_num_samples: int = -1,
     # orchestrator
@@ -175,7 +176,7 @@ def tokenization2arrow(
         wait_job_ready_tmout - time to wait for job ready, sec
         wait_print_tmout - time between prints, sec
         http_retries - http retries for API server calls
-    :param data_s3_access_secret - s3 access secret
+    :param data_s3_secret - s3 access secret
     :param data_s3_config - s3 configuration
     :param data_max_files - max files to process
     :param data_num_samples - num samples to process
@@ -231,9 +232,19 @@ def tokenization2arrow(
             ray_head_options=ray_head_options,
             ray_worker_options=ray_worker_options,
             server_url=server_url,
+            other_secrets=other_secrets,
             additional_params=additional_params,
         )
         ComponentUtils.add_settings_to_component(ray_cluster, ONE_HOUR_SEC * 2)
+        if os.getenv("KFPv2", "0") == "1":
+            from kfp import kubernetes
+
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=ray_cluster, secret_name=S3_SECRET, secret_key_to_env=env2key)
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(ray_cluster, data_s3_secret)
         ray_cluster.after(compute_exec_params)
         # Execute job
         execute_job = execute_ray_jobs_op(
@@ -253,7 +264,7 @@ def tokenization2arrow(
             env2key = ComponentUtils.set_secret_key_to_env()
             kubernetes.use_secret_as_env(task=execute_job, secret_name=S3_SECRET, secret_key_to_env=env2key)
         else:
-            ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
+            ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_secret)
         execute_job.after(ray_cluster)
 
 

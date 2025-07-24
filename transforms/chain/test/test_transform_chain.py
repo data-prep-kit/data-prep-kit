@@ -40,7 +40,7 @@ class TestTransformChain:
         doc_quality = DocQualityTransform(dq)
 
         da_config = {
-            "local_config": {
+            "config": {
                 "input_folder": os.path.join(basedir, "input"),
                 "output_folder": os.path.join(basedir, "output"),
             },

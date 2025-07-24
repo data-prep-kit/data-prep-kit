@@ -73,7 +73,7 @@ expected_metadata_list = [
 Config (parameter settings) for the run:
 """
 dal = DataAccessLocal(
-    local_config={
+    config={
         "input_folder": "test-data/ds01/input",
         "output_folder": "testoutput",
     }

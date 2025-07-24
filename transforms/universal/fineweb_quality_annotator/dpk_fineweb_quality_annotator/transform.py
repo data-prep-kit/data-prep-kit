@@ -23,7 +23,7 @@ from data_processing.utils import CLIArgumentProvider, TransformUtils, get_logge
 from numpy.random import default_rng
 
 
-logger = get_logger(__name__, level="INFO")
+logger = get_logger(__name__)
 from typing import Any
 
 
@@ -144,7 +144,6 @@ class FineWebQualityAnnotatorTransform(AbstractTableTransform):
             if element in unique_x:
                 duplicate_chars += len(element)
                 duplicate_elements += 1
-
             else:
                 unique_x.add(element)
         return duplicate_elements, duplicate_chars
@@ -168,16 +167,28 @@ class FineWebQualityAnnotatorTransform(AbstractTableTransform):
             if index % 1000 == 999:
                 logger.debug(f"Processed {index + 1}/ {table_length} documents")
             doc_text = doc.as_py()
+            if doc_text.strip() == "":
+                logger.debug(f"Found document {index = } empty. Setting annotation values to -1.")
+                frac_line_punct_column[index] = -1
+                short_line_frac_column[index] = -1
+                dup_line_char_frac_column[index] = -1
+                new_line_ratio_column[index] = -1
+                continue
             lines = doc_text.split("\n")
+            # frac_line_punct_column = what % of lines end with END_PUNCTUATION(".", "?", "!", '"', "'")
             frac_line_punct_column[index] = sum(1 for line in lines if line.endswith(END_PUNCTUATION)) / len(lines)
+            # short_line_frac_column = what % of lines are <= short_line_length ( default 30)
             short_line_frac_column[index] = sum(1 for line in lines if len(line) <= self.short_line_length) / len(
                 lines
             )
             non_empty_lines = [line for line in lines if line.strip() != ""]
+            # find_duplicates returns number of duplicate lines & count of chars of those lines
             _, dup_chars = self.find_duplicates(non_empty_lines)
+            # dup_line_char_frac_column = what % chars are duplicate(calculated by checking duplicates at line level)
             dup_line_char_frac_column[index] = dup_chars / len(doc_text.replace("\n", ""))
             words = nltk.word_tokenize(doc_text)
             new_line_count = doc_text.count("\n")
+            # How many new line per character in absolute number
             new_line_ratio_column[index] = new_line_count / len(words)
 
         logger.debug(f"Processed {table_length}/ {table_length} documents")

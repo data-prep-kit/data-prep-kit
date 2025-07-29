@@ -105,7 +105,7 @@ docling2parquet_bitmap_area_threshold_default = 0.05
 docling2parquet_ocr_engine_default = docling2parquet_ocr_engine.EASYOCR
 docling2parquet_pdf_backend_default = docling2parquet_pdf_backend.DLPARSE_V2
 docling2parquet_double_precision_default = 8
-docling2parquet_do_formula_enrichment_default = False # Add this line
+docling2parquet_do_formula_enrichment_default = False 
 
 docling2parquet_batch_size_cli_param = f"{cli_prefix}{docling2parquet_batch_size_key}"
 docling2parquet_artifacts_path_cli_param = f"{cli_prefix}{docling2parquet_artifacts_path_key}"
@@ -124,11 +124,16 @@ docling2parquet_double_precision_cli_param = (
 )
 docling2parquet_do_formula_enrichment_cli_param = (
     f"{cli_prefix}{docling2parquet_do_formula_enrichment_key}"
-)  # Add this block
-
+) 
 
 class Docling2ParquetTransform(AbstractBinaryTransform):
     def __init__(self, config: dict):
+        """
+        Initialize based on the dictionary of configuration information.
+        This is generally called with configuration parsed from the CLI arguments defined
+        by the companion runtime, LangSelectorTransformRuntime.  If running inside the RayMutatingDriver,
+        these will be provided by that class with help from the RayMutatingDriver.
+        """
         super().__init__(config)
 
         self.batch_size = config.get(docling2parquet_batch_size_key, docling2parquet_batch_size_default)

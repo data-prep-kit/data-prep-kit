@@ -132,11 +132,11 @@ class FineWebQualityAnnotatorTransform(AbstractTableTransform):
         self.short_line_frac_cname = config.get(short_line_frac_cname_key, short_line_frac_cname_default)
         self.short_line_length = config.get(short_line_length_key, short_line_length_default)
 
-        # download NLTK resources needed for sentence tokenizer
         lock = MultiLock("punkt_tab_lock")
         try:
             lock.acquire()
             logger.debug(f"Lock {lock.lock_filename} acquired.")
+            # download NLTK resources needed for sentence tokenizer
             nltk.data.find("tokenizers/punkt_tab","/Users/santoshborse/development/")
         except LookupError:
             nltk.download("punkt_tab")

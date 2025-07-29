@@ -20,7 +20,9 @@ from data_processing.data_access import DataAccessFactory
 from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
 from data_processing.utils import CLIArgumentProvider, TransformUtils, get_logger
+from data_processing.utils.multilock import MultiLock
 from numpy.random import default_rng
+
 
 
 logger = get_logger(__name__)
@@ -131,10 +133,16 @@ class FineWebQualityAnnotatorTransform(AbstractTableTransform):
         self.short_line_length = config.get(short_line_length_key, short_line_length_default)
 
         # download NLTK resources needed for sentence tokenizer
+        lock = MultiLock("punkt_tab_lock")
         try:
-            nltk.data.find("tokenizers/punkt_tab")
+            lock.acquire()
+            logger.debug(f"Lock {lock.lock_filename} acquired.")
+            nltk.data.find("tokenizers/punkt_tab","/Users/santoshborse/development/")
         except LookupError:
             nltk.download("punkt_tab")
+        finally:
+            lock.release()
+            logger.debug(f"Lock {lock.lock_filename} released.")
 
     def find_duplicates(self, x: list[str]) -> tuple[int, int]:
         unique_x = set()

@@ -4,3 +4,5 @@ docling-ibm-models
 docling-parse
 docling
 filetype >=1.2.0, <2.0.0
+ocrmac; sys_platform == "darwin"
+rapidocr_onnxruntime

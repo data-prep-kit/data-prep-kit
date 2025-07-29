@@ -44,6 +44,8 @@ from docling.datamodel.pipeline_options import (
     PdfPipelineOptions,
     TesseractCliOcrOptions,
     TesseractOcrOptions,
+    OcrMacOptions,
+    RapidOcrOptions,
 )
 from docling.document_converter import DocumentConverter, InputFormat, PdfFormatOption
 from docling.models.base_ocr_model import OcrOptions
@@ -63,6 +65,7 @@ docling2parquet_ocr_engine_key = f"ocr_engine"
 docling2parquet_bitmap_area_threshold_key = f"bitmap_area_threshold"
 docling2parquet_pdf_backend_key = f"pdf_backend"
 docling2parquet_double_precision_key = f"double_precision"
+docling2parquet_do_formula_enrichment_key = f"do_formula_enrichment"  
 
 
 class docling2parquet_contents_types(str, enum.Enum):
@@ -87,6 +90,8 @@ class docling2parquet_ocr_engine(str, enum.Enum):
     EASYOCR = "easyocr"
     TESSERACT_CLI = "tesseract_cli"
     TESSERACT = "tesseract"
+    OCRMAC = "ocrmac"
+    RAPIDOCR = "rapidocr"
 
     def __str__(self):
         return str(self.value)
@@ -96,10 +101,11 @@ docling2parquet_batch_size_default = -1
 docling2parquet_contents_type_default = docling2parquet_contents_types.MARKDOWN
 docling2parquet_do_table_structure_default = True
 docling2parquet_do_ocr_default = True
-docling2parquet_bitmap_area_threshold_default = 0.10
+docling2parquet_bitmap_area_threshold_default = 0.05
 docling2parquet_ocr_engine_default = docling2parquet_ocr_engine.EASYOCR
-docling2parquet_pdf_backend_default = docling2parquet_pdf_backend.PYPDFIUM2
+docling2parquet_pdf_backend_default = docling2parquet_pdf_backend.DLPARSE_V2
 docling2parquet_double_precision_default = 8
+docling2parquet_do_formula_enrichment_default = False # Add this line
 
 docling2parquet_batch_size_cli_param = f"{cli_prefix}{docling2parquet_batch_size_key}"
 docling2parquet_artifacts_path_cli_param = f"{cli_prefix}{docling2parquet_artifacts_path_key}"
@@ -116,19 +122,13 @@ docling2parquet_pdf_backend_cli_param = f"{cli_prefix}{docling2parquet_pdf_backe
 docling2parquet_double_precision_cli_param = (
     f"{cli_prefix}{docling2parquet_double_precision_key}"
 )
+docling2parquet_do_formula_enrichment_cli_param = (
+    f"{cli_prefix}{docling2parquet_do_formula_enrichment_key}"
+)  # Add this block
 
 
 class Docling2ParquetTransform(AbstractBinaryTransform):
-    """ """
-
     def __init__(self, config: dict):
-        """
-        Initialize based on the dictionary of configuration information.
-        This is generally called with configuration parsed from the CLI arguments defined
-        by the companion runtime, LangSelectorTransformRuntime.  If running inside the RayMutatingDriver,
-        these will be provided by that class with help from the RayMutatingDriver.
-        """
-
         super().__init__(config)
 
         self.batch_size = config.get(docling2parquet_batch_size_key, docling2parquet_batch_size_default)
@@ -161,12 +161,20 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
         self.double_precision = config.get(
             docling2parquet_double_precision_key, docling2parquet_double_precision_default
         )
+        
+        # Add formula enrichment configuration
+        self.do_formula_enrichment = config.get(
+            docling2parquet_do_formula_enrichment_key, docling2parquet_do_formula_enrichment_default
+        )
 
         logger.info("Initializing models")
+        
+        # Update PdfPipelineOptions to include formula enrichment
         pipeline_options = PdfPipelineOptions(
             artifacts_path=self.artifacts_path,
             do_table_structure=self.do_table_structure,
             do_ocr=self.do_ocr,
+            do_formula_enrichment=self.do_formula_enrichment,  # Add this line
             ocr_options=self._get_ocr_engine(self.ocr_engine_name),
         )
         pipeline_options.ocr_options.bitmap_area_threshold = self.bitmap_area_threshold
@@ -201,7 +209,11 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
             return TesseractCliOcrOptions()
         elif engine_name == docling2parquet_ocr_engine.TESSERACT:
             return TesseractOcrOptions()
-
+        elif engine_name == docling2parquet_ocr_engine.OCRMAC:
+            return OcrMacOptions()
+        elif engine_name == docling2parquet_ocr_engine.RAPIDOCR:
+            return RapidOcrOptions()
+        
         raise RuntimeError(f"Unknown OCR engine `{engine_name}`")
 
     def _get_pdf_backend(self, backend_name: docling2parquet_pdf_backend):
@@ -416,7 +428,7 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
             logger.debug(f"flushing buffered table with {len(self.buffer)} rows.")
             table = pa.Table.from_pylist(self.buffer)
             result.append((TransformUtils.convert_arrow_to_binary(table=table), ".parquet"))
-            self.buffer = []
+            self.buffer = None
         else:
             logger.debug(f"Empty buffer. nothing to flush.")
         return result, {}
@@ -501,6 +513,13 @@ class Docling2ParquetTransformConfiguration(TransformConfiguration):
             default=docling2parquet_double_precision_default,
         )
 
+        parser.add_argument(
+            f"--{docling2parquet_do_formula_enrichment_cli_param}",
+            type=str2bool,
+            help="If true, formula enrichment will be enabled to extract LaTeX representations of mathematical formulas.",
+            default=docling2parquet_do_formula_enrichment_default,
+        )
+
     def apply_input_params(self, args: Namespace) -> bool:
         """
         Validate and apply the arguments that have been parsed
@@ -512,3 +531,4 @@ class Docling2ParquetTransformConfiguration(TransformConfiguration):
         self.params = self.params | captured
         logger.info(f"docling2parquet parameters are : {self.params}")
         return True
+        

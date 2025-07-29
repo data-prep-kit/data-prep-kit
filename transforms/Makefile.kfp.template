@@ -2,6 +2,9 @@ REPOROOT=${CURDIR}/../../../../
 WORKFLOW_VENV_ACTIVATE=${REPOROOT}/transforms/venv/bin/activate
 include $(REPOROOT)/transforms/.make.workflows
 
+# This may be needed at some point
+#TRANSFORM_NAME?=$(shell basename $(shell dirname `pwd`))
+
 SRC_DIR=${CURDIR}/../
 # Use the docker image that is built for ray runtime
 TRANSFORM_RUNTIME=ray

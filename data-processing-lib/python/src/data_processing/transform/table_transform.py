@@ -11,6 +11,7 @@
 # limitations under the License.
 ################################################################################
 
+from abc import abstractmethod
 from typing import Any
 
 import pyarrow as pa
@@ -65,6 +66,7 @@ class AbstractTableTransform(AbstractBinaryTransform):
             out_tables=out_tables, stats=stats | {"source_doc_count": table.num_rows}
         )
 
+    @abstractmethod
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
         """
         Converts input table into an output table.
@@ -74,7 +76,7 @@ class AbstractTableTransform(AbstractBinaryTransform):
         :return: a tuple of a list of 0 or more converted tables and a dictionary of statistics that will be
         propagated to metadata
         """
-        raise NotImplemented("This method must be implemented by the subclass")
+        pass
 
     def flush_binary(self) -> tuple[list[tuple[bytes, str]], dict[str, Any]]:
         """
@@ -100,6 +102,14 @@ class AbstractTableTransform(AbstractBinaryTransform):
         propagated to metadata
         """
         return [], {}
+
+    def enforce_folder_boundary(self):
+        """
+        This is supporting method for transformers, that implement buffering of tables, and triggers
+        a call to flush the buffer prior to switching to a new folder if so required
+        :return: true if the runtime should call the flush method before processing the next folder
+        """
+        return False
 
     def _check_and_convert_tables(
         self, out_tables: list[pa.Table], stats: dict[str, Any]

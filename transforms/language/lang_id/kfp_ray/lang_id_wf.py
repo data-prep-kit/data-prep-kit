@@ -28,11 +28,15 @@ from workflow_support.compile_utils import (
     ComponentUtils,
 )
 
+from runtime_utils import KFPUtils
 
-# The name of the secret that holds the HugginFace token
+# The name of the secret that holds the HuggingFace token
 HF_SECRET = "hf-secret"
-# The secret key that holds the HugginFace token
+# The secret key that holds the HuggingFace token
 HF_SECRET_KEY = "hf-token"
+# HuggingFace environment variable
+HF_READ_ACCESS_TOKEN = "HF_READ_ACCESS_TOKEN"
+
 
 task_image = "quay.io/dataprep1/data-prep-kit/lang_id-ray:latest"
 
@@ -108,8 +112,8 @@ TASK_NAME: str = "lang_id"
 # which will set it as an environment variable in the Ray nodes.
 # In this option the secret name can be set at runtime
 # but is dependent on the KFP version.
-env_v = EnvVarFrom(source=EnvVarSource.SECRET, name=HF_SECRET, key=HF_SECRET_KEY)
-envs = EnvironmentVariables(from_ref={"HF_READ_ACCESS_TOKEN": env_v})
+#env_v = EnvVarFrom(source=EnvVarSource.SECRET, name=HF_SECRET, key=HF_SECRET_KEY)
+#envs = EnvironmentVariables(from_ref={"HF_READ_ACCESS_TOKEN": env_v})
 
 
 @dsl.pipeline(
@@ -121,7 +125,7 @@ def lang_id(
     ray_name: str = "lang_id-kfp-ray",  # name of Ray cluster
     ray_run_id_KFPv2: str = "",  # Ray cluster unique ID used only in KFP v2
     # Add image_pull_secret and image_pull_policy to ray workers if needed
-    ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image, "environment": envs.to_dict()},
+    ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
     ray_worker_options: dict = {
         "replicas": 2,
         "max_replicas": 2,
@@ -129,7 +133,6 @@ def lang_id(
         "cpu": 2,
         "memory": 4,
         "image": task_image,
-        "environment": envs.to_dict(),
     },
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
@@ -137,6 +140,7 @@ def lang_id(
     data_s3_access_secret: str = S3_SECRET,
     data_max_files: int = -1,
     data_num_samples: int = -1,
+    other_secrets: dict = {HF_SECRET: {HF_READ_ACCESS_TOKEN: HF_SECRET_KEY}},
     # orchestrator
     runtime_actor_options: dict = {"num_cpus": 0.8},
     runtime_pipeline_id: str = "pipeline_id",
@@ -230,10 +234,20 @@ def lang_id(
             run_id=run_id,
             ray_head_options=ray_head_options,
             ray_worker_options=ray_worker_options,
+            other_secrets=other_secrets,
             server_url=server_url,
             additional_params=additional_params,
         )
         ComponentUtils.add_settings_to_component(ray_cluster, ONE_HOUR_SEC * 2)
+        if os.getenv("KFPv2", "0") == "1":
+            from kfp import kubernetes
+
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=ray_cluster, secret_name=S3_SECRET, secret_key_to_env=env2key)
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(ray_cluster, data_s3_access_secret)
         ray_cluster.after(compute_exec_params)
         # Execute job
         execute_job = execute_ray_jobs_op(

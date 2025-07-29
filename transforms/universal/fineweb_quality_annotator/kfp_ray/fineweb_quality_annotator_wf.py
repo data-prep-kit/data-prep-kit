@@ -22,16 +22,16 @@ from workflow_support.compile_utils import (
     ONE_WEEK_SEC,
     ComponentUtils,
 )
+
+
+task_image = "quay.io/dataprep1/data-prep-kit/fineweb_quality_annotator-ray:latest"
+
 # The secret name containing the s3 credentials.
 S3_SECRET = "s3-secret"  # pragma: allowlist secret
 
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_fineweb_quality_annotator.ray.runtime"
 PREFIX: str = ""
-
-
-task_image = "quay.io/dataprep1/data-prep-kit/fineweb_quality_annotator-ray:latest"
-
 # components
 base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
@@ -124,6 +124,7 @@ def fineweb_quality_annotator(
     # data access
     data_s3_config: str = "{'input_folder': 'test/fineweb_quality_annotator/input/', 'output_folder': 'test/fineweb_quality_annotator/output/'}",
     data_s3_access_secret: str = S3_SECRET,
+    other_secrets: dict = {},
     data_max_files: int = -1,
     data_num_samples: int = -1,
     data_checkpointing: bool = False,
@@ -221,11 +222,20 @@ def fineweb_quality_annotator(
             ray_head_options=ray_head_options,
             ray_worker_options=ray_worker_options,
             server_url=server_url,
+            other_secrets=other_secrets,
             additional_params=additional_params,
         )
         ComponentUtils.add_settings_to_component(ray_cluster, ONE_HOUR_SEC * 2)
-        ray_cluster.after(compute_exec_params)
+        if os.getenv("KFPv2", "0") == "1":
+            from kfp import kubernetes
 
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=ray_cluster, secret_name=S3_SECRET, secret_key_to_env=env2key)
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(ray_cluster, data_s3_access_secret)
+        ray_cluster.after(compute_exec_params)
         # Execute job
         execute_job = execute_ray_jobs_op(
             ray_name=ray_name,
@@ -235,7 +245,6 @@ def fineweb_quality_annotator(
             exec_script_name=EXEC_SCRIPT_NAME,
             server_url=server_url,
         )
-
         ComponentUtils.add_settings_to_component(execute_job, ONE_WEEK_SEC)
         if os.getenv("KFPv2", "0") == "1":
             from kfp import kubernetes
@@ -246,7 +255,6 @@ def fineweb_quality_annotator(
             kubernetes.use_secret_as_env(task=execute_job, secret_name=S3_SECRET, secret_key_to_env=env2key)
         else:
             ComponentUtils.set_s3_env_vars_to_component(execute_job, data_s3_access_secret)
-        
         execute_job.after(ray_cluster)
 
 

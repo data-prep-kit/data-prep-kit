@@ -21,7 +21,7 @@ def get_log_level(name: str = None) -> str:
     if name is None:
         level_name = DPKConfig.DEFAULT_LOG_LEVEL
     else:
-        name = name.upper()
+        name = name.upper().replace('.', '_')
         name = "DPK_" + name + "_LOG_LEVEL"
         level_name = os.environ.get(name, DPKConfig.DEFAULT_LOG_LEVEL)
     return level_name

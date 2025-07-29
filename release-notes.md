@@ -1,5 +1,30 @@
 # Data Prep Kit Release notes
 
+## Release 1.1.2.post1 - 7/3/2025
+
+## General
+
+1. Patch filter failing when transform is used with default/empty configuration
+1. Patch PII requirements for pydantic to allow testing with Prefect
+
+## Release 1.1.2 - 7/3/2025
+
+## General
+
+1. Restructured data-access package to allow adding user specific connectors as external packages (e.g. lakehouse connector) 
+1. Removed credentials being utilized as transform/data access arguments and now passed set as environment variable
+1. Added runtime code location  environment variables to docker files to display real build information
+1. Added in-memory data access for caching reads/writes in DataAccessLocal, and in new DataAccessMemory class. 
+1. Added file batch processing for data access
+
+### Transforms
+
+1. Added transform chain module for running one more transforms in sequence, with support for parallel micro-batch execution
+1. Added fineweb_quality_annotator and gopher_repetition_annotator transforms
+1. Added model loader util for transforms utilizing models, enabling loading from COS, HuggingFace, and locally
+1. Updated KPF workflows to remove setting runtime code location, and set credentials via environment variables
+
+
 ## Release 1.1.1 - 4/9/2025
 
 ## General

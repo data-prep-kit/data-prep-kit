@@ -60,6 +60,7 @@ jobs:
 
 
     test-src:
+
         needs: [check_if_allowed]
         runs-on: ubuntu-22.04
         env:
@@ -73,6 +74,10 @@ jobs:
 
             - name: Checkout
               uses: actions/checkout@v4
+              with:
+                # Requires careful code review prior to triggering workflow
+                ref: ${{ github.event.pull_request.head.sha }}
+
             - name: Test transform source in transforms/chain
               run: |
                   if [ -e "transforms/chain/Makefile" ]; then

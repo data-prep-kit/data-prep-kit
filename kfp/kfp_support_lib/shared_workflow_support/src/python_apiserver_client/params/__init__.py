@@ -27,6 +27,7 @@ from python_apiserver_client.params.environmentvariables import (
     EnvironmentVariables,
     env_var_from_decoder,
     environment_variables_decoder,
+    environment_variables_from_secrets,
 )
 from python_apiserver_client.params.headnode import (
     ServiceType,

@@ -30,6 +30,7 @@ class TestInit:
     path_dict = {
         "input_folder": os.path.join(os.sep, "tmp", "input_guf"),
         "output_folder": os.path.join(os.sep, "tmp", "output_guf"),
+        "cache": True,
     }
     dal = DataAccessLocal(path_dict, d_sets=["dset1", "dset2"], checkpoint=True, m_files=-1)
     size_stat_dict_empty = {"max_file_size": 0.0, "min_file_size": float(GB), "total_file_size": 0.0}
@@ -464,9 +465,11 @@ class TestSavePyarrowTable(TestInit):
         with patch("os.path.getsize") as mock_getsize, patch("os.path.basename") as mock_basename:
             mock_getsize.return_value = 1024
             mock_basename.return_value = "test_file.parquet"
+            assert len(self.dal.tables) == 0
             size_in_memory, file_info, _ = self.dal.save_table(self.pq_file_path, self.table)
             os.remove(self.pq_file_path)
             # Assertions about return values
+            assert len(self.dal.tables) > 0
             assert size_in_memory == self.table.nbytes
             assert file_info == {"name": "test_file.parquet", "size": 1024}
 

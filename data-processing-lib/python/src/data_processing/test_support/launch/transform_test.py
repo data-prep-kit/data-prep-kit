@@ -11,6 +11,7 @@
 # limitations under the License.
 ################################################################################
 
+from abc import abstractmethod
 import sys
 import tempfile
 from typing import Any
@@ -88,6 +89,7 @@ class AbstractTransformLauncherTest(AbstractTest):
             # Install the fixture, matching the parameter names used by test_transform() method.
             metafunc.parametrize("launcher,cli_params,in_table_path,expected_out_table_path,ignore_columns", fixtures)
 
+    @abstractmethod
     def get_test_transform_fixtures(self) -> list[tuple]:
         """
         Get the test data for the test_transform() test.  The returned list contains 0 or more tuples
@@ -99,4 +101,4 @@ class AbstractTransformLauncherTest(AbstractTest):
             |  Item 4: columns to drop for table comparison (optional), if omitted an empty array is used
         :return:  a list of Tuples, to test. Each tuple contains the test inputs for test_transform() method.
         """
-        raise NotImplemented()
+        pass

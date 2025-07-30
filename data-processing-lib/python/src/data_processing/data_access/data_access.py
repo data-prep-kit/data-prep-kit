@@ -191,7 +191,6 @@ class DataAccess(ABC):
         for i in range(0, len(files), bs):
             yield files[i:i + bs]
 
-    @abstractmethod
     def _get_folders_to_use(self) -> tuple[list[str], int]:
         """
         convert data sets to a list of folders to use

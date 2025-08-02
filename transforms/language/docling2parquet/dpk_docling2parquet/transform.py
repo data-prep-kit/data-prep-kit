@@ -46,6 +46,8 @@ from docling.datamodel.pipeline_options import (
     TesseractOcrOptions,
     OcrMacOptions,
     RapidOcrOptions,
+    AcceleratorOptions,  
+    AcceleratorDevice,   
 )
 from docling.document_converter import DocumentConverter, InputFormat, PdfFormatOption
 from docling.models.base_ocr_model import OcrOptions
@@ -65,7 +67,10 @@ docling2parquet_ocr_engine_key = f"ocr_engine"
 docling2parquet_bitmap_area_threshold_key = f"bitmap_area_threshold"
 docling2parquet_pdf_backend_key = f"pdf_backend"
 docling2parquet_double_precision_key = f"double_precision"
-docling2parquet_do_formula_enrichment_key = f"do_formula_enrichment"  
+docling2parquet_do_formula_enrichment_key = f"do_formula_enrichment"
+docling2parquet_accelerator_device_key = f"accelerator_device"  
+docling2parquet_num_threads_key = f"num_threads"  
+docling2parquet_cuda_flash_attention_key = f"cuda_use_flash_attention2"  
 
 
 class docling2parquet_contents_types(str, enum.Enum):
@@ -97,6 +102,16 @@ class docling2parquet_ocr_engine(str, enum.Enum):
         return str(self.value)
 
 
+class docling2parquet_accelerator_device(str, enum.Enum):
+    AUTO = "auto"
+    CPU = "cpu"
+    CUDA = "cuda"
+    MPS = "mps"
+
+    def __str__(self):
+        return str(self.value)
+
+
 docling2parquet_batch_size_default = -1
 docling2parquet_contents_type_default = docling2parquet_contents_types.MARKDOWN
 docling2parquet_do_table_structure_default = True
@@ -105,7 +120,10 @@ docling2parquet_bitmap_area_threshold_default = 0.05
 docling2parquet_ocr_engine_default = docling2parquet_ocr_engine.EASYOCR
 docling2parquet_pdf_backend_default = docling2parquet_pdf_backend.DLPARSE_V2
 docling2parquet_double_precision_default = 8
-docling2parquet_do_formula_enrichment_default = False 
+docling2parquet_do_formula_enrichment_default = False  
+docling2parquet_accelerator_device_default = docling2parquet_accelerator_device.AUTO  # Add this
+docling2parquet_num_threads_default = 4  
+docling2parquet_cuda_flash_attention_default = False 
 
 docling2parquet_batch_size_cli_param = f"{cli_prefix}{docling2parquet_batch_size_key}"
 docling2parquet_artifacts_path_cli_param = f"{cli_prefix}{docling2parquet_artifacts_path_key}"
@@ -124,7 +142,16 @@ docling2parquet_double_precision_cli_param = (
 )
 docling2parquet_do_formula_enrichment_cli_param = (
     f"{cli_prefix}{docling2parquet_do_formula_enrichment_key}"
-) 
+)
+docling2parquet_accelerator_device_cli_param = (
+    f"{cli_prefix}{docling2parquet_accelerator_device_key}"
+)  # Add this
+docling2parquet_num_threads_cli_param = (
+    f"{cli_prefix}{docling2parquet_num_threads_key}"
+)  # Add this
+docling2parquet_cuda_flash_attention_cli_param = (
+    f"{cli_prefix}{docling2parquet_cuda_flash_attention_key}"
+)  # Add this
 
 class Docling2ParquetTransform(AbstractBinaryTransform):
     def __init__(self, config: dict):
@@ -172,16 +199,41 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
             docling2parquet_do_formula_enrichment_key, docling2parquet_do_formula_enrichment_default
         )
 
+
+        self.accelerator_device_name = config.get(
+            docling2parquet_accelerator_device_key, docling2parquet_accelerator_device_default
+        )
+        if not isinstance(self.accelerator_device_name, docling2parquet_accelerator_device):
+            self.accelerator_device_name = docling2parquet_accelerator_device[self.accelerator_device_name]
+        
+        self.num_threads = config.get(
+            docling2parquet_num_threads_key, docling2parquet_num_threads_default
+        )
+        self.cuda_flash_attention = config.get(
+            docling2parquet_cuda_flash_attention_key, docling2parquet_cuda_flash_attention_default
+        )
         logger.info("Initializing models")
         
-        # Update PdfPipelineOptions to include formula enrichment
+        # Create AcceleratorOptions
+        accelerator_options = AcceleratorOptions(
+            num_threads=self.num_threads,
+            device=self._get_accelerator_device(self.accelerator_device_name)
+        )
+        
+        # Update PdfPipelineOptions to include GPU support
         pipeline_options = PdfPipelineOptions(
             artifacts_path=self.artifacts_path,
             do_table_structure=self.do_table_structure,
             do_ocr=self.do_ocr,
-            do_formula_enrichment=self.do_formula_enrichment,  # Add this line
+            do_formula_enrichment=self.do_formula_enrichment,
             ocr_options=self._get_ocr_engine(self.ocr_engine_name),
+            accelerator_options=accelerator_options,
         )
+        
+        # Set CUDA flash attention if using CUDA
+        if self.accelerator_device_name == docling2parquet_accelerator_device.CUDA:
+            pipeline_options.cuda_use_flash_attention2 = self.cuda_flash_attention
+
         pipeline_options.ocr_options.bitmap_area_threshold = self.bitmap_area_threshold
 
         lock = MultiLock("dpk_docling2parquet_init")
@@ -523,6 +575,28 @@ class Docling2ParquetTransformConfiguration(TransformConfiguration):
             type=str2bool,
             help="If true, formula enrichment will be enabled to extract LaTeX representations of mathematical formulas.",
             default=docling2parquet_do_formula_enrichment_default,
+        )
+
+        parser.add_argument(
+            f"--{docling2parquet_accelerator_device_cli_param}",
+            type=docling2parquet_accelerator_device,
+            choices=list(docling2parquet_accelerator_device),
+            help="The accelerator device to use for processing (auto, cpu, cuda, mps).",
+            default=docling2parquet_accelerator_device_default,
+        )
+        
+        parser.add_argument(
+            f"--{docling2parquet_num_threads_cli_param}",
+            type=int,
+            help="Number of threads to use for processing.",
+            default=docling2parquet_num_threads_default,
+        )
+        
+        parser.add_argument(
+            f"--{docling2parquet_cuda_flash_attention_cli_param}",
+            type=str2bool,
+            help="If true, use flash attention for CUDA processing.",
+            default=docling2parquet_cuda_flash_attention_default,
         )
 
     def apply_input_params(self, args: Namespace) -> bool:

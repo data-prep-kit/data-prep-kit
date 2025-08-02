@@ -42,5 +42,7 @@ ENV KFP_v2=$KFP_v2
 # Put these at the end since they seem to upset the docker cache.
 ARG BUILD_DATE
 ARG GIT_COMMIT
+ENV BUILD_DATE $BUILD_DATE
+ENV GIT_COMMIT $GIT_COMMIT
 LABEL build-date=$BUILD_DATE
 LABEL git-commit=$GIT_COMMIT

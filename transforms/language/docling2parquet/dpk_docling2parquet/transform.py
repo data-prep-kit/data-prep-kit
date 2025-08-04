@@ -58,10 +58,10 @@ from docling.datamodel.pipeline_options_vlm_model import (
     InlineVlmOptions,
     ResponseFormat,
     TransformersModelType,
-    TransformersPromptStyle,  # Add this
+
 )
-from docling.pipeline.vlm_pipeline import VlmPipeline  # Add this
-from docling.datamodel import vlm_model_specs  # Add this
+
+from docling.datamodel import vlm_model_specs 
 
 
 class docling2parquet_vlm_model_type(str, enum.Enum):

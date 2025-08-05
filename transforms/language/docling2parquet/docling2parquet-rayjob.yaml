@@ -18,6 +18,8 @@ spec:
               env:
                 - name: DPK_LOG_LEVEL 
                   value: DEBUG
+                - name: DPK_DPK_DOCLING2PARQUET_TRANSFORM_LOG_LEVEL 
+                  value: INFO
                 - name: S3_ACCESS_KEY
                   valueFrom:
                     secretKeyRef:
@@ -47,15 +49,15 @@ spec:
               resources:
                 requests:
                   cpu: 2
-                  memory: 8Gi
+                  memory: 32Gi
                 limits:
                   cpu: 2
-                  memory: 8Gi
+                  memory: 32Gi
     workerGroupSpecs:
       - groupName: small-group
-        replicas: 10 # Initial number of worker nodes
-        minReplicas: 10
-        maxReplicas: 10
+        replicas: 5 # Initial number of worker nodes
+        minReplicas: 5
+        maxReplicas: 5
         rayStartParams: {}
         template:
           spec:
@@ -86,22 +88,18 @@ spec:
                 resources:
                   requests:
                     cpu: 1
-                    memory: 8Gi
+                    memory: 32Gi
                   limits:
                     cpu: 1
-                    memory: 8Gi
+                    memory: 32Gi
   # Job details
   # The command to execute the Python script
   entrypoint: >
     python -m dpk_docling2parquet.ray.transform 
     --run_locally False 
-    --data_s3_config "{ 'input_folder' : 'bucket-wikimedia-1/html_zip', 'output_folder' : 'bucket-wikimedia-1/take1' }" 
+    --data_s3_config "{ 'input_folder' : 'bucket-wikimedia-1/html_zip', 'output_folder' : 'bucket-wikimedia-1/take3' }" 
     --data_files_to_use "[ '.zip' ]" 
     --data_checkpointing False 
     --runtime_creation_delay 3 
-    --runtime_num_workers 10
+    --runtime_num_workers 5
     --runtime_worker_options "{ 'num_cpus': 0.8, 'max_restarts': 0, 'max_task_retries': 0 }" 
-  # --runtime_worker_options "{ 'num_cpus': 0.8, 'memory': 3500000000, 'max_restarts': 0, 'max_task_retries': 0 }"
-  #  --runtime_worker_options "{ 'num_cpus': 0.8, 'max_restarts': 0 }"
-  # submissionMode: "K8sJobMode" # This is the default, but can be specified if needed
-  # shutdownAfterJobFinishes: true # Whether to delete the RayCluster after the job finishes

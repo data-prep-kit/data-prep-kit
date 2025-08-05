@@ -42,6 +42,14 @@ RUN docling-tools models download layout tableformer picture_classifier easyocr
 # Parallelism
 ENV OMP_NUM_THREADS=2
 
+RUN pip install "boto3>=1.35.74,<1.35.94"
+
+USER root
+RUN mkdir -p /home/ray/.cache/huggingface \
+    && chown ray:root /home/ray/.cache \
+    && chmod -R a+rwx /home/ray/.cache
+USER ray
+
 # Put these at the end since they seem to upset the docker cache.
 ARG BUILD_DATE
 ARG GIT_COMMIT

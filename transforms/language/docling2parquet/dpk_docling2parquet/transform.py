@@ -34,6 +34,7 @@ from data_processing.transform import AbstractBinaryTransform, TransformConfigur
 from data_processing.utils import TransformUtils, get_logger, str2bool
 from data_processing.utils.cli_utils import CLIArgumentProvider
 from data_processing.utils.multilock import MultiLock
+from docling_core.types.doc import ContentLayer
 from docling.backend.docling_parse_backend import DoclingParseDocumentBackend
 from docling.backend.docling_parse_v2_backend import DoclingParseV2DocumentBackend
 from docling.backend.pypdfium2_backend import PyPdfiumDocumentBackend
@@ -231,7 +232,7 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
         elapse_time = time.time() - start_time
 
         if self.contents_type == docling2parquet_contents_types.MARKDOWN:
-            content_string = doc.export_to_markdown()
+            content_string = doc.export_to_markdown(included_content_layers={ContentLayer.BODY, ContentLayer.FURNITURE})
         elif self.contents_type == docling2parquet_contents_types.TEXT:
             content_string = doc.export_to_text()
         elif self.contents_type == docling2parquet_contents_types.JSON:

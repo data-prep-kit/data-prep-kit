@@ -13,8 +13,8 @@ spec:
         dashboard-host: '0.0.0.0'
       template:
         spec:
-          imagePullSecrets:
-            - name: prod-all-icr-io # Replace with the name of your created secret
+#          imagePullSecrets:
+#            - name: prod-all-icr-io # Replace with the name of your created secret
           containers:
             - name: ray-head
               env:
@@ -41,7 +41,7 @@ spec:
                   valueFrom:
                     resourceFieldRef:
                       resource: requests.cpu
-              image: us.icr.io/cil15-shared-registry/preprocessing-pipelines/tokenization2arrow-ray:1.0.0-lh
+              image: quay.io/dataprep1/data-prep-kit/tokenization2arrow-ray:latest
               imagePullPolicy: IfNotPresent
               ports:
                 - containerPort: 6379 # Ray port
@@ -63,8 +63,8 @@ spec:
         rayStartParams: {}
         template:
           spec:
-            imagePullSecrets:
-              - name: prod-all-icr-io # Replace with the name of your created secret
+#            imagePullSecrets:
+#              - name: prod-all-icr-io # Replace with the name of your created secret
             containers:
               - name: ray-worker
                 env:
@@ -87,7 +87,7 @@ spec:
                       secretKeyRef:
                         name: s3-secret
                         key: S3_ENDPOINT
-                image: us.icr.io/cil15-shared-registry/preprocessing-pipelines/tokenization2arrow-ray:1.0.0-lh
+                image: quay.io/dataprep1/data-prep-kit/tokenization2arrow-ray:latest
                 imagePullPolicy: IfNotPresent
                 resources:
                   requests:
@@ -99,12 +99,12 @@ spec:
   # Job details
   # The command to execute the Python script
   entrypoint: >
-    python -m dpk_tokenizer2arrow.ray.runtime 
+    python -m dpk_tokenization2arrow.ray.runtime 
     --data_max_files 1
     --tkn_tokenizer s3://bucket-wikimedia-1/granite-4.0-tiktoken-r250219a/
-    --tk_doc_content_column contents
+    --tkn_doc_content_column contents
     --tkn_doc_id_column document_id
-    --tk_chunk_size 2000
+    --tkn_chunk_size 2000
     --tkn_tokenizer_args cache_dir=/root/ray/.cache/tkn
     --run_locally False
     --data_s3_config "{ 'input_folder' : 'bucket-wikimedia-1/take6_md', 'output_folder' : 'bucket-wikimedia-1/tknarrow' }" 
@@ -113,7 +113,8 @@ spec:
     --runtime_creation_delay 3 
     --runtime_num_workers 1
     --runtime_worker_options "{ 'num_cpus': 0.8, 'max_restarts': 0, 'max_task_retries': 0 }" 
-  runtimeEnvYAML: |
-    pip:
-      - data-prep-toolkit[ray] @ git+https://github.com/swith005/data-prep-kit.git@model_loader_s3#subdirectory=data-processing-lib/
+#  runtimeEnvYAML: |
+#    pre_execution_command: "python -m pip install -y data-prep-toolkit>=1.0.1.dev0"
+#    pip:
+#      - data-prep-toolkit @ git+https://github.com/swith005/data-prep-kit-outer.git@model_loader_s3#subdirectory=data-processing-lib/
 #      - data-prep-toolkit-transforms[tokenization] @ git+https://github.com/swith005/data-prep-kit.git@model_loader_s3#subdirectory=transforms/

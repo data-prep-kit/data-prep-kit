@@ -18,7 +18,7 @@ Issues = "https://github.com/data-prep-kit/data-prep-kit/issues"
 Documentation = "https://data-prep-kit.github.io/data-prep-kit/doc"
 
 [build-system]
-requires = ["setuptools>=68.0.0", "wheel", "setuptools_scm[toml]>=7.1.0"]
+requires = ["setuptools>=68.0.0", "wheel", "setuptools_scm[toml]>=7.1.0,<=8.3.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.dynamic.dependencies]

@@ -97,9 +97,12 @@ spec:
   entrypoint: >
     python -m dpk_docling2parquet.ray.transform 
     --run_locally False 
-    --data_s3_config "{ 'input_folder' : 'bucket-wikimedia-1/html_zip', 'output_folder' : 'bucket-wikimedia-1/take3' }" 
+    --data_s3_config "{ 'input_folder' : 'bucket-wikimedia-1/html_zip', 'output_folder' : 'bucket-wikimedia-1/take7_md' }" 
     --data_files_to_use "[ '.zip' ]" 
     --data_checkpointing False 
     --runtime_creation_delay 3 
     --runtime_num_workers 5
     --runtime_worker_options "{ 'num_cpus': 0.8, 'max_restarts': 0, 'max_task_retries': 0 }" 
+  runtimeEnvYAML: |
+    pip:
+      - boto3>=1.35.74,<1.35.94

@@ -7,7 +7,8 @@ USER root
 RUN chown ray:root /home/ray \
     && chmod g=u /home/ray \
     && mkdir -p /home/ray/.cache/huggingface \
-    && chown ray:root /home/ray/.cache \
+    && mkdir -p /home/ray/.cache/pip \
+    && chown -R ray:root /home/ray/.cache \
     && chmod -R a+rwx /home/ray/.cache
 USER ray
 

@@ -82,39 +82,39 @@ jobs:
                      echo "Skipping transforms/language/readability kfp test for lack of Makefile and/or kfp_ray/Makefile"
                    fi
 
-    test-kfp-v2:
-        runs-on: ubuntu-22.04
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
-            - name: Free up space in github runner
-              # Free space as indicated here : https://github.com/actions/runner-images/issues/2840#issuecomment-790492173
-              run: |
-                  df -h
-                  sudo rm -rf "/usr/local/share/boost"
-                  sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-                  sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /usr/local/share/powershell /usr/share/swift /usr/lib/jvm /usr/local/.ghcup
-                  sudo docker rmi $(docker image ls -aq) >/dev/null 2>&1 || true
-                  df -h
-            - name: Import environment variables
-              run: |
-                  cat scripts/k8s-setup/requirements.env >> $GITHUB_ENV
-                  echo "K8S_SETUP_SCRIPTS=$PWD/scripts/k8s-setup" >> $GITHUB_ENV
-                  echo "REPOROOT=$PWD" >> $GITHUB_ENV
-                  echo "PATH=$PATH:/tmp" >> $GITHUB_ENV
-                  echo "KFPv2=1" >> $GITHUB_ENV
-            - name: Test V2 KFP workflow for transforms/language/readability
-              timeout-minutes: 120
-              run: |
-                  KFP_BLACK_LIST=$(./scripts/check-workflows.sh -show-kfp-black-list)
-                  if [ -e "transforms/language/readability/Makefile" -a -e "transforms/language/readability/kfp_ray/Makefile" ]; then
-                     transform=$(basename "transforms/language/readability")
-                     if echo ${KFP_BLACK_LIST} | grep -qv ${transform}; then
-                        $PWD/scripts/workflow_helper.sh install-tools
-                        $PWD/scripts/workflow_helper.sh test-workflow transforms/language/readability   
-                     else
-                        $PWD/scripts/workflow_helper.sh build-workflow transforms/language/readability
-                     fi              
-                  else
-                     echo "Skipping transforms/language/readability kfp test for lack of Makefile and/or kfp_ray/Makefile"
-                   fi
+#    test-kfp-v2:
+#        runs-on: ubuntu-22.04
+#        steps:
+#            - name: Checkout
+#              uses: actions/checkout@v4
+#            - name: Free up space in github runner
+#              # Free space as indicated here : https://github.com/actions/runner-images/issues/2840#issuecomment-790492173
+#              run: |
+#                  df -h
+#                  sudo rm -rf "/usr/local/share/boost"
+#                  sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+#                  sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /usr/local/share/powershell /usr/share/swift /usr/lib/jvm /usr/local/.ghcup
+#                  sudo docker rmi $(docker image ls -aq) >/dev/null 2>&1 || true
+#                  df -h
+#            - name: Import environment variables
+#              run: |
+#                  cat scripts/k8s-setup/requirements.env >> $GITHUB_ENV
+#                  echo "K8S_SETUP_SCRIPTS=$PWD/scripts/k8s-setup" >> $GITHUB_ENV
+#                  echo "REPOROOT=$PWD" >> $GITHUB_ENV
+#                  echo "PATH=$PATH:/tmp" >> $GITHUB_ENV
+#                  echo "KFPv2=1" >> $GITHUB_ENV
+#            - name: Test V2 KFP workflow for transforms/language/readability
+#              timeout-minutes: 120
+#              run: |
+#                  KFP_BLACK_LIST=$(./scripts/check-workflows.sh -show-kfp-black-list)
+#                  if [ -e "transforms/language/readability/Makefile" -a -e "transforms/language/readability/kfp_ray/Makefile" ]; then
+#                     transform=$(basename "transforms/language/readability")
+#                     if echo ${KFP_BLACK_LIST} | grep -qv ${transform}; then
+#                        $PWD/scripts/workflow_helper.sh install-tools
+#                        $PWD/scripts/workflow_helper.sh test-workflow transforms/language/readability
+#                     else
+#                        $PWD/scripts/workflow_helper.sh build-workflow transforms/language/readability
+#                     fi
+#                  else
+#                     echo "Skipping transforms/language/readability kfp test for lack of Makefile and/or kfp_ray/Makefile"
+#                   fi

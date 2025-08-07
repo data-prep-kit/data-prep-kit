@@ -1,7 +1,7 @@
 apiVersion: ray.io/v1alpha1
 kind: RayJob
 metadata:
-  name: rayjob-1 # Name of your RayCluster
+  name: rayjob-tkn # Name of your RayCluster
 spec:
   rayClusterSpec:
     rayVersion: '2.36.1' # Specify the Ray version
@@ -42,7 +42,7 @@ spec:
                     resourceFieldRef:
                       resource: requests.cpu
               image: quay.io/dataprep1/data-prep-kit/tokenization2arrow-ray:latest
-              imagePullPolicy: IfNotPresent
+              imagePullPolicy: Always
               ports:
                 - containerPort: 6379 # Ray port
                   name: ray-client
@@ -59,7 +59,7 @@ spec:
       - groupName: small-group
         replicas: 1 # Initial number of worker nodes
         minReplicas: 1
-        maxReplicas: 1
+        maxReplicas: 5
         rayStartParams: {}
         template:
           spec:
@@ -88,7 +88,7 @@ spec:
                         name: s3-secret
                         key: S3_ENDPOINT
                 image: quay.io/dataprep1/data-prep-kit/tokenization2arrow-ray:latest
-                imagePullPolicy: IfNotPresent
+                imagePullPolicy: Always
                 resources:
                   requests:
                     cpu: 1
@@ -100,21 +100,22 @@ spec:
   # The command to execute the Python script
   entrypoint: >
     python -m dpk_tokenization2arrow.ray.runtime 
-    --data_max_files 1
     --tkn_tokenizer s3://bucket-wikimedia-1/granite-4.0-tiktoken-r250219a/
     --tkn_doc_content_column contents
     --tkn_doc_id_column document_id
     --tkn_chunk_size 2000
     --tkn_tokenizer_args cache_dir=/root/ray/.cache/tkn
     --run_locally False
-    --data_s3_config "{ 'input_folder' : 'bucket-wikimedia-1/take6_md', 'output_folder' : 'bucket-wikimedia-1/tknarrow' }" 
+    --data_s3_config "{ 'input_folder' : 'bucket-wikimedia-1/take6_md', 'output_folder' : 'bucket-wikimedia-1/tknarrow_2' }" 
     --data_files_to_use "[ '.parquet' ]" 
     --data_checkpointing False 
     --runtime_creation_delay 3 
     --runtime_num_workers 1
     --runtime_worker_options "{ 'num_cpus': 0.8, 'max_restarts': 0, 'max_task_retries': 0 }" 
+
+# Does not seem to be working
 #  runtimeEnvYAML: |
-#    pre_execution_command: "python -m pip install -y data-prep-toolkit>=1.0.1.dev0"
 #    pip:
-#      - data-prep-toolkit @ git+https://github.com/swith005/data-prep-kit-outer.git@model_loader_s3#subdirectory=data-processing-lib/
-#      - data-prep-toolkit-transforms[tokenization] @ git+https://github.com/swith005/data-prep-kit.git@model_loader_s3#subdirectory=transforms/
+#      - boto3==1.35.74
+#      - data_prep_toolkit>=1.0.1.dev0
+#     - data-prep-toolkit @ git+https://github.com/swith005/data-prep-kit-outer.git@model_loader_s3#subdirectory=data-processing-lib/

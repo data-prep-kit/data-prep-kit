@@ -1,0 +1,18 @@
+{
+    "total_docs": 12,
+    "dropped_docs": 7,
+    "drop_too_few_sentences": 3,
+    "drop_too_short_paragraphs": 1,
+    "drop_too_few_paragraphs": 1,
+    "drop_curly_bracket": 1,
+    "drop_lorem_ipsum": 1,
+    "doc_line_stats": {
+        "line-total": 90,
+        "line-kept": 35,
+        "line-filter-no_terminal_punc": 47,
+        "line-filter-too_few_words": 2,
+        "line-filter-policy": 2,
+        "line-filter-javascript": 1,
+        "line-filter-too_long_word": 3
+    }
+}

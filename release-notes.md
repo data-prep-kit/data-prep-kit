@@ -11,7 +11,7 @@
 
 ## General
 
-1. Restructured data-access package to allow adding user specific connectors as external packages (e.g. lakehouse connector)
+1. Restructured data-access package to allow adding user specific connectors as external packages (e.g. lakehouse connector) 
 1. Removed credentials being utilized as transform/data access arguments and now passed set as environment variable
 1. Added runtime code location  environment variables to docker files to display real build information
 1. Added in-memory data access for caching reads/writes in DataAccessLocal, and in new DataAccessMemory class. 

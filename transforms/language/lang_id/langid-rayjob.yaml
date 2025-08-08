@@ -1,0 +1,214 @@
+apiVersion: ray.io/v1alpha1
+kind: RayJob
+metadata:
+  name: rayjob-langid # Name of your RayCluster
+spec:
+  rayClusterSpec:
+    rayVersion: '2.36.1' # Specify the Ray version
+    headGroupSpec:
+      # Service type for the head node, can be ClusterIP or NodePort
+      serviceType: ClusterIP
+# Ray container image for the head node
+      rayStartParams:
+        dashboard-host: '0.0.0.0'
+      template:
+        spec:
+          volumes:
+            - name: ray-logs
+              emptyDir: {}
+            - name: fluentbit-config
+              configMap:
+                name: fluentbit-config-for-ray # ConfigMap containing Fluent Bit configuration
+          containers:
+            - name: ray-head
+              env:
+                - name: DPK_LOG_LEVEL 
+                  value: DEBUG
+                - name: DPK_DPK_DOCLING2PARQUET_TRANSFORM_LOG_LEVEL 
+                  value: INFO
+                - name: HF_READ_ACCESS_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: hf-secret
+                      key: hf-token
+                - name: S3_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: s3-secret
+                      key: S3_ACCESS_KEY
+                - name: S3_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: s3-secret
+                      key: S3_SECRET_KEY
+                - name: S3_ENDPOINT
+                  valueFrom:
+                    secretKeyRef:
+                      name: s3-secret
+                      key: S3_ENDPOINT
+                - name: WORKER_CPU_REQUEST
+                  valueFrom:
+                    resourceFieldRef:
+                      resource: requests.cpu
+              image: quay.io/dataprep1/data-prep-kit/lang_id-ray:latest
+              imagePullPolicy: Always
+              ports:
+                - containerPort: 6379 # Ray port
+                  name: ray-client
+                - containerPort: 8265 # Ray Dashboard port
+                  name: dashboard
+              resources:
+                requests:
+                  cpu: 2
+                  memory: 32Gi
+                limits:
+                  cpu: 2
+                  memory: 32Gi
+              volumeMounts:
+                - name: ray-logs
+                  mountPath: /tmp/ray # Mount the shared volume to Ray's log directory
+            - name: fluentbit # Sidecar container for log forwarding
+              image: fluent/fluent-bit:3.2.2 # Fluent Bit image
+              command: ["fluent-bit/bin/fluent-bit", "-c", "/fluent-bit/etc/fluent-bit.conf"]
+              env:
+                - name: POD_LABELS
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.labels['ray.io/cluster']
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: s3-logs # Kubernetes Secret containing S3 access key
+                      key: AWS_ACCESS_KEY_ID
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: s3-logs
+                      key: AWS_SECRET_ACCESS_KEY
+                - name: AWS_ENDPOINT_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: s3-logs
+                      key: AWS_ENDPOINT_URL
+                - name: S3_BUCKET_NAME
+                  value: "bucket-dpk-logs"
+                - name: S3_REGION
+                  value: "us-south"
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 128Mi
+                limits:
+                  cpu: 100m
+                  memory: 128Mi
+              volumeMounts:
+                - name: ray-logs
+                  mountPath: /tmp/ray              # Mount the shared volume
+                - name: fluentbit-config
+                  mountPath: /fluent-bit/etc/fluent-bit.conf
+                  subPath: fluent-bit.conf
+    workerGroupSpecs:
+      - groupName: small-group
+        replicas: 5 # Initial number of worker nodes
+        minReplicas: 5
+        maxReplicas: 5
+        rayStartParams: {}
+        template:
+          spec:
+            volumes:
+              - name: ray-logs
+                emptyDir: {}
+              - name: fluentbit-config
+                configMap:
+                  name: fluentbit-config-for-ray # ConfigMap containing Fluent Bit configuration
+            containers:
+              - name: ray-worker
+                volumeMounts:
+                  - name: ray-logs
+                    mountPath: /tmp/ray
+                env:
+                  - name: DPK_LOG_LEVEL 
+                    value: DEBUG
+                  - name: DPK_DPK_DOCLING2PARQUET_TRANSFORM_LOG_LEVEL 
+                    value: DEBUG
+                  - name: HF_READ_ACCESS_TOKEN
+                    valueFrom:
+                      secretKeyRef:
+                        name: hf-secret
+                        key: hf-token
+                  - name: S3_ACCESS_KEY
+                    valueFrom:
+                      secretKeyRef:
+                        name: s3-secret
+                        key: S3_ACCESS_KEY
+                  - name: S3_SECRET_KEY
+                    valueFrom:
+                      secretKeyRef:
+                        name: s3-secret
+                        key: S3_SECRET_KEY
+                  - name: S3_ENDPOINT
+                    valueFrom:
+                      secretKeyRef:
+                        name: s3-secret
+                        key: S3_ENDPOINT
+                image: quay.io/dataprep1/data-prep-kit/lang_id-ray:latest
+                imagePullPolicy: Always
+                resources:
+                  requests:
+                    cpu: 1
+                    memory: 16Gi
+                  limits:
+                    cpu: 1
+                    memory: 16Gi
+              - name: fluentbit # Sidecar container for log forwarding
+                image: fluent/fluent-bit:3.2.2 # Fluent Bit image
+                command: ["fluent-bit/bin/fluent-bit", "-c", "/fluent-bit/etc/fluent-bit.conf"]
+                env:
+                  - name: POD_LABELS
+                    valueFrom:
+                      fieldRef:
+                        fieldPath: metadata.labels['ray.io/cluster']
+                  - name: AWS_ACCESS_KEY_ID
+                    valueFrom:
+                      secretKeyRef:
+                        name: s3-logs # Kubernetes Secret containing S3 access key
+                        key: AWS_ACCESS_KEY_ID
+                  - name: AWS_SECRET_ACCESS_KEY
+                    valueFrom:
+                      secretKeyRef:
+                        name: s3-logs
+                        key: AWS_SECRET_ACCESS_KEY
+                  - name: AWS_ENDPOINT_URL
+                    valueFrom:
+                      secretKeyRef:
+                        name: s3-logs
+                        key: AWS_ENDPOINT_URL
+                  - name: S3_BUCKET_NAME
+                    value: "bucket-dpk-logs"
+                  - name: S3_REGION
+                    value: "us-south"
+                volumeMounts:
+                  - name: ray-logs
+                    mountPath: /tmp/ray # Mount the shared volume
+                  - name: fluentbit-config
+                    mountPath: /fluent-bit/etc/fluent-bit.conf
+                    subPath: fluent-bit.conf
+  # Job details
+  # The command to execute the Python script
+  entrypoint: >
+    python -m dpk_lang_id.ray.transform 
+    --lang_id_model_kind fasttext
+    --lang_id_model_url facebook/fasttext-language-identification
+    --lang_id_content_column_name contents
+    --lang_id_output_lang_column_name language
+    --lang_id_output_score_column_name lang_score
+    --data_s3_config "{ 'input_folder' : 'bucket-wikimedia-1/take6_md', 'output_folder' : 'bucket-wikimedia-1/lang_id_2' }" 
+    --data_files_to_use "[ '.parquet' ]" 
+    --data_checkpointing False 
+    --runtime_creation_delay 3 
+    --runtime_num_workers 5
+    --runtime_worker_options "{ 'num_cpus': 0.8, 'max_restarts': 0, 'max_task_retries': 0 }" 
+#    --data_max_files 1
+#  runtimeEnvYAML: |
+#    pip:
+#      - boto3>=1.35.74,<1.35.94

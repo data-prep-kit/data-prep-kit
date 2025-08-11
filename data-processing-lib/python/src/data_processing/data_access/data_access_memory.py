@@ -15,21 +15,46 @@ import pyarrow as pa
 from data_processing.data_access import DataAccess
 from data_processing.utils import get_logger
 
+logger = get_logger(__name__)
 
 class DataAccessMemory(DataAccess):
     """
     Implementation of the Base Data access class for in memory data access.
     """
 
+    @classmethod
+    def validate_config(cls, config: dict[str, str], cli_arg_prefix: str = '') -> bool:
+        """
+        Validate that
+        :param local_config: dictionary of local config
+        :return: True if local config is valid, False otherwise
+        """
+        valid_config = True
+        # If config is undefined, let it pass
+        if config is None:
+            # valid_config = False
+            logger.info(f"data access factory {cli_arg_prefix}: Could not find a valid configuration")
+            return valid_config
+
+        # If config is empty, allow
+        if not (config):
+            logger.error(f"data access factory {cli_arg_prefix}: Could not find a valid configuration")
+            return valid_config
+
+        return valid_config
+
     def __init__(
             self,
+            config: dict[str, str] = None,
             checkpoint: bool = False,
+            **kwargs,
     ):
         """
         Create data access class for folder based configuration
         :param path_config: dictionary of path info
         """
         self.tables = {}
+        self.config = config
         self.checkpoint = checkpoint
         self.logger = get_logger(__name__)
 
@@ -84,3 +109,17 @@ class DataAccessMemory(DataAccess):
         :return pyarrow table to be seraialized
         """
         return pa.Table.from_pydict(buffer)
+
+    def save_job_metadata(self, metadata: dict[str, Any]) -> tuple[dict[str, Any], int] | None:
+        return None
+
+    
+    def get_file(self, path: str) -> tuple[bytes, int] | None:
+        return None
+
+    def get_input_folder(self) -> str | None:
+        return None
+        
+
+    def save_file(self, path: str, data: bytes) -> tuple[dict[str, Any], int] | None:
+        return None

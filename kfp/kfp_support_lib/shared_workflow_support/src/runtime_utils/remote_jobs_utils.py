@@ -407,6 +407,22 @@ class RayRemoteJobs:
 #        logger.info(f"saving execution log to {execution_log_path}")
 #        data_access.save_file(path=execution_log_path, data=bytes(log, "UTF-8"))
 
+        ## Add One last check for flagging run based on number of exceptions encountered
+        ## Those exceptions are in most cases considered non-fatal and allow the run to proceed but with mixed results
+        ## 
+        try:
+            import json
+            data_file, _=data_access.get_file(path=f"{output_folder}metadata.json")
+            _metastats=json.loads(data_file.decode())['job_output_stats']
+            if 'transform execution exception' in _metastats:
+                exceptions = _metastats['transform execution exception']
+                if exceptions > 0:
+                    logger.error(f"Flagging completed run due to {exceptions} exceptions: {_metastats}")
+                    sys.exit(1)
+            logger.info(f"Did not detect any exceptions in current job. job_output_stats: {_metastats}")
+        except Exception as e:
+            logger.error(f"Could not read/parse metadata.json: {str(e)}")
+            sys.exit(1)
 
 def _execute_remote_job(
     name: str,

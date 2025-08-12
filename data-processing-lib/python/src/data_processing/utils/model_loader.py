@@ -13,7 +13,6 @@
 import os
 import tempfile
 import shutil
-import boto3
 from data_processing.utils import ParamsUtils, get_logger
 from data_processing.utils.model_loader_registry import MODEL_LOADERS
 logger = get_logger(__name__)
@@ -35,38 +34,34 @@ def load_model(model_path_or_url: str, model_type: str, token: str = None, **kwa
     try:
         # handle s3/COS
         if model_path_or_url.startswith("s3://"):
+            from data_processing.data_access import DataAccessS3
             s3_url = model_path_or_url[5:]
-            bucket, key_prefix = s3_url.split('/', 1)
             temp_dir = tempfile.mkdtemp()
 
-            s3 = boto3.client("s3")
-            paginator = s3.get_paginator('list_objects_v2')
-            found = False
-            for page in paginator.paginate(Bucket=bucket, Prefix=key_prefix):
-                for obj in page.get('Contents', []):
-                    found = True
-                    s3_key = obj['Key']
-                    if s3_key.endswith('/'):
+            s3 = DataAccessS3(config={'prefix': kwargs.get('prefix')})
+            files = s3._list_files_folder(s3_url)[0]
+
+            if len(files) > 0:
+                for file in files:
+                    if file['name'].endswith('/'):
                         continue
 
-                    if not s3_key.startswith(key_prefix):
-                        logger.error(f"S3 key {s3_key} does not start with expected prefix {key_prefix}")
-                        raise ValueError(f"S3 key {s3_key} does not start with expected prefix {key_prefix}")
-
                     # strip prefix to get relative path
-                    relative_path = s3_key[len(key_prefix):].lstrip('/')
+                    relative_path = file['name'][len(s3_url):].lstrip('/')
                     if not relative_path or relative_path == "":
-                        relative_path = os.path.basename(s3_key)
+                        relative_path = os.path.basename(file['name'])
 
-                    #construct local path
+                    # construct local path
                     local_path = os.path.join(temp_dir, relative_path)
                     os.makedirs(os.path.dirname(local_path), exist_ok=True)
-                    s3.download_file(bucket, s3_key, local_path)
+                    bucket, s3_key = file['name'].split('/', 1)
+                    s3.arrS3.s3_client.download_file(bucket, s3_key, local_path)
 
-            if not found:
+                model_path = temp_dir
+
+            else:
                 logger.error(f"No files found at S3 path: {model_path_or_url}")
                 raise FileNotFoundError(f"No files found at S3 path: {model_path_or_url}")
-            model_path = temp_dir
 
         # check locally filesystem
         elif os.path.exists(model_path_or_url):
@@ -82,7 +77,7 @@ def load_model(model_path_or_url: str, model_type: str, token: str = None, **kwa
         return model
 
     except Exception as e:
-        logger.error(f"No files found at S3 path: {model_path_or_url}")
+        logger.error(f"Not able to download files at S3 path: {model_path_or_url}")
         raise RuntimeError(f"Failed to load model from '{model_path_or_url}': {e}")
 
     finally:

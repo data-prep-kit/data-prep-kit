@@ -1,3 +1,4 @@
 textstat<=0.7.5
+cmudict<=1.0.32
 pandas
 polars>=1.9.0,<1.18.0

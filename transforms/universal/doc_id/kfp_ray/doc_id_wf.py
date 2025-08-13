@@ -23,7 +23,7 @@ from workflow_support.compile_utils import (
 )
 
 
-task_image = "quay.io/dataprep1/data-prep-kit/doc_id-ray:latest"
+task_image = "quay.io/dataprep1/data-prep-kit/doc_id-ray:1.1.3"
 
 # The secret name containing the s3 credentials.
 S3_SECRET = "s3-secret"
@@ -31,7 +31,7 @@ S3_SECRET = "s3-secret"
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_doc_id.ray.transform"
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:1.1.3"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv(

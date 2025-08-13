@@ -21,6 +21,7 @@ from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
+import logging
 
 import filetype
 import pandas as pd
@@ -315,7 +316,7 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
                     file_data["source_filename"] = TransformUtils.get_file_basename(
                         file_name
                     )
-                    if logger.getLevel() == logging.DEBUG:
+                    if logger.level == logging.DEBUG:
                         # If the logger is set to DEBUG, we will include the original content
                         # in the file_data for debugging purposes.
                         # This is not recommended for production use, as it may contain sensitive information.
@@ -371,7 +372,7 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
                                 file_data["source_filename"] = (
                                     TransformUtils.get_file_basename(file_name)
                                 )
-                                if logger.getLevel() == logging.DEBUG:
+                                if logger.level == logging.DEBUG:
                                     # If the logger is set to DEBUG, we will include the original content
                                     # in the file_data for debugging purposes.
                                     # This is not recommended for production use, as it may contain sensitive information.

@@ -315,6 +315,15 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
                     file_data["source_filename"] = TransformUtils.get_file_basename(
                         file_name
                     )
+                    if logger.getLevel() == logging.DEBUG:
+                        # If the logger is set to DEBUG, we will include the original content
+                        # in the file_data for debugging purposes.
+                        # This is not recommended for production use, as it may contain sensitive information.
+                        # It is also not recommended for large files, as it may consume a lot of memory.
+                        try:
+                            file_data['original_content']=(content_bytes.decode())
+                        except:
+                            file_data['original_content']=(content_bytes)
 
                     data.append(file_data)
                     number_of_rows += 1
@@ -362,6 +371,15 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
                                 file_data["source_filename"] = (
                                     TransformUtils.get_file_basename(file_name)
                                 )
+                                if logger.getLevel() == logging.DEBUG:
+                                    # If the logger is set to DEBUG, we will include the original content
+                                    # in the file_data for debugging purposes.
+                                    # This is not recommended for production use, as it may contain sensitive information.
+                                    # It is also not recommended for large files, as it may consume a lot of memory.
+                                    try:
+                                        file_data['original_content']=(content_bytes.decode())
+                                    except:
+                                        file_data['original_content']=(content_bytes)
 
                                 data.append(file_data)
                                 success_doc_id.append(archive_doc_filename)

@@ -21,3 +21,24 @@ class AbstractTransform(ABC):
     @abstractmethod
     def __init__(self):
         pass
+
+    @abstractmethod
+    def get_metadata(self) -> dict:
+        """
+        Return the transform matadata
+        """
+        pass
+
+    @abstractmethod
+    def validate(self, **kwargs) -> None:
+        """
+        Preform parameters validation.
+        """
+        pass
+
+    @staticmethod
+    def is_available() -> bool:
+        """
+        Disable the transform using this function.
+        """
+        return True

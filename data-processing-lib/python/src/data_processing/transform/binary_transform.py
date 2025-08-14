@@ -43,6 +43,12 @@ class AbstractBinaryTransform(AbstractTransform):
         """
         pass
 
+    def get_metadata(self) -> dict:
+        """
+        Return the transform matadata
+        """
+        return {}
+
     def flush_binary(self) -> tuple[list[tuple[bytes, str]], dict[str, Any]]:
         """
         This is a supporting method for transformers that implement buffering of data, for example, coalesce.
@@ -55,3 +61,26 @@ class AbstractBinaryTransform(AbstractTransform):
                 holding the extension to be used when writing out the new bytes.
         """
         return [], {}
+
+    def validate(self, **kwargs) -> None:
+        """
+        Preform parameters validation.
+        """
+        return
+
+    def get_required_features(self) -> list[str]:
+        """
+        List of required features, such as column names, for the transform.
+        """
+        return []
+
+    def get_feature(self, name, description, type, **kwargs) -> dict:
+        """
+        Return a list of the transform features
+        """
+        return {
+            "name": name,
+            "description": description,
+            "type": type
+        }
+

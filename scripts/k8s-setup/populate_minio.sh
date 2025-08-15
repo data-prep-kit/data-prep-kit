@@ -54,5 +54,5 @@ mc cp --recursive ${REPOROOT}/transforms/universal/hap/test-data/input/ kfp/test
 mc cp --recursive ${REPOROOT}/transforms/universal/rep_removal/test-data/input/ kfp/test/rep_removal/input
 mc cp --recursive ${REPOROOT}/transforms/universal/blocklist/test-data/input/ kfp/test/blocklist/input
 mc cp --recursive ${REPOROOT}/transforms/universal/blocklist/test-data/domains/ kfp/test/blocklist/domains
-mc cp --recursive ${REPOROOT}/transforms/universal/fineweb_quality_annotator/input/ kfp/test/fineweb_quality_annotator/input
+mc cp --recursive ${REPOROOT}/transforms/universal/fineweb_quality_annotator/test-data/input/ kfp/test/fineweb_quality_annotator/input
 mc cp --recursive ${REPOROOT}/transforms/universal/gopher_repetition_annotator/test-data/input/ kfp/test/gopher_repetition_annotator/input

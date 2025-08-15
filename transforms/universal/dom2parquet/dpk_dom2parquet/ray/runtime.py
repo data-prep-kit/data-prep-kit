@@ -16,7 +16,7 @@ from data_processing_ray.runtime.ray import RayTransformLauncher
 from data_processing_ray.runtime.ray.runtime_configuration import (
     RayTransformRuntimeConfiguration,
 )
-from dpk_doc_cleaner.transform import CodeDocCleanerTransformConfiguration
+from dpk_dom2parquet.transform import CodeDocCleanerTransformConfiguration
 
 
 logger = get_logger(__name__)

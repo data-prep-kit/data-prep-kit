@@ -13,14 +13,19 @@
 from argparse import ArgumentParser, Namespace
 from functools import partial
 from typing import Any
+import zipfile
+import uuid
+import io
+import hashlib
+
 
 import pyarrow as pa
 from data_processing.transform import (
     AbstractTableTransform,
     TransformConfiguration,
 )
-from data_processing.utils import CLIArgumentProvider, get_logger, str2bool
-from dpk_doc_cleaner.clean_by_resiliparse import extract_and_clean_html
+from data_processing.utils import TransformUtils, CLIArgumentProvider, get_logger, str2bool
+from dpk_dom2parquet.clean_by_resiliparse import extract_and_clean_html, extract_and_clean_zip
 
 
 logger = get_logger(__name__)
@@ -58,11 +63,55 @@ class CodeDocCleanerTransform(AbstractTableTransform):
         self.html_column_name = config.get(html_column_name_cli_param, default_html_column_name)
         self.text_column_name = config.get(text_column_name_cli_param, default_text_column_name)
 
+
+    def transform_binary(
+        self, file_name: str, byte_array: bytes
+    ) -> tuple[list[tuple[bytes, str]], dict[str, Any]]:
+        """
+        If file_name is detected as a ZIP archive, it generates a pyarrow table with a row
+        for each PDF file detected in the archive.
+        """
+        if TransformUtils.get_file_extension(file_name)[1] !='.zip':
+            return super().transform_binary(file_name, byte_array)
+
+        logger.debug(
+                f"Detected file {file_name=} as ZIP. Iterating through the archive content."
+            )
+
+        with zipfile.ZipFile(io.BytesIO(byte_array)) as opened_zip:
+            zip_namelist = opened_zip.namelist()
+            func = partial(extract_and_clean_zip, 
+                           opened_zip=opened_zip, 
+                           disable_table_structure=self.disable_table_structure)
+            payload=list(map(func, zip_namelist))
+            column_names = ['filename', 'uuid', 'hash', self.text_column_name]
+            table=pa.Table.from_pylist([dict(zip(column_names, row)) for row in payload],
+                                         schema=pa.schema([
+                                             ("filename", pa.string()),
+                                             ("uuid", pa.string()),
+                                             ("hash", pa.string()),
+                                             (self.text_column_name, pa.string())
+                                         ]))
+
+        batch_results = [(TransformUtils.convert_arrow_to_binary(table=table), ".parquet")]
+
+        metadata = {
+                "nrows": len(payload)
+            }
+        return batch_results, metadata
+
+
+
+
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
         """
         Put Transform-specific to convert one Table to 0 or more tables. It also returns
         a dictionary of execution statistics - arbitrary dictionary.
         """
+        logger.debug(
+                f"Processing all rows in parquet file {file_name=}."
+            )
+
         func = partial(extract_and_clean_html, disable_table_structure=self.disable_table_structure)
         transformed = pa.array(
             map(func, table[self.html_column_name].to_pylist()),

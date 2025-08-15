@@ -17,7 +17,7 @@ import pyarrow.parquet as pq
 
 from data_processing.test_support.transform.table_transform_test import AbstractTableTransformTest
 from data_processing.transform import get_transform_config
-from code_doc_cleaner_transform import (
+from dpk_dom2parquet.transform import (
     default_disable_tab_str,
     default_html_column_name,
     default_text_column_name,

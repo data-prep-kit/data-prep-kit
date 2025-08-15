@@ -15,8 +15,10 @@ import html
 import re
 import sys
 from typing import Optional
+import zipfile
+import uuid
 
-from data_processing.utils import get_logger
+from data_processing.utils import TransformUtils, get_logger
 from resiliparse.extract.html2text import extract_plain_text
 from resiliparse.parse.html import HTMLTree
 
@@ -176,6 +178,37 @@ def extract_and_clean_html(html_text: str, disable_table_structure: bool = False
         logger.warning(e)
         text = ""
     return text
+
+
+def extract_and_clean_zip(archive_doc_filename: str,
+                        opened_zip: zipfile.ZipFile,
+                        disable_table_structure: bool = False) -> tuple[str, str, str,str]:
+    """Extract and clean text from HTML file.
+
+    Parameters
+    ----------
+    in_file : str
+        HTML file
+    disable_table_structure : bool, optional
+        if True, do not preserve table structure, by default False
+
+    Returns
+    -------
+    str
+        cleaned text
+    """
+    with opened_zip.open(archive_doc_filename) as fi:
+        # Read the content of the file
+        content_bytes = fi.read()
+        html_text = content_bytes.decode("utf-8", errors="ignore")
+
+    text = extract_and_clean_html(html_text, disable_table_structure)
+    _uuid = str(uuid.uuid4())
+    hash=TransformUtils.str_to_hash(TransformUtils.normalize_string(str(text)))
+
+    logger.debug(f"Procesing from archive- {archive_doc_filename=}")
+    return (archive_doc_filename, _uuid, hash, text)
+
 
 
 def extract_and_clean_html_from_file(in_file: str, disable_table_structure: bool = False) -> str:

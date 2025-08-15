@@ -23,9 +23,15 @@ TRANSFORM_RAY_SRC="-m dpk_$(TRANSFORM_NAME).ray.runtime"
 run-cli-sample:
 	make venv
 	source venv/bin/activate && \
-	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
+	DPK_DPK_DOC_CLEANER_TRANSFORM_LOG_LEVEL=DEBUG $(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
             --data_local_config "{ 'input_folder' : 'enwiki', 'output_folder' : 'output'}"  \
             --cdc_contents_column_name original_content \
             --cdc_clean_text_column_name content_resi
 
 
+run-zip-test:
+	make venv
+	source venv/bin/activate && \
+	DPK_DPK_DOC_CLEANER_TRANSFORM_LOG_LEVEL=DEBUG $(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
+            --data_local_config "{ 'input_folder' : 'input-zip', 'output_folder' : 'output'}"  \
+			--data_files_to_use "['.zip']"

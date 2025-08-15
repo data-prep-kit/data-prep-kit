@@ -16,7 +16,7 @@ from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
 from data_processing_ray.runtime.ray import RayTransformLauncher
-from dpk_doc_cleaner.transform import (
+from dpk_dom2parquet.transform import (
     default_disable_tab_str,
     default_html_column_name,
     default_text_column_name,
@@ -24,7 +24,7 @@ from dpk_doc_cleaner.transform import (
     html_column_name_cli_param,
     text_column_name_cli_param,
 )
-from dpk_doc_cleaner.ray.runtime import (
+from dpk_dom2parquet.ray.runtime import (
     CodeDocCleanerRayTransformConfiguration,
 )
 

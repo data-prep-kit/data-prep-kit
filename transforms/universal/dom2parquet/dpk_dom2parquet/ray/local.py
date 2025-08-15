@@ -16,7 +16,7 @@ import sys
 from data_processing.utils import ParamsUtils
 from data_processing_ibm.data_access.data_access_factory_ibm import DataAccessFactoryIBM
 from data_processing_ray.runtime.ray import RayTransformLauncher
-from code_doc_cleaner_transform import (
+from dpk_dom2parquet.transform import (
     default_disable_tab_str,
     default_html_column_name,
     default_text_column_name,
@@ -24,7 +24,7 @@ from code_doc_cleaner_transform import (
     html_column_name_cli_param,
     text_column_name_cli_param,
 )
-from code_doc_cleaner_transform_ray_ibm import (
+from dpk_dom2parquet.ray.runtime import (
     CodeDocCleanerRayTransformConfiguration,
 )
 

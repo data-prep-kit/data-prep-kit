@@ -15,8 +15,8 @@ from data_processing.runtime.pure_python.runtime_configuration import (
     PythonTransformRuntimeConfiguration,
 )
 from data_processing.utils import get_logger
-from data_processing_ibm.data_access import DataAccessFactoryIBM
-from code_doc_cleaner_transform import CodeDocCleanerTransformConfiguration
+from data_processing.data_access import DataAccessFactory
+from dpk_dom2parquet.transform import CodeDocCleanerTransformConfiguration
 
 
 logger = get_logger(__name__)
@@ -39,6 +39,6 @@ class CodeDocCleanerPythonTransformConfiguration(PythonTransformRuntimeConfigura
 
 
 if __name__ == "__main__":
-    launcher = PythonTransformLauncher(CodeDocCleanerPythonTransformConfiguration(), DataAccessFactoryIBM())
+    launcher = PythonTransformLauncher(CodeDocCleanerPythonTransformConfiguration(), DataAccessFactory())
     logger.info("Launching CodeDocCleaner transform (python)")
     launcher.launch()

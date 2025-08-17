@@ -78,6 +78,7 @@ jobs:
                    fi
 
     test-kfp-v2:
+        if: ${{ vars.KFP_V2_WORKFLOW }}   #Disable all kfpv2 testing unless specifically set
         runs-on: ubuntu-22.04
         steps:
             - name: Checkout

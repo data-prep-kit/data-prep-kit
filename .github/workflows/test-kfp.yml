@@ -100,7 +100,8 @@ jobs:
                   make -C kfp/kfp_support_lib test
                   $PWD/scripts/workflow_helper.sh test-workflow "transforms/universal/noop"
                   echo "Run noop completed"
-#    test-kfp-v2:
+    test-kfp-v2:
+        if: ${{ vars.KFP_V2_WORKFLOW }}   #Disable all kfpv2 testing unless specifically set
 #        runs-on: ubuntu-22.04
 #        steps:
 #            - name: Checkout

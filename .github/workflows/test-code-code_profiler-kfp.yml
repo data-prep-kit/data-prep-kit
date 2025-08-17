@@ -84,7 +84,7 @@ jobs:
                    fi
 
     test-kfp-v2:
-        if : ${{ vars.KFPv2_WORKFLOW }}; # This job will only run if KFPv2 is set to 1
+        if: ${{ vars.KFPv2_WORKFLOW }} # This job will only run if KFPv2 is set to 1
         runs-on: ubuntu-22.04
         steps:
             - name: Checkout

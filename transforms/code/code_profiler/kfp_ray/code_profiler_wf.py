@@ -15,7 +15,7 @@ import os
 import kfp.compiler as compiler
 import kfp.components as comp
 import kfp.dsl as dsl
-#from kubernetes import client as k8s_client
+##from kubernetes import client as k8s_client
 from workflow_support.compile_utils import (
     DEFAULT_KFP_COMPONENT_SPEC_PATH,
     ONE_HOUR_SEC,

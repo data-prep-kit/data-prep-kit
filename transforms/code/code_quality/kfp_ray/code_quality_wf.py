@@ -35,7 +35,7 @@ S3_SECRET = "s3-secret"
 EXEC_SCRIPT_NAME: str = "-m dpk_code_quality.ray.runtime"
 PREFIX: str = ""
 
-task_image = "quay.io/dataprep1/data-prep-kit/code_quality-ray:latest"
+task_image = "quay.io/dataprep1/data-prep-kit/code_quality-ray:1.1.3"
 
 # The name of the secret that holds the HuggingFace token
 HF_SECRET = "hf-secret"
@@ -45,7 +45,7 @@ HF_SECRET_KEY = "hf-token"
 HF_READ_ACCESS_TOKEN = "HF_READ_ACCESS_TOKEN"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:1.1.3"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)

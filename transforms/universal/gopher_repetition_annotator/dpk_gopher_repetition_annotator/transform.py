@@ -277,7 +277,13 @@ class GopherRepetitionAnnotatorTransform(AbstractTableTransform):
                 self.logger.debug(f"Processed {index + 1}/ {table_length} documents")
             stat_update(metadata, "total_docs")
             text = doc.as_py()
-
+            if text.strip() == "":
+                self.logger.debug(f"Found document {index = } empty. Setting annotation values to -1.")
+                dup_line_frac_column[index] = -1
+                dup_line_char_frac_column[index] = -1
+                dup_para_frac_column[index] = -1
+                dup_para_char_frac_column[index] = -1
+                continue
             lines = self._line_splitter.split(text)
             line_duplicates, char_duplicates = self.find_duplicates(lines)
             dup_line_frac_column[index] = line_duplicates / len(lines)

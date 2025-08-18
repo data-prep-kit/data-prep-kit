@@ -13,7 +13,7 @@
 
 from abc import ABC, abstractmethod
 from pydantic import BaseModel, Field
-from typing import Any
+from typing import Any, ClassVar
 
 
 class AbstractTransform(BaseModel, ABC):
@@ -21,11 +21,11 @@ class AbstractTransform(BaseModel, ABC):
     Base class for all transform types
     """
 
-    NAME = "name"
-    ID = "id"
-    JOB_ID = "job_id"
-    JOB_RUN_ID = "job_run_id"
-    CONTEXT_ID = "context_id"
+    NAME: ClassVar[str] = "name"
+    ID: ClassVar[str] = "id"
+    JOB_ID: ClassVar[str] = "job_id"
+    JOB_RUN_ID: ClassVar[str] = "job_run_id"
+    CONTEXT_ID: ClassVar[str] = "context_id"
 
     config: dict[str, Any]  # type hint for clarity and IDE support
 

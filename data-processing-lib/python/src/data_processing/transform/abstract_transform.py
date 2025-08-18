@@ -12,15 +12,55 @@
 ################################################################################
 
 from abc import ABC, abstractmethod
+from pydantic import BaseModel, Field
 
-class AbstractTransform(ABC):
+
+
+class AbstractTransform(BaseModel, ABC):
     """
     Base class for all transform types
     """
 
-    @abstractmethod
-    def __init__(self):
-        pass
+    NAME = "name"
+    ID = "id"
+    JOB_ID = "job_id"
+    JOB_RUN_ID = "job_run_id"
+    CONTEXT_ID = "context_id"
+
+    config: dict[str, Any]  # type hint for clarity and IDE support
+
+    def __init__(self, config: dict[str, Any]):
+        """
+        Initialize based on the dictionary of configuration information.
+        This simply stores the given instance in this instance for later use.
+        """
+        if config is None:
+            raise ValueError("config cannot be None")
+
+        self.config = config.copy()  # optional: copy to avoid mutating external dict
+        self.config.setdefault(NAME, self.__class__.__name__)
+
+    # Shared properties
+    @property
+    def name(self):
+        return  self.config[NAME]
+
+    @property
+    def id(self):
+        return self.config[ID]
+
+    @property
+    def job_id(self):
+        return self.config[JOB_ID]
+
+    @property
+    def job_run_id(self):
+        return self.config[JOB_RUN_ID]
+
+    @property
+    def context_id(self):
+        return self.config[CONTEXT_ID]
+
 
     @abstractmethod
     def get_metadata(self) -> dict:
@@ -42,3 +82,26 @@ class AbstractTransform(ABC):
         Disable the transform using this function.
         """
         return True
+
+    def get_required_features(self):
+        # The concrete subclasses will retrieve the required features.
+        return []
+
+    def get_feature(self, name, description, type, available_for_filter=False, available_for_vector_db=False, mandatory_for_vector_db=False):
+        return {
+            OperatorConstants.NAME: name,
+            OperatorConstants.DESCRIPTION: description,
+            OperatorConstants.TYPE: type,
+            OperatorConstants.AVAILABLE_FOR_FILTER: available_for_filter,
+            OperatorConstants.AVAILABLE_FOR_VECTOR_DB: available_for_vector_db,
+            OperatorConstants.MANDATORY_FOR_VECTOR_DB: mandatory_for_vector_db
+        }
+    def get_metadata_fields_to_accumulate(self) -> list[str]:
+        """
+        Return the metadata field names that needs to be accumulated.
+        Subclasses should provide real implementation
+
+        Returns:
+            list[str]: List of field to be accumulated.
+        """
+        return []

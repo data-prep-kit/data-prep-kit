@@ -3,7 +3,7 @@
 ## Release 1.1.3 - 8/15/2025
 
 ## General
-Patches more for streamlined experience, including:
+Patches for more streamlined experience, including:
 1. Fixed the bug with MD file as input for docling2parquet 
 1. Adjust tagged dependencies to ensure notebooks work in google collab environment
 1. Prepare post1 release with patches 

@@ -1,16 +1,15 @@
 # Data Prep Kit Release notes
 
-## Release 1.1.3 - 8/15/2025
+## Release 1.1.3 - 8/18/2025
 
 ## General
-Patches for more streamlined experience, including:
+
 1. Fixed the bug with MD file as input for docling2parquet 
 1. Adjust tagged dependencies to ensure notebooks work in google collab environment
 1. Prepare post1 release with patches 
 1. Parse metadata.json at end of the run and flag for exceptions, removing errors where logs would show failure, but KFP would show success
 1. Updated model_loader to utilize data_access_s3, enabling s3 I/O from different COS locations
 1. Removing non-required torch dependency
-
 1. Updated validation for data_access_local, allowing empty input_folder and/or output_folder (defaults to current directory)
 1. Fixed bug with dividing by 0 in fine web quality annotator
 

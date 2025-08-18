@@ -71,13 +71,10 @@ jobs:
               run: |
                   KFP_BLACK_LIST=$(./scripts/check-workflows.sh -show-kfp-black-list)
                   if [ -e "transforms/universal/gopher_repetition_annotator/Makefile" -a -e "transforms/universal/gopher_repetition_annotator/kfp_ray/Makefile" ]; then
-                     transform=$(basename "transforms/universal/gopher_repetition_annotator")
-                     if echo ${KFP_BLACK_LIST} | grep -qv ${transform}; then
-                        $PWD/scripts/workflow_helper.sh install-tools
-                        $PWD/scripts/workflow_helper.sh test-workflow transforms/universal/gopher_repetition_annotator   
-                     else
-                        $PWD/scripts/workflow_helper.sh build-workflow transforms/universal/gopher_repetition_annotator
-                     fi              
+                     transform=$(basename "transforms/universal/gopher_repetition_annotator")   
+                     
+                     $PWD/scripts/workflow_helper.sh build-workflow transforms/universal/gopher_repetition_annotator
+                                   
                   else
                      echo "Skipping transforms/universal/gopher_repetition_annotator kfp test for lack of Makefile and/or kfp_ray/Makefile"
                    fi

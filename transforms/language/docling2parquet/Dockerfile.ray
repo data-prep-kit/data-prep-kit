@@ -4,7 +4,12 @@ FROM ${BASE_IMAGE}
 
 # see https://docs.openshift.com/container-platform/4.17/openshift_images/create-images.html#use-uid_create-images
 USER root
-RUN chown ray:root /home/ray && chmod g=u /home/ray
+RUN chown ray:root /home/ray \
+    && chmod g=u /home/ray \
+    && mkdir -p /home/ray/.cache/huggingface \
+    && mkdir -p /home/ray/.cache/pip \
+    && chown -R ray:root /home/ray/.cache \
+    && chmod -R a+rwx /home/ray/.cache
 USER ray
 
 RUN pip install --upgrade --no-cache-dir pip 
@@ -41,6 +46,7 @@ RUN docling-tools models download layout tableformer picture_classifier easyocr
 
 # Parallelism
 ENV OMP_NUM_THREADS=2
+
 
 # Put these at the end since they seem to upset the docker cache.
 ARG BUILD_DATE

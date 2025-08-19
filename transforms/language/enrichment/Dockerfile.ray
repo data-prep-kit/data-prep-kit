@@ -26,6 +26,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 RUN python -c 'import nltk; nltk.download("punkt_tab")'
 
+RUN pip install "boto3>=1.35.74,<1.35.94"
+
 # Set environment
 ENV PYTHONPATH /home/ray
 

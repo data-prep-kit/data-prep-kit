@@ -36,6 +36,8 @@ RUN sudo apt remove gcc g++ -y \
     && sudo rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
 USER ray
 
+RUN pip install "boto3>=1.35.74,<1.35.94"
+
 # Set environment
 ENV PYTHONPATH /home/ray
 

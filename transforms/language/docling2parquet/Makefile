@@ -25,6 +25,13 @@ ifeq ($(OS),Linux)
 	endif
 endif
 
+run-test-sample:
+#	make venv
+	source venv/bin/activate && \
+	DPK_DPK_DOCLING2PARQUET_TRANSFORM_LOG_LEVEL=DEBUG $(PYTHON) -m dpk_$(TRANSFORM_NAME).transform_python \
+             --data_local_config "{ 'input_folder' : 'enwiki', 'output_folder' : 'output'}"  \
+				--data_files_to_use "['.zip']"
+
 run-cli-sample:
 	make venv
 	source venv/bin/activate && \

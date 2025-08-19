@@ -10,6 +10,7 @@
 # limitations under the License.
 ################################################################################
 
+import os
 from typing import Any
 import pyarrow as pa
 from data_processing.data_access import DataAccess
@@ -54,6 +55,14 @@ class DataAccessMemory(DataAccess):
         :param path_config: dictionary of path info
         """
         self.tables = {}
+        if config is None:
+            self.input_folder = None
+            self.output_folder = None
+            self.cache = False
+        else:
+            self.input_folder = os.path.abspath(config["input_folder"])
+            self.output_folder = os.path.abspath(config["output_folder"])
+            self.cache = config.get('cache', False)
         self.config = config
         self.checkpoint = checkpoint
         self.logger = get_logger(__name__)
@@ -92,7 +101,14 @@ class DataAccessMemory(DataAccess):
         Get output folder as a string
         :return: output_folder
         """
-        return None
+        return self.output_folder
+
+    def get_input_folder(self) -> str:
+        """
+        Get input folder as a string
+        :return: input_folder
+        """
+        return self.input_folder
 
     def table_to_buffer(table: pa.Table) -> Any:
         """

@@ -58,11 +58,9 @@ class DataAccessMemory(DataAccess):
         if config is None:
             self.input_folder = None
             self.output_folder = None
-            self.cache = False
         else:
-            self.input_folder = os.path.abspath(config["input_folder"])
-            self.output_folder = os.path.abspath(config["output_folder"])
-            self.cache = config.get('cache', False)
+            self.input_folder = os.path.abspath(config.get("input_folder", None))
+            self.output_folder = os.path.abspath(config.get("output_folder", None))
         self.config = config
         self.checkpoint = checkpoint
         self.logger = get_logger(__name__)

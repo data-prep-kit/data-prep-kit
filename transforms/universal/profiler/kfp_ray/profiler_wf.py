@@ -24,7 +24,7 @@ from workflow_support.compile_utils import (
 )
 
 
-task_image = "quay.io/dataprep1/data-prep-kit/profiler-ray:1.1.3"
+task_image = "quay.io/dataprep1/data-prep-kit/profiler-ray:latest"
 
 # The secret name containing the s3 credentials.
 S3_SECRET = "s3-secret"
@@ -33,7 +33,7 @@ S3_SECRET = "s3-secret"
 EXEC_SCRIPT_NAME: str = "-m dpk_profiler.ray.runtime"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:1.1.3"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)

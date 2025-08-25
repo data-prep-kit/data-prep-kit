@@ -21,14 +21,14 @@ from workflow_support.compile_utils import (
     ONE_WEEK_SEC,
     ComponentUtils,
 )
-task_image = "quay.io/dataprep1/data-prep-kit/c4_annotator-ray:1.1.3"
+task_image = "quay.io/dataprep1/data-prep-kit/c4_annotator-ray:latest"
 
 # The secret name containing the s3 credentials.
 S3_SECRET = "s3-secret"  # pragma: allowlist secret
 EXEC_SCRIPT_NAME: str = "-m dpk_c4_annotator.ray.runtime"
 PREFIX: str = ""
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:1.1.3"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)
 

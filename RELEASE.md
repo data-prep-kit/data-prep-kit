@@ -54,6 +54,12 @@ git push --set-upstream origin pending-release/x.x.x
 
 Create a PR against the dev branch, review, approve and merge PR.
 
+Once merged, build a wheel for `data-processing-lib` and `transforms` and upload to pypi: 
+```
+make build-pkg-dist
+make publish-dist
+```
+
 
 ### Step 2: Create the release
 

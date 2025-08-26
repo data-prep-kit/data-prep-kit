@@ -12,7 +12,7 @@
 ################################################################################
 
 from abc import ABC, abstractmethod
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import Any, ClassVar
 
 
@@ -23,6 +23,7 @@ class AbstractTransform(BaseModel, ABC):
 
     NAME: ClassVar[str] = "name"
     ID: ClassVar[str] = "id"
+    DESCRIPTION: ClassVar[str] = "description"
     JOB_ID: ClassVar[str] = "job_id"
     JOB_RUN_ID: ClassVar[str] = "job_run_id"
     CONTEXT_ID: ClassVar[str] = "context_id"
@@ -38,28 +39,32 @@ class AbstractTransform(BaseModel, ABC):
             raise ValueError("config cannot be None")
 
         self.config = config.copy()  # optional: copy to avoid mutating external dict
-        self.config.setdefault(NAME, self.__class__.__name__)
+        self.config.setdefault(self.NAME, self.__class__.__name__)
 
     # Shared properties
     @property
     def name(self):
-        return  self.config[NAME]
+        return  self.config[self.NAME]
+
+    @property
+    def description(self):
+        return self.config[self.DESCRIPTION]
 
     @property
     def id(self):
-        return self.config[ID]
+        return self.config[self.ID]
 
     @property
     def job_id(self):
-        return self.config[JOB_ID]
+        return self.config[self.JOB_ID]
 
     @property
     def job_run_id(self):
-        return self.config[JOB_RUN_ID]
+        return self.config[self.JOB_RUN_ID]
 
     @property
     def context_id(self):
-        return self.config[CONTEXT_ID]
+        return self.config[self.CONTEXT_ID]
 
 
     @abstractmethod
@@ -89,12 +94,12 @@ class AbstractTransform(BaseModel, ABC):
 
     def get_feature(self, name, description, type, available_for_filter=False, available_for_vector_db=False, mandatory_for_vector_db=False):
         return {
-            OperatorConstants.NAME: name,
-            OperatorConstants.DESCRIPTION: description,
-            OperatorConstants.TYPE: type,
-            OperatorConstants.AVAILABLE_FOR_FILTER: available_for_filter,
-            OperatorConstants.AVAILABLE_FOR_VECTOR_DB: available_for_vector_db,
-            OperatorConstants.MANDATORY_FOR_VECTOR_DB: mandatory_for_vector_db
+            self.NAME: name,
+            self.DESCRIPTION: description,
+            self.TYPE: type,
+            #OperatorConstants.AVAILABLE_FOR_FILTER: available_for_filter,
+            #OperatorConstants.AVAILABLE_FOR_VECTOR_DB: available_for_vector_db,
+            #OperatorConstants.MANDATORY_FOR_VECTOR_DB: mandatory_for_vector_db
         }
     def get_metadata_fields_to_accumulate(self) -> list[str]:
         """

@@ -12,16 +12,20 @@
 ################################################################################
 
 from abc import abstractmethod
+from pydantic import BaseModel
 from typing import Any
+
 from data_processing.transform import AbstractTransform
 
 
-class AbstractBinaryTransform(AbstractTransform):
+class AbstractBinaryTransform(BaseModel, AbstractTransform):
     """
     Converts input binary file to output file(s) (binary)
     Sub-classes must provide the transform() method to provide the conversion of one binary files to 0 or
     more new binary files.
     """
+
+    config: dict[str, Any]  # REQUIRED
 
     def __init__(self, config: dict[str, Any]):
         """

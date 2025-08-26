@@ -90,7 +90,16 @@ class TokenizationTransform(AbstractTableTransform):
             doc_id = table[self.doc_id_column][idx].as_py()
             doc_content = table[self.doc_content_column][idx].as_py()
             if type(doc_content) is list:
-                doc_content='\n\n'.join(doc_content)
+                try:
+                    try:
+                        doc_content='\n\n'.join(doc_content)
+                    except TypeError as e:
+                        self.logger.warning(f"When joining list at row {idx} due to: {e}")
+                        doc_content='\n\n'.join([str(s) for s in doc_content])
+                except Exception as ex:
+                    self.logger.error(f"Skipping -Failed in joining list at row {idx} in {file_name} due to: {ex}")
+                    empty_doc_ids.append(doc_id)
+                    continue
             doc_length = len(doc_content)
 
             # skip empty document/row:

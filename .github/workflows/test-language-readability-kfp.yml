@@ -82,7 +82,8 @@ jobs:
                      echo "Skipping transforms/language/readability kfp test for lack of Makefile and/or kfp_ray/Makefile"
                    fi
 
-#    test-kfp-v2:
+    test-kfp-v2:
+        if: ${{ vars.KFP_V2_WORKFLOW }}   #Disable all kfpv2 testing unless specifically set
 #        runs-on: ubuntu-22.04
 #        steps:
 #            - name: Checkout

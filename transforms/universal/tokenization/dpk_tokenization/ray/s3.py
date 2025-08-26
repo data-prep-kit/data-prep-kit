@@ -16,7 +16,7 @@ import sys
 
 from data_processing.utils import ParamsUtils
 from data_processing_ray.runtime.ray import RayTransformLauncher
-from transforms.universal.tokenization.dpk_tokenization.ray.runtime import TokenizationRayConfiguration
+from dpk_tokenization.ray.runtime import TokenizationRayConfiguration
 
 
 print(os.environ)

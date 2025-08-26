@@ -201,4 +201,4 @@ class KFPUtils:
         for env_name, secret_key in env2key.items():
             env_v = EnvVarFrom(source=EnvVarSource.SECRET, name=secret_name, key=secret_key)
             var_s[env_name] = env_v
-        return EnvironmentVariables(from_ref=var_s).to_dict()
+        return var_s

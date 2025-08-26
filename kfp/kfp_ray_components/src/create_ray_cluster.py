@@ -44,7 +44,7 @@ def start_ray_cluster(
     if other_secrets:
          other_secrets_obj = KFPUtils.load_from_json(other_secrets.replace("'", '"'))
          for secret_name, env2value in other_secrets_obj.items():
-             shared_secrets = shared_secrets | KFPUtils.secret_2_environment(secret_name, env2value)
+             shared_secrets.setdefault("valuesFrom", {}).update(KFPUtils.secret_2_environment(secret_name, env2value))
     # add S3 credentials
     shared_secrets["values"] = KFPUtils.credentials_dict()
     # Convert input

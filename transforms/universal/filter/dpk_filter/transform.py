@@ -197,7 +197,7 @@ class FilterTransform(AbstractTableTransform):
         if file_name is not None:
             if not file_name.endswith(".parquet"):
                 self.logger.error(f"Error: input_file name doesn't end with '.parquet': {file_name}")
-                return [], {"wrong file tpye": 1}
+                return [table.schema.empty_table()], {"wrong file type": 1}
         # move table under a different name, to avoid SQL query parsing error
         input_table = table
         total_docs = input_table.num_rows
@@ -249,7 +249,7 @@ class FilterTransform(AbstractTableTransform):
         metadata["bytes_after_filter"] = filtered_table.nbytes
         
         if filtered_table_cols_dropped.num_rows == 0:
-            return [], metadata
+            return [filtered_table_cols_dropped], metadata
         else:
             # before returning the filtered table (parquet files) also filter the corresponding arrow and meta files
             if bool(self.input_arrow_folder.strip()):

@@ -89,6 +89,8 @@ class TokenizationTransform(AbstractTableTransform):
         for idx in range(table.num_rows):
             doc_id = table[self.doc_id_column][idx].as_py()
             doc_content = table[self.doc_content_column][idx].as_py()
+            if type(doc_content) is list:
+                doc_content='\n\n'.join(doc_content)
             doc_length = len(doc_content)
 
             # skip empty document/row:

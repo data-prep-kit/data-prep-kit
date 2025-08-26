@@ -15,7 +15,7 @@ import sys
 
 from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.utils import ParamsUtils
-from dpk_tokenization.transform_python import TokenizationPythonConfiguration
+from transforms.universal.tokenization.dpk_tokenization.runtime import TokenizationPythonConfiguration
 
 
 # create parameters

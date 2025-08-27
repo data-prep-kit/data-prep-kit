@@ -17,7 +17,7 @@ import pyarrow as pa
 from data_processing.test_support.transform.table_transform_test import (
     AbstractTableTransformTest,
 )
-from dpk_tokenization.transform import TokenizationTransform
+from dpk_tokenization import TokenizationTransform
 
 
 """

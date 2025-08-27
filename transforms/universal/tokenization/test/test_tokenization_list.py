@@ -13,32 +13,30 @@
 
 import os
 
+from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
-from data_processing_ray.runtime.ray import RayTransformLauncher
-from dpk_tokenization.ray import TokenizationRayConfiguration
+from dpk_tokenization import TokenizationPythonConfiguration
 
 
 tkn_params = {
-    "run_locally": True,
-    "tkn_tokenizer": "hf-internal-testing/llama-tokenizer",
-    "tkn_doc_id_column": "document_id",
-    "tkn_doc_content_column": "contents",
-    "tkn_text_lang": "en",
-    "tkn_chunk_size": 0,
+    "tkn_doc_id_column": "pulls_and_issues_id",
+    "tkn_doc_content_column": "curr_file_contents",
 }
 
 
-class TestRayTokenizationTransform(AbstractTransformLauncherTest):
+class TestPythonTokenizationTransform(AbstractTransformLauncherTest):
     """
-    Extends the super-class to define the test data for the tests defined there.
-    The name of this class MUST begin with the word Test so that pytest recognizes it as a test class.
+    This involves testing a tokenizer by tokenizing a lengthy document
+    through segmenting it into chunks and then tokenizing each segment individually.
+    By tokenizing the text in this manner and subsequently merging the tokenized chunks,
+    it contributes to enhancing the overall runtime efficiency.
     """
 
     def get_test_transform_fixtures(self) -> list[tuple]:
         basedir = "../test-data"
         basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))
-        launcher = RayTransformLauncher(TokenizationRayConfiguration())
-        fixtures = [(launcher, tkn_params, basedir + "/ds01/input", basedir + "/ds01/expected")]
+        launcher = PythonTransformLauncher(TokenizationPythonConfiguration())
+        fixtures = [(launcher, tkn_params, basedir + "/list/input", basedir + "/list/expected")]
         return fixtures

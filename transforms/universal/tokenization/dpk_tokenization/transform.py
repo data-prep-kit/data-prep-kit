@@ -50,6 +50,7 @@ class TokenizationTransform(AbstractTableTransform):
         self.doc_content_column = config.get("doc_content_column", "contents")
         self.chunk_size = config.get("chunk_size", 0)
         self.text_lang = config.get("text_lang", "en")
+        self.none_substitute = config.get("none_substitute", "")
 
         self.logger.debug(f"\n*** `config` to run:")
         for k, v in config.items():
@@ -89,6 +90,17 @@ class TokenizationTransform(AbstractTableTransform):
         for idx in range(table.num_rows):
             doc_id = table[self.doc_id_column][idx].as_py()
             doc_content = table[self.doc_content_column][idx].as_py()
+            if type(doc_content) is list:
+                try:
+                    try:
+                        doc_content='\n\n'.join(doc_content)
+                    except TypeError as e:
+                        self.logger.warning(f"Using `{self.none_substitute}` When joining list at row {idx} due to: {e}")
+                        doc_content='\n\n'.join([str(s or self.none_substitute) for s in doc_content])
+                except Exception as ex:
+                    self.logger.error(f"Skipping -Failed in joining list at row {idx} in {file_name} due to: {ex}")
+                    empty_doc_ids.append(doc_id)
+                    continue
             doc_length = len(doc_content)
 
             # skip empty document/row:
@@ -220,6 +232,13 @@ class TokenizationTransformConfiguration(TransformConfiguration):
             default=0,
             help="Specify >0 value to tokenize each row/text in chunks of characters (rounded in words)",
         )
+        # When concatenated list of string, use substitute string to replace missing/None value
+        parser.add_argument(
+            "--tkn_none_substitute",
+            type=str,
+            default="",
+            help="Specify string to use as a substitute for None values in list",
+        )
 
     def apply_input_params(self, args: Namespace) -> bool:
         """
@@ -262,5 +281,6 @@ class TokenizationTransformConfiguration(TransformConfiguration):
         self.params["doc_content_column"] = args.tkn_doc_content_column
         self.params["text_lang"] = args.tkn_text_lang
         self.params["chunk_size"] = args.tkn_chunk_size
+        self.params["none_substitute"] = args.tkn_none_substitute
 
         return True

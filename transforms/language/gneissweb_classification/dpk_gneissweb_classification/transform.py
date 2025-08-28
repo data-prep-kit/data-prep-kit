@@ -17,9 +17,8 @@ from typing import Any
 import pyarrow as pa
 
 import ast
-
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import CLIArgumentProvider, TransformUtils, load_model
+from data_processing.utils import CLIArgumentProvider, TransformUtils, load_model, UnrecoverableException
 from dpk_gneissweb_classification.classification_models import FastTextModel, ClassificationModel
 from dpk_gneissweb_classification.nlp import get_label_ds_pa
 from dpk_gneissweb_classification.nlp_parallel import get_label_ds_pa_parallel
@@ -97,7 +96,11 @@ class ClassificationTransform(AbstractTableTransform):
         self.logger.debug(f"Transforming one table with {len(table)} rows")
         for url, file_name, label_column_name, score_column_name in zip(self.model_url, self.model_file_name,self.output_label_column_name,self.output_score_column_name):
             if self.n_processes <= 1:
-                model = load_model(url, 'fasttext', self.model_credential, model_filename=file_name)
+                try:
+                    model = load_model(url, 'fasttext', self.model_credential, model_filename=file_name)
+                except Exception as e:
+                    self.logger.error(str(e))
+                    raise UnrecoverableException(str(e))
                 nlp_classfication = FastTextModel(model, url)
 
             else:

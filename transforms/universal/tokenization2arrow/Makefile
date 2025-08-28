@@ -33,3 +33,13 @@ run-cli-sample-ray:
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.runtime \
             --data_local_config "{ 'input_folder' : 'test-data/ds01/input', 'output_folder' : 'output/ds01'}" \
 			--run_locally True
+
+run-list-sample:
+	# TODO: set env variable HF_TOKEN to download tokenizer from HF
+	make venv
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
+			--tkn_doc_content_column  curr_file_contents \
+			--tkn_doc_id_column pulls_and_issues_id \
+            --data_local_config "{ 'input_folder' : 'test-data/list/input', 'output_folder' : 'output'}"
+

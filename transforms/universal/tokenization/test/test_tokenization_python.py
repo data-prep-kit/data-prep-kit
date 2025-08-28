@@ -17,7 +17,7 @@ from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
-from dpk_tokenization.transform_python import TokenizationPythonConfiguration
+from dpk_tokenization import TokenizationPythonConfiguration
 
 
 tkn_params = {

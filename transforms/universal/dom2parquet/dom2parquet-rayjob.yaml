@@ -95,7 +95,7 @@ spec:
   # Job details
   # The command to execute the Python script
   entrypoint: >
-    python -m dpk_tokenization2arrow.ray.runtime 
+    python -m dpk_dom2parquet.ray.runtime
     --run_locally False
     --data_s3_config "{'input_folder': '$DOM_INPUT_FOLDER', 'output_folder': '$DOM_OUTPUT_FOLDER'}"
     --data_files_to_use "[ '.zip' ]" 

@@ -1,6 +1,6 @@
 ###
 # Usage:
-# envsubst < tokenization2arrow-rayjob.yaml | kubectl apply -f -
+# envsubst < dom2parquet-rayjob.yaml | kubectl apply -f -
 ###
 apiVersion: ray.io/v1alpha1
 kind: RayJob

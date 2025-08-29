@@ -14,12 +14,10 @@
 import argparse
 import ast
 import json
-import pandas as pd
-from typing import Dict
+from typing import Any
 import duckdb
 import pyarrow as pa
 import os
-import string
 from data_processing.data_access import DataAccess
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
 from data_processing.utils import CLIArgumentProvider, TransformUtils, get_logger
@@ -249,7 +247,7 @@ class FilterTransform(AbstractTableTransform):
         metadata["bytes_after_filter"] = filtered_table.nbytes
         
         if filtered_table_cols_dropped.num_rows == 0:
-            return [filtered_table_cols_dropped], metadata
+            return [table.schema.empty_table()], metadata
         else:
             # before returning the filtered table (parquet files) also filter the corresponding arrow and meta files
             if bool(self.input_arrow_folder.strip()):
@@ -261,6 +259,38 @@ class FilterTransform(AbstractTableTransform):
                 self.logger.warning(f"NOTE: no input_arrow_folder provided. Only parquet files are filtered.")
         
             return [filtered_table_cols_dropped], metadata
+
+    def transform_binary(self, file_name: str, byte_array: bytes) -> tuple[list[tuple[bytes, str]], dict[str, Any]]:
+        """
+        Converts input file into o or more output files.
+        If there is an error, an exception must be raised - exit()ing is not generally allowed.
+        :param byte_array: contents of the input file to be transformed.
+        :param file_name: the file name of the file containing the given byte_array.
+        :return: a tuple of a list of 0 or more tuples and a dictionary of statistics that will be propagated
+                to metadata.  Each element of the return list, is a tuple of the transformed bytes and a string
+                holding the extension to be used when writing out the new bytes.
+        """
+        # convert to table
+        table = TransformUtils.convert_binary_to_arrow(data=byte_array)
+        if table is None:
+            self.logger.warning("Transformation of file to table failed")
+            return [], {"failed_reads": 1}
+        # validate extension
+        if TransformUtils.get_file_extension(file_name)[1] != ".parquet":
+            self.logger.warning(f"Get wrong file type {file_name}")
+            return [table.schema.empty_table()], {"wrong file type": 1}
+        # Ensure that table is not empty
+        if table.num_rows == 0:
+            self.logger.warning(f"table is empty, skipping processing")
+            return [table.schema.empty_table()], {"skipped empty tables": 1}
+        # transform table
+        out_tables, stats = self.transform(table=table, file_name=file_name)
+        # Add number of rows to stats
+        stats = stats | {"source_doc_count": table.num_rows}
+        # convert tables to files
+        return self._check_and_convert_tables(
+            out_tables=out_tables, stats=stats | {"source_doc_count": table.num_rows}
+        )
 
 
 class FilterTransformConfiguration(TransformConfiguration):

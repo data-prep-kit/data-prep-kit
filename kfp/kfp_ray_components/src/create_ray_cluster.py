@@ -18,7 +18,7 @@ import sys
 from runtime_utils import KFPUtils, RayRemoteJobs
 
 
-values_from_key = "valuesFrom"
+VALUES_FROM_KEY = "valuesFrom"
 def start_ray_cluster(
     name: str,  # name of Ray cluster
     ray_head_options: str,  # ray head configuration
@@ -44,8 +44,8 @@ def start_ray_cluster(
         :param ray_pod_options_dict: head_options or worker_options dict
         :return: the merged dict
         """
-        values_from_other_secrets = other_secrets_dict.get(values_from_key, {})
-        ray_pod_options = ray_pod_options_dict.get(values_from_key, {})
+        values_from_other_secrets = other_secrets_dict.get(VALUES_FROM_KEY, {})
+        ray_pod_options = ray_pod_options_dict.get(VALUES_FROM_KEY, {})
         return copy.deepcopy(values_from_other_secrets | ray_pod_options)
 
     dict_params = KFPUtils.load_from_json(additional_params.replace("'", '"'))
@@ -58,7 +58,7 @@ def start_ray_cluster(
     if other_secrets:
          other_secrets_obj = KFPUtils.load_from_json(other_secrets.replace("'", '"'))
          for secret_name, env2value in other_secrets_obj.items():
-             shared_secrets.setdefault(values_from_key, {}).update(KFPUtils.secret_2_environment(secret_name, env2value))
+             shared_secrets.setdefault(VALUES_FROM_KEY, {}).update(KFPUtils.secret_2_environment(secret_name, env2value))
     # add S3 credentials
     shared_secrets["values"] = KFPUtils.credentials_dict()
     # Convert input

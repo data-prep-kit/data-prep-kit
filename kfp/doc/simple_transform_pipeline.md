@@ -380,17 +380,27 @@ For example, similar to how `HF_READ_ACCESS_TOKEN` was used, you can export a ne
 envs = EnvironmentVariables(from_ref={"HF_READ_ACCESS_TOKEN": env_v, "NEW_TOKEN": env_v})
 ```
 
-Another way to export secrets is by using the `other_secrets` KFP pipeline parameter, as illustrated in the code_quality workflow example below.
-With this approach, secrets values can be modified at runtime.
-Note that the secrets in `other_secrets` are applied to both the head and worker pods.
+These environment variables are then passed to the Ray pods by including them in `ray_head_options` or `ray_worker_options`, as shown below:
+```bash
+ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image, "environment": envs.to_dict()},
+```
+
+Another way to export secrets is by using the `other_secrets` KFP pipeline parameter, as shown in the code_quality workflow example below.
+In this example, two environment variables are defined: `HF_READ_ACCESS_TOKEN` and `NEW_TOKEN`, whose values are derived from the 
+Kubernetes secrets `hf-secret` and `new-hf-secret`, respectively.
+With this approach, secret values can be modified at runtime.
+Note that secrets defined in other_secrets are applied to both the head and worker pods.
 
 ```bash
+...
 def code_quality(
     # Ray cluster
     ray_name: str = "code_quality-kfp-ray",  # name of Ray cluster
     ...
-    other_secrets: dict = {HF_SECRET: {HF_READ_ACCESS_TOKEN: HF_SECRET_KEY}},
+    other_secrets: dict = {"hf-secret": {"HF_READ_ACCESS_TOKEN": HF_SECRET_KEY}, "new-hf-secret": {"NEW_TOKEN": HF_SECRET_KEY}},
     ...
 ```
 
 If an environment variable is defined in both `other_secrets` and `ray_head_options` or `ray_worker_options`, the latter will take precedence.
+For example, in the examples above "HF_READ_ACCESS_TOKEN" and "NEW_TOKEN" env variables are defined 
+for both `other_secrets` and `ray_head_options` dicts. In this case, their values are taken from `ray_head_options` dict.

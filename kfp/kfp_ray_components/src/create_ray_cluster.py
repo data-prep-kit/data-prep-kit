@@ -10,6 +10,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ################################################################################
+import copy
 import json
 import os
 import sys
@@ -17,6 +18,7 @@ import sys
 from runtime_utils import KFPUtils, RayRemoteJobs
 
 
+values_from_key = "valuesFrom"
 def start_ray_cluster(
     name: str,  # name of Ray cluster
     ray_head_options: str,  # ray head configuration
@@ -34,6 +36,18 @@ def start_ray_cluster(
     :param additional_params:  additional parameters
     :return: None
     """
+    def merge_valuesFrom_key(other_secrets_dict, ray_pod_options_dict):
+        """
+        Combine environment variables specified in the other_secrets_dict and ray_pod_options_dict dictionaries,
+        with values in ray_pod_options_dict taking precedence.
+        :param other_secrets_dict: other_secret dict
+        :param ray_pod_options_dict: head_options or worker_options dict
+        :return: the merged dict
+        """
+        values_from_other_secrets = other_secrets_dict.get(values_from_key, {})
+        ray_pod_options = ray_pod_options_dict.get(values_from_key, {})
+        return copy.deepcopy(values_from_other_secrets | ray_pod_options)
+
     dict_params = KFPUtils.load_from_json(additional_params.replace("'", '"'))
     # get current namespace
     ns = KFPUtils.get_namespace()
@@ -44,7 +58,7 @@ def start_ray_cluster(
     if other_secrets:
          other_secrets_obj = KFPUtils.load_from_json(other_secrets.replace("'", '"'))
          for secret_name, env2value in other_secrets_obj.items():
-             shared_secrets.setdefault("valuesFrom", {}).update(KFPUtils.secret_2_environment(secret_name, env2value))
+             shared_secrets.setdefault(values_from_key, {}).update(KFPUtils.secret_2_environment(secret_name, env2value))
     # add S3 credentials
     shared_secrets["values"] = KFPUtils.credentials_dict()
     # Convert input
@@ -52,11 +66,17 @@ def start_ray_cluster(
     worker_node = KFPUtils.load_from_json(ray_worker_options.replace("'", '"'))
     if shared_secrets:
          if head_options.get("environment"):
+             values_from = merge_valuesFrom_key(shared_secrets, head_options.get("environment"))
              head_options["environment"] = shared_secrets | head_options.get("environment")
+             # Override valueFrom
+             head_options["environment"]["valuesFrom"] = values_from
          else:
              head_options["environment"] = shared_secrets
          if worker_node.get("environment"):
+             values_from = merge_valuesFrom_key(shared_secrets, worker_node.get("environment"))
              worker_node["environment"] = shared_secrets | worker_node.get("environment")
+             # Override valueFrom
+             worker_node["environment"]["valuesFrom"] = values_from
          else:
              worker_node["environment"] = shared_secrets
     head_node = head_options | {

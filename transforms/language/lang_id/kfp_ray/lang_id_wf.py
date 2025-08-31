@@ -138,6 +138,7 @@ def lang_id(
     # data access
     data_s3_config: str = "{'input_folder': 'test/lang_id/input/', 'output_folder': 'test/lang_id/output/'}",
     data_s3_access_secret: str = S3_SECRET,
+    other_secrets: dict = {},
     data_max_files: int = -1,
     data_num_samples: int = -1,
     other_secrets: dict = {HF_SECRET: {HF_READ_ACCESS_TOKEN: HF_SECRET_KEY}},
@@ -236,6 +237,7 @@ def lang_id(
             ray_worker_options=ray_worker_options,
             other_secrets=other_secrets,
             server_url=server_url,
+            other_secrets=other_secrets,
             additional_params=additional_params,
         )
         ComponentUtils.add_settings_to_component(ray_cluster, ONE_HOUR_SEC * 2)

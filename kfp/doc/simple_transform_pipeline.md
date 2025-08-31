@@ -371,3 +371,26 @@ type: Opaque
 stringData:
       hf-token: "${HF_READ_ACCESS_TOKEN}"
 ``` 
+
+### Exporting multiple secrets to ray cluster pods
+
+To export multiple secrets to Ray cluster pods, you can extend the approach shown above by adding additional environment variables to `EnvironmentVariables`.
+For example, similar to how `HF_READ_ACCESS_TOKEN` was used, you can export a new env var named `NEW_TOKEN` as follows (note that the secret details remain unchanged in this example):
+```bash
+envs = EnvironmentVariables(from_ref={"HF_READ_ACCESS_TOKEN": env_v, "NEW_TOKEN": env_v})
+```
+
+Another way to export secrets is by using the `other_secrets` KFP pipeline parameter, as illustrated in the code_quality workflow example below.
+With this approach, secrets values can be modified at runtime.
+Note that the secrets in `other_secrets` are applied to both the head and worker pods.
+
+```bash
+def code_quality(
+    # Ray cluster
+    ray_name: str = "code_quality-kfp-ray",  # name of Ray cluster
+    ...
+    other_secrets: dict = {HF_SECRET: {HF_READ_ACCESS_TOKEN: HF_SECRET_KEY}},
+    ...
+```
+
+If an environment variable is defined in both `other_secrets` and `ray_head_options` or `ray_worker_options`, the latter will take precedence.

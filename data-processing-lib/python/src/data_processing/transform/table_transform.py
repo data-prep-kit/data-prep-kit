@@ -56,7 +56,7 @@ class AbstractTableTransform(AbstractBinaryTransform):
         # Ensure that table is not empty
         if table.num_rows == 0:
             self.logger.warning(f"table is empty, skipping processing")
-            return [table.schema.empty_table()], {"skipped empty tables": 1}
+            return [], {"skipped empty tables": 1}
         # transform table
         out_tables, stats = self.transform(table=table, file_name=file_name)
         # Add number of rows to stats

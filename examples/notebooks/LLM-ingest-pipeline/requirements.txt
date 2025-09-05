@@ -1,0 +1,30 @@
+data-prep-toolkit-transforms[html2parquet, web2parquet]==1.1.0
+
+seaborn
+humanfriendly
+## HTML processing
+trafilatura
+
+
+# Milvus
+pymilvus
+pymilvus[model]
+
+## --- Replicate
+replicate
+
+## --- llama-index
+llama-index
+llama-index-embeddings-huggingface
+llama-index-llms-replicate
+llama-index-vector-stores-milvus
+
+## utils
+humanfriendly
+pandas
+nest-asyncio
+
+## jupyter and friends
+jupyterlab
+ipykernel
+ipywidgets

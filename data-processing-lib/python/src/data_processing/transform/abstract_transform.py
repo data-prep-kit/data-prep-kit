@@ -43,10 +43,10 @@ class AbstractTransform(ABC):
         self.context_id = config.get(TransformConstants.CONTEXT_ID, self.job_id)
         self.output_features_to_drop = config.get(TransformConstants.OUTPUT_FEATURES_TO_DROP, [])
 
-    @abstractmethod
     def validate(self, **kwargs) -> None:
         """
         Preform parameters validation.
+        Subclasses should provide real implementation
         """
         pass
 

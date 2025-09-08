@@ -13,13 +13,12 @@
 
 from abc import ABC, abstractmethod
 import pyarrow as pa
-from pydantic import BaseModel
 from typing import Any
 
-from data_processing.transform import TransformCategory, TransformConstants
+from data_processing.utils import TransformCategory, TransformConstants
 
 
-class AbstractTransform(BaseModel, ABC):
+class AbstractTransform(ABC):
     """
     Base class for all transform types
     """
@@ -43,35 +42,6 @@ class AbstractTransform(BaseModel, ABC):
         self.job_run_id = config.get(TransformConstants.JOB_RUN_ID)
         self.context_id = config.get(TransformConstants.CONTEXT_ID, self.job_id)
         self.output_features_to_drop = config.get(TransformConstants.OUTPUT_FEATURES_TO_DROP, [])
-
-    # Shared properties
-    @property
-    def name(self):
-        return  self.config[self.NAME]
-
-    @name.setter
-    def name(self, value):
-        self._name = value
-
-    @property
-    def description(self):
-        return self.config[self.DESCRIPTION]
-
-    @property
-    def id(self):
-        return self.config[self.ID]
-
-    @property
-    def job_id(self):
-        return self.config[self.JOB_ID]
-
-    @property
-    def job_run_id(self):
-        return self.config[self.JOB_RUN_ID]
-
-    @property
-    def context_id(self):
-        return self.config[self.CONTEXT_ID]
 
     @abstractmethod
     def validate(self, **kwargs) -> None:

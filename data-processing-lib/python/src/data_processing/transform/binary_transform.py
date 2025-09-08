@@ -12,13 +12,12 @@
 ################################################################################
 
 from abc import abstractmethod
-from pydantic import BaseModel
 from typing import Any
 
 from data_processing.transform import AbstractTransform
 
 
-class AbstractBinaryTransform(BaseModel, AbstractTransform):
+class AbstractBinaryTransform(AbstractTransform):
     """
     Converts input binary file to output file(s) (binary)
     Sub-classes must provide the transform() method to provide the conversion of one binary files to 0 or
@@ -32,7 +31,7 @@ class AbstractBinaryTransform(BaseModel, AbstractTransform):
         Initialize based on the dictionary of configuration information.
         This simply stores the given instance in this instance for later use.
         """
-        self.config = config
+        super().__init__(config=config)
 
     @abstractmethod
     def transform_binary(self, file_name: str, byte_array: bytes) -> tuple[list[tuple[bytes, str]], dict[str, Any]]:

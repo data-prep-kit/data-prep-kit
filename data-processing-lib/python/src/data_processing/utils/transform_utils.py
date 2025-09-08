@@ -339,3 +339,4 @@ class TransformUtils:
         return {
             Metrics.External.SKIPPED_DOCS: skipped_docs_list,
             Metrics.External.SKIPPED_DOCS_COUNT: len(skipped_docs_list)
+        }

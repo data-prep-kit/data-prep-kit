@@ -66,25 +66,6 @@ class AbstractBinaryTransform(BaseModel, AbstractTransform):
         """
         return [], {}
 
-    def validate(self, **kwargs) -> None:
-        """
-        Preform parameters validation.
-        """
-        return
 
-    def get_required_features(self) -> list[str]:
-        """
-        List of required features, such as column names, for the transform.
-        """
-        return []
 
-    def get_feature(self, name, description, type, **kwargs) -> dict:
-        """
-        Return a list of the transform features
-        """
-        return {
-            "name": name,
-            "description": description,
-            "type": type
-        }
 

@@ -12,21 +12,19 @@
 ################################################################################
 
 from abc import ABC, abstractmethod
+import pyarrow as pa
 from pydantic import BaseModel
-from typing import Any, ClassVar
+from typing import Any
+
+from data_processing.transform import TransformCategory, TransformConstants
 
 
 class AbstractTransform(BaseModel, ABC):
     """
     Base class for all transform types
     """
-
-    NAME: ClassVar[str] = "name"
-    ID: ClassVar[str] = "id"
-    DESCRIPTION: ClassVar[str] = "description"
-    JOB_ID: ClassVar[str] = "job_id"
-    JOB_RUN_ID: ClassVar[str] = "job_run_id"
-    CONTEXT_ID: ClassVar[str] = "context_id"
+    short_name: str = None
+    category: TransformCategory = None
 
     config: dict[str, Any]  # type hint for clarity and IDE support
 
@@ -39,12 +37,21 @@ class AbstractTransform(BaseModel, ABC):
             raise ValueError("config cannot be None")
 
         self.config = config.copy()  # optional: copy to avoid mutating external dict
-        self.config.setdefault(self.NAME, self.__class__.__name__)
+        self.name = config.get(TransformConstants.NAME)
+        self.id = config.get(TransformConstants.ID)
+        self.job_id = config.get(TransformConstants.JOB_ID)
+        self.job_run_id = config.get(TransformConstants.JOB_RUN_ID)
+        self.context_id = config.get(TransformConstants.CONTEXT_ID, self.job_id)
+        self.output_features_to_drop = config.get(TransformConstants.OUTPUT_FEATURES_TO_DROP, [])
 
     # Shared properties
     @property
     def name(self):
         return  self.config[self.NAME]
+
+    @name.setter
+    def name(self, value):
+        self._name = value
 
     @property
     def description(self):
@@ -66,14 +73,6 @@ class AbstractTransform(BaseModel, ABC):
     def context_id(self):
         return self.config[self.CONTEXT_ID]
 
-
-    @abstractmethod
-    def get_metadata(self) -> dict:
-        """
-        Return the transform matadata
-        """
-        pass
-
     @abstractmethod
     def validate(self, **kwargs) -> None:
         """
@@ -92,15 +91,23 @@ class AbstractTransform(BaseModel, ABC):
         # The concrete subclasses will retrieve the required features.
         return []
 
-    def get_feature(self, name, description, type, available_for_filter=False, available_for_vector_db=False, mandatory_for_vector_db=False):
-        return {
-            self.NAME: name,
-            self.DESCRIPTION: description,
-            self.TYPE: type,
-            #OperatorConstants.AVAILABLE_FOR_FILTER: available_for_filter,
-            #OperatorConstants.AVAILABLE_FOR_VECTOR_DB: available_for_vector_db,
-            #OperatorConstants.MANDATORY_FOR_VECTOR_DB: mandatory_for_vector_db
-        }
+    def get_metadata(self) -> dict:
+        """
+        Return the transform matadata
+        """
+        pass
+
+    def get_removed_and_added_columns(self) -> (set[str], list[pa.Field]):
+        """
+        Return the details of the removed and added columns after the transform.
+
+        Returns:
+            removed_columns (set[str]): Set of column names removed during the transform.
+            added_columns (list[pa.Field]): List of column schemas added during the transform.
+        """
+        # TODO should we use NotImplementedError('subclasses must implement this method') instead
+        return set(), []
+
     def get_metadata_fields_to_accumulate(self) -> list[str]:
         """
         Return the metadata field names that needs to be accumulated.
@@ -109,4 +116,5 @@ class AbstractTransform(BaseModel, ABC):
         Returns:
             list[str]: List of field to be accumulated.
         """
+        # TODO should we use NotImplementedError('subclasses must implement this method') instead
         return []

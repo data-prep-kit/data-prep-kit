@@ -19,7 +19,7 @@ import nltk
 import pyarrow as pa
 from data_processing.data_access import DataAccessFactory
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import CLIArgumentProvider, TransformUtils, get_logger
+from data_processing.utils import CLIArgumentProvider, TransformUtils, get_logger, MultiLock
 from typing import Any
 
 short_name = "gra"
@@ -203,12 +203,16 @@ class GopherRepetitionAnnotatorTransform(AbstractTableTransform):
         self.paragraph_exp = re.compile(r"\n{2,}")
         self._line_splitter = re.compile("\n+")
 
-        # download NLTK resources needed for sentence tokenizer
+        lock = MultiLock("punkt_tab_lock")
         try:
+            lock.acquire()
+            # download NLTK resources needed for sentence tokenizer
             nltk.data.find("tokenizers/punkt_tab")
         except LookupError:
             nltk.download("punkt_tab")
-        # self.tokenizer = load_word_tokenizer(language)
+        finally:
+            lock.release()
+
 
     def get_n_grams(self, words: list[str], n: int) -> list[str]:
         return [" ".join(words[i : i + n]) for i in range(len(words) - n + 1)]
@@ -277,6 +281,13 @@ class GopherRepetitionAnnotatorTransform(AbstractTableTransform):
                 self.logger.debug(f"Processed {index + 1}/ {table_length} documents")
             stat_update(metadata, "total_docs")
             text = doc.as_py()
+            if text.strip() == "":
+                self.logger.debug(f"Found document {index = } empty. Setting annotation values to -1.")
+                dup_line_frac_column[index] = -1
+                dup_line_char_frac_column[index] = -1
+                dup_para_frac_column[index] = -1
+                dup_para_char_frac_column[index] = -1
+                continue
 
             lines = self._line_splitter.split(text)
             line_duplicates, char_duplicates = self.find_duplicates(lines)

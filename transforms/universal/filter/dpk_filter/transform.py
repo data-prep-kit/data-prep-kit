@@ -195,7 +195,10 @@ class FilterTransform(AbstractTableTransform):
         if file_name is not None:
             if not file_name.endswith(".parquet"):
                 self.logger.error(f"Error: input_file name doesn't end with '.parquet': {file_name}")
-                return [table.schema.empty_table()], {"wrong file type": 1}
+                if isinstance(table, pa.Table):
+                    return [table.schema.empty_table()], {"wrong file type": 1}
+                else:
+                    return [], {"wrong file type": 1}
         # move table under a different name, to avoid SQL query parsing error
         input_table = table
         total_docs = input_table.num_rows

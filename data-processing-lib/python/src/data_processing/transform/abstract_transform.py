@@ -65,7 +65,7 @@ class AbstractTransform(ABC):
         """
         Return the transform matadata
         """
-        pass
+        return {}
 
     def get_removed_and_added_columns(self) -> (set[str], list[pa.Field]):
         """

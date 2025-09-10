@@ -16,7 +16,7 @@ import gc
 import concurrent.futures
 from pathlib import Path
 from data_processing.utils import get_logger, TransformUtils
-from data_processing.transform import AbstractTableTransform
+
 
 class ParallelTransformsChain:
     def __init__(self, data_access, transforms, max_workers=4):
@@ -41,45 +41,34 @@ class ParallelTransformsChain:
             self.logger.info(batch_files)
             self.logger.info(f"Processing file: {file_path}")
 
-            # check if parquet file to get table:
-            _, ext = os.path.splitext(file_path)
-            if ext.lower() == '.parquet':
-                table, _ = self.data_access.get_table(file_path)
-                byte_array = None
+            # depending on head transform (i.e. docling, web2parquet), original file path could be non parquet,
+            # which would be a problem for other table transforms expecting input extension to be parquet
+            # to counter, change ext. to parquet after the first transform to be safe.
+            first = True
 
-            # if not parquet file, get the binary
-            else:
-                byte_array, _ = self.data_access.get_file(file_path)
-                table = None
+            # get raw bytes from file
+            byte_array, _ = self.data_access.get_file(file_path)
 
             for transform in self.transforms:
-                # use transform method if transform is abstract table transform
-                if AbstractTableTransform in transform.__class__.__bases__:
-                    table_list, metadata = transform.transform(table)
-                    if table_list and len(table_list) > 0:
-                        table = table_list[0]
-                    else:
-                        self.logger.info("Transform returned empty, skipping.")
-                        continue
-
-                # assume AbstractBinaryTransform
+                # use transform_binary to accommodate table and binary transform calls
+                if first:
+                    fp = file_path
+                    first = False
                 else:
-                    # byte_array should be None unless it's the initial input
-                    if byte_array is None:
-                        byte_array = TransformUtils.convert_arrow_to_binary(table)
-                    byte_list, metadata = transform.transform_binary(file_name=file_path, byte_array=byte_array)
-                    if byte_list and len(byte_list) > 0:
-                        bytes = byte_list[0][0]
-                        table = TransformUtils.convert_binary_to_arrow(bytes)
-                        byte_array = None
-                    else:
-                        self.logger.info("Transform returned empty, skipping.")
-                        byte_array = None
-                        continue
+                    fp = Path(file_path).with_suffix(".parquet")
+
+                byte_list, metadata = transform.transform_binary(file_name=fp, byte_array=byte_array)
+
+                if byte_list and len(byte_list) > 0:
+                    byte_array = byte_list[0][0]
+
+                else:
+                    self.logger.info("Transform returned empty, skipping.")
+                    continue
 
             output_path = os.path.join(self.data_access.get_output_folder(), os.path.basename(file_path))
             output_path = Path(output_path).with_suffix(".parquet")
-            self.data_access.save_table(output_path, table)
+            self.data_access.save_file(output_path, byte_array)
             self.logger.info(f"Finished processing and saved: {output_path}")
-            del table
+            del byte_array
             gc.collect()

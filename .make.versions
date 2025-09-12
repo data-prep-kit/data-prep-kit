@@ -25,7 +25,7 @@ DPK_CONNECTOR_NEXT_RELEASE=0.2.4
 DPK_CONNECTOR_SUFFIX=.dev0
 
 TRANSFORM_NEXT_RELEASE=1.1.4
-TRANSFORM_VERSION_SUFFIX=.dev0
+TRANSFORM_VERSION_SUFFIX=.dev1
 
 ################################################################################
 # Begin versions that the repo depends on. 

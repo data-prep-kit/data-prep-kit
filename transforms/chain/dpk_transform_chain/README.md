@@ -38,25 +38,37 @@ pip install .
 ## 🔬 Usage Example
 
 ```python
+from data_processing.data_access import DataAccessLocal
+from dpk_docling2parquet import docling2parquet_contents_types, Docling2ParquetTransform
+from dpk_doc_chunk import DocChunkTransform
 from dpk_transform_chain import TransformsChain
-from transforms import Docling2ParquetTransform, DocChunkTransform
-from data_access import DataAccessLocal
 
 # Instantiate your transforms (fully compatible with existing transform logic)
-transform1 = Docling2ParquetTransform(data_files_to_use=[".pdf"], contents_type="text/markdown")
-transform2 = DocChunkTransform(chunking_type="li_markdown")
+docling2parquet_params = {"contents_type": docling2parquet_contents_types.MARKDOWN}
+
+doc_chunk_params = {"chunking_type": "li_markdown",
+                    "chunk_size_tokens": 128,
+                    "chunk_overlap_tokens": 30,
+                    }
+doc2parquet = Docling2ParquetTransform(docling2parquet_params)
+doc_chunk = DocChunkTransform(doc_chunk_params)
 
 # Instantiate your data access object
-data_access = DataAccessLocal(
-    input_folder="/Documents",
-    output_folder="/Desktop"
-)
+da_config = {
+            "config": {
+                "input_folder": "test-data/binary_input",
+                "output_folder": "test-data/binary_output",
+            },
+            "files_to_use": [".pdf"]
+        }
+
+data_access = DataAccessLocal(**da_config)
 
 # Create orchestrator instance (this example uses AutoMode)
 orch = TransformsChain(
-    data_access=data_access,
-    transforms=[transform1, transform2],
-)
+            data_access=data_access,
+            transforms=[doc2parquet, doc_chunk]
+        )
 
 # Run full pipeline
 orch.run()

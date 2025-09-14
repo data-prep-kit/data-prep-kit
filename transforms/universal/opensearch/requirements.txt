@@ -1,1 +1,1 @@
-opensearch-py
+opensearch-py==3.0.0

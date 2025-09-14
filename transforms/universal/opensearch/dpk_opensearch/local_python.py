@@ -16,7 +16,7 @@ import sys
 
 from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.utils import ParamsUtils
-from dpk_noop.runtime import NOOPPythonTransformConfiguration
+from dpk_opensearch.runtime import OpenSearchPythonTransformConfiguration
 
 
 # create parameters
@@ -34,13 +34,12 @@ params = {
     "runtime_pipeline_id": "pipeline_id",
     "runtime_job_id": "job_id",
     "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
-    # noop params
-    "noop_sleep_sec": 1,
+    # opensearch params
+    "os_index": "dpk_test",
+    "os_host": "localhost"
 }
 if __name__ == "__main__":
-    # Set the simulated command line args
     sys.argv = ParamsUtils.dict_to_req(d=params)
     # create launcher
-    launcher = PythonTransformLauncher(runtime_config=NOOPPythonTransformConfiguration())
-    # Launch the ray actor(s) to process the input
+    launcher = PythonTransformLauncher(runtime_config=OpenSearchPythonTransformConfiguration())
     launcher.launch()

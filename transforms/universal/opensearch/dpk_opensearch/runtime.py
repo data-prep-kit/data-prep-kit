@@ -11,8 +11,6 @@
 # limitations under the License.
 ################################################################################
 
-import time
-
 from data_processing.runtime.pure_python import (
     PythonTransformLauncher,
     PythonTransformRuntimeConfiguration,
@@ -29,8 +27,6 @@ logger = get_logger(__name__)
 class OpenSearchPythonTransformConfiguration(PythonTransformRuntimeConfiguration):
     """
     Implements the PythonTransformConfiguration for NOOP as required by the PythonTransformLauncher.
-    NOOP does not use a RayRuntime class so the superclass only needs the base
-    python-only configuration.
     """
 
     def __init__(self):

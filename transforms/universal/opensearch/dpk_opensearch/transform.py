@@ -11,199 +11,218 @@
 # limitations under the License.
 ################################################################################
 
-import time
-from datetime import datetime, timezone
-from argparse import ArgumentParser, Namespace
-from typing import Any
-import os
-from opensearchpy import OpenSearch
-from opensearchpy.helpers import bulk
-
-
 import pyarrow as pa
+from typing import Any
+import warnings
+import os
+from urllib3.exceptions import InsecureRequestWarning
+from argparse import ArgumentParser, Namespace
+from datetime import datetime, timezone
+
+from opensearchpy import OpenSearch, helpers
+
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
 from data_processing.utils import CLIArgumentProvider
 from data_processing.utils import UnrecoverableException, get_logger
 
-logger = get_logger(__name__)
+# Suppress SSL warnings for self-signed certificates
+warnings.simplefilter('ignore', InsecureRequestWarning)
+warnings.filterwarnings('ignore', message='Connecting to .* using SSL with verify_certs=False is insecure')
+
+hostname = "host"
+indx = "index"
+docid_column_name_key = "document_id_column_name"
+dimension_size = "dimension_size"
+content_column_name_key = "content_column_name"
+embeddings_column_name_key = "embeddings_column_name"
+filename_column_name_key = "filename"
+delete_index = "delete_index"
 
 short_name = "os"
 cli_prefix = f"{short_name}_"
-host_cli_param = f"{cli_prefix}host"
-ndx_cli_param = f"{cli_prefix}index"
-docid_cli_param = f"{cli_prefix}document_id_column_name"
+host_cli_param = f"{cli_prefix}{hostname}"
+indx_cli_param = f"{cli_prefix}{indx}"
+docid_cli_param = f"{cli_prefix}{docid_column_name_key}"
+embeddings_cli_param = f"{cli_prefix}{embeddings_column_name_key}"
+dimension_size_cli_param = f"{cli_prefix}{dimension_size}"
+content_column_name_cli_param = f"{cli_prefix}{content_column_name_key}"
+delete_index_cli_param = f"{cli_prefix}{delete_index}"
 
-doc_id_default = "document_id"
-port_default = "9200"
-host_default = f"localhost"
-
+default_host = "localhost:9200"
+default_username = "admin"
+default_port = "9200"
+default_docid_column_name = "document_id"
+default_embeddings_column_name = "embeddings"
+default_content_column_name = "contents"
+default_filename = "filename"
+default_delete_index = False
+user = os.environ.get("OPENSEARH_USERID", "admin")
 
 
 class OpenSearchTransform(AbstractTableTransform):
-    """
-    Implements a simple copy of a pyarrow Table.
-    """
 
-    def __init__(self, config: dict[str, Any]={}):
-        """
-        Initialize based on the dictionary of configuration information.
-        This is generally called with configuration parsed from the CLI arguments defined
-        by the companion runtime, NOOPTransformRuntime.  If running inside the RayMutatingDriver,
-        these will be provided by that class with help from the RayMutatingDriver.
-        """
-        # Make sure that the param name corresponds to the name used in apply_input_params method
-        # of NOOPTransformConfiguration class
+    def __init__(self, config: dict[str, Any]):
         super().__init__(config)
-        x=config.get(host_cli_param, host_default).split(':')
+        self.logger = get_logger(__name__)
+
+        x = config.get(hostname, default_host).split(':')
         self.host = x[0]
-        self.port = x[1] if len(x) > 1 else port_default
-        self.docId = config.get(docid_cli_param, doc_id_default)
-        self.ndx= config.get(ndx_cli_param, 
-                               f"dpk_{datetime.now().strftime('%y%m%d%H%M%S')}")
+        self.port = x[1] if len(x) > 1 else default_port
+        self.doc_id_column = config.get(docid_column_name_key, default_docid_column_name)
 
-        self.uid=os.environ.get("OPENSEARH_USERID", "admin")
+        self.index_name = config.get(indx, f"dpk_{datetime.now().strftime('%y%m%d%H%M%S')}")
+        self.embeddings_column = config.get(embeddings_column_name_key, default_embeddings_column_name)
+        self.content_column = config.get(content_column_name_key, default_content_column_name)
+        self.dimension_size = config.get(dimension_size)
+        self.delete_index = config.get(delete_index, default_delete_index)
+
+        self.uid = user
         try:
-            self.pwd=os.environ["OPENSEARCH_PASSWORD"]
+            self.pwd = os.environ["OPENSEARCH_PASSWORD"]
         except KeyError as e:
-            logger.error(f"Environment variable OPENSEARCH_PASSWORD must be define. Raising Exception: {e}")
+            self.logger.error(f"Environment variable OPENSEARCH_PASSWORD must be define. Raising Exception: {e}")
             raise UnrecoverableException("Missing credentials")
-
-
-    def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
-        """
-        Put Transform-specific to convert one Table to 0 or more tables. It also returns
-        a dictionary of execution statistics - arbitrary dictionary
-        This implementation makes no modifications so effectively implements a copy of the
-        input parquet to the output folder, without modification.
-        """
-        filename_col=pa.array([file_name or 'missing'] * len(table), type=pa.string())
-        table = table.append_column('transformfilepath', filename_col)
-        ts = datetime.now(timezone.utc)
-        ts_col = pa.array([ts] * len(table), type=pa.timestamp('ns', tz='UTC'))
-        table = table.append_column('transformtimestamp', ts_col)
-    
-        docs = table.to_pylist()
-
-        success, failed = self.write_index(docs)
-
-        metadata = {"rows_processed": table.num_rows ,
-                    "rows_inserted": success,
-                    "rows_failed": len(failed),
-                    "index": self.ndx,
-                    "transform": short_name
-        }
-        return [], metadata
-
-    def write_index(self, docs: list[dict]) -> tuple[int,int]:
         try:
-            client = OpenSearch(
+            self.client = OpenSearch(
                 hosts=[{'host': self.host, 'port': self.port}],
-                http_compress=True, # enables gzip compression for request bodies
-                http_auth = (self.uid, self.pwd),
+                http_compress=True,  # enables gzip compression for request bodies
+                http_auth=(self.uid, self.pwd),
                 use_ssl=True,
-                verify_certs=False,   # Set to True for production environments and provide appropriate CA certificates
+                verify_certs=False,  # Set to True for production environments and provide appropriate CA certificates
                 ssl_assert_hostname=False,
                 ssl_show_warn=False
             )
         except Exception as e:
-            logger.error(f"Failed to create OpenSearch client due to {e}")
+            self.logger.error(f"Failed to create OpenSearch client due to {e}")
             raise UnrecoverableException(f"Failed to create OpenSearch client due to {e}")
-        
-        if not client.indices.exists(index=self.ndx):
-            # Create a new index
-            client.indices.create(index=self.ndx)
 
-        actions = [
-        {
-            '_op_type': 'index',
-            '_index': self.ndx,
-            '_id': doc.get(self.docId, None),
-            '_source': doc
-        }
-        for doc in docs
+    def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
+        """
+        Insert data into an OpenSearch vector index. Create the index if it does not exist.
+        It assumes that embeddings are generated externally and stored as raw vectors in the table,
+        following the process described in the
+        https://docs.opensearch.org/latest/vector-search/creating-vector-index/#storing-raw-vectors-or-embeddings-generated-outside-of-opensearch.
+.
+        :param table: input table
+        """
+        self.logger.info(f"Transforming one table with {len(table)} rows")
+        if self.delete_index:
+            self.logger.info("Drop index initiated as the delete index option is specified")
+            self.drop_index()
+
+        if self.embeddings_column not in table.schema.names:
+            self.logger.error(f"Column {self.embeddings_column} does not exist!")
+            raise UnrecoverableException(f"Column {self.embeddings_column} does not exist!")
+
+        if not self.dimension_size:
+            self.dimension_size = len(table[self.embeddings_column][0].as_py())
+
+        ts = datetime.now(timezone.utc)
+        ts_col = pa.array([ts] * len(table), type=pa.timestamp('ns', tz='UTC'))
+        table = table.append_column('transformtimestamp', ts_col)
+        docs = table.to_pylist()
+
+        success, failed = self.write_index(docs)
+
+        metadata = {"rows_processed": table.num_rows,
+                    "rows_inserted": success,
+                    "rows_failed": len(failed),
+                    }
+        return [table], metadata
+
+    def create_index(self) -> None:
+        """
+        Creates a vector index.
+        Through an exception if error occurs.
+        """
+        try:
+            # Create a new index
+            index_body = {
+                "settings": {
+                    "index.knn": True
+                },
+                "mappings": {
+                    "properties": {
+                        self.embeddings_column: {
+                            "type": "knn_vector",
+                            "dimension": self.dimension_size
+                        }
+                    }
+                }
+            }
+            self.client.indices.create(index=self.index_name, body=index_body)
+            self.logger.info(f"index {self.index_name} created")
+        except Exception as e:
+            self.logger.error(f"Failed to create index {self.index_name} due to {e}")
+            raise e
+
+    def write_index(self, docs: list[dict]) -> tuple[int, int]:
+        """
+        Creates a vector index and write the data.
+        Through an exception if error occurs.
+        """
+        index_exists = self.check_index()
+        if index_exists:
+            self.logger.info(f"index {self.index_name} exists")
+        else:
+            self.logger.debug(f"index {self.index_name} does not exist, creating it")
+            self.create_index()
+
+        documents = [
+            {
+                "_index": self.index_name,
+                **({"_id": doc[self.doc_id_column]} if self.doc_id_column in doc else {}),
+                "_source": {
+                    **({self.doc_id_column: doc[self.doc_id_column]} if self.doc_id_column in doc else {}),
+                    self.content_column: doc[self.content_column],
+                    self.embeddings_column: doc[self.embeddings_column],
+                    **({filename_column_name_key: doc[
+                        filename_column_name_key]} if filename_column_name_key in doc else {}),
+                }
+            }
+            for doc in docs
         ]
         try:
-            success,failed = bulk(client, actions)
+            success, failed = helpers.bulk(self.client, documents, refresh="wait_for")
         except Exception as e:
-            logger.error(f"Failed to index documents into index {self.ndx} due to {e}")
-            raise UnrecoverableException(f"Failed to index documents into index {self.ndx} due to {e}") 
-        
-        logger.debug(f"Successfully indexed {success} documents into index {self.ndx} ")
+            self.logger.error(f"Failed to index documents into index {self.index_name} due to {e}")
+            raise UnrecoverableException(f"Failed to index documents into index {self.index_name} due to {e}")
+
+        self.logger.info(f"Successfully indexed {success} documents into index {self.index_name} ")
         if len(failed) > 0:
-            logger.error(f"Failed to index {len(failed)} documents into index {self.ndx} ")
+            self.logger.error(f"Failed to index {len(failed)} documents into index {self.index_name} ")
 
         return success, failed
-    
 
-    def read_index(self):
+    def check_index(self) -> bool:
         """
-        Drop the index if it exists
-        Primarily used to clean up after testing 
+        Returns true if index exists. Otherwise, returns false.
+        Through an exception if error occurs.
         """
-        client = OpenSearch(
-            hosts=[{'host': self.host, 'port': self.port}],
-            http_compress=True, # enables gzip compression for request bodies
-            http_auth = (self.uid, self.pwd),
-            use_ssl=True,
-            verify_certs=False,   # Set to True for production environments and provide appropriate CA certificates
-            ssl_assert_hostname=False,
-            ssl_show_warn=False
-        )
-        search_body = {
-            'query': {
-                'match_all': {}
-            }
-        }
         try:
-            response = client.search(index=self.ndx,body=search_body)
-            logger.debug(f"Total hits: {response['hits']['total']['value']}")
-            return pa.Table.from_pylist(response['hits']['hits'])
+            return self.client.indices.exists(index=self.index_name)
+        except Exception as e:
+            self.logger.error(f"An error occurred while checing the index: {e}")
+            raise e
 
-        except Exception  as e:
-                logger.error(f"Exception reding index  {self.ndx} : {e}")
-                raise UnrecoverableException(f"Exception reding index  {self.ndx} : {e}")
-
-    
-    def drop_index(self):
+    def drop_index(self) -> None:
         """
         Drop the index if it exists
-        Primarily used to clean up after testing 
+        Through an exception if error occurs.
         """
-        client = OpenSearch(
-            hosts=[{'host': self.host, 'port': self.port}],
-            http_compress=True, # enables gzip compression for request bodies
-            http_auth = (self.uid, self.pwd),
-            use_ssl=True,
-            verify_certs=False,   # Set to True for production environments and provide appropriate CA certificates
-            ssl_assert_hostname=False,
-            ssl_show_warn=False
-        )
-        if client.indices.exists(index=self.ndx):
-            client.indices.delete(index=self.ndx)
-            logger.info(f"Deleted index {self.ndx}")
+        index_exists = self.check_index()
+        if index_exists:
+            try:
+                self.client.indices.delete(index=self.index_name)
+                self.logger.info(f"Deleted index {self.index_name}")
+            except Exception as e:
+                self.logger.error(f"An error occurred while deleting the index: {e}")
+                raise e
         else:
-            logger.info(f"Index {self.ndx} does not exist. Nothing to delete.")
+            self.logger.info(f"Index {self.index_name} does not exist. Nothing to delete.")
 
-    def check_index(self):
-        """
-        Drop the index if it exists
-        Primarily used to clean up after testing 
-        """
-        client = OpenSearch(
-            hosts=[{'host': self.host, 'port': self.port}],
-            http_compress=True, # enables gzip compression for request bodies
-            http_auth = (self.uid, self.pwd),
-            use_ssl=True,
-            verify_certs=False,   # Set to True for production environments and provide appropriate CA certificates
-            ssl_assert_hostname=False,
-            ssl_show_warn=False
-        )
-        return  client.indices.exists(index=self.ndx)
-
-    
 
 class OpenSearchTransformConfiguration(TransformConfiguration):
-
     """
     Provides support for configuring and using the associated Transform class include
     configuration with CLI args.
@@ -219,19 +238,18 @@ class OpenSearchTransformConfiguration(TransformConfiguration):
     def add_input_params(self, parser: ArgumentParser) -> None:
         """
         Add Transform-specific arguments to the given  parser.
-        This will be included in a dictionary used to initialize the NOOPTransform.
+        This will be included in a dictionary used to initialize the OpenSearchTransform.
         By convention a common prefix should be used for all transform-specific CLI args
-        (e.g, noop_, pii_, etc.)
         """
         parser.add_argument(
             f"--{host_cli_param}",
             type=str,
             required=False,
-            default=host_default,
-            help="Specify the OpenSearch host:port"
-            )
+            default=default_host,
+            help="Specify the OpenSearch host:port. Defaults to localhost:9200"
+        )
         parser.add_argument(
-            f"--{ndx_cli_param}",
+            f"--{indx_cli_param}",
             type=str,
             required=False,
             help="Specify the name of the OpenSearch Index to write",
@@ -240,10 +258,32 @@ class OpenSearchTransformConfiguration(TransformConfiguration):
             f"--{docid_cli_param}",
             type=str,
             required=False,
-            default=doc_id_default,
+            default=default_docid_column_name,
             help="Name of the table column that identy a unique document ID",
         )
-
+        parser.add_argument(
+            f"--{embeddings_cli_param}",
+            type=str,
+            required=False,
+            default=default_embeddings_column_name,
+            help="Embeddings Column name",
+        )
+        parser.add_argument(
+            f"--{dimension_size_cli_param}",
+            type=str,
+            required=False,
+            help="Embeddings length",
+        )
+        parser.add_argument(
+            f"--{content_column_name_cli_param}",
+            default=default_content_column_name,
+            help="Column name to get content",
+        )
+        parser.add_argument(
+            f"--{delete_index_cli_param}",
+            default=default_delete_index,
+            help="If true, delete the index before applying the transform",
+        )
 
     def apply_input_params(self, args: Namespace) -> bool:
         """

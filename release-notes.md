@@ -1,5 +1,24 @@
 # Data Prep Kit Release notes
 
+## Release 1.1.4 - 9/15/2025
+
+### General
+
+1. Improved logging to remove access and secret keys from config when present for legacy runs.
+1. Resolved issues related to handling additional secrets when more than one secret added to config for kfp.
+
+
+### Transforms
+
+1. Added support for binary transforms and binary data in chained operations (new examples and test coverage provided).
+1. Updated filter transform to return an empty table while preserving the original schema when filtering results in empty table
+1. Updated tokenization2arrow to correctly process lists of texts.
+
+### Dependency updates
+
+1. Avoided using polars version 1.33 due to breaking changes.
+1. Removed lower bound constraint on boto3 dependency.
+
 ## Release 1.1.3 - 8/18/2025
 
 ## General

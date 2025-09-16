@@ -83,3 +83,12 @@ class TestOpenSearch:
         assert f"{self.x.index_name} created" in text
         assert f"Successfully indexed {tbl.num_rows} documents" in text
 
+    def test_delete_files(self, caplog):
+        tbl = pq.read_table(test_file)
+        text = str(tbl["contents"][0])
+        _, metadata = self.x.transform(tbl, test_file)
+        assert metadata['rows_inserted'] == tbl.num_rows
+        assert (1 == self.x.delete_docs_by_field_value(field_name="contents", value=text))
+        assert f"Successfully deleted all 1 docs" in caplog.text
+
+

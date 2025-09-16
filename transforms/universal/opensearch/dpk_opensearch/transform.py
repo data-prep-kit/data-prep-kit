@@ -221,6 +221,40 @@ class OpenSearchTransform(AbstractTableTransform):
         else:
             self.logger.info(f"Index {self.index_name} does not exist. Nothing to delete.")
 
+    def delete_docs_by_field_value(self, field_name, value) -> None:
+        """
+        Delete all docs where the field field_name matches the given value param.
+
+        :param field_name The name of the field in the document to match on.
+        :param value The value to compare against field_name. Documents where field_name equals this value will be deleted.
+        :return the number of docs deleted
+        """
+        if not field_name or not value:
+            raise UnrecoverableException("Missing params to delete")
+        self.logger.info(f"Delete all docs where the {field_name} field is {value}")
+        field_name_key = f"{field_name}.keyword"
+        try:
+            response = self.client.delete_by_query(
+                index=self.index_name,
+                refresh=True,
+                body={
+                    "query": {
+                        "term": {
+                            field_name_key: {
+                                "value": value
+                            }
+                        }
+                    }
+                }
+            )
+
+            self.logger.info(
+                f"Successfully deleted all {response['deleted']} docs from {field_name} file in {self.index_name} index")
+            return response['deleted']
+        except Exception as e:
+            self.logger.error(f"An error occurred: {e}")
+            raise e
+
 
 class OpenSearchTransformConfiguration(TransformConfiguration):
     """

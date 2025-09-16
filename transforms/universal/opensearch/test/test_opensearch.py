@@ -10,7 +10,7 @@ from data_processing.utils import get_logger
 logger = get_logger(__name__)
 
 from dpk_opensearch.transform import (
-    hostname, default_embeddings_column_name
+    hostname, default_embeddings_column_name, indx
 )
 
 input_test_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "test-data", "input"))
@@ -23,7 +23,12 @@ class TestOpenSearch:
             pytest.skip("Skipping all tests running from github action")
 
         logger.info("Testing connection to OpenSearch")
-        self.x = OpenSearchTransform(config={hostname: 'localhost:9200'})
+        if method.__name__ == "test_index_name":
+            from datetime import datetime
+            index_name = f"dpk_test_{datetime.now().strftime('%y%m%d%H%M%S')}"
+            self.x = OpenSearchTransform(config={indx: index_name})
+        else:
+            self.x = OpenSearchTransform(config={hostname: 'localhost:9200'})
         try:
             self.x.check_index()
         except ConnectionError:
@@ -70,3 +75,11 @@ class TestOpenSearch:
         tbl = tbl.drop(default_embeddings_column_name)
         with pytest.raises(UnrecoverableException):
             _, _ = self.x.transform(tbl, test_file)
+
+    def test_index_name(self, caplog):
+        tbl = pq.read_table(test_file)
+        _, _ = self.x.transform(tbl, test_file)
+        text = caplog.text
+        assert f"{self.x.index_name} created" in text
+        assert f"Successfully indexed {tbl.num_rows} documents" in text
+

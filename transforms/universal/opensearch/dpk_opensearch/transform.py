@@ -98,7 +98,7 @@ class OpenSearchTransform(AbstractTableTransform):
 
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
         """
-        Insert data into an OpenSearch vector index. Create the index if it does not exist.
+        Insert data into an OpenSearch k-NN vector index. Create the index if it does not exist.
         It assumes that embeddings are generated externally and stored as raw vectors in the table,
         following the process described in the
         https://docs.opensearch.org/latest/vector-search/creating-vector-index/#storing-raw-vectors-or-embeddings-generated-outside-of-opensearch.
@@ -252,7 +252,7 @@ class OpenSearchTransformConfiguration(TransformConfiguration):
             f"--{indx_cli_param}",
             type=str,
             required=False,
-            help="Specify the name of the OpenSearch Index to write",
+            help="Specify the name of the OpenSearch Index to write. If the index does not already exist, it will be automatically created.",
         )
         parser.add_argument(
             f"--{docid_cli_param}",

@@ -5,7 +5,7 @@ for details on general project conventions, transform configuration,
 testing and IDE set up.
 
 ## Summary 
-The openserach transform creates and inserts data into an [OpenSearch vector index](https://docs.opensearch.org/latest/vector-search/creating-vector-index/). 
+The openserach transform creates and inserts data into an [OpenSearch k-NN vector index](https://docs.opensearch.org/latest/vector-search/creating-vector-index/). 
 It assumes that embeddings are generated externally, following the process described in the [OpenSearch documentation](https://docs.opensearch.org/latest/vector-search/creating-vector-index/#storing-raw-vectors-or-embeddings-generated-outside-of-opensearch)
 . For details on how to search the vector store, please refer to the [OpenSearch documentation](https://docs.opensearch.org/latest/vector-search/searching-data/).
 

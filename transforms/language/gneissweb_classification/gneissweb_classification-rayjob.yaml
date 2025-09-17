@@ -1,0 +1,123 @@
+###
+# Usage:
+# envsubst < tokenization2arrow-rayjob.yaml | kubectl apply -f -
+###
+apiVersion: ray.io/v1alpha1
+kind: RayJob
+metadata:
+  name: rayjob-gw # Name of your RayCluster
+spec:
+  rayClusterSpec:
+    rayVersion: '2.36.1' # Specify the Ray version
+    headGroupSpec:
+      # Service type for the head node, can be ClusterIP or NodePort
+      serviceType: ClusterIP
+      # Ray container image for the head node
+      rayStartParams:
+        dashboard-host: '0.0.0.0'
+      template:
+        spec:
+          containers:
+            - name: ray-head
+              env:
+                - name: HF_READ_ACCESS_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: hf-secret
+                      key: HF_READ_ACCESS_TOKEN
+                - name: DPK_LOG_LEVEL 
+                  value: DEBUG
+                - name: S3_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: s3-secret
+                      key: S3_ACCESS_KEY
+                - name: S3_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: s3-secret
+                      key: S3_SECRET_KEY
+                - name: S3_ENDPOINT
+                  valueFrom:
+                    secretKeyRef:
+                      name: s3-secret
+                      key: S3_ENDPOINT
+                - name: WORKER_CPU_REQUEST
+                  valueFrom:
+                    resourceFieldRef:
+                      resource: requests.cpu
+              image: quay.io/dataprep1/data-prep-kit/gneissweb_classification-ray:1.1.4.dev0
+              imagePullPolicy: Always
+              ports:
+                - containerPort: 6379 # Ray port
+                  name: ray-client
+                - containerPort: 8265 # Ray Dashboard port
+                  name: dashboard
+              resources:
+                requests:
+                  cpu: 8
+                  memory: 16Gi
+                limits:
+                  cpu: 8
+                  memory: 16Gi
+    workerGroupSpecs:
+      - groupName: small-group
+        replicas: 5 # Initial number of worker nodes
+        minReplicas: 5
+        maxReplicas: 5
+        rayStartParams: {}
+        template:
+          spec:
+            containers:
+              - name: ray-worker
+                env:
+                  - name: HF_READ_ACCESS_TOKEN
+                    valueFrom:
+                      secretKeyRef:
+                        name: hf-secret
+                        key: HF_READ_ACCESS_TOKEN
+                  - name: DPK_LOG_LEVEL 
+                    value: DEBUG
+                  - name: S3_ACCESS_KEY
+                    valueFrom:
+                      secretKeyRef:
+                        name: s3-secret
+                        key: S3_ACCESS_KEY
+                  - name: S3_SECRET_KEY
+                    valueFrom:
+                      secretKeyRef:
+                        name: s3-secret
+                        key: S3_SECRET_KEY
+                  - name: S3_ENDPOINT
+                    valueFrom:
+                      secretKeyRef:
+                        name: s3-secret
+                        key: S3_ENDPOINT
+                image: quay.io/dataprep1/data-prep-kit/gneissweb_classification-ray:1.1.4.dev0
+                imagePullPolicy: Always
+                resources:
+                  requests:
+                    cpu: 1
+                    memory: 16Gi
+                  limits:
+                    cpu: 1
+                    memory: 16Gi
+  # Job details
+  # The command to execute the Python script
+  entrypoint: >
+    python -m dpk_gneissweb_classification.ray.runtime 
+    --gcls_model_url  "[ 's3://bucket-wikimedia-1/math.bin' ]"
+    --gcls_model_file_name "[ 'math.bin' ]"
+    --gcls_content_column_name "contents"
+    --gcls_output_label_column_name "[ 'math_label' ]"
+    --gcls_output_score_column_name "[ 'math_score' ]"
+    --run_locally False
+    --data_s3_config "{'input_folder': 'bucket-wikimedia-1/ededup', 'output_folder': 'bucket-wikimedia-1/test_0917a'}"
+    --data_files_to_use "[ '.parquet' ]" 
+    --data_max_files -1
+    --data_num_samples -1
+    --data_checkpointing False 
+    --runtime_num_workers 5
+    --runtime_worker_options "{ 'num_cpus': 0.8, 'max_restarts': 0, 'max_task_retries': 0 }" 
+
+

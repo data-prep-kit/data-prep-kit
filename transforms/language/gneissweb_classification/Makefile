@@ -13,14 +13,15 @@ TRANSFORM_NAME=$(shell basename `pwd`)
 
 ################################################################################
 
+TRANSFORM_PYTHON_SRC="-m dpk_$(TRANSFORM_NAME).runtime"
+TRANSFORM_RAY_SRC="-m dpk_$(TRANSFORM_NAME).ray.runtime"
 
 
 run-cli-sample:
 	make venv
 	source venv/bin/activate && \
-	$(PYTHON) -m dpk_$(TRANSFORM_NAME).transform_python \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
                 --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
-                --gcls_model_credential "PUT YOUR OWN HUGGINGFACE CREDENTIAL"	\
 				--gcls_model_file_name "['fasttext_medical.bin']"	\
 				--gcls_model_url "['ibm-granite/GneissWeb.Med_classifier']"\
 				--gcls_output_label_column_name "['label']"	\
@@ -29,10 +30,25 @@ run-cli-sample:
 run-cli-ray-sample: 
 	make venv
 	source venv/bin/activate && \
-	$(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.transform \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.runtime \
                 --run_locally True --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
-                --gcls_model_credential "PUT YOUR OWN HUGGINGFACE CREDENTIAL"	\
 				--gcls_model_file_name "['fasttext_medical.bin']"	\
 				--gcls_model_url "['ibm-granite/GneissWeb.Med_classifier']"\
 				--gcls_output_label_column_name "['label']"	\
 				--gcls_content_column_name "text"
+
+run-docker-ray: 
+	#make image-ray
+	docker run --env-file .env -it --rm --network=host gneissweb_classification-ray:latest $(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.runtime \
+		--run_locally True \
+		--gcls_model_file_name "[ 'math.bin' ]"	\
+		--gcls_model_url "[ 's3://bucket-wikimedia-1/math.bin' ]"\
+		--gcls_output_label_column_name "[ 'math_label' ]"	\
+		--gcls_output_score_column_name "[ 'math_score' ]"	\
+		--gcls_content_column_name "contents" \
+		--data_s3_config "{ 'input_folder': 'bucket-wikimedia-1/ededup', 'output_folder': 'bucket-wikimedia-1/test_0917' }" \
+		--data_files_to_use "[ '.parquet' ]" \
+		--data_max_files 1 \
+		--data_checkpointing False \
+		--runtime_num_workers 1 \
+		--runtime_worker_options "{ 'num_cpus': 0.8, 'max_restarts': 0, 'max_task_retries': 0 }"

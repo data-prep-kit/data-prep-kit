@@ -38,8 +38,8 @@ run-cli-ray-sample:
 				--gcls_content_column_name "text"
 
 run-docker-ray: 
-	#make image-ray
-	docker run --env-file .env -it --rm --network=host gneissweb_classification-ray:latest $(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.runtime \
+	make image-ray
+	docker run --env-file .env -dt --network=host gneissweb_classification-ray:latest $(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.runtime \
 		--run_locally True \
 		--gcls_model_file_name "[ 'math.bin' ]"	\
 		--gcls_model_url "[ 's3://bucket-wikimedia-1/math.bin' ]"\
@@ -48,7 +48,6 @@ run-docker-ray:
 		--gcls_content_column_name "contents" \
 		--data_s3_config "{ 'input_folder': 'bucket-wikimedia-1/ededup', 'output_folder': 'bucket-wikimedia-1/test_0917' }" \
 		--data_files_to_use "[ '.parquet' ]" \
-		--data_max_files 1 \
 		--data_checkpointing False \
-		--runtime_num_workers 1 \
+		--runtime_num_workers 5 \
 		--runtime_worker_options "{ 'num_cpus': 0.8, 'max_restarts': 0, 'max_task_retries': 0 }"

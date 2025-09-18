@@ -13,6 +13,14 @@ It assumes that embeddings are generated externally, following the process descr
 None
 
 ## Usage
+
+Set OpenSearch credentials via the following environment variables before running:
+
+```bash
+export OPENSEARH_USERID=admin
+export OPENSEARCH_PASSWORD=""
+```
+
 The following command line arguments are available in addition to the options provided by the launcher.
 
 ```bash

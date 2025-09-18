@@ -21,6 +21,9 @@ class SinkHandler(ABC):
     @abstractmethod
     def delete_documents(self, docs_to_delete: list[str]) -> dict[str, Any]:
         """
-        Delete documents. Returns dictionary of statistics about the deletion.
+        Delete documents.
+
+        :param docs_to_delete: A list of filenames to delete
+        :return: Returns dictionary of statistics about the deletion.
         """
         pass

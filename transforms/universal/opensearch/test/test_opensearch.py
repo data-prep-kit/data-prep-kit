@@ -136,3 +136,10 @@ class TestOpenSearch:
         assert (0 == self.x.delete_docs_by_field_value(field_name="dummy", value="dummy"))
         assert f"Successfully deleted all 0 rows" in caplog.text
 
+    def test_create_index(self, caplog):
+        tbl = pq.read_table(test_file)
+        _, _ = self.x.transform(tbl, test_file)
+        with pytest.raises(Exception):
+            self.x.create_index()
+        assert "resource_already_exists_exception" in caplog.text
+

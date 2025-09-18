@@ -133,7 +133,7 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
     def create_index(self) -> None:
         """
         Creates a vector index.
-        Through an exception if error occurs.
+        Through an exception if the index already exists or an error occurs.
         """
         try:
             # Create a new index
@@ -207,8 +207,8 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
 
     def drop_index(self) -> None:
         """
-        Drop the index if it exists
-        Through an exception if error occurs.
+        Drop the index if it exists. If the index does not exist, no action is taken.
+        An exception is raised if an error occurs.
         """
         index_exists = self.check_index()
         if index_exists:
@@ -223,10 +223,11 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
 
     def delete_documents(self, docs_to_delete: list[str]) -> Dict[str, Any]:
         """
-        Delete documents from OpenSearch index
+        Delete documents from OpenSearch index. If the documents do not exist, no action is taken.
+        An exception is raised if an error occurs.
 
-        :param docs_to_delete list of filenames to delete.
-        :return Dictionary of statistics about the deletion.
+        :param: docs_to_delete: list of filenames to delete.
+        :return: Dictionary of statistics about the deletion.
         """
         deleted_count = 0
         failed_files = []
@@ -251,7 +252,6 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
                 "not_found": not_found_files,
                 "details": {"index": self.config.get("index", "unknown")}
             }
-
         except Exception as e:
             return {
                 "success": False,
@@ -264,9 +264,9 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
         """
         Delete all docs where the field field_name matches the given value param.
 
-        :param field_name The name of the field in the document to match on.
-        :param value The value to compare against field_name. Documents where field_name equals this value will be deleted.
-        :return the number of docs deleted.
+        :param field_name: The name of the field in the document to match on.
+        :param value: The value to compare against field_name. Documents where field_name equals this value will be deleted.
+        :return: the number of docs deleted.
         """
         if not field_name or not value:
             raise UnrecoverableException("Missing params to delete")

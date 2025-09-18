@@ -12,7 +12,7 @@
 ################################################################################
 
 import pyarrow as pa
-from typing import Any
+from typing import Any, Dict
 import warnings
 import os
 from urllib3.exceptions import InsecureRequestWarning
@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 
 from opensearchpy import OpenSearch, helpers
 
-from data_processing.transform import AbstractTableTransform, TransformConfiguration
+from data_processing.transform import AbstractTableTransform, TransformConfiguration, SinkHandler
 from data_processing.utils import CLIArgumentProvider
 from data_processing.utils import UnrecoverableException, get_logger
 
@@ -59,7 +59,7 @@ default_delete_index = False
 user = os.environ.get("OPENSEARH_USERID", "admin")
 
 
-class OpenSearchTransform(AbstractTableTransform):
+class OpenSearchTransform(AbstractTableTransform, SinkHandler):
 
     def __init__(self, config: dict[str, Any]):
         super().__init__(config)
@@ -221,13 +221,52 @@ class OpenSearchTransform(AbstractTableTransform):
         else:
             self.logger.info(f"Index {self.index_name} does not exist. Nothing to delete.")
 
-    def delete_docs_by_field_value(self, field_name, value) -> None:
+    def delete_documents(self, docs_to_delete: list[str]) -> Dict[str, Any]:
+        """
+        Delete documents from OpenSearch index
+
+        :param docs_to_delete list of filenames to delete.
+        :return Dictionary of statistics about the deletion.
+        """
+        deleted_count = 0
+        failed_files = []
+        not_found_files = []
+        try:
+            for doc in docs_to_delete:
+                try:
+                    filename = os.path.basename(doc)
+                    result = self.delete_docs_by_field_value(field_name=filename_column_name_key, value=filename)
+                    if result > 0:
+                        deleted_count += 1
+                    else:
+                        not_found_files.append(filename)
+                except Exception as e:
+                    failed_files.append(filename)
+                    print(f"Failed to delete {filename}: {e}")
+
+            return {
+                "success": len(failed_files) == 0,
+                "deleted_count": deleted_count,
+                "failed": failed_files,
+                "not_found": not_found_files,
+                "details": {"index": self.config.get("index", "unknown")}
+            }
+
+        except Exception as e:
+            return {
+                "success": False,
+                "deleted_count": 0,
+                "failed": doc,
+                "details": {"error": str(e)}
+            }
+
+    def delete_docs_by_field_value(self, field_name, value) -> int:
         """
         Delete all docs where the field field_name matches the given value param.
 
         :param field_name The name of the field in the document to match on.
         :param value The value to compare against field_name. Documents where field_name equals this value will be deleted.
-        :return the number of docs deleted
+        :return the number of docs deleted.
         """
         if not field_name or not value:
             raise UnrecoverableException("Missing params to delete")
@@ -249,10 +288,12 @@ class OpenSearchTransform(AbstractTableTransform):
             )
 
             self.logger.info(
-                f"Successfully deleted all {response['deleted']} docs from {field_name} file in {self.index_name} index")
+                f"Successfully deleted all {response['deleted']} rows from {field_name} "
+                f"column with value '{value}' in {self.index_name} index")
             return response['deleted']
         except Exception as e:
-            self.logger.error(f"An error occurred: {e}")
+            self.logger.error(f"An error occurred while deleting all rows from {field_name}"
+                              f" column with value '{value}' in {self.index_name} index: {e}")
             raise e
 
 
@@ -316,7 +357,8 @@ class OpenSearchTransformConfiguration(TransformConfiguration):
         parser.add_argument(
             f"--{delete_index_cli_param}",
             default=default_delete_index,
-            help="If true, delete the index before applying the transform",
+            help="If set to true, the index will be deleted before the transform is applied. "
+                 "If the index does not exist, no action is taken."
         )
 
     def apply_input_params(self, args: Namespace) -> bool:

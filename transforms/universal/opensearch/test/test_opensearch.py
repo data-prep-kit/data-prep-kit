@@ -4,6 +4,7 @@ from data_processing.utils import UnrecoverableException
 import pyarrow.parquet as pq
 import os
 import pytest
+import pyarrow as pa
 
 from data_processing.utils import get_logger
 
@@ -83,12 +84,55 @@ class TestOpenSearch:
         assert f"{self.x.index_name} created" in text
         assert f"Successfully indexed {tbl.num_rows} documents" in text
 
-    def test_delete_files(self, caplog):
+    def test_delete_docs(self, caplog):
         tbl = pq.read_table(test_file)
         text = str(tbl["contents"][0])
         _, metadata = self.x.transform(tbl, test_file)
         assert metadata['rows_inserted'] == tbl.num_rows
         assert (1 == self.x.delete_docs_by_field_value(field_name="contents", value=text))
-        assert f"Successfully deleted all 1 docs" in caplog.text
+        assert f"Successfully deleted all 1 rows" in caplog.text
 
+    @pytest.mark.parametrize("deletion_func", ["delete_docs_by_field_value", "delete_documents"])
+    def test_delete_docs(self, deletion_func, caplog):
+        tbl = pq.read_table(test_file)
+        dummy_filename = "dummy"
+        new_col = pa.array([dummy_filename] * tbl.num_rows)
+        new_tbl = tbl.append_column("filename", new_col)
+        _, metadata = self.x.transform(new_tbl, test_file)
+        assert metadata['rows_inserted'] == new_tbl.num_rows
+        if deletion_func == "delete_documents":
+            del_metadata = self.x.delete_documents([dummy_filename])
+            assert del_metadata['deleted_count'] == 1
+            assert len(del_metadata['failed']) == 0
+            assert len(del_metadata['not_found']) == 0
+            assert del_metadata['success'] == True
+        else:
+            assert (tbl.num_rows == self.x.delete_docs_by_field_value(field_name="filename", value=dummy_filename))
+
+        assert f"Successfully deleted all {tbl.num_rows} rows" in caplog.text
+
+    @pytest.mark.parametrize("deletion_func", ["delete_docs_by_field_value", "delete_documents"])
+    def test_delete_nonexist_docs(self, deletion_func, caplog):
+        dummy_filename = "dummy"
+        tbl = pq.read_table(test_file)
+        new_col = pa.array([dummy_filename] * tbl.num_rows)
+        new_tbl = tbl.append_column("filename", new_col)
+        _, metadata = self.x.transform(new_tbl, test_file)
+        assert metadata['rows_inserted'] == new_tbl.num_rows
+        if deletion_func == "delete_documents":
+            del_metadata = self.x.delete_documents(["notexist_files"])
+            assert del_metadata['deleted_count'] == 0
+            assert len(del_metadata['failed']) == 0
+            assert len(del_metadata['not_found']) == 1
+            assert del_metadata['success'] == True
+        else:
+            assert (0 == self.x.delete_docs_by_field_value(field_name="filename", value="notexist_files"))
+        assert f"Successfully deleted all 0 rows" in caplog.text
+
+    def test_delete_nonexist_column(self, caplog):
+        tbl = pq.read_table(test_file)
+        _, metadata = self.x.transform(tbl, test_file)
+        assert metadata['rows_inserted'] == tbl.num_rows
+        assert (0 == self.x.delete_docs_by_field_value(field_name="dummy", value="dummy"))
+        assert f"Successfully deleted all 0 rows" in caplog.text
 

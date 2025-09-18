@@ -171,7 +171,6 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
         documents = [
             {
                 "_index": self.index_name,
-                **({"_id": doc[self.doc_id_column]} if self.doc_id_column in doc else {}),
                 "_source": {
                     **({self.doc_id_column: doc[self.doc_id_column]} if self.doc_id_column in doc else {}),
                     self.content_column: doc[self.content_column],

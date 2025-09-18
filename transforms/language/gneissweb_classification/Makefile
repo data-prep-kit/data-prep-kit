@@ -51,3 +51,9 @@ run-docker-ray:
 		--data_checkpointing False \
 		--runtime_num_workers 5 \
 		--runtime_worker_options "{ 'num_cpus': 0.8, 'max_restarts': 0, 'max_task_retries': 0 }"
+
+
+deploy-kuberay:
+        kind load docker-image quay.io/dataprep1/data-prep-kit/gneissweb_classification-ray:latest --name kind-cluster
+        #cd $(REPOROOT)/scripts/k8s-setup/tools && K8S_SETUP_SCRIPTS=../ KUBERAY_APISERVER=1.1.0 KUBERAY_OPERATOR=1.0.0 ./install_kuberay.sh cleanup
+        cd $(REPOROOT)/scripts/k8s-setup/tools && K8S_SETUP_SCRIPTS=../ KUBERAY_APISERVER=1.1.0 KUBERAY_OPERATOR=1.0.0 ./install_kuberay.sh deploy

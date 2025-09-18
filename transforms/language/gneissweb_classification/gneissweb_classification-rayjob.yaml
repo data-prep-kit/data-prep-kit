@@ -1,6 +1,6 @@
 ###
 # Usage:
-# envsubst < tokenization2arrow-rayjob.yaml | kubectl apply -f -
+# envsubst < gneissweb_classification-rayjob.yaml | kubectl apply -f -
 ###
 apiVersion: ray.io/v1alpha1
 kind: RayJob
@@ -20,11 +20,11 @@ spec:
           containers:
             - name: ray-head
               env:
-                - name: HF_READ_ACCESS_TOKEN
-                  valueFrom:
-                    secretKeyRef:
-                      name: hf-secret
-                      key: HF_READ_ACCESS_TOKEN
+#                - name: HF_READ_ACCESS_TOKEN
+#                  valueFrom:
+#                    secretKeyRef:
+#                      name: hf-secret
+#                      key: HF_READ_ACCESS_TOKEN
                 - name: DPK_LOG_LEVEL 
                   value: DEBUG
                 - name: S3_ACCESS_KEY
@@ -46,7 +46,7 @@ spec:
                   valueFrom:
                     resourceFieldRef:
                       resource: requests.cpu
-              image: quay.io/dataprep1/data-prep-kit/gneissweb_classification-ray:1.1.4.dev0
+              image: quay.io/dataprep1/data-prep-kit/gneissweb_classification-ray:latest
               imagePullPolicy: Always
               ports:
                 - containerPort: 6379 # Ray port
@@ -71,11 +71,11 @@ spec:
             containers:
               - name: ray-worker
                 env:
-                  - name: HF_READ_ACCESS_TOKEN
-                    valueFrom:
-                      secretKeyRef:
-                        name: hf-secret
-                        key: HF_READ_ACCESS_TOKEN
+#                  - name: HF_READ_ACCESS_TOKEN
+#                    valueFrom:
+#                      secretKeyRef:
+#                        name: hf-secret
+#                        key: HF_READ_ACCESS_TOKEN
                   - name: DPK_LOG_LEVEL 
                     value: DEBUG
                   - name: S3_ACCESS_KEY
@@ -93,7 +93,7 @@ spec:
                       secretKeyRef:
                         name: s3-secret
                         key: S3_ENDPOINT
-                image: quay.io/dataprep1/data-prep-kit/gneissweb_classification-ray:1.1.4.dev0
+                image: quay.io/dataprep1/data-prep-kit/gneissweb_classification-ray:latest
                 imagePullPolicy: Always
                 resources:
                   requests:
@@ -112,7 +112,7 @@ spec:
     --gcls_output_label_column_name "[ 'math_label' ]"
     --gcls_output_score_column_name "[ 'math_score' ]"
     --run_locally False
-    --data_s3_config "{'input_folder': 'bucket-wikimedia-1/ededup', 'output_folder': 'bucket-wikimedia-1/test_0917a'}"
+    --data_s3_config "{'input_folder': 'bucket-wikimedia-1/ededup', 'output_folder': 'bucket-wikimedia-1/math_0918'}"
     --data_files_to_use "[ '.parquet' ]" 
     --data_max_files -1
     --data_num_samples -1

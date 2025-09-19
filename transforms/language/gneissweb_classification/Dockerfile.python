@@ -21,7 +21,8 @@ RUN  pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}
 # set up environment required to install and use huggingface and fasttext
 USER root
 RUN apt update && apt install gcc g++ -y
-RUN mkdir -p /home/dpk/.cache/huggingface/hub && chmod -R 777 /home/dpk/.cache/huggingface/hub
+RUN mkdir -p /home/dpk/.cache/huggingface/hub && chmod -R 777 /home/dpk/.cache
+RUN chown -R dpk:root /home/dpk/.cache
 USER dpk
 
 COPY --chown=dpk:root dpk_gneissweb_classification/ dpk_gneissweb_classification/

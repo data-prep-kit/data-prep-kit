@@ -37,22 +37,13 @@ run-cli-ray-sample:
 				--gcls_output_label_column_name "['label']"	\
 				--gcls_content_column_name "text"
 
-run-cli-s3:
-	#make venv
-	source venv/bin/activate && \
-	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
-        --gcls_model_file_name "[ 'fasttext_medical.bin' ]" \
-        --gcls_model_url "[ 'ibm-granite/GneissWeb.Med_classifier' ]" \
-        --gcls_output_label_column_name "[ 'med_label' ]" \
-        --gcls_output_score_column_name "[ 'med_score' ]" \
-        --gcls_content_column_name "contents" \
-        --data_s3_config "{ 
-			input_folder': 'bucket-wikimedia-1/ededup', 'output_folder': 'bucket-wikimedia-1/gneiss-med-docling' }" \
-        --data_files_to_use "[ '.parquet' ]" \
-        --data_checkpointing False
-
 run-math-s3:
-	#make venv
+ifndef OUTPUT_FOLDER
+	$(info >>>> OUTPUT_FOLDER is not defined. Must specify a valid output folder in current bucket)
+	$(info >>>> EXAMPLE- make OUTPUT_FOLDER=test_$(shell date +%m%d%H) run-math-s3)
+	$(error OUTPUT_FOLDER is required)
+endif
+	make venv
 	source venv/bin/activate && \
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
 		--gcls_n_processes 1 \
@@ -61,42 +52,58 @@ run-math-s3:
 		--gcls_output_label_column_name "[ 'math_label' ]"	\
 		--gcls_output_score_column_name "[ 'math_score' ]"	\
         --gcls_content_column_name "contents" \
-        --data_s3_config "{ 'input_folder': 'bucket-wikimedia-1/ededup', 'output_folder': 'bucket-wikimedia-1/test_0919p' }" \
+        --data_s3_config "{ 'input_folder': 'bucket-wikimedia-1/ededup', 'output_folder': 'bucket-wikimedia-1/$(OUTPUT_FOLDER)' }" \
         --data_files_to_use "[ '.parquet' ]" \
         --data_checkpointing False
 
-run-cli-ray-s3:
-	make venv
+run-math-ray-s3:
+ifndef OUTPUT_FOLDER
+	$(info >>>> OUTPUT_FOLDER is not defined. Must specify a valid output folder in current bucket)
+	$(info >>>> EXAMPLE- make OUTPUT_FOLDER=test_$(shell date +%m%d%H) run-math-ray-s3)
+	$(error OUTPUT_FOLDER is required)
+endif
+	#make venv
 	source venv/bin/activate && \
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.runtime \
         --run_locally True \
-        --gcls_model_file_name "[ 'fasttext_medical.bin' ]” \
-        --gcls_model_url "[ 'ibm-granite/GneissWeb.Med_classifier' ]"\
-        --gcls_output_label_column_name "[ 'med_label' ]”   \
-        --gcls_output_score_column_name "[ 'med_score' ]”   \
-        --gcls_content_column_name "contents” \
-        --data_s3_config "{ 'input_folder': 'bucket-wikimedia-1/ededup', 'output_folder': 'bucket-wikimedia-1/gneiss-med-docling' }” \
-        --data_files_to_use "[ '.parquet' ]” \
+		--gcls_model_file_name "[ 'math.bin' ]"	\
+		--gcls_model_url "[ 's3://bucket-wikimedia-1/math.bin' ]"\
+		--gcls_output_label_column_name "[ 'math_label' ]"	\
+		--gcls_output_score_column_name "[ 'math_score' ]"	\
+        --gcls_content_column_name "contents" \
+        --data_s3_config "{ 'input_folder': 'bucket-wikimedia-1/ededup', 'output_folder': 'bucket-wikimedia-1/$(OUTPUT_FOLDER)' }" \
+        --data_files_to_use "[ '.parquet' ]" \
         --data_checkpointing False \
         --runtime_num_workers 5 \
-        --runtime_worker_options "{ 'num_cpus': 0.8, 'max_restarts': 0, 'max_task_retries': 0 }”
+        --runtime_worker_options "{ 'num_cpus': 0.8, 'max_restarts': 0, 'max_task_retries': 0 }"
 
-run-docker-ray: 
-	#DOCKER_PLATFORM=linux/arm64 make image-ray
-	docker run --env-file .env -it -v ~/tmp:/tmp --shm-size=8gb --memory=8g gneissweb_classification-ray:latest $(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.runtime \
+docker-math-ray-s3:
+# Fails on MacOs
+ifndef OUTPUT_FOLDER
+	$(info >>>> OUTPUT_FOLDER is not defined. Must specify a valid output folder in current bucket)
+	$(info >>>> EXAMPLE- make OUTPUT_FOLDER=test_$(shell date +%m%d%H) docker-math-ray-s3)
+	$(error OUTPUT_FOLDER is required)
+endif
+	DOCKER_PLATFORM=linux/arm64 make image-ray
+	docker run --env-file .env -dt -v ~/tmp:/tmp --shm-size=8gb --memory=8g gneissweb_classification-ray:latest $(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.runtime \
 		--run_locally True \
-        --gcls_model_file_name "[ 'fasttext_medical.bin' ]” \
-        --gcls_model_url "[ 'ibm-granite/GneissWeb.Med_classifier' ]"\
-        --gcls_output_label_column_name "[ 'med_label' ]”   \
-        --gcls_output_score_column_name "[ 'med_score' ]”   \
+		--gcls_model_file_name "[ 'math.bin' ]"	\
+		--gcls_model_url "[ 's3://bucket-wikimedia-1/math.bin' ]"\
+		--gcls_output_label_column_name "[ 'math_label' ]"	\
+		--gcls_output_score_column_name "[ 'math_score' ]"	\
 		--gcls_content_column_name "contents" \
-		--data_s3_config "{ 'input_folder': 'bucket-wikimedia-1/ededup', 'output_folder': 'bucket-wikimedia-1/test_0919' }" \
+		--data_s3_config "{ 'input_folder': 'bucket-wikimedia-1/ededup', 'output_folder': 'bucket-wikimedia-1/$(OUTPUT_FOLDER)' }" \
 		--data_files_to_use "[ '.parquet' ]" \
 		--data_checkpointing False \
 		--runtime_num_workers 1 \
 		--runtime_worker_options "{ 'num_cpus': 1, 'max_restarts': 0, 'max_task_retries': 0 }"
 
-run-docker-math-s3: 
+docker-math-s3:
+ifndef OUTPUT_FOLDER
+	$(info >>>> OUTPUT_FOLDER is not defined. Must specify a valid output folder in current bucket)
+	$(info >>>> EXAMPLE- make OUTPUT_FOLDER=test_$(shell date +%m%d%H) docker-math-s3)
+	$(error OUTPUT_FOLDER is required)
+endif
 	DOCKER_PLATFORM=linux/arm64 make image-python
 	docker run --env-file .env -dt gneissweb_classification-python:latest $(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
 		--gcls_model_file_name "[ 'math.bin' ]"	\
@@ -104,7 +111,7 @@ run-docker-math-s3:
 		--gcls_output_label_column_name "[ 'math_label' ]"	\
 		--gcls_output_score_column_name "[ 'math_score' ]"	\
 		--gcls_content_column_name "contents" \
-		--data_s3_config "{ 'input_folder': 'bucket-wikimedia-1/ededup', 'output_folder': 'bucket-wikimedia-1/test_0919d' }" \
+		--data_s3_config "{ 'input_folder': 'bucket-wikimedia-1/ededup', 'output_folder': 'bucket-wikimedia-1/$(OUTPUT_FOLDER)' }" \
 		--data_files_to_use "[ '.parquet' ]" \
 		--data_checkpointing False
 

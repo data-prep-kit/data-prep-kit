@@ -24,7 +24,7 @@ from opensearchpy import OpenSearch, helpers
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
 from data_processing.utils import CLIArgumentProvider
 from data_processing.utils import UnrecoverableException, get_logger
-from .sink_handler import SinkHandler
+from dpk_opensearch.sink_handler import SinkHandler
 
 # Suppress SSL warnings for self-signed certificates
 warnings.simplefilter('ignore', InsecureRequestWarning)
@@ -39,6 +39,8 @@ embeddings_cli_param = f"{cli_prefix}embeddings_column_name"
 dimension_size_cli_param = f"{cli_prefix}dimension_size"
 content_column_name_cli_param = f"{cli_prefix}content_column_name"
 delete_index_cli_param = f"{cli_prefix}delete_index"
+disable_security_cli_param = f"{cli_prefix}disable_security"
+verify_certs_cli_param = f"{cli_prefix}verify_certs"
 
 default_host = "localhost:9200"
 default_username = "admin"
@@ -56,40 +58,58 @@ filename_column_name_key = "filename"
 class OpenSearchTransform(AbstractTableTransform, SinkHandler):
 
     def __init__(self, config: dict[str, Any]):
+        def set_client() -> None:
+            """
+            Set OpenSearch client. Through exception if an error occurs.
+            """
+            try:
+                if self.disable_security is True:
+                    self.logger.info("OpenSearch security is disabled")
+                    self.client = OpenSearch(
+                        hosts=[{'host': self.host, 'port': self.port}],
+                        http_compress=True,  # enables gzip compression for request bodies
+                    )
+                else:
+                    self.logger.info("OpenSearch security is enabled")
+                    try:
+                        pwd = os.getenv("OPENSEARCH_PASSWORD")
+                    except KeyError as e:
+                        self.logger.error(
+                            f"Environment variable OPENSEARCH_PASSWORD must be define. Raising Exception: {e}")
+                        raise UnrecoverableException("Missing credentials")
+                    user_name = os.environ.get("OPENSEARH_USERID", "admin")
+                    self.client = OpenSearch(
+                        hosts=[{'host': self.host, 'port': self.port}],
+                        http_compress=True,  # enables gzip compression for request bodies
+                        http_auth=(user_name, pwd),
+                        use_ssl=True,
+                        # Set to True for production environments and provide appropriate CA certificates
+                        verify_certs=self.verify_certs,
+                        sl_assert_hostname=False,
+                        ssl_show_warn=False
+                    )
+            except Exception as e:
+                self.logger.error(f"Failed to create OpenSearch client due to {e}")
+                raise UnrecoverableException(f"Failed to create OpenSearch client due to {e}")
+
         super().__init__(config)
         self.logger = get_logger(__name__)
 
         x = config.get(host_cli_param, default_host).split(':')
-        self.host = x[0]
-        self.port = x[1] if len(x) > 1 else default_port
-        self.doc_id_column = config.get(docid_cli_param, default_docid_column_name)
 
+        self.doc_id_column = config.get(docid_cli_param, default_docid_column_name)
         self.index_name = config.get(index_cli_param, f"dpk_{datetime.now().strftime('%y%m%d%H%M%S')}")
         self.embeddings_column = config.get(embeddings_cli_param, default_embeddings_column_name)
         self.content_column = config.get(content_column_name_cli_param, default_content_column_name)
         self.dimension_size = config.get(dimension_size_cli_param)
         self.delete_index = config.get(delete_index_cli_param, default_delete_index)
+        self.verify_certs = config.get("verify_certs", False)
+        self.disable_security = config.get("disable_security", False)
         self.apply_knn = False
 
-        self.uid = user
-        try:
-            self.pwd = os.environ["OPENSEARCH_PASSWORD"]
-        except KeyError as e:
-            self.logger.error(f"Environment variable OPENSEARCH_PASSWORD must be define. Raising Exception: {e}")
-            raise UnrecoverableException("Missing credentials")
-        try:
-            self.client = OpenSearch(
-                hosts=[{'host': self.host, 'port': self.port}],
-                http_compress=True,  # enables gzip compression for request bodies
-                http_auth=(self.uid, self.pwd),
-                use_ssl=True,
-                verify_certs=False,  # Set to True for production environments and provide appropriate CA certificates
-                ssl_assert_hostname=False,
-                ssl_show_warn=False
-            )
-        except Exception as e:
-            self.logger.error(f"Failed to create OpenSearch client due to {e}")
-            raise UnrecoverableException(f"Failed to create OpenSearch client due to {e}")
+        self.host = x[0]
+        self.port = x[1] if len(x) > 1 else default_port
+        set_client()
 
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
         """
@@ -392,6 +412,18 @@ class OpenSearchTransformConfiguration(TransformConfiguration):
             default=default_delete_index,
             help="If set to true, the index will be deleted before the transform is applied. "
                  "If the index does not exist, no action is taken."
+        )
+        parser.add_argument(
+            f"--{disable_security_cli_param}",
+            default=False,
+            help="If True, the OpenSearch server works without security checks and the client should use http, "
+                 "without username and password. If False, OPENSEARH_USERID and OPENSEARCH_PASSWORD "
+                 "environment variables must be defined.",
+        )
+        parser.add_argument(
+            f"--{verify_certs_cli_param}",
+            default=False,
+            help="If True, the OpenSearch client and server should use correct SSL certificates.",
         )
 
     def apply_input_params(self, args: Namespace) -> bool:

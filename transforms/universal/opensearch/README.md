@@ -13,18 +13,10 @@ None
 
 ## Usage
 
-Set OpenSearch credentials via the following environment variables before running:
-
-```bash
-export OPENSEARH_USERID=admin
-export OPENSEARCH_PASSWORD=""
-```
-
 The following command line arguments are available in addition to the options provided by the launcher.
 
 ```bash
-  --os_host OS_HOST     Specify the OpenSearch host:port. Defaults to localhost:9200
-  --os_index OS_INDEX   Specify the name of the OpenSearch Index to write
+  --os_index OS_INDEX   Specify the name of the OpenSearch Index to write. If the index does not already exist, it will be automatically created.
   --os_document_id_column_name OS_DOCUMENT_ID_COLUMN_NAME
                         Name of the table column that identy a unique document ID
   --os_embeddings_column_name OS_EMBEDDINGS_COLUMN_NAME
@@ -34,6 +26,21 @@ The following command line arguments are available in addition to the options pr
   --os_content_column_name OS_CONTENT_COLUMN_NAME
                         Column name to get content
   --os_delete_index OS_DELETE_INDEX
-                        If true, delete the index before applying the transform
+                        If set to true, the index will be deleted before the transform is applied. 
+                        If the index does not exist, no action is taken.
+  --os_disable_security OS_DISABLE_SECURITY
+                        If True, the OpenSearch server works without security checks and the client should use http, 
+                        without username and password. If False, OPENSEARH_USERID and OPENSEARCH_PASSWORD 
+                        environment variables must be defined.
+  --os_verify_certs OS_VERIFY_CERTS
+                        If True, the OpenSearch client and server should use correct SSL certificates
+```
+
+If `os_disable_security` option is `False`, set OpenSearch credentials via the following environment 
+variables before running:
+
+```bash
+export OPENSEARH_USERID=admin
+export OPENSEARCH_PASSWORD=""
 ```
 

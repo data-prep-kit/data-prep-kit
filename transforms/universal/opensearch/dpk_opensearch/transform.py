@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# (C) Copyright IBM Corp. 2024.
+# (C) Copyright IBM Corp. 2025.
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -21,32 +21,24 @@ from datetime import datetime, timezone
 
 from opensearchpy import OpenSearch, helpers
 
-from data_processing.transform import AbstractTableTransform, TransformConfiguration, SinkHandler
+from data_processing.transform import AbstractTableTransform, TransformConfiguration
 from data_processing.utils import CLIArgumentProvider
 from data_processing.utils import UnrecoverableException, get_logger
+from .sink_handler import SinkHandler
 
 # Suppress SSL warnings for self-signed certificates
 warnings.simplefilter('ignore', InsecureRequestWarning)
 warnings.filterwarnings('ignore', message='Connecting to .* using SSL with verify_certs=False is insecure')
 
-hostname = "host"
-indx = "index"
-docid_column_name_key = "document_id_column_name"
-dimension_size = "dimension_size"
-content_column_name_key = "content_column_name"
-embeddings_column_name_key = "embeddings_column_name"
-filename_column_name_key = "filename"
-delete_index = "delete_index"
-
 short_name = "os"
 cli_prefix = f"{short_name}_"
-host_cli_param = f"{cli_prefix}{hostname}"
-indx_cli_param = f"{cli_prefix}{indx}"
-docid_cli_param = f"{cli_prefix}{docid_column_name_key}"
-embeddings_cli_param = f"{cli_prefix}{embeddings_column_name_key}"
-dimension_size_cli_param = f"{cli_prefix}{dimension_size}"
-content_column_name_cli_param = f"{cli_prefix}{content_column_name_key}"
-delete_index_cli_param = f"{cli_prefix}{delete_index}"
+host_cli_param = f"{cli_prefix}host"
+index_cli_param = f"{cli_prefix}index"
+docid_cli_param = f"{cli_prefix}document_id_column_name"
+embeddings_cli_param = f"{cli_prefix}embeddings_column_name"
+dimension_size_cli_param = f"{cli_prefix}dimension_size"
+content_column_name_cli_param = f"{cli_prefix}content_column_name"
+delete_index_cli_param = f"{cli_prefix}delete_index"
 
 default_host = "localhost:9200"
 default_username = "admin"
@@ -58,6 +50,8 @@ default_filename = "filename"
 default_delete_index = False
 user = os.environ.get("OPENSEARH_USERID", "admin")
 
+filename_column_name_key = "filename"
+
 
 class OpenSearchTransform(AbstractTableTransform, SinkHandler):
 
@@ -65,16 +59,17 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
         super().__init__(config)
         self.logger = get_logger(__name__)
 
-        x = config.get(hostname, default_host).split(':')
+        x = config.get(host_cli_param, default_host).split(':')
         self.host = x[0]
         self.port = x[1] if len(x) > 1 else default_port
-        self.doc_id_column = config.get(docid_column_name_key, default_docid_column_name)
+        self.doc_id_column = config.get(docid_cli_param, default_docid_column_name)
 
-        self.index_name = config.get(indx, f"dpk_{datetime.now().strftime('%y%m%d%H%M%S')}")
-        self.embeddings_column = config.get(embeddings_column_name_key, default_embeddings_column_name)
-        self.content_column = config.get(content_column_name_key, default_content_column_name)
-        self.dimension_size = config.get(dimension_size)
-        self.delete_index = config.get(delete_index, default_delete_index)
+        self.index_name = config.get(index_cli_param, f"dpk_{datetime.now().strftime('%y%m%d%H%M%S')}")
+        self.embeddings_column = config.get(embeddings_cli_param, default_embeddings_column_name)
+        self.content_column = config.get(content_column_name_cli_param, default_content_column_name)
+        self.dimension_size = config.get(dimension_size_cli_param)
+        self.delete_index = config.get(delete_index_cli_param, default_delete_index)
+        self.apply_knn = False
 
         self.uid = user
         try:
@@ -98,11 +93,9 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
 
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
         """
-        Insert data into an OpenSearch k-NN vector index. Create the index if it does not exist.
-        It assumes that embeddings are generated externally and stored as raw vectors in the table,
-        following the process described in the
-        https://docs.opensearch.org/latest/vector-search/creating-vector-index/#storing-raw-vectors-or-embeddings-generated-outside-of-opensearch.
-.
+        Insert data into an OpenSearch vector index. Create the index if it does not exist.
+        If an embeddings column is present, a k-NN vector index is created; otherwise, a regular index is used.
+
         :param table: input table
         """
         self.logger.info(f"Transforming one table with {len(table)} rows")
@@ -110,19 +103,26 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
             self.logger.info("Drop index initiated as the delete index option is specified")
             self.drop_index()
 
-        if self.embeddings_column not in table.schema.names:
-            self.logger.error(f"Column {self.embeddings_column} does not exist!")
-            raise UnrecoverableException(f"Column {self.embeddings_column} does not exist!")
+        if self.embeddings_column in table.schema.names:
+            self.logger.info(f"Column {self.embeddings_column} exists, apply k-NN index")
+            if not self.dimension_size:
+                self.dimension_size = len(table[self.embeddings_column][0].as_py())
+            self.apply_knn = True
+        else:
+            self.logger.info(f"Column {self.embeddings_column} does not exist, creating a regular index")
 
-        if not self.dimension_size:
-            self.dimension_size = len(table[self.embeddings_column][0].as_py())
+        if filename_column_name_key not in table.schema.names:
+            filename = os.path.basename(file_name)
+            self.logger.info(f"{filename_column_name_key} column is missing, add it with the value {filename}")
+            new_col = pa.array([filename] * len(table))
+            table = table.append_column(filename_column_name_key, new_col)
 
         ts = datetime.now(timezone.utc)
         ts_col = pa.array([ts] * len(table), type=pa.timestamp('ns', tz='UTC'))
         table = table.append_column('transformtimestamp', ts_col)
         docs = table.to_pylist()
 
-        success, failed = self.write_index(docs)
+        success, failed = self.store_data(docs)
 
         metadata = {"rows_processed": table.num_rows,
                     "rows_inserted": success,
@@ -130,11 +130,27 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
                     }
         return [table], metadata
 
-    def create_index(self) -> None:
+    def create_index(self, body: Any = None) -> None:
         """
-        Creates a vector index.
-        Through an exception if the index already exists or an error occurs.
+        Create an index. Through exception if the index already exists or an error occurs.
+        :param body: The configuration for the index (`settings` and mappings`)
         """
+        try:
+            self.client.indices.create(index=self.index_name, body=body)
+            self.logger.info(f"index {self.index_name} created")
+        except Exception as e:
+            self.logger.error(f"Failed to create index {self.index_name} due to {e}")
+            raise e
+
+    def get_knn_configuration(self) -> Any:
+        """
+        Get knn configuration
+        :return: The configuration for the index (`settings` and `mappings`)
+        """
+        if not self.dimension_size:
+            self.logger.error("dimension_size is missing")
+            raise UnrecoverableException
+
         try:
             # Create a new index
             index_body = {
@@ -150,39 +166,54 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
                     }
                 }
             }
-            self.client.indices.create(index=self.index_name, body=index_body)
-            self.logger.info(f"index {self.index_name} created")
+            return  index_body
         except Exception as e:
-            self.logger.error(f"Failed to create index {self.index_name} due to {e}")
+            self.logger.error(f"Failed to create knn index {self.index_name} configuration due to {e}")
             raise e
 
-    def write_index(self, docs: list[dict]) -> tuple[int, int]:
+    def get_actions(self, docs: list[dict]) -> list:
         """
-        Creates a vector index and write the data.
+        Get the actions to be executed.
+
+        :param docs: The documents to index
+        :return: Iterable containing the actions to be executed
+        """
+        try:
+            actions = [
+                {
+                    '_op_type': 'index',
+                    '_index': self.index_name,
+                    **({"_id": doc[self.doc_id_column]} if self.doc_id_column in doc else {}),
+                    '_source': doc
+                }
+                for doc in docs
+            ]
+            return actions
+        except Exception as e:
+            self.logger.error(f"Failed to get actions due to {e}")
+            raise UnrecoverableException(f"Failed to get actions due to {e}")
+
+    def store_data(self, docs: list[dict]) -> tuple[int, int]:
+        """
+        Creates an index (k-NN vector index or regular index) and writes the data.
+        The index is created only if it does not already exist.
         Through an exception if error occurs.
+        :param docs: the documents to index
+        :return: A tuple containing the number of success and failed docs.
         """
         index_exists = self.check_index()
         if index_exists:
             self.logger.info(f"index {self.index_name} exists")
         else:
+            config = None
             self.logger.debug(f"index {self.index_name} does not exist, creating it")
-            self.create_index()
+            if self.apply_knn:
+                config = self.get_knn_configuration()
+            self.create_index(body=config)
 
-        documents = [
-            {
-                "_index": self.index_name,
-                "_source": {
-                    **({self.doc_id_column: doc[self.doc_id_column]} if self.doc_id_column in doc else {}),
-                    self.content_column: doc[self.content_column],
-                    self.embeddings_column: doc[self.embeddings_column],
-                    **({filename_column_name_key: doc[
-                        filename_column_name_key]} if filename_column_name_key in doc else {}),
-                }
-            }
-            for doc in docs
-        ]
+        actions = self.get_actions(docs)
         try:
-            success, failed = helpers.bulk(self.client, documents, refresh="wait_for")
+            success, failed = helpers.bulk(client=self.client, actions=actions, stats_only=False, refresh="wait_for")
         except Exception as e:
             self.logger.error(f"Failed to index documents into index {self.index_name} due to {e}")
             raise UnrecoverableException(f"Failed to index documents into index {self.index_name} due to {e}")
@@ -195,8 +226,9 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
 
     def check_index(self) -> bool:
         """
-        Returns true if index exists. Otherwise, returns false.
+        Checks whether the index exists.
         Through an exception if error occurs.
+        :return: True if index exists. Otherwise, returns false.
         """
         try:
             return self.client.indices.exists(index=self.index_name)
@@ -259,7 +291,7 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
                 "details": {"error": str(e)}
             }
 
-    def delete_docs_by_field_value(self, field_name, value) -> int:
+    def delete_docs_by_field_value(self, field_name: str, value: Any) -> int:
         """
         Delete all docs where the field field_name matches the given value param.
 
@@ -269,7 +301,7 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
         """
         if not field_name or not value:
             raise UnrecoverableException("Missing params to delete")
-        self.logger.info(f"Delete all docs where the {field_name} field is {value}")
+        self.logger.info(f"Delete all docs where the {field_name} field value is {value}")
         field_name_key = f"{field_name}.keyword"
         try:
             response = self.client.delete_by_query(
@@ -309,6 +341,8 @@ class OpenSearchTransformConfiguration(TransformConfiguration):
             remove_from_metadata=[],
         )
 
+        self.logger = get_logger(__name__)
+
     def add_input_params(self, parser: ArgumentParser) -> None:
         """
         Add Transform-specific arguments to the given  parser.
@@ -323,7 +357,7 @@ class OpenSearchTransformConfiguration(TransformConfiguration):
             help="Specify the OpenSearch host:port. Defaults to localhost:9200"
         )
         parser.add_argument(
-            f"--{indx_cli_param}",
+            f"--{index_cli_param}",
             type=str,
             required=False,
             help="Specify the name of the OpenSearch Index to write. If the index does not already exist, it will be automatically created.",
@@ -366,7 +400,7 @@ class OpenSearchTransformConfiguration(TransformConfiguration):
         :param args: user defined arguments.
         :return: True, if validate pass or False otherwise
         """
-        captured = CLIArgumentProvider.capture_parameters(args, cli_prefix, False)
+        captured = CLIArgumentProvider.capture_parameters(args, cli_prefix, True)
 
         self.params = self.params | captured
         self.logger.info(f"OpenSearch parameters are : {self.params}")

@@ -114,7 +114,7 @@ spec:
     --gcls_output_label_column_name "[ 'math_label' ]"
     --gcls_output_score_column_name "[ 'math_score' ]"
     --run_locally False
-    --data_s3_config "{'input_folder': '{S3_BUCKET_PATH}/${GW_MATH_INPUT}', 'output_folder': '{S3_BUCKET_PATH}/${GW_MATH_OUTPUT}'}"
+    --data_s3_config "{'input_folder': '$S3_BUCKET_PATH/$GW_MATH_INPUT', 'output_folder': '$S3_BUCKET_PATH/$GW_MATH_OUTPUT'}"
     --data_files_to_use "[ '.parquet' ]" 
     --data_max_files -1
     --data_num_samples -1

@@ -6,13 +6,13 @@ spec:
   workspaces:
     - name: dpk-pipeline-ws
   params:
-    - name: S3_BUCKET_PATH  # Define a parameter for the Pipeline
+    - name: S3_BUCKET_PATH
       description: Bucket name or bucket name and path for the root S3 folder (e.g.. bucket-wikimedia-1 or bucket-wikimedia-1/run1, etc) 
       type: string
-    - name: GW_MATH_OUTPUT  # Define the parameter for the Pipeline
+    - name: GW_MATH_OUTPUT
       type: string
       description: The output folder for the GW Math Classifier
-    - name: GW_MATH_INPUT  # Define the parameter for the Pipeline
+    - name: GW_MATH_INPUT
       type: string
       description: The input folder for the GW Math Classifier
   tasks:

@@ -1,5 +1,8 @@
     
----
+#####################################
+## Usage
+## kubectl apply -f rayjobs-rbac.yaml
+#####################################
 # ray-job-rbac.yaml
 # Define a Role that allows read-only access to RayJob resources in the 'default' namespace.
 apiVersion: rbac.authorization.k8s.io/v1
@@ -10,6 +13,9 @@ rules:
 - apiGroups: ["ray.io"]
   resources: ["rayjobs"]
   verbs: ["create", "get", "watch", "list", "update", "patch", "delete"]
+- apiGroups: ["batch"]
+  resources: ["jobs"]
+  verbs: ["get", "list", "watch"] # "get" is required, "list" and "watch" are often useful too
 
 ---
 # Define a RoleBinding to link the 'rayjobs-reader' role to the 'default' service account.

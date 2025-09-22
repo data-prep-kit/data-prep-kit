@@ -1,14 +1,13 @@
 ###
 # Usage:
 # envsubst < gneissweb_classification-rayjob.yaml | kubectl apply -f -
-# kubectl create configmap gneissweb_classification-cm.yaml --from-file=mgneissweb_classification-rayjob.yaml
-# kubectl apply -f ray-job-configmap.yaml
 ###
 apiVersion: ray.io/v1alpha1
 kind: RayJob
 metadata:
   name: rayjob-gw # Name of your RayCluster
 spec:
+  shutdownAfterJobFinishes: true
   rayClusterSpec:
     rayVersion: '2.36.1' # Specify the Ray version
     headGroupSpec:
@@ -116,8 +115,7 @@ spec:
     --run_locally False
     --data_s3_config "{'input_folder': '$S3_BUCKET_PATH/$GW_MATH_INPUT', 'output_folder': '$S3_BUCKET_PATH/$GW_MATH_OUTPUT'}"
     --data_files_to_use "[ '.parquet' ]" 
-    --data_max_files -1
-    --data_num_samples -1
+    --data_max_files 2
     --data_checkpointing False 
     --runtime_num_workers 5
     --runtime_worker_options "{ 'num_cpus': 0.8, 'max_restarts': 0, 'max_task_retries': 0 }" 

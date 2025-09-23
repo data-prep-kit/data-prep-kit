@@ -1,3 +1,4 @@
+kubectl get rayjobs -o yaml | kubectl delete -f -
 kubectl get pipelinerun -o yaml | kubectl delete -f - 
 kubectl get pipeline -o yaml | kubectl delete -f - 
 kubectl get task -o yaml | kubectl delete -f -

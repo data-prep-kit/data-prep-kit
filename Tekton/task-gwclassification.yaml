@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
-  name: gw-classification-task
+  name: gwclassification
 spec:
   params:
     - name: S3_BUCKET_PATH
@@ -21,8 +21,6 @@ spec:
         export S3_BUCKET_PATH=$(params.S3_BUCKET_PATH)
         export GW_MATH_INPUT=$(params.GW_MATH_INPUT)
         export GW_MATH_OUTPUT=$(params.GW_MATH_OUTPUT)
-        git clone -b tekton-pipelines --depth 1 https://github.com/touma-I/data-prep-kit-pkg.git /workspace/rayjobs/data-prep-kit
-        # Substitute the parameters in the RayJob YAML file and apply it
         envsubst < /workspace/rayjobs/data-prep-kit/transforms/language/gneissweb_classification/gneissweb_classification-rayjob.yaml > /workspace/rayjobs/gw-task.yaml
         cat /workspace/rayjobs/gw-task.yaml
         kubectl apply -f /workspace/rayjobs/gw-task.yaml

@@ -1,0 +1,37 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: ededup
+spec:
+  params:
+    - name: S3_BUCKET_PATH
+      type: string
+    - name: EDEDUP_INPUT
+      type: string
+    - name: EDEDUP_OUTPUT
+      type: string
+  workspaces:
+    - name: rayjobs
+      description: A workspace to mount the job YAML.
+  steps:
+    - name: run-ededup-job
+      image: bitnami/kubectl:latest
+      env:
+        - name: S3_BUCKET_PATH
+          value: $(params.S3_BUCKET_PATH)
+        - name: EDEDUP_INPUT
+          value: $(params.EDEDUP_INPUT)
+        - name: EDEDUP_OUTPUT
+          value: $(params.EDEDUP_OUTPUT)
+
+      script: |
+        #!/bin/sh
+        envsubst < /workspace/rayjobs/data-prep-kit/transforms/universal/ededup/ededup-rayjob.yaml > /workspace/rayjobs/ededup-task.yaml
+        cat /workspace/rayjobs/ededup-task.yaml
+        kubectl apply -f /workspace/rayjobs/ededup-task.yaml
+        echo "Watiing for Kubernetes job/rayjob-gw to finish or timeout after 24h..."
+        kubectl wait --for=jsonpath='{.status.jobDeploymentStatus}'=Complete rayjob/rayjob-ededup --timeout=24h
+        echo "Kubernetes job/rayjob-ededup completed. Check log for completion status..."
+
+
+        

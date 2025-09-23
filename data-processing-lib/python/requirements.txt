@@ -6,7 +6,7 @@ numpy < 2.0.0
 pyarrow<=17.0.0
 # Later version 1.38.7 is breaking authentication. 
 # check compatibility with other applications that depend on botocore(DMF, DSift, etc.)
-boto3>=1.35.74,<=1.38.18
+boto3<=1.38.18
 mmh3
 psutil
 polars>=1.9.0

@@ -1,21 +1,25 @@
 apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
-  name: ededup-gwclassifiation
+  name: gwclassification
 spec:
   pipelineRef:
-    name: ededup-gwclassification
+    name: gwclassification
   params:
       - name: S3_BUCKET_PATH
-        value: "bucket-wikimedia-1"   
+        value: "bucket-wikimedia-1" 
+      - name: HTML_ZIP
+        value: "html_zip"
+      - name: DOCLING_OUTPUT
+        value: "T0923/docling_md"  
       - name: EDEDUP_INPUT
-        value: "take6_md"
+        value: "T0923/docling_md"
       - name: EDEDUP_OUTPUT
-        value: "mt-ededup-2"
+        value: "T0923/ededup"
       - name: GW_MATH_INPUT
-        value: "mt-ededup-2"
+        value: "T0923/ededup"
       - name: GW_MATH_OUTPUT
-        value: "gw_classification_mt-2"
+        value: "T0923/gwclassification"
   workspaces:
       - name: dpk-pipeline-ws
         volumeClaimTemplate:

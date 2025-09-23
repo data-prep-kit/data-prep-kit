@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
-  name: ededup-gwclassification
+  name: gwclassification
 spec:
   workspaces:
     - name: dpk-pipeline-ws
@@ -9,18 +9,24 @@ spec:
     - name: S3_BUCKET_PATH
       description: Bucket name or bucket name and path for the root S3 folder (e.g.. bucket-wikimedia-1 or bucket-wikimedia-1/run1, etc) 
       type: string
-    - name: EDEDUP_OUTPUT
+    - name: HTML_ZIP
       type: string
-      description: The output folder for the EDedup transform
+      description: The input folder for the docling transform
+    - name: DOCLING_OUTPUT
+      type: string
+      description: The output folder for the docling transform
     - name: EDEDUP_INPUT
       type: string
       description: The input folder for the EDedup transform
-    - name: GW_MATH_OUTPUT
+    - name: EDEDUP_OUTPUT
       type: string
-      description: The output folder for the GW Math Classifier
+      description: The output folder for the EDedup transform
     - name: GW_MATH_INPUT
       type: string
       description: The input folder for the GW Math Classifier
+    - name: GW_MATH_OUTPUT
+      type: string
+      description: The output folder for the GW Math Classifier
   tasks:
     - name: execute-repo-task
       taskRef:
@@ -28,11 +34,26 @@ spec:
       workspaces:
         - name: rayjobs
           workspace: dpk-pipeline-ws
+    - name: execute-docling-task
+      taskRef:
+        name: docling
+      runAfter:
+        - execute-repo-task
+      workspaces:
+        - name: rayjobs
+          workspace: dpk-pipeline-ws
+      params:
+        - name: S3_BUCKET_PATH
+          value: "$(params.S3_BUCKET_PATH)" 
+        - name: HTML_ZIP
+          value: "$(params.HTML_ZIP)"  
+        - name: DOCLING_OUTPUT
+          value: "$(params.DOCLING_OUTPUT)"
     - name: execute-ededup-task
       taskRef:
         name: ededup
       runAfter:
-        - execute-repo-task
+        - execute-docling-task
       workspaces:
         - name: rayjobs
           workspace: dpk-pipeline-ws

@@ -29,7 +29,7 @@ spec:
         envsubst < /workspace/rayjobs/data-prep-kit/transforms/universal/ededup/ededup-rayjob.yaml > /workspace/rayjobs/ededup-task.yaml
         cat /workspace/rayjobs/ededup-task.yaml
         kubectl apply -f /workspace/rayjobs/ededup-task.yaml
-        echo "Watiing for Kubernetes job/rayjob-gw to finish or timeout after 24h..."
+        echo "Watiing for Kubernetes job/ededup to finish or timeout after 24h..."
         kubectl wait --for=jsonpath='{.status.jobDeploymentStatus}'=Complete rayjob/rayjob-ededup --timeout=24h
         echo "Kubernetes job/rayjob-ededup completed. Check log for completion status..."
 

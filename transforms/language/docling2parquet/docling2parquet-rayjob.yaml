@@ -6,7 +6,7 @@
 apiVersion: ray.io/v1alpha1
 kind: RayJob
 metadata:
-  name: rayjob-docling2parquet # Name of your RayCluster
+  name: rayjob-docling # Name of your RayCluster
 spec:
   shutdownAfterJobFinishes: true
   ttlSecondsAfterFinished: 10

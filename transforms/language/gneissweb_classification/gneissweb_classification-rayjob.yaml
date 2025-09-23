@@ -116,9 +116,10 @@ spec:
     --run_locally False
     --data_s3_config "{'input_folder': '$S3_BUCKET_PATH/$GW_MATH_INPUT', 'output_folder': '$S3_BUCKET_PATH/$GW_MATH_OUTPUT'}"
     --data_files_to_use "[ '.parquet' ]" 
-    --data_max_files 2
     --data_checkpointing False 
     --runtime_num_workers 5
     --runtime_worker_options "{ 'num_cpus': 0.8, 'max_restarts': 0, 'max_task_retries': 0 }" 
+
+#    --data_max_files 2
 
 

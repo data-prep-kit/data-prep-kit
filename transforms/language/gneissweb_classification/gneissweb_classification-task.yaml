@@ -27,7 +27,7 @@ spec:
         cat /workspace/rayjobs/gw-task.yaml
         kubectl apply -f /workspace/rayjobs/gw-task.yaml
         echo "Watiing for Kubernetes job/rayjob-gw to finish or timeout after 24h..."
-        kubectl wait --for=condition=complete rayjobs/rayjob-gw --timeout=24h
+        kubectl wait --for=jsonpath='{.status.jobDeploymentStatus}'=Complete rayjob/rayjob-gw --timeout=24h
         echo "Kubernetes job/rayjob-gw completed. Check log for completion status..."
 
 

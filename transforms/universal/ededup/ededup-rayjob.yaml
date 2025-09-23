@@ -102,7 +102,7 @@ spec:
     --run_locally False
     --ededup_hash_cpu 0.5
     --ededup_num_hashes 2
-    --data_s3_config "{'input_folder': '$S3_BUCKET_PATH/$GW_EDEDUP_INPUT', 'output_folder': '$S3_BUCKET_PATH/$GW_EDEDUP_OUTPUT'}"
+    --data_s3_config "{'input_folder': '$S3_BUCKET_PATH/$EDEDUP_INPUT', 'output_folder': '$S3_BUCKET_PATH/$EDEDUP_OUTPUT'}"
     --data_files_to_use "[ '.parquet' ]" 
     --data_checkpointing False 
     --runtime_num_workers 5

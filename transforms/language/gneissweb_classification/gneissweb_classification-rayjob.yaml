@@ -7,7 +7,8 @@ kind: RayJob
 metadata:
   name: rayjob-gw # Name of your RayCluster
 spec:
-  #shutdownAfterJobFinishes: true
+  shutdownAfterJobFinishes: true
+  ttlSecondsAfterFinished: 10
   rayClusterSpec:
     rayVersion: '2.36.1' # Specify the Ray version
     headGroupSpec:

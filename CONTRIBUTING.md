@@ -53,7 +53,7 @@ When proposing a new feature, please select the **Feature request** template in 
 #### Fixing bugs
 
 If you discover a bug or would like to fix a bug, please raise an issue, before sending a
-pull request so it can be tracked. Select the **Bug Report** template in creating a new issue and fill all the mandatory sections of the template, including **What happend ...** , **Reproduction script**, **OS** , and **Python version**. 
+pull request so it can be tracked. Select the **Bug Report** template in creating a new issue and fill all the mandatory sections of the template, including **What happend ...** , **Reproduction script**, **OS** , and **Python version**.
 
 ### PR review
 

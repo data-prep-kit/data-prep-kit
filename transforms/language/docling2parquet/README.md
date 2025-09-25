@@ -5,6 +5,8 @@ containing the converted document in Markdown or JSON format.
 
 The conversion is using the [Docling package](https://github.com/DS4SD/docling).
 
+**New: This transform now supports Automatic Speech Recognition (ASR) for audio files.**
+
 Please see the set of
 [transform project conventions](../../README.md#transform-project-conventions)
 for details on general project conventions, transform configuration,
@@ -30,6 +32,7 @@ This transform supports the following input formats:
 - ASCII Docs documents
 - XML in JATS format (e.g. scientific publications)
 - XML of USPTO publications
+- **Audio files (wav, mp3, etc) for ASR**
 
 The input documents can be provided in a folder structure, or as a zip archive.
 Please see the configuration section for specifying the input files.
@@ -54,6 +57,7 @@ The output table will contain following columns
 | num_tables | number | number of tables in the document |
 | num_doc_elements | number | number of document elements in the document |
 | document_convert_time | float | time taken to convert the document in seconds |
+| asr_model | string | (if ASR enabled) the ASR model used |
 
 
 ## Configuration
@@ -72,15 +76,19 @@ The transform can be initialized with the following parameters.
 | `bitmap_area_threshold`      | `0.05`        | Threshold for running OCR on bitmap figures embedded in document. The threshold is computed as the fraction of the area covered by the bitmap, compared to the whole page area. |
 | `pdf_backend`                | `dlparse_v2`  | The PDF backend to use. Valid values are `dlparse_v2`, `dlparse_v1`, `pypdfium2`. |
 | `double_precision`           | `8`           | If set, all floating points (e.g. bounding boxes) are rounded to this precision. For tests it is advised to use 0. |
+| `do_asr`                 | `True`        | If true, automatic speech recognition (ASR) will be performed on audio files. |
+| `asr_model`              | `whisper_tiny`| The ASR model to use. Valid values are `whisper_tiny`, `whisper_small`, `whisper_medium`, `whisper_base`, `whisper_large`, `whisper_turbo`. |
 
 
 Example
 
 ```py
 {
-    "data_files_to_use": ast.literal_eval("['.pdf','.docx','.pptx','.zip']"),
+    "data_files_to_use": ast.literal_eval("['.pdf','.docx','.pptx','.zip','.wav','.mp3']"),
     "contents_type": "application/json",
     "do_ocr": True,
+    "do_asr": True,
+    "asr_model": "whisper_large"
 }
 ```
 
@@ -89,8 +97,7 @@ Example
 
 ### Launched Command Line Options 
 
-When invoking the CLI, the parameters must be set as `--docling2parquet_<name>`, e.g., `--docling2parquet_do_ocr=true`.
-
+When invoking the CLI, the parameters must be set as `--docling2parquet_<name>`, e.g., `--docling2parquet_do_ocr=true`, `--docling2parquet_do_asr=true`, `--docling2parquet_asr_model=whisper_large`.
 
 ### Running the samples
 To run the samples, use the following `make` target

@@ -89,7 +89,7 @@ class CodeToParquetTransform(AbstractBinaryTransform):
                     "Programming language detection requested without providing a mapping of extensions to languages"
                 )
         domain = config.get(domain_key, None)
-        snapshot = config.get(domain_key, None)
+        snapshot = config.get(snapshot_key, None)  
         self.shared_columns = {}
         if domain is not None:
             self.shared_columns["domain"] = domain

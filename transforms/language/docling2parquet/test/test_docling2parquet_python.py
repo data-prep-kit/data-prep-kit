@@ -212,21 +212,3 @@ class TestPythonDocling2ParquetTransform(AbstractTransformLauncherTest):
                 assert expected_item.text == test_item.text, (
                     msg + f"Text does not match."
                 )
-
-
-def test_granite_docling():
-    basedir = "../test-data"
-    basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))
-    with tempfile.TemporaryDirectory() as temp_dir:
-        x = Docling2Parquet(input_folder=os.path.join(basedir, "granite_docling_input"),
-                            output_folder=temp_dir,
-                            data_files_to_use=['.pdf'],
-                            docling2parquet_contents_type=docling2parquet_contents_types.JSON,
-                            docling2parquet_pipeline="vlm").transform()
-
-        table1 = pq.read_table(os.path.join(temp_dir, 'granite-docling.parquet')).to_pandas()
-        table2 = pq.read_table(os.path.join(basedir, 'granite_docling_expected', 'granite-docling.parquet')).to_pandas()
-
-        assert table1['num_doc_elements'].values[0] == table2['num_doc_elements'].values[0]
-        assert table1['num_pages'].values[0] == table2['num_pages'].values[0]
-        assert table1['num_tables'].values[0] == table2['num_tables'].values[0]

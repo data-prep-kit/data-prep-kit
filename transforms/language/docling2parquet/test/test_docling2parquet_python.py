@@ -227,7 +227,7 @@ class TestPythonGraniteDocling2ParquetTransform(AbstractTransformLauncherTest):
         }
 
         # this is added as a fixture to remove these columns from comparison
-        ignore_columns = ["date_acquired", "document_id", "document_convert_time", "hash"]
+        #ignore_columns = ["date_acquired", "document_id", "document_convert_time", "hash"]
 
         fixtures = []
         launcher = PythonTransformLauncher(Docling2ParquetPythonTransformConfiguration())
@@ -241,7 +241,7 @@ class TestPythonGraniteDocling2ParquetTransform(AbstractTransformLauncherTest):
                 },
                 basedir + "/granite_docling_input",
                 basedir + "/granite_docling_expected",
-                ignore_columns,
+               # ignore_columns,
             )
         )
 
@@ -265,7 +265,6 @@ class TestPythonGraniteDocling2ParquetTransform(AbstractTransformLauncherTest):
             test_row:
             expected_row:
         """
-
         assert test_row.num_rows == 1, "Invalid usage.  Expected test table with 1 row"
         assert test_row['num_pages'] == expected_row['num_pages']
         assert test_row['num_tables'] == expected_row['num_tables']

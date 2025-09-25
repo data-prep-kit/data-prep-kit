@@ -13,7 +13,8 @@
 
 import ast
 import os
-
+import tempfile
+import pyarrow.parquet as pq
 import pyarrow as pa
 from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.test_support.abstract_test import _allowed_float_percent_diff
@@ -21,6 +22,7 @@ from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
 from docling_core.types.doc import DocItem, DoclingDocument, TextItem
+from dpk_docling2parquet.transform_python import Docling2Parquet
 from dpk_docling2parquet.transform_python import Docling2ParquetPythonTransformConfiguration
 from dpk_docling2parquet.transform import docling2parquet_contents_types
 from pydantic import ValidationError
@@ -211,61 +213,20 @@ class TestPythonDocling2ParquetTransform(AbstractTransformLauncherTest):
                     msg + f"Text does not match."
                 )
 
-class TestPythonGraniteDocling2ParquetTransform(AbstractTransformLauncherTest):
-    """
-    Extends the super-class to define the test data for the tests defined there.
-    The name of this class MUST begin with the word Test so that pytest recognizes it as a test class.
-    """
 
-    def get_test_transform_fixtures(self) -> list[tuple]:
-        basedir = "../test-data"
-        basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))
-        config = {
-            "data_files_to_use": ast.literal_eval("['.pdf']"),
-            "docling2parquet_contents_type": docling2parquet_contents_types.JSON,
-            "docling2parquet_pipeline": "vlm",
-        }
+def test_granite_docling():
+    basedir = "../test-data"
+    basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))
+    with tempfile.TemporaryDirectory() as temp_dir:
+        x = Docling2Parquet(input_folder=os.path.join(basedir, "granite_docling_input"),
+                            output_folder=temp_dir,
+                            data_files_to_use=['.pdf'],
+                            docling2parquet_contents_type=docling2parquet_contents_types.JSON,
+                            docling2parquet_pipeline="vlm").transform()
 
-        # this is added as a fixture to remove these columns from comparison
-        #ignore_columns = ["date_acquired", "document_id", "document_convert_time", "hash"]
+        table1 = pq.read_table(os.path.join(temp_dir, 'granite-docling.parquet')).to_pandas()
+        table2 = pq.read_table(os.path.join(basedir, 'granite_docling_expected', 'granite-docling.parquet')).to_pandas()
 
-        fixtures = []
-        launcher = PythonTransformLauncher(Docling2ParquetPythonTransformConfiguration())
-
-        # Default parameters
-        fixtures.append(
-            (
-                launcher,
-                {
-                    **config,
-                },
-                basedir + "/granite_docling_input",
-                basedir + "/granite_docling_expected",
-               # ignore_columns,
-            )
-        )
-
-        return fixtures
-
-    @classmethod
-    def validate_expected_row(
-        cls,
-        table_index: int,
-        row_index: int,
-        test_row: pa.Table,
-        expected_row: pa.Table,
-    ):
-        """
-        Compare the two rows for equality, allowing float values to be within a percentage
-        of each other as defined by global _allowed_float_percent_diff.
-        We assume the schema has already been compared and is equivalent.
-        Args:
-            table_index: index of tables that is the source of the rows.
-            row_index:
-            test_row:
-            expected_row:
-        """
-        assert test_row.num_rows == 1, "Invalid usage.  Expected test table with 1 row"
-        assert test_row['num_pages'] == expected_row['num_pages']
-        assert test_row['num_tables'] == expected_row['num_tables']
-        assert test_row['num_doc_elements'] == expected_row['num_doc_elements']
+        assert table1['num_doc_elements'].values[0] == table2['num_doc_elements'].values[0]
+        assert table1['num_pages'].values[0] == table2['num_pages'].values[0]
+        assert table1['num_tables'].values[0] == table2['num_tables'].values[0]

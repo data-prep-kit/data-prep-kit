@@ -40,6 +40,8 @@ class SparkTransformFileProcessor(AbstractTransformFileProcessor):
             transform_parameters=runtime_configuration.get_transform_params(),
             is_folder=is_folder,
         )
+        self.data_access = data_access_factory.create_data_access()
+        self.transform_params["data_access"] = self.data_access
         # Add data access ant statistics to the processor parameters
         self.runtime_configuration = runtime_configuration
         self.transform = None

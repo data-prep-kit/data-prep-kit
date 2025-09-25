@@ -38,15 +38,122 @@ from docling.backend.docling_parse_backend import DoclingParseDocumentBackend
 from docling.backend.docling_parse_v2_backend import DoclingParseV2DocumentBackend
 from docling.backend.pypdfium2_backend import PyPdfiumDocumentBackend
 from docling.datamodel.base_models import DocumentStream, MimeTypeToFormat
+from docling.datamodel.document import InputFormat  
+from docling.document_converter import DocumentConverter, PdfFormatOption 
 from docling.datamodel.pipeline_options import (
     EasyOcrOptions,
     OcrOptions,
     PdfPipelineOptions,
     TesseractCliOcrOptions,
     TesseractOcrOptions,
+    OcrMacOptions,
+    RapidOcrOptions,
+    AcceleratorOptions,
+    AcceleratorDevice,
+    VlmPipelineOptions,  
 )
-from docling.document_converter import DocumentConverter, InputFormat, PdfFormatOption
-from docling.models.base_ocr_model import OcrOptions
+from docling.datamodel.pipeline_options_vlm_model import (
+    ApiVlmOptions,
+    InferenceFramework,
+    InlineVlmOptions,
+    ResponseFormat,
+    TransformersModelType,
+
+)
+
+from docling.datamodel import vlm_model_specs 
+
+
+class docling2parquet_vlm_model_type(str, enum.Enum):
+    SMOLDOCLING_MLX = "smoldocling_mlx"
+    SMOLDOCLING_TRANSFORMERS = "smoldocling_transformers"
+    GRANITE_VISION_TRANSFORMERS = "granite_vision_transformers"
+    GRANITE_VISION_OLLAMA = "granite_vision_ollama"
+    PIXTRAL_12B_TRANSFORMERS = "pixtral_12b_transformers"
+    PIXTRAL_12B_MLX = "pixtral_12b_mlx"
+    PHI4_TRANSFORMERS = "phi4_transformers"
+    QWEN25_VL_3B_MLX = "qwen25_vl_3b_mlx"
+    GEMMA3_12B_MLX = "gemma3_12b_mlx"
+    CUSTOM_INLINE = "custom_inline"
+    CUSTOM_API = "custom_api"
+
+class docling2parquet_inference_framework(str, enum.Enum):
+    MLX = "mlx"
+    TRANSFORMERS = "transformers"
+
+class docling2parquet_response_format(str, enum.Enum):
+    DOCTAGS = "doctags"
+    MARKDOWN = "markdown"
+    HTML = "html"
+
+class docling2parquet_transformers_model_type(str, enum.Enum):
+    AUTOMODEL = "automodel"
+    AUTOMODEL_VISION2SEQ = "automodel-vision2seq"
+    AUTOMODEL_CAUSALLM = "automodel-causallm"
+    AUTOMODEL_IMAGETEXTTOTEXT = "automodel-imagetexttotext"
+
+
+docling2parquet_use_vlm_pipeline_key = "use_vlm_pipeline"
+docling2parquet_vlm_model_type_key = "vlm_model_type"
+docling2parquet_vlm_repo_id_key = "vlm_repo_id"
+docling2parquet_vlm_prompt_key = "vlm_prompt"
+docling2parquet_vlm_api_url_key = "vlm_api_url"
+docling2parquet_vlm_api_model_key = "vlm_api_model"
+docling2parquet_vlm_inference_framework_key = "vlm_inference_framework"
+docling2parquet_vlm_response_format_key = "vlm_response_format"
+docling2parquet_vlm_transformers_model_type_key = "vlm_transformers_model_type"
+docling2parquet_vlm_scale_key = "vlm_scale"
+docling2parquet_vlm_temperature_key = "vlm_temperature"
+docling2parquet_vlm_max_new_tokens_key = "vlm_max_new_tokens"
+docling2parquet_vlm_timeout_key = "vlm_timeout"
+docling2parquet_vlm_trust_remote_code_key = "vlm_trust_remote_code"
+docling2parquet_vlm_load_in_8bit_key = "vlm_load_in_8bit"
+
+
+docling2parquet_use_vlm_pipeline_default = False
+docling2parquet_vlm_model_type_default = docling2parquet_vlm_model_type.SMOLDOCLING_TRANSFORMERS
+docling2parquet_vlm_repo_id_default = "ds4sd/SmolDocling-256M-preview"
+docling2parquet_vlm_prompt_default = "Convert this page to docling."
+docling2parquet_vlm_api_url_default = "http://localhost:11434/v1/chat/completions"
+docling2parquet_vlm_api_model_default = "granite3.2-vision:2b"
+docling2parquet_vlm_inference_framework_default = docling2parquet_inference_framework.TRANSFORMERS
+docling2parquet_vlm_response_format_default = docling2parquet_response_format.DOCTAGS
+docling2parquet_vlm_transformers_model_type_default = docling2parquet_transformers_model_type.AUTOMODEL_VISION2SEQ
+docling2parquet_vlm_scale_default = 2.0
+docling2parquet_vlm_temperature_default = 0.0
+docling2parquet_vlm_max_new_tokens_default = 4096
+docling2parquet_vlm_timeout_default = 120.0
+docling2parquet_vlm_trust_remote_code_default = False
+docling2parquet_vlm_load_in_8bit_default = True
+
+
+logger = get_logger(__name__)
+shortname = "docling2parquet"
+cli_prefix = f"{shortname}_"
+
+
+docling2parquet_use_vlm_pipeline_cli_param = f"{cli_prefix}{docling2parquet_use_vlm_pipeline_key}"
+docling2parquet_vlm_model_type_cli_param = f"{cli_prefix}{docling2parquet_vlm_model_type_key}"
+docling2parquet_vlm_repo_id_cli_param = f"{cli_prefix}{docling2parquet_vlm_repo_id_key}"
+docling2parquet_vlm_prompt_cli_param = f"{cli_prefix}{docling2parquet_vlm_prompt_key}"
+docling2parquet_vlm_api_url_cli_param = f"{cli_prefix}{docling2parquet_vlm_api_url_key}"
+docling2parquet_vlm_api_model_cli_param = f"{cli_prefix}{docling2parquet_vlm_api_model_key}"
+docling2parquet_vlm_inference_framework_cli_param = f"{cli_prefix}{docling2parquet_vlm_inference_framework_key}"
+docling2parquet_vlm_response_format_cli_param = f"{cli_prefix}{docling2parquet_vlm_response_format_key}"
+docling2parquet_vlm_transformers_model_type_cli_param = f"{cli_prefix}{docling2parquet_vlm_transformers_model_type_key}"
+docling2parquet_vlm_scale_cli_param = f"{cli_prefix}{docling2parquet_vlm_scale_key}"
+docling2parquet_vlm_temperature_cli_param = f"{cli_prefix}{docling2parquet_vlm_temperature_key}"
+docling2parquet_vlm_max_new_tokens_cli_param = f"{cli_prefix}{docling2parquet_vlm_max_new_tokens_key}"
+docling2parquet_vlm_timeout_cli_param = f"{cli_prefix}{docling2parquet_vlm_timeout_key}"
+docling2parquet_vlm_trust_remote_code_cli_param = f"{cli_prefix}{docling2parquet_vlm_trust_remote_code_key}"
+docling2parquet_vlm_load_in_8bit_cli_param = f"{cli_prefix}{docling2parquet_vlm_load_in_8bit_key}"
+
+
+class docling2parquet_accelerator_device(str, enum.Enum):
+    AUTO = "auto"
+    CPU = "cpu"
+    CUDA = "cuda"
+    MPS = "mps"
 
 
 logger = get_logger(__name__)
@@ -63,6 +170,10 @@ docling2parquet_ocr_engine_key = f"ocr_engine"
 docling2parquet_bitmap_area_threshold_key = f"bitmap_area_threshold"
 docling2parquet_pdf_backend_key = f"pdf_backend"
 docling2parquet_double_precision_key = f"double_precision"
+docling2parquet_do_formula_enrichment_key = f"do_formula_enrichment"
+docling2parquet_accelerator_device_key = f"accelerator_device"  
+docling2parquet_num_threads_key = f"num_threads" 
+docling2parquet_cuda_flash_attention_key = f"cuda_use_flash_attention2" 
 
 
 class docling2parquet_contents_types(str, enum.Enum):
@@ -87,6 +198,8 @@ class docling2parquet_ocr_engine(str, enum.Enum):
     EASYOCR = "easyocr"
     TESSERACT_CLI = "tesseract_cli"
     TESSERACT = "tesseract"
+    OCRMAC = "ocrmac"
+    RAPIDOCR = "rapidocr"
 
     def __str__(self):
         return str(self.value)
@@ -100,6 +213,10 @@ docling2parquet_bitmap_area_threshold_default = 0.05
 docling2parquet_ocr_engine_default = docling2parquet_ocr_engine.EASYOCR
 docling2parquet_pdf_backend_default = docling2parquet_pdf_backend.DLPARSE_V2
 docling2parquet_double_precision_default = 8
+docling2parquet_do_formula_enrichment_default = False
+docling2parquet_accelerator_device_default = docling2parquet_accelerator_device.AUTO  
+docling2parquet_num_threads_default = 4  
+docling2parquet_cuda_flash_attention_default = False 
 
 docling2parquet_batch_size_cli_param = f"{cli_prefix}{docling2parquet_batch_size_key}"
 docling2parquet_artifacts_path_cli_param = f"{cli_prefix}{docling2parquet_artifacts_path_key}"
@@ -116,19 +233,13 @@ docling2parquet_pdf_backend_cli_param = f"{cli_prefix}{docling2parquet_pdf_backe
 docling2parquet_double_precision_cli_param = (
     f"{cli_prefix}{docling2parquet_double_precision_key}"
 )
+docling2parquet_do_formula_enrichment_cli_param = (
+    f"{cli_prefix}{docling2parquet_do_formula_enrichment_key}"
+)  
 
 
 class Docling2ParquetTransform(AbstractBinaryTransform):
-    """ """
-
     def __init__(self, config: dict):
-        """
-        Initialize based on the dictionary of configuration information.
-        This is generally called with configuration parsed from the CLI arguments defined
-        by the companion runtime, LangSelectorTransformRuntime.  If running inside the RayMutatingDriver,
-        these will be provided by that class with help from the RayMutatingDriver.
-        """
-
         super().__init__(config)
 
         self.batch_size = config.get(docling2parquet_batch_size_key, docling2parquet_batch_size_default)
@@ -161,14 +272,48 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
         self.double_precision = config.get(
             docling2parquet_double_precision_key, docling2parquet_double_precision_default
         )
+        
+
+        self.do_formula_enrichment = config.get(
+            docling2parquet_do_formula_enrichment_key, docling2parquet_do_formula_enrichment_default
+        )
+
+
+        self.accelerator_device_name = config.get(
+            docling2parquet_accelerator_device_key, docling2parquet_accelerator_device_default
+        )
+        if not isinstance(self.accelerator_device_name, docling2parquet_accelerator_device):
+            self.accelerator_device_name = docling2parquet_accelerator_device[self.accelerator_device_name]
+        
+        self.num_threads = config.get(
+            docling2parquet_num_threads_key, docling2parquet_num_threads_default
+        )
+        self.cuda_flash_attention = config.get(
+            docling2parquet_cuda_flash_attention_key, docling2parquet_cuda_flash_attention_default
+        )
 
         logger.info("Initializing models")
+        
+
+        accelerator_options = AcceleratorOptions(
+            num_threads=self.num_threads,
+            device=self._get_accelerator_device(self.accelerator_device_name)
+        )
+        
+
         pipeline_options = PdfPipelineOptions(
             artifacts_path=self.artifacts_path,
             do_table_structure=self.do_table_structure,
             do_ocr=self.do_ocr,
+            do_formula_enrichment=self.do_formula_enrichment,
             ocr_options=self._get_ocr_engine(self.ocr_engine_name),
+            accelerator_options=accelerator_options,
         )
+        
+
+        if self.accelerator_device_name == docling2parquet_accelerator_device.CUDA:
+            pipeline_options.cuda_use_flash_attention2 = self.cuda_flash_attention
+
         pipeline_options.ocr_options.bitmap_area_threshold = self.bitmap_area_threshold
 
         lock = MultiLock("dpk_docling2parquet_init")
@@ -201,7 +346,11 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
             return TesseractCliOcrOptions()
         elif engine_name == docling2parquet_ocr_engine.TESSERACT:
             return TesseractOcrOptions()
-
+        elif engine_name == docling2parquet_ocr_engine.OCRMAC:
+            return OcrMacOptions()
+        elif engine_name == docling2parquet_ocr_engine.RAPIDOCR:
+            return RapidOcrOptions()
+        
         raise RuntimeError(f"Unknown OCR engine `{engine_name}`")
 
     def _get_pdf_backend(self, backend_name: docling2parquet_pdf_backend):
@@ -214,10 +363,78 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
 
         raise RuntimeError(f"Unknown PDF backend `{backend_name}`")
 
+    def _get_accelerator_device(self, device_name: docling2parquet_accelerator_device) -> AcceleratorDevice:
+
+        if device_name == docling2parquet_accelerator_device.AUTO:
+            return AcceleratorDevice.AUTO
+        elif device_name == docling2parquet_accelerator_device.CPU:
+            return AcceleratorDevice.CPU
+        elif device_name == docling2parquet_accelerator_device.CUDA:
+            return AcceleratorDevice.CUDA
+        elif device_name == docling2parquet_accelerator_device.MPS:
+            return AcceleratorDevice.MPS
+        
+        raise RuntimeError(f"Unknown accelerator device `{device_name}`")
+
     def _update_metrics(self, num_pages: int, elapse_time: float):
-        # This is implemented in the ray version
+
         pass
 
+    def enforce_folder_boundary(self) -> bool:
+        """Return True if the transform should flush data when crossing folder boundaries."""
+        return False
+
+    def _get_vlm_options(self, model_type: docling2parquet_vlm_model_type):
+        """Get VLM options based on model type"""
+        if model_type == docling2parquet_vlm_model_type.SMOLDOCLING_MLX:
+            return vlm_model_specs.SMOLDOCLING_MLX
+        elif model_type == docling2parquet_vlm_model_type.SMOLDOCLING_TRANSFORMERS:
+            return vlm_model_specs.SMOLDOCLING_TRANSFORMERS
+        elif model_type == docling2parquet_vlm_model_type.GRANITE_VISION_TRANSFORMERS:
+            return vlm_model_specs.GRANITE_VISION_TRANSFORMERS
+        elif model_type == docling2parquet_vlm_model_type.GRANITE_VISION_OLLAMA:
+            return vlm_model_specs.GRANITE_VISION_OLLAMA
+        elif model_type == docling2parquet_vlm_model_type.PIXTRAL_12B_TRANSFORMERS:
+            return vlm_model_specs.PIXTRAL_12B_TRANSFORMERS
+        elif model_type == docling2parquet_vlm_model_type.PIXTRAL_12B_MLX:
+            return vlm_model_specs.PIXTRAL_12B_MLX
+        elif model_type == docling2parquet_vlm_model_type.PHI4_TRANSFORMERS:
+            return vlm_model_specs.PHI4_TRANSFORMERS
+        elif model_type == docling2parquet_vlm_model_type.QWEN25_VL_3B_MLX:
+            return vlm_model_specs.QWEN25_VL_3B_MLX
+        elif model_type == docling2parquet_vlm_model_type.GEMMA3_12B_MLX:
+            return vlm_model_specs.GEMMA3_12B_MLX
+        elif model_type == docling2parquet_vlm_model_type.CUSTOM_INLINE:
+            return InlineVlmOptions(
+                repo_id=self.vlm_repo_id,
+                prompt=self.vlm_prompt,
+                response_format=ResponseFormat(self.vlm_response_format.value),
+                inference_framework=InferenceFramework(self.vlm_inference_framework.value),
+                transformers_model_type=TransformersModelType(self.vlm_transformers_model_type.value),
+                scale=self.vlm_scale,
+                temperature=self.vlm_temperature,
+                max_new_tokens=self.vlm_max_new_tokens,
+                trust_remote_code=self.vlm_trust_remote_code,
+                load_in_8bit=self.vlm_load_in_8bit,
+                supported_devices=[
+                    AcceleratorDevice.CPU,
+                    AcceleratorDevice.CUDA,
+                    AcceleratorDevice.MPS,
+                ],
+            )
+        elif model_type == docling2parquet_vlm_model_type.CUSTOM_API:
+            return ApiVlmOptions(
+                url=self.vlm_api_url,
+                params={"model": self.vlm_api_model},
+                prompt=self.vlm_prompt,
+                scale=self.vlm_scale,
+                timeout=self.vlm_timeout,
+                response_format=ResponseFormat(self.vlm_response_format.value),
+                temperature=self.vlm_temperature,
+            )
+        else:
+            raise ValueError(f"Unknown VLM model type: {model_type}")
+    
     def _convert_docling2parquet(
         self, doc_filename: str, ext: str, content_bytes: bytes
     ) -> dict:
@@ -501,6 +718,36 @@ class Docling2ParquetTransformConfiguration(TransformConfiguration):
             default=docling2parquet_double_precision_default,
         )
 
+        parser.add_argument(
+            f"--{docling2parquet_do_formula_enrichment_cli_param}",
+            type=str2bool,
+            help="If true, formula enrichment will be enabled to extract LaTeX representations of mathematical formulas.",
+            default=docling2parquet_do_formula_enrichment_default,
+        )
+        
+        # Add GPU support parameters
+        parser.add_argument(
+            f"--{cli_prefix}{docling2parquet_accelerator_device_key}",
+            type=docling2parquet_accelerator_device,
+            choices=list(docling2parquet_accelerator_device),
+            help="The accelerator device to use for GPU acceleration (auto, cpu, cuda, mps).",
+            default=docling2parquet_accelerator_device_default,
+        )
+        
+        parser.add_argument(
+            f"--{cli_prefix}{docling2parquet_num_threads_key}",
+            type=int,
+            help="Number of threads to use for processing.",
+            default=docling2parquet_num_threads_default,
+        )
+        
+        parser.add_argument(
+            f"--{cli_prefix}{docling2parquet_cuda_flash_attention_key}",
+            type=str2bool,
+            help="Enable CUDA flash attention optimization (only applicable when using CUDA).",
+            default=docling2parquet_cuda_flash_attention_default,
+        )
+
     def apply_input_params(self, args: Namespace) -> bool:
         """
         Validate and apply the arguments that have been parsed
@@ -512,3 +759,4 @@ class Docling2ParquetTransformConfiguration(TransformConfiguration):
         self.params = self.params | captured
         logger.info(f"docling2parquet parameters are : {self.params}")
         return True
+        

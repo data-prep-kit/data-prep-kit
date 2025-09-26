@@ -4,4 +4,4 @@ docling-ibm-models
 docling-parse
 docling
 filetype >=1.2.0, <2.0.0
-mlx-vlm
+mlx-vlm; sys_platform == 'darwin'

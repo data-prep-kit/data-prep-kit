@@ -25,7 +25,7 @@ from dpk_gneissweb_classification.transform import (
     output_label_column_name_cli_param,
     output_score_column_name_cli_param
 )
-from dpk_gneissweb_classification.transform_python import ClassificationPythonTransformConfiguration
+from dpk_gneissweb_classification.runtime import ClassificationPythonTransformConfiguration
 
 
 # create parameters

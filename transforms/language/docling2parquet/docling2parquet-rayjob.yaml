@@ -91,10 +91,10 @@ spec:
                 resources:
                   requests:
                     cpu: 1
-                    memory: 24Gi
+                    memory: 32Gi
                   limits:
                     cpu: 1
-                    memory: 24Gi
+                    memory: 32Gi
   # Job details
   # The command to execute the Python script
   entrypoint: >

@@ -1,0 +1,35 @@
+# Specify user prefix (UP) and run prefix (RP) before applying the pipeline run
+# UP=MT RP=`date +"%m%d%H"` envsubst < run-gwclassification.yaml | kubectl apply -f -
+
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: gwclassification
+spec:
+  pipelineRef:
+    name: gwclassification
+  timeouts:
+    pipeline: "24h"  # Set to 0 to disable timeout
+  params:
+      - name: S3_BUCKET_PATH
+        value: "bucket-wikimedia-1" 
+      - name: HTML_ZIP
+        value: "html_zip"
+      - name: DOCLING_OUTPUT
+        value: "U_MT/R_092707/docling_md"  
+      - name: EDEDUP_INPUT
+        value: "U_MT/R_092707/docling_md"
+      - name: EDEDUP_OUTPUT
+        value: "U_MT/R_092707/ededup"
+      - name: GW_MATH_INPUT
+        value: "U_MT/R_092707/ededup"
+      - name: GW_MATH_OUTPUT
+        value: "U_MT/R_092707/gwclassification"
+  workspaces:
+      - name: dpk-pipeline-ws
+        volumeClaimTemplate:
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 1Gi

@@ -1,7 +1,8 @@
     
 ##########################################################
 ## Usage
-## kubectl apply -f rayjobs-rbac.yaml
+## kubectl apply -f rayjobs-rbac-ocp.yaml
+## on ocp, this needs to apply to service account pipeline 
 ############################################################
 # ray-job-rbac.yaml
 # Define a Role that allows read-only access to RayJob resources in the current namespace.
@@ -18,14 +19,14 @@ rules:
   verbs: ["get", "list", "watch"] # "get" is required, "list" and "watch" are often useful too
 
 ---
-# kind: Define a RoleBinding to link the 'rayjobs-manager' role to the 'default' service account.
+# OCP: Define a RoleBinding to link the 'rayjobs-manager' role to the 'pipeline' service account.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: default-rayjobs-manager-binding
+  name: pipeline-rayjobs-manager-binding
 subjects:
 - kind: ServiceAccount
-  name: default
+  name: pipeline
 roleRef:
   kind: Role
   name: rayjobs-manager

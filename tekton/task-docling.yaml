@@ -29,9 +29,7 @@ spec:
         envsubst < /workspace/rayjobs/data-prep-kit/transforms/language/docling2parquet/docling2parquet-rayjob.yaml > /workspace/rayjobs/docling-task.yaml
         cat /workspace/rayjobs/docling-task.yaml
         kubectl apply -f /workspace/rayjobs/docling-task.yaml
-        echo "Watiing for Kubernetes job/rayjob-docling to finish or timeout after 24h..."
+        echo "Waiting for Kubernetes job/rayjob-docling to finish or timeout after 24h..."
         kubectl wait --for=jsonpath='{.status.jobDeploymentStatus}'=Complete rayjob/rayjob-docling --timeout=24h
         echo "Kubernetes job/rayjob-ededup completed. Check log for completion status..."
 
-
-        

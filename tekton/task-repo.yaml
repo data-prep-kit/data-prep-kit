@@ -11,7 +11,7 @@ spec:
       image: bitnami/kubectl:latest
       script: |
         #!/bin/sh
+        df -h
         git clone -b tekton-2 --depth 1 https://github.com/touma-I/data-prep-kit-pkg.git /workspace/rayjobs/data-prep-kit
 
 
-        

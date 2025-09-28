@@ -35,7 +35,7 @@ jupyter lab
 
 ## Data Files
 
-PDF files are located in [examples/data-files/pdf-processing-1](../examples/data-files/pdf-processing-1/)
+PDF files are located in [examples/data-files/pdf-processing-1](../data-files/pdf-processing-1/)
 
 ## Running the code
 

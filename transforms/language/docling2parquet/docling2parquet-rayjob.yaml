@@ -44,7 +44,7 @@ spec:
                   valueFrom:
                     resourceFieldRef:
                       resource: requests.cpu
-              image: quay.io/dataprep1/data-prep-kit/docling2parquet-ray:latest
+              image: quay.io/dataprep1/data-prep-kit/docling2parquet-ray:1.1.3.dev0
               imagePullPolicy: Always
               ports:
                 - containerPort: 6379 # Ray port
@@ -86,7 +86,7 @@ spec:
                       secretKeyRef:
                         name: s3-secret
                         key: s3-endpoint
-                image: quay.io/dataprep1/data-prep-kit/docling2parquet-ray:latest
+                image: quay.io/dataprep1/data-prep-kit/docling2parquet-ray:1.1.3.dev0
                 imagePullPolicy: Always
                 resources:
                   requests:

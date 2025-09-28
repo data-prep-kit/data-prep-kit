@@ -25,6 +25,11 @@ spec:
               env:
                 - name: DPK_LOG_LEVEL 
                   value: DEBUG
+                - name: HF_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: hf-secret
+                      key: hf-token
                 - name: S3_ACCESS_KEY
                   valueFrom:
                     secretKeyRef:
@@ -71,6 +76,11 @@ spec:
                 env:
                   - name: DPK_LOG_LEVEL 
                     value: DEBUG
+                  - name: HF_TOKEN
+                    valueFrom:
+                      secretKeyRef:
+                        name: hf-secret
+                        key: hf-token
                   - name: S3_ACCESS_KEY
                     valueFrom:
                       secretKeyRef:

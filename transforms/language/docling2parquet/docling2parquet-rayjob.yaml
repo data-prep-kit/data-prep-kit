@@ -44,7 +44,7 @@ spec:
                   valueFrom:
                     resourceFieldRef:
                       resource: requests.cpu
-              image: quay.io/dataprep1/data-prep-kit/docling2parquet-ray:1.1.3.dev0
+              image: quay.io/dataprep1/data-prep-kit/docling2parquet-ray:latest
               imagePullPolicy: Always
               ports:
                 - containerPort: 6379 # Ray port
@@ -86,7 +86,7 @@ spec:
                       secretKeyRef:
                         name: s3-secret
                         key: s3-endpoint
-                image: quay.io/dataprep1/data-prep-kit/docling2parquet-ray:1.1.3.dev0
+                image: quay.io/dataprep1/data-prep-kit/docling2parquet-ray:latest
                 imagePullPolicy: Always
                 resources:
                   requests:
@@ -98,7 +98,7 @@ spec:
   # Job details
   # The command to execute the Python script
   entrypoint: >
-    python -m dpk_docling2parquet.ray.transform
+    python -m dpk_docling2parquet.ray.runtime
     --run_locally False
     --data_s3_config "{'input_folder': '$S3_BUCKET_PATH/$HTML_ZIP', 'output_folder': '$S3_BUCKET_PATH/$DOCLING_OUTPUT'}"
     --data_files_to_use "[ '.zip' ]" 

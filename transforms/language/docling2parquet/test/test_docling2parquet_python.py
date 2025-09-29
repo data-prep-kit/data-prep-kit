@@ -13,7 +13,8 @@
 
 import ast
 import os
-
+import tempfile
+import pyarrow.parquet as pq
 import pyarrow as pa
 from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.test_support.abstract_test import _allowed_float_percent_diff

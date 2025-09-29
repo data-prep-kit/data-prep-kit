@@ -1,9 +1,9 @@
-ultralytics
-omegaconf
-opencv-python
-numpy
-transformers
-Pillow
-pandas
-polars
+ultralytics==8.3.203
+omegaconf==2.3.0
+opencv-python==4.11.0.86
+numpy<1.29.0
+transformers==4.56.2
+Pillow==11.3.0
+pandas==2.3.2
+polars==1.33.1
 

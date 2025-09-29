@@ -12,17 +12,13 @@
 
 from argparse import ArgumentParser, Namespace
 from typing import Any
-from urllib.parse import urlparse
 
 import nltk
 import pyarrow as pa
 from data_processing.data_access import DataAccessFactory
-from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
 from data_processing.utils import CLIArgumentProvider, TransformUtils, get_logger
 from data_processing.utils.multilock import MultiLock
-from numpy.random import default_rng
-
 
 
 logger = get_logger(__name__)
@@ -137,7 +133,7 @@ class FineWebQualityAnnotatorTransform(AbstractTableTransform):
             lock.acquire()
             logger.debug(f"Lock {lock.lock_filename} acquired.")
             # download NLTK resources needed for sentence tokenizer
-            nltk.data.find("tokenizers/punkt_tab","/Users/santoshborse/development/")
+            nltk.data.find("tokenizers/punkt_tab")
         except LookupError:
             nltk.download("punkt_tab")
         finally:

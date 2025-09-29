@@ -16,7 +16,7 @@ import sys
 
 from data_processing.utils import ParamsUtils
 from data_processing_ray.runtime.ray import RayTransformLauncher
-from dpk_pii_redactor.ray.transform import PIIRedactorRayTransformConfiguration
+from dpk_pii_redactor.ray.runtime import PIIRedactorRayTransformConfiguration
 
 
 # create parameters

@@ -13,6 +13,8 @@ TRANSFORM_NAME=$(shell basename `pwd`)
 
 ################################################################################
 
+TRANSFORM_PYTHON_SRC="-m dpk_$(TRANSFORM_NAME).runtime"
+TRANSFORM_RAY_SRC="-m dpk_$(TRANSFORM_NAME).ray.runtime"
 
 #### user defined Target
 
@@ -31,6 +33,16 @@ run-cli-sample:
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).transform_python \
              --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'expected_json'}"  \
 				--data_files_to_use "['.pdf','.zip','.xml']"
+
+run-cli-granite:
+	make venv
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).transform_python \
+             --data_local_config "{ 'input_folder' : 'test-data/granite_docling_input', 'output_folder' : 'expected_json'}"  \
+				--data_files_to_use "['.pdf']" \
+				--docling2parquet_contents_type "application/json" \
+                --docling2parquet_pipeline "vlm"
+
 
 generate-expected:
 	make venv

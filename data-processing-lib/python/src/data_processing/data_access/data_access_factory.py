@@ -15,6 +15,7 @@ import argparse
 import ast
 from typing import Union
 import importlib
+import copy
 
 from data_processing.data_access import (
     DataAccess,
@@ -226,10 +227,14 @@ class DataAccessFactory(DataAccessFactoryBase):
             self.config = arg_dict.get(provided_configs[0])
             if 'prefix' not in self.config:
                 self.config['prefix']=self.cli_arg_prefix
-            self.logger.info(
+            logging_config = copy.deepcopy(self.config)
+            logging_config.pop('access_key', None)
+            logging_config.pop('secret_key', None)
+            self.logger.debug(
             f"data factory {self.cli_arg_prefix} "
-            f"data configuration used: {self.config}"
+            f"data configuration used: {logging_config}"
             )
+            del logging_config
             ##########################################################################
             ## Data Access Class can be specified as par of the data configuration dictionary
             # expect da_class string to be in the form: package[.submodule].classname

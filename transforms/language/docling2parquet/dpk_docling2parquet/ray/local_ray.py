@@ -18,7 +18,7 @@ import sys
 from data_processing.utils import ParamsUtils
 try:
     from data_processing_ray.runtime.ray import RayTransformLauncher
-    from dpk_docling2parquet.ray.transform import Docling2ParquetRayTransformConfiguration
+    from dpk_docling2parquet.ray.runtime import Docling2ParquetRayTransformConfiguration
 except ImportError:
     raise ImportError("Please install data_prep_toolkit[ray]")
 

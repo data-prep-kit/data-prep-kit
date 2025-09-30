@@ -18,7 +18,7 @@ from data_processing.test_support.launch.transform_test import (
 )
 from data_processing_ray.runtime.ray import RayTransformLauncher
 from dpk_pii_redactor.transform import doc_transformed_contents_cli_param
-from dpk_pii_redactor.ray.transform import PIIRedactorRayTransformConfiguration
+from dpk_pii_redactor.ray.runtime import PIIRedactorRayTransformConfiguration
 
 
 class TestRayPIIRedactorTransform(AbstractTransformLauncherTest):

@@ -46,6 +46,9 @@ class PythonTransformFileProcessor(AbstractTransformFileProcessor):
             transform_parameters=dict(transform_params),
             is_folder=is_folder,
         )
+        self.data_access = data_access_factory.create_data_access()
+        self.transform_params["data_access"] = self.data_access
+
         self.transform_params["statistics"] = statistics
         # Create local processor
         try:
@@ -84,14 +87,20 @@ class PythonPoolTransformFileProcessor(AbstractTransformFileProcessor):
             transform_parameters=dict(transform_params),
             is_folder=is_folder,
         )
-        # Add data access and statistics to the processor parameters
-        self.transform_params["data_access"] = self.data_access
+        self.data_access = None
         self.transform_class = transform_class
         self.transform = None
 
     def process_file(self, f_name: str) -> dict[str, Any]:
         # re initialize statistics
         self.stats = {}
+        # This is delayed until last minute to prevent failure on s3 client pickle
+        # _pickle.PicklingError: Can't pickle <class 'botocore.client.S3'>: attribute lookup S3 on botocore.client failed
+        if self.data_access is None:
+            # Add data access and statistics to the processor parameters
+            self.data_access = self.data_access_factory.create_data_access()
+            self.transform_params["data_access"] = self.data_access
+
         if self.transform is None:
             # create transform. Make sure to do this locally
             try:
@@ -99,6 +108,7 @@ class PythonPoolTransformFileProcessor(AbstractTransformFileProcessor):
             except Exception as e:
                 self.logger.error(f"Exception creating transform  {e}")
                 raise UnrecoverableException("failed creating transform")
+                    
         # Invoke superclass method
         super().process_file(f_name=f_name)
         # return collected statistics

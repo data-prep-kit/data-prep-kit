@@ -1,6 +1,6 @@
 ## Usage
 ## docker build --platform linux/amd64 -t kubectl .
-##docker tag kubectl:latest quay.io/dataprep1/data-prep-kit/kubectl:latest
+## docker tag kubectl:latest quay.io/dataprep1/data-prep-kit/kubectl:latest
 ## docker push quay.io/dataprep1/data-prep-kit/kubectl:latest 
 ##
 
@@ -25,6 +25,7 @@ RUN apt-get update && apt-get install -y \
     apt-transport-https \
     wget \
     git \
+    gettext \
     && rm -rf /var/lib/apt/lists/*
 
 

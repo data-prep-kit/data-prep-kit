@@ -15,7 +15,7 @@ spec:
       description: A workspace to mount the job YAML.
   steps:
     - name: run-docling-job
-      image: bitnami/kubectl:latest
+      image: quay.io/dataprep1/data-prep-kit/kubectl:latest
       env:
         - name: S3_BUCKET_PATH
           value: $(params.S3_BUCKET_PATH)

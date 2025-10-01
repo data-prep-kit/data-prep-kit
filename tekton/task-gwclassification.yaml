@@ -15,7 +15,7 @@ spec:
       description: A workspace to mount the job YAML.
   steps:
     - name: run-gw-classification-job
-      image: bitnami/kubectl:latest
+      image: quay.io/dataprep1/data-prep-kit/kubectl:latest
       script: |
         #!/bin/sh
         export S3_BUCKET_PATH=$(params.S3_BUCKET_PATH)

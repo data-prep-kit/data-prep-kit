@@ -7,11 +7,12 @@ spec:
     - name: rayjobs
       description: A workspace to mount the job YAML.
   steps:
-    - name: run-ededup-job
-      image: bitnami/kubectl:latest
+    - name: run-repo-job
+      image: quay.io/dataprep1/data-prep-kit/kubectl:latest
       script: |
         #!/bin/sh
         df -h
-        git clone -b tekton-2 --depth 1 https://github.com/touma-I/data-prep-kit-pkg.git /workspace/rayjobs/data-prep-kit
+        git clone -b tekton-4 --depth 1 https://github.com/touma-I/data-prep-kit-pkg.git /workspace/rayjobs/data-prep-kit
+        
 
 

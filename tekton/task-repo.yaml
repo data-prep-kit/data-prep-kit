@@ -7,7 +7,7 @@ spec:
     - name: rayjobs
       description: A workspace to mount the job YAML.
   steps:
-    - name: run-ededup-job
+    - name: run-repo-job
       image: quay.io/dataprep1/data-prep-kit/kubectl:latest
       script: |
         #!/bin/sh

@@ -23,12 +23,12 @@ from workflow_support.compile_utils import (
 )
 
 
-task_image = "quay.io/dataprep1/data-prep-kit/enrichment-ray:1.1.5"
+task_image = "quay.io/dataprep1/data-prep-kit/enrichment-ray:latest"
 
 EXEC_SCRIPT_NAME: str = "-m dpk_enrichment.ray.runtime"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:1.1.5"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)

@@ -34,11 +34,41 @@ spec:
       workspaces:
         - name: rayjobs
           workspace: dpk-pipeline-ws
+    - name: execute-docling-task
+      taskRef:
+        name: docling
+      runAfter:
+        - execute-repo-task
+      workspaces:
+        - name: rayjobs
+          workspace: dpk-pipeline-ws
+      params:
+        - name: S3_BUCKET_PATH
+          value: "$(params.S3_BUCKET_PATH)"
+        - name: HTML_ZIP
+          value: "$(params.HTML_ZIP)"
+        - name: DOCLING_OUTPUT
+          value: "$(params.DOCLING_OUTPUT)"
+    - name: execute-ededup-task
+      taskRef:
+        name: ededup
+      runAfter:
+        - execute-docling-task
+      workspaces:
+        - name: rayjobs
+          workspace: dpk-pipeline-ws
+      params:
+        - name: S3_BUCKET_PATH
+          value: "$(params.S3_BUCKET_PATH)"
+        - name: EDEDUP_INPUT
+          value: "$(params.EDEDUP_INPUT)"
+        - name: EDEDUP_OUTPUT
+          value: "$(params.EDEDUP_OUTPUT)"
     - name: execute-gw-classification-task
       taskRef:
         name: gwclassification
       runAfter:
-        - execute-repo-task
+        - execute-ededup-task
       workspaces:
         - name: rayjobs
           workspace: dpk-pipeline-ws

@@ -97,25 +97,18 @@ def commit_fragments(s3: fs.S3FileSystem, all_fragments_json: list, schema_folde
 def main(args):
     lancedb_storage_type = args.lancedb_storage_type
     if lancedb_storage_type == 's3':
-        s3_access_key=args.s3_access_key
-        s3_secret_key=args.s3_secret_key
-        s3_endpoint=args.s3_endpoint
-        if not bool(s3_access_key):
-            # get access key from environ variable AWS_ACCESS_KEY
-            s3_access_key = os.getenv("AWS_ACCESS_KEY_ID", "")
-            if not bool(s3_access_key):
-                print(f"Error: empty s3_access_key, need to provide with a command-line argument or set env 'AWS_ACCESS_KEY_ID'")
-                exit(1)
-        if not bool(s3_secret_key):
-            s3_secret_key = os.getenv("AWS_SECRET_ACCESS_KEY", "")
-            if not bool(s3_access_key):
-                print(f"Error: empty s3_secret_key, need to provide with a command-line argument or set env 'AWS_SECRET_ACCESS_KEY'")
-                exit(1)
-        if not bool(s3_endpoint):
-            s3_endpoint = os.getenv('AWS_ENDPOINT')
-            if not bool(s3_endpoint):
-                print(f"Error: empty s3_endpoint, need to provide with a command-line argument, or set env 'AWS_ENDPOINT'")
-                exit(1)
+        s3_access_key=os.environ.get('S3_ACCESS_KEY')
+        s3_secret_key=os.environ.get('S3_SECRET_KEY')
+        s3_endpoint=os.environ.get('S3_ENDPOINT')
+        if s3_access_key is None:
+            print(f"Error: need to provide s3_access_key")
+            exit(1)
+        if s3_secret_key is None:
+            print(f"Error: need to provide s3_secret_key")
+            exit(1)
+        if s3_endpoint is None:
+            print(f"Error: need to provide s3_endpoint")
+            exit(1)
         s3 = setup_s3(s3_access_key, s3_secret_key, s3_endpoint)
     else:
         s3 = fs.LocalFileSystem()
@@ -134,17 +127,6 @@ def main(args):
     print(f"{table.count_rows()=}")
     print(f"lance completed the commit.")
 
-    # optimizing the lance fragments in storage
-    # print(f"table optimizing...")
-    # table.optimize()
-    # print(f"table optimized.")
-    # print(f"{table.count_rows()=}")
-
-    # After optimizing, start building lance vector indexing, could take a long time for a large table
-    # print(f"building index...")
-    # table.create_index(metric='cosine', vector_column_name='embeddings')
-    # print(f"lancedb index with cosine metric built successfully.")
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Commit lance fragments written by parallel jobs into lancedb table.")
@@ -154,27 +136,6 @@ if __name__ == "__main__":
         required=False,
         default='local',
         help="lancedb storage type: local or s3"
-    )
-    parser.add_argument(
-        f"--s3_access_key",
-        type=str,
-        required=False,
-        default="",
-        help="s3 COS access key, empty '', if local file system"
-    )
-    parser.add_argument(
-        f"--s3_secret_key",
-        type=str,
-        required=False,
-        default="",
-        help="s3 COS secret key, empty '', if local file system"
-    )
-    parser.add_argument(
-        f"--s3_endpoint",
-        type=str,
-        required=False,
-        default="",
-        help="s3 COS endpoint URL, empty '', if local file system"
     )
     parser.add_argument(
         f"--lancedb_uri",

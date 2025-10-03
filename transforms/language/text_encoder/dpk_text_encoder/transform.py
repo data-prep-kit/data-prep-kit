@@ -21,6 +21,7 @@ import lance
 import os
 import ray
 import json
+from typing import List
 from lance.fragment import write_fragments
 
 import pyarrow as pa
@@ -41,6 +42,8 @@ embedding_batch_size_key="embedding_batch_size"
 fragments_json_folder_key="fragments_json_folder"
 dataset_name_key="dataset_name"
 embeddings_exist_key="embeddings_exist"
+embeddings_in_chunks_key="embeddings_in_chunks"
+embeddings_max_num_chunks_key="embeddings_max_num_chunks"
 
 model_name_cli_param = f"{cli_prefix}{model_name_key}"
 content_column_name_cli_param = f"{cli_prefix}{content_column_name_key}"
@@ -51,6 +54,8 @@ embedding_batch_size_cli_param = f"{cli_prefix}{embedding_batch_size_key}"
 fragments_json_folder_cli_param = f"{cli_prefix}{fragments_json_folder_key}"
 dataset_name_cli_param = f"{cli_prefix}{dataset_name_key}"
 embeddings_exist_cli_param = f"{cli_prefix}{embeddings_exist_key}"
+embeddings_in_chunks_cli_param = f"{cli_prefix}{embeddings_in_chunks_key}"
+embeddings_max_num_chunks_cli_param = f"{cli_prefix}{embeddings_max_num_chunks_key}"
 
 default_model_name = "ibm-granite/granite-embedding-30m-english"
 default_content_column_name = "contents"
@@ -61,6 +66,8 @@ default_embedding_batch_size = 16
 default_fragments_json_folder = ""
 default_dataset_name = ""
 default_embeddings_exist = False
+default_embeddings_in_chunks = True
+default_embeddings_max_num_chunks = 10
 
 
 class TextEncoderTransform(AbstractTableTransform):
@@ -106,6 +113,12 @@ class TextEncoderTransform(AbstractTableTransform):
         if not self.embeddings_exist:
             self.model = SentenceTransformer(self.model_name)
             self.model = self.model.to(device)
+
+        self.embeddings_in_chunks = config.get(embeddings_in_chunks_key, default_embeddings_in_chunks)
+        self.logger.info(f"{self.embeddings_in_chunks=}")
+
+        self.embeddings_max_num_chunks = config.get(embeddings_max_num_chunks_key, default_embeddings_max_num_chunks)
+        self.logger.info(f"{self.embeddings_max_num_chunks=}")
 
         # settign up data_access, input_folder, output_folder, and fragments_json_folder
         self.data_access: DataAccess = config.get("data_access", None)
@@ -265,7 +278,121 @@ class TextEncoderTransform(AbstractTableTransform):
         self.output_files_buffer = []
         del combined_table
 
-    # This function is used to create embeddings for a list of documents
+    def _chunk_document(self, text: str, chunk_size: int, overlap_size: int) -> List[str]:
+        """
+        Chunk document into smaller pieces with overlap.
+        
+        Args:
+            text: Input document text
+            chunk_size: Size of each chunk in characters.
+            overlap_size: overlap between chunks
+            
+        Returns:
+            List of text chunks
+        """
+        
+        # If document is shorter than chunk_size, return as single chunk
+        if len(text) <= chunk_size:
+            return [text.strip()]
+        
+        chunks = []
+        start = 0
+        
+        while start < len(text) and len(chunks) < self.embeddings_max_num_chunks:
+            end = start + chunk_size
+            
+            # If not the last chunk, try to break at word boundary
+            if end < len(text):
+                # Look backwards for a space to avoid breaking words
+                space_pos = text.rfind(' ', start, end)
+                if space_pos > start:  # Found a space
+                    end = space_pos
+            
+            chunk = text[start:end].strip()
+            if chunk:  # Only add non-empty chunks
+                chunks.append(chunk)
+            
+            # Move start position (with overlap)
+            start = end - overlap_size
+            
+            # Prevent infinite loop if overlap is too large
+            if len(chunks) > 1 and start <= len(text) - len(chunks[-1]):
+                start = end
+        
+        return chunks
+
+
+    def get_chunk_embeddings(self, all_chunks: List[str], batch_size: int = 16) -> np.ndarray:
+        """
+        Get embeddings for all chunks in batches for better efficiency.
+        
+        Args:
+            all_chunks: List of all text chunks
+            batch_size: Number of chunks to process at once
+            
+        Returns:
+            Array of embeddings, shape (num_chunks, embedding_dim)
+        """
+        if not all_chunks:
+            raise ValueError("No chunks provided")
+        
+        all_embeddings = []
+        
+        # Process in batches
+        for i in range(0, len(all_chunks), batch_size):
+            batch = all_chunks[i:i + batch_size]
+            
+            # Check for potential truncation in batch
+            # for j, chunk in enumerate(batch):
+            #     estimated_tokens = len(chunk) // self.chars_per_token
+            #     if estimated_tokens > self.max_seq_length:
+            #         warnings.warn(f"Chunk {i+j} may be truncated")
+            
+            # Generate embeddings for batch
+            batch_embeddings = self.model.encode(
+                batch, 
+                convert_to_numpy=True
+            )
+            all_embeddings.append(batch_embeddings)
+        
+        return np.vstack(all_embeddings)
+
+
+    def _compute_embeddings_in_chunks(self, docs: list, batch_size: int) -> list[list[float]]:
+        """
+        Take a list of docs, chunk each and append them into all chunks, do embeddings for all chunks in batches and
+        finally average chunks of each doc into document-level embeddings and return a list of lists 
+        """
+        # first phase: chunking docs into all chunks
+        all_chunks = []
+        doc_chunk_counts = []
+        max_seq_length = self.model.max_seq_length
+        chars_per_token = 4
+        chunk_size = int(0.9 * max_seq_length * chars_per_token)
+        overlap_size = int(0.05*chunk_size)
+        for document in docs:
+            chunks = self._chunk_document(document, chunk_size, overlap_size)
+            all_chunks.extend(chunks)
+            doc_chunk_counts.append(len(chunks))
+
+        self.logger.info(f"{len(all_chunks)=}")
+        # Second phase: process all chunks in batches into all_chunk_embeddings
+        document_embeddings = []
+        if all_chunks:
+            all_chunk_embeddings = self.get_chunk_embeddings(all_chunks, batch_size)
+
+            # group and average chunk-level embeddings back to document-level embeddings
+            chunk_idx = 0
+            for chunk_count in doc_chunk_counts:
+                if chunk_count > 0:
+                    doc_chunk_embeddings = all_chunk_embeddings[chunk_idx:chunk_idx + chunk_count]
+                    averaged_embedding = np.mean(doc_chunk_embeddings, axis=0)
+                    document_embeddings.append(averaged_embedding.tolist())
+                    chunk_idx += chunk_count
+        self.logger.info(f"{len(document_embeddings)=}")
+        return document_embeddings
+
+    # This function is used to create embeddings for a list of documents without chunking
     def _compute_embeddings(self, docs: list, embed_batch_size: int) -> list[list[float]]:
         """ given a list of documents, compute their embeddings as a list of list, using sentence_transformer API """
         embeddings = []
@@ -296,7 +423,12 @@ class TextEncoderTransform(AbstractTableTransform):
 
         if not self.embeddings_exist:
             documents = table.column(self.content_column_name).to_pylist()
-            embeddings = self._compute_embeddings(documents, self.embedding_batch_size)
+            if self.embeddings_in_chunks:
+                self.logger.info(f"compute embeddings_in_chunks for {file_name}")
+                embeddings = self._compute_embeddings_in_chunks(documents, self.embedding_batch_size)
+            else:
+                self.logger.info(f"compute embeddings without chunking for {file_name}")
+                embeddings = self._compute_embeddings(documents, self.embedding_batch_size)
             # embedding_dtype = pa.list_(pa.float16(), len(embeddings[0]))
             # embeddings_float16 = [np.array(emb, dtype=np.float16) for emb in embeddings]
             # embeddings_pa_array = pa.array(embeddings_float16, type=embedding_dtype)
@@ -304,7 +436,7 @@ class TextEncoderTransform(AbstractTableTransform):
             new_table = table.add_column(len(table.schema), self.output_embeddings_column_name, embeddings_pa_array)
         else:
             embeddings = table.column(self.output_embeddings_column_name).to_pylist()
-            assert len(embeddings) > 0, f"No embbeddings are loaded from input parquet, {file_name=}"
+            assert len(embeddings) > 0, f"No embbeddings are loaded from input parquet"
             embeddings_pa_array = self._converting_embeddings_list_to_pa_array(embeddings)
             new_table = table.set_column(len(table.schema)-1, self.output_embeddings_column_name, embeddings_pa_array)
 
@@ -312,6 +444,7 @@ class TextEncoderTransform(AbstractTableTransform):
         metadata = {"nfiles": 1, "num_rows": new_table.num_rows}
         del new_table
         del table
+        self.logger.info(f"finished embeddings for {file_name}")
         return [], metadata
     
     def flush(self) -> tuple[list[pa.Table], dict[str, Any]]:
@@ -397,6 +530,20 @@ class TextEncoderTransformConfiguration(TransformConfiguration):
             required=False,
             default=default_embeddings_exist,
             help="A flag indicating whether or not embeddings exist in parquet",
+        )
+        parser.add_argument(
+            f"--{embeddings_in_chunks_cli_param}",
+            type=bool,
+            required=False,
+            default=default_embeddings_in_chunks,
+            help="A flag to indicate whether or not embeddings should be created by chunking the text first"
+        )
+        parser.add_argument(
+            f"--{embeddings_max_num_chunks_cli_param}",
+            type=int,
+            required=False,
+            default=default_embeddings_max_num_chunks,
+            help="max num of chunks to create chunk-embeddings for a document"
         )
 
     def apply_input_params(self, args: Namespace) -> bool:

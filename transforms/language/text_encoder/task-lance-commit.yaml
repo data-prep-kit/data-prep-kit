@@ -1,0 +1,46 @@
+# filename: task-lance-commit.yaml
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: lance-commit
+spec:
+  params:
+    - name: LANCEDB_STORAGE_TYPE
+      type: string
+    - name: LANCEDB_URI
+      type: string
+    - name: LANCE_DATASET_URI
+      type: string
+    - name: LANCEDB_TABLE_NAME
+      type: string
+    - name: FRAGMENTS_JSON_FOLDER
+      type: string
+    - name: LANCEDB_TABLE_SCHEMA
+      type: string
+  workspaces:
+    - name: rayjobs
+      description: A workspace to mount the job YAML.
+  steps:
+    - name: run-lance-commit-job
+      image: quay.io/dataprep1/data-prep-kit/kubectl:latest
+      env:
+        - name: LANCEDB_STORAGE_TYPE
+          value: $(params.LANCEDB_STORAGE_TYPE)
+        - name: LANCEDB_URI
+          value: $(params.LANCEDB_URI)
+        - name: LANCE_DATASET_URI
+          value: $(params.LANCE_DATASET_URI)
+        - name: LANCEDB_TABLE_NAME
+          value: $(params.LANCEDB_TABLE_NAME)
+        - name: FRAGMENTS_JSON_FOLDER
+          value: $(params.FRAGMENTS_JSON_FOLDER)
+        - name: LANCEDB_TABLE_SCHEMA
+          value: $(params.LANCEDB_TABLE_SCHEMA)
+      script: |
+        #!/bin/sh
+        envsubst < /workspace/rayjobs/data-prep-kit/transforms/language/text_encoder/lance-commit-rayjob.yaml > /workspace/rayjobs/lance-commit-task.yaml
+        cat /workspace/rayjobs/lance-commit-task.yaml
+        kubectl apply -f /workspace/rayjobs/lance-commit-task.yaml
+        echo "Watiing for Kubernetes job/lance-commit-task to finish or timeout after 24h..."
+        kubectl wait --for=jsonpath='{.status.jobDeploymentStatus}'=Complete rayjob/rayjob-lance-commit --timeout=24h
+        echo "Kubernetes job/rayjob-lance-commit completed. Check log for completion status..."

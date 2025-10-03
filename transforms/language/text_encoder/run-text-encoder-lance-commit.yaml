@@ -29,6 +29,18 @@ spec:
         value: "document_id"
       - name: RUNTIME_NUM_WORKERS
         value: "1"
+      - name: LANCEDB_STORAGE_TYPE
+        value: "s3"
+      - name: LANCEDB_URI
+        value: "s3://cos-optimal-llm-pile/bluepile-processing/rel_10/embeddings/tekton_tests/lance/tekton_tests.db/"
+      - name: LANCE_DATASET_URI
+        value: "s3://cos-optimal-llm-pile/bluepile-processing/rel_10/embeddings/tekton_tests/lance/tekton_tests.db/tekton_tests.lance/"
+      - name: LANCEDB_TABLE_NAME
+        value: "tekton_tests"
+      - name: FRAGMENTS_JSON_FOLDER
+        value: "cos-optimal-llm-pile/bluepile-processing/rel_10/embeddings/tekton_tests/lance/tekton_tests_fragments_json/"
+      - name: LANCEDB_TABLE_SCHEMA
+        value: "cos-optimal-llm-pile/bluepile-processing/rel_10/embeddings/tekton_tests/input_parquets_tmp4embeddings/"
   workspaces:
       - name: dpk-pipeline-ws
         volumeClaimTemplate:

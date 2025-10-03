@@ -28,6 +28,18 @@ spec:
     - name: RUNTIME_NUM_WORKERS
       type: string
       default: "10"
+    - name: LANCEDB_STORAGE_TYPE
+      type: string
+    - name: LANCEDB_URI
+      type: string
+    - name: LANCE_DATASET_URI
+      type: string
+    - name: LANCEDB_TABLE_NAME
+      type: string
+    - name: FRAGMENTS_JSON_FOLDER
+      type: string
+    - name: LANCEDB_TABLE_SCHEMA
+      type: string
   tasks:
     - name: execute-repo-task
       taskRef:
@@ -62,4 +74,26 @@ spec:
           value: $(params.TEXT_ENCODER_DOCUMENT_ID_NAME)
         - name: RUNTIME_NUM_WORKERS
           value: $(params.RUNTIME_NUM_WORKERS)
+    - name: execute-lance-commit-task
+      taskRef:
+        name: lance-commit
+      runAfter:
+        - execute-text-encoder-task
+      workspaces:
+        - name: rayjobs
+          workspace: dpk-pipeline-ws
+      params:
+        - name: LANCEDB_STORAGE_TYPE
+          value: $(params.LANCEDB_STORAGE_TYPE)
+        - name: LANCEDB_URI
+          value: $(params.LANCEDB_URI)
+        - name: LANCE_DATASET_URI
+          value: $(params.LANCE_DATASET_URI)
+        - name: LANCEDB_TABLE_NAME
+          value: $(params.LANCEDB_TABLE_NAME)
+        - name: FRAGMENTS_JSON_FOLDER
+          value: $(params.FRAGMENTS_JSON_FOLDER)
+        - name: LANCEDB_TABLE_SCHEMA
+          value: $(params.LANCEDB_TABLE_SCHEMA)
+
    

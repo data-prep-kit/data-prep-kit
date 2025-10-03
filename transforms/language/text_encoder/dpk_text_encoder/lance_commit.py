@@ -101,13 +101,13 @@ def main(args):
         s3_secret_key=os.environ.get('S3_SECRET_KEY')
         s3_endpoint=os.environ.get('S3_ENDPOINT')
         if s3_access_key is None:
-            print(f"Error: need to provide s3_access_key")
+            print(f"Error: need to provide s3_access_key via env S3_ACCESS_KEY")
             exit(1)
         if s3_secret_key is None:
-            print(f"Error: need to provide s3_secret_key")
+            print(f"Error: need to provide s3_secret_key via env S3_SECRET_KEY")
             exit(1)
         if s3_endpoint is None:
-            print(f"Error: need to provide s3_endpoint")
+            print(f"Error: need to provide s3_endpoint via env S3_ENDPOINT")
             exit(1)
         s3 = setup_s3(s3_access_key, s3_secret_key, s3_endpoint)
     else:

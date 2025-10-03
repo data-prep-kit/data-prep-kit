@@ -1,0 +1,141 @@
+###
+# Usage:
+# export $(cat .env | xargs)
+# envsubst < ededup-rayjob.yaml | kubectl apply -f -
+###
+apiVersion: ray.io/v1alpha1
+kind: RayJob
+metadata:
+  name: rayjob-text-encoder # Name of your RayCluster
+spec:
+  shutdownAfterJobFinishes: true
+  ttlSecondsAfterFinished: 10
+  rayClusterSpec:
+    rayVersion: '2.36.1' # Specify the Ray version
+    headGroupSpec:
+      # Service type for the head node, can be ClusterIP or NodePort
+      serviceType: ClusterIP
+      # Ray container image for the head node
+      rayStartParams:
+        dashboard-host: '0.0.0.0'
+      template:
+        spec:
+          containers:
+            - name: ray-head
+              env:
+                - name: DPK_LOG_LEVEL 
+                  value: DEBUG
+                - name: S3_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: klwu-cos-east-secrets
+                      key: AWS_ACCESS_KEY_ID
+                - name: S3_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: klwu-cos-east-secrets
+                      key: AWS_SECRET_ACCESS_KEY
+                - name: S3_ENDPOINT
+                  valueFrom:
+                    secretKeyRef:
+                      name: klwu-cos-east-secrets
+                      key: AWS_ENDPOINT
+                - name: HF_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: klwu-huggingface-token
+                      key: HF_TOKEN
+                - name: HF_HOME
+                  value: /tmp/.cache
+                - name: WORKER_CPU_REQUEST
+                  valueFrom:
+                    resourceFieldRef:
+                      resource: requests.cpu
+              image: us.icr.io/cil15-shared-registry/preprocessing-pipelines/text_encoder-ray:0.2
+              imagePullPolicy: Always
+              ports:
+                - containerPort: 6379 # Ray port
+                  name: ray-client
+                - containerPort: 8265 # Ray Dashboard port
+                  name: dashboard
+              resources:
+                requests:
+                  cpu: 10
+                  memory: 160Gi
+                  ephemeral-storage: 20Gi
+                limits:
+                  cpu: 10
+                  memory: 160Gi
+                  ephemeral-storage: 20Gi
+          imagePullSecrets:
+              - name: prod-all-icr-io
+    workerGroupSpecs:
+      - groupName: worker-group
+        replicas: 10 # Initial number of worker nodes
+        minReplicas: 10
+        maxReplicas: 10
+        rayStartParams: {}
+        template:
+          spec:
+            containers:
+              - name: ray-worker
+                env:
+                  - name: DPK_LOG_LEVEL 
+                    value: DEBUG
+                  - name: S3_ACCESS_KEY
+                    valueFrom:
+                      secretKeyRef:
+                        name: klwu-cos-east-secrets
+                        key: AWS_ACCESS_KEY_ID
+                  - name: S3_SECRET_KEY
+                    valueFrom:
+                      secretKeyRef:
+                        name: klwu-cos-east-secrets
+                        key: AWS_SECRET_ACCESS_KEY
+                  - name: S3_ENDPOINT
+                    valueFrom:
+                      secretKeyRef:
+                        name: klwu-cos-east-secrets
+                        key: AWS_ENDPOINT
+                  - name: HF_TOKEN
+                    valueFrom:
+                      secretKeyRef:
+                        name: klwu-huggingface-token
+                        key: HF_TOKEN
+                  - name: HF_HOME
+                    value: /tmp/.cache
+                image: us.icr.io/cil15-shared-registry/preprocessing-pipelines/text_encoder-ray:0.2
+                imagePullPolicy: Always
+                resources:
+                  requests:
+                    cpu: 15
+                    memory: 160Gi
+                  limits:
+                    cpu: 15
+                    memory: 160Gi
+            imagePullSecrets:
+              - name: prod-all-icr-io
+  # Job details
+  # The command to execute the Python script
+  entrypoint: >
+    python3 -m dpk_text_encoder.ray.runtime
+    --run_locally False
+    --text_encoder_model_name $TEXT_ENCODER_MODEL_NAME
+    --text_encoder_content_column_name $TEXT_ENCODER_CONTENTS_NAME
+    --text_encoder_output_embeddings_column_name "embeddings"
+    --text_encoder_lanceDB_batch_size 1048576
+    --text_encoder_embedding_batch_size 16
+    --text_encoder_embeddings_in_chunks True
+    --text-encoder_max_num_chunks 10
+    --text_encoder_dataset_name $TEXT_ENCODER_DATASET_NAME
+    --text_encoder_fragments_json_folder $TEXT_ENCODER_FRAGMENT_JSON_FOLDER
+    --text_encoder_lanceDB_data_uri $TEXT_ENCODER_LANCEDB_DATA_URI
+    --data_s3_config '{"input_folder": $TEXT_ENCODER_INPUT_FOLDER, "output_folder": $TEXT_ENCODER_OUTPUT_FOLDER}'
+    --runtime_worker_options '{"num_cpus": 9, "memory": 95000000000, "max_restarts": 0, "max_task_retries": 0,}'
+    --runtime_creation_delay 3
+    --runtime_num_workers $RUNTIME_NUM_WORKERS
+    --data_checkpointing True
+
+#    --data_max_files -1
+#    --data_num_samples -1
+

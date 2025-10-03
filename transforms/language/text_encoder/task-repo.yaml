@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: repo
+spec:
+  workspaces:
+    - name: rayjobs
+      description: A workspace to mount the job YAML.
+  steps:
+    - name: run-repo-job
+      image: quay.io/dataprep1/data-prep-kit/kubectl:latest
+      script: |
+        #!/bin/sh
+        df -h
+        git clone -b text_encoder --depth 1 https://github.com/klwuibm/data-prep-kit.git /workspace/rayjobs/data-prep-kit
+
+
+

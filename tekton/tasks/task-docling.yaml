@@ -26,10 +26,15 @@ spec:
 
       script: |
         #!/bin/sh
-        envsubst < /workspace/rayjobs/data-prep-kit/transforms/language/docling2parquet/docling2parquet-rayjob.yaml > /workspace/rayjobs/docling-task.yaml
-        cat /workspace/rayjobs/docling-task.yaml
-        kubectl apply -f /workspace/rayjobs/docling-task.yaml
-        echo "Waiting for Kubernetes job/rayjob-docling to finish or timeout after 24h..."
-        kubectl wait --for=jsonpath='{.status.jobDeploymentStatus}'=Complete rayjob/rayjob-docling --timeout=24h
-        echo "Kubernetes job/rayjob-ededup completed. Check log for completion status..."
+        JOBFILE=/workspace/rayjobs/data-prep-kit/transforms/language/docling2parquet/docling2parquet-rayjob.yaml
+        ##############################################################################
+        ## Most jobs follow the same pattern, so we can templatize this in the future
+        JOBNAME=`yq '.metadata.name' $JOBFILE`
+        TMPFILE=$(mktemp)
+        envsubst < "$JOBFILE" > "$TMPFILE"
+        cat "$TMPFILE" && kubectl apply -f "$TMPFILE"
+        echo "Watiing for Kubernetes rayjob/$JOBNAME to finish or timeout after 24h..."
+        kubectl wait --for=jsonpath='{.status.jobDeploymentStatus}'=Complete rayjob/$JOBNAME --timeout=24h
+        echo "Kubernetes rayjob/$JOBNAME completed. Check log for completion status..."
+        ##############################################################################
 

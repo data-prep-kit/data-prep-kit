@@ -6,10 +6,12 @@ spec:
   params:
     - name: REPO_URL
       type: string
-      default: https://github.com/data-prep-kit/data-prep-kit.git
+#      default: https://github.com/data-prep-kit/data-prep-kit.git
+      default: https://github.com/touma-I/data-prep-kit-pkg.git
     - name: REPO_BRANCH
       type: string
-      default: feature/tekton
+#      default: feature/tekton
+      default: tekton-4
   workspaces:
     - name: rayjobs
       description: A workspace to mount the job YAML.

@@ -16,17 +16,26 @@ spec:
   steps:
     - name: run-gw-classification-job
       image: quay.io/dataprep1/data-prep-kit/kubectl:latest
+      env:
+        - name: S3_BUCKET_PATH
+          value: $(params.S3_BUCKET_PATH)
+        - name: GW_MATH_INPUT
+          value: $(params.GW_MATH_INPUT)
+        - name: GW_MATH_OUTPUT
+          value: $(params.GW_MATH_OUTPUT)
       script: |
         #!/bin/sh
-        export S3_BUCKET_PATH=$(params.S3_BUCKET_PATH)
-        export GW_MATH_INPUT=$(params.GW_MATH_INPUT)
-        export GW_MATH_OUTPUT=$(params.GW_MATH_OUTPUT)
-        envsubst < /workspace/rayjobs/data-prep-kit/transforms/language/gneissweb_classification/gneissweb_classification-rayjob.yaml > /workspace/rayjobs/gw-task.yaml
-        cat /workspace/rayjobs/gw-task.yaml
-        kubectl apply -f /workspace/rayjobs/gw-task.yaml
-        echo "Watiing for Kubernetes job/rayjob-gw to finish or timeout after 24h..."
-        kubectl wait --for=jsonpath='{.status.jobDeploymentStatus}'=Complete rayjob/rayjob-gw --timeout=24h
-        echo "Kubernetes job/rayjob-gw completed. Check log for completion status..."
+        JOBFILE=/workspace/rayjobs/data-prep-kit/transforms/language/gneissweb_classification/gneissweb_classification-rayjob.yaml
+        ##############################################################################
+        ## Most jobs follow the same pattern, so we can templatize this in the future
+        JOBNAME=`yq '.metadata.name' $JOBFILE`
+        TMPFILE=$(mktemp)
+        envsubst < "$JOBFILE" > "$TMPFILE"
+        cat "$TMPFILE" && kubectl apply -f "$TMPFILE"
+        echo "Watiing for Kubernetes rayjob/$JOBNAME to finish or timeout after 24h..."
+        kubectl wait --for=jsonpath='{.status.jobDeploymentStatus}'=Complete rayjob/$JOBNAME --timeout=24h
+        echo "Kubernetes rayjob/$JOBNAME completed. Check log for completion status..."
+        ##############################################################################
 
 
         

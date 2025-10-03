@@ -26,12 +26,16 @@ spec:
 
       script: |
         #!/bin/sh
-        envsubst < /workspace/rayjobs/data-prep-kit/transforms/universal/ededup/ededup-rayjob.yaml > /workspace/rayjobs/ededup-task.yaml
-        cat /workspace/rayjobs/ededup-task.yaml
-        kubectl apply -f /workspace/rayjobs/ededup-task.yaml
-        echo "Watiing for Kubernetes job/ededup to finish or timeout after 24h..."
-        kubectl wait --for=jsonpath='{.status.jobDeploymentStatus}'=Complete rayjob/rayjob-ededup --timeout=24h
-        echo "Kubernetes job/rayjob-ededup completed. Check log for completion status..."
-
+        JOBFILE=/workspace/rayjobs/data-prep-kit/transforms/universal/ededup/ededup-rayjob.yaml
+        ##############################################################################
+        ## Most jobs follow the same pattern, so we can templatize this in the future
+        JOBNAME=`yq '.metadata.name' $JOBFILE`
+        TMPFILE=$(mktemp)
+        envsubst < "$JOBFILE" > "$TMPFILE"
+        cat "$TMPFILE" && kubectl apply -f "$TMPFILE"
+        echo "Watiing for Kubernetes rayjob/$JOBNAME to finish or timeout after 24h..."
+        kubectl wait --for=jsonpath='{.status.jobDeploymentStatus}'=Complete rayjob/$JOBNAME --timeout=24h
+        echo "Kubernetes rayjob/$JOBNAME completed. Check log for completion status..."
+        ##############################################################################
 
         

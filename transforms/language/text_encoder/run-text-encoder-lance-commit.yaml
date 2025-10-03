@@ -12,7 +12,7 @@ spec:
     pipeline: "24h"  # Set to 0 to disable timeout
   params:
       - name: TEXT_ENCODER_LANCEDB_DATA_URI
-        value: "cos-optimal-llm-pile/bluepile-processing/rel_10/embeddings/tekton_tests/lance/tekton_tests.db/tekton_tests.lance/"
+        value: "s3://cos-optimal-llm-pile/bluepile-processing/rel_10/embeddings/tekton_tests/lance/tekton_tests.db/tekton_tests.lance/"
       - name: TEXT_ENCODER_FRAGMENT_JSON_FOLDER
         value: "cos-optimal-llm-pile/bluepile-processing/rel_10/embeddings/tekton_tests/lance/tekton_tests_fragments_json/"
       - name: TEXT_ENCODER_DATASET_NAME

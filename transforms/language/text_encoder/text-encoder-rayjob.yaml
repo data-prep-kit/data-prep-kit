@@ -71,9 +71,9 @@ spec:
               - name: prod-all-icr-io
     workerGroupSpecs:
       - groupName: worker-group
-        replicas: 10 # Initial number of worker nodes
-        minReplicas: 10
-        maxReplicas: 10
+        replicas: 2 # Initial number of worker nodes
+        minReplicas: 2
+        maxReplicas: 2
         rayStartParams: {}
         template:
           spec:
@@ -110,9 +110,11 @@ spec:
                   requests:
                     cpu: 15
                     memory: 160Gi
+                    ephemeral-storage: 20Gi
                   limits:
                     cpu: 15
                     memory: 160Gi
+                    ephemeral-storage: 20Gi
             imagePullSecrets:
               - name: prod-all-icr-io
   # Job details

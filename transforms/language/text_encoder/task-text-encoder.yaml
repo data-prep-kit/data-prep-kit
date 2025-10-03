@@ -51,7 +51,6 @@ spec:
           value: $(params.TEXT_ENCODER_DOCUMENT_ID_NAME)
         - name: RUNTIME_NUM_WORKERS
           value: $(params.RUNTIME_NUM_WORKERS)
-
       script: |
         #!/bin/sh
         envsubst < /workspace/rayjobs/data-prep-kit/transforms/language/text_encoder/text-encoder-rayjob.yaml > /workspace/rayjobs/text-encoder-task.yaml

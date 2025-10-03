@@ -128,7 +128,7 @@ spec:
     --text_encoder_lanceDB_batch_size 1048576
     --text_encoder_embedding_batch_size 16
     --text_encoder_embeddings_in_chunks True
-    --text-encoder_max_num_chunks 10
+    --text_encoder_max_num_chunks 10
     --text_encoder_dataset_name "$TEXT_ENCODER_DATASET_NAME"
     --text_encoder_fragments_json_folder "$TEXT_ENCODER_FRAGMENT_JSON_FOLDER"
     --text_encoder_lanceDB_data_uri "$TEXT_ENCODER_LANCEDB_DATA_URI"

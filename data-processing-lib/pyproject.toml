@@ -1,6 +1,6 @@
 [project]
 name = "data_prep_toolkit"
-version = "1.0.3.dev0"
+version = "1.1.6.dev0"
 keywords = ["data", "data preprocessing", "data preparation", "llm", "generative", "ai", "fine-tuning", "llmapps" ]
 requires-python = ">=3.10,<3.13"
 description = "Data Preparation Toolkit Library for Ray and Python"

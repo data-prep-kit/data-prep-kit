@@ -214,7 +214,7 @@ class FilterTransform(AbstractTableTransform):
 
         # initialize the SQL statement used for filtering
         sql_statement = "SELECT * FROM input_table"
-        if len(self.filter_criteria) > 0:
+        if self.filter_criteria is not None and len(self.filter_criteria) > 0:
             # populate metadata with filtering stats for each filter criterion
             for filter_criterion in self.filter_criteria:
                 criterion_sql = f"{sql_statement} WHERE {filter_criterion}"

@@ -2,8 +2,8 @@ kubectl get rayjobs -o yaml | kubectl delete -f -
 kubectl get pipelinerun -o yaml | kubectl delete -f - 
 kubectl get pipeline -o yaml | kubectl delete -f - 
 kubectl get task -o yaml | kubectl delete -f -
-for x in task-*; do kubectl apply -f $x; done
-for x in pipeline-*; do kubectl apply -f $x; done
-for x in run-*; do UP=MT RP=`date +"%m%d%H"` envsubst < run-gwclassification.yaml > run.yaml; kubectl apply -f run.yaml; done
+for x in tasks/task-*; do kubectl apply -f $x; done
+for x in pipelines/pipeline-*; do kubectl apply -f $x; done
+UP=MT RP=`date +"%m%d%H"` envsubst < pipelines/run-gwclassification.yaml | kubectl apply -f -
 kubectl get pods -w
 

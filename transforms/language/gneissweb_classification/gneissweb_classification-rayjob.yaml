@@ -61,7 +61,7 @@ spec:
                   memory: 16Gi
                 limits:
                   cpu: 8
-                  memory: 16Gi
+                  memory: 32Gi
     workerGroupSpecs:
       - groupName: small-group
         replicas: 5 # Initial number of worker nodes
@@ -103,7 +103,7 @@ spec:
                     memory: 16Gi
                   limits:
                     cpu: 1
-                    memory: 16Gi
+                    memory: 32Gi
   # Job details
   # The command to execute the Python script
   entrypoint: >

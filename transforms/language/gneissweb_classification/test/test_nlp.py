@@ -22,7 +22,6 @@ def test_classification():
     url = "ibm-granite/GneissWeb.Med_classifier"
     file_name = "fasttext_medical.bin"
     model = load_model(url, 'fasttext', token, model_filename=file_name)
-    nlp_langid = FastTextModel(model, url)
 
     documents = pa.array(
         [
@@ -39,7 +38,7 @@ def test_classification():
         ]
     )
     table = pa.Table.from_arrays([documents], names=["contents"])
-    table, stats = get_label_ds_pa(table, nlp_langid, "contents", "label", "score")
+    table, stats = get_label_ds_pa(table, model, url,  "contents", "label", "score")
     assert table["label"].to_pylist() == ["cc", "cc", "cc", "cc", "cc"]
     assert len(table["score"].to_pylist()) == len(table["label"].to_pylist())
     assert "ft_label" not in table.column_names

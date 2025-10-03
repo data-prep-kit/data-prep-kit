@@ -53,6 +53,9 @@ spec:
                       resource: requests.cpu
               image: us.icr.io/cil15-shared-registry/preprocessing-pipelines/text_encoder-ray:0.2
               imagePullPolicy: Always
+              envFrom:
+                  - secretRef:
+                      name: klwu-cos-east-secrets
               ports:
                 - containerPort: 6379 # Ray port
                   name: ray-client
@@ -106,6 +109,9 @@ spec:
                     value: /tmp/.cache
                 image: us.icr.io/cil15-shared-registry/preprocessing-pipelines/text_encoder-ray:0.2
                 imagePullPolicy: Always
+                envFrom:
+                  - secretRef:
+                      name: klwu-cos-east-secrets
                 resources:
                   requests:
                     cpu: 15

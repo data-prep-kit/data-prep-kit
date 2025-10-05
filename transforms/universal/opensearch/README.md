@@ -44,3 +44,20 @@ export OPENSEARH_USERID=admin
 export OPENSEARCH_PASSWORD=""
 ```
 
+# Local Opensearch execution
+
+If you don't have Opensearch server, you can install it according to the [instructions](https://docs.opensearch.org/latest/install-and-configure/install-opensearch/index/). 
+
+Probably, the simplest way is to execute Opensearch in Docker containers:
+```bash
+git clone   https://github.com/opensearch-project/opensearch-build
+export OPENSEARCH_INITIAL_ADMIN_PASSWORD=mypassword
+cd opensearch-build/docker/release/dockercomposefiles/
+docker-compose -f docker-compose-default.x.yml up -d 
+```
+
+If you want to run Opensearch **without** security protections (developer, demo mode)
+```bash
+docker-compose -f ./unsecured-docker-compose.yaml up -d
+```
+In this case you don't need username and password to access opensearch REST API and its dashboard.

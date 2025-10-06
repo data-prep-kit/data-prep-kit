@@ -12,18 +12,16 @@
 
 from argparse import ArgumentParser, Namespace
 from typing import Any
-from urllib.parse import urlparse
 
 import nltk
 import pyarrow as pa
 from data_processing.data_access import DataAccessFactory
-from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
 from data_processing.utils import CLIArgumentProvider, TransformUtils, get_logger
-from numpy.random import default_rng
+from data_processing.utils.multilock import MultiLock
 
 
-logger = get_logger(__name__, level="INFO")
+logger = get_logger(__name__)
 from typing import Any
 
 
@@ -130,11 +128,17 @@ class FineWebQualityAnnotatorTransform(AbstractTableTransform):
         self.short_line_frac_cname = config.get(short_line_frac_cname_key, short_line_frac_cname_default)
         self.short_line_length = config.get(short_line_length_key, short_line_length_default)
 
-        # download NLTK resources needed for sentence tokenizer
+        lock = MultiLock("punkt_tab_lock")
         try:
+            lock.acquire()
+            logger.debug(f"Lock {lock.lock_filename} acquired.")
+            # download NLTK resources needed for sentence tokenizer
             nltk.data.find("tokenizers/punkt_tab")
         except LookupError:
             nltk.download("punkt_tab")
+        finally:
+            lock.release()
+            logger.debug(f"Lock {lock.lock_filename} released.")
 
     def find_duplicates(self, x: list[str]) -> tuple[int, int]:
         unique_x = set()
@@ -144,7 +148,6 @@ class FineWebQualityAnnotatorTransform(AbstractTableTransform):
             if element in unique_x:
                 duplicate_chars += len(element)
                 duplicate_elements += 1
-
             else:
                 unique_x.add(element)
         return duplicate_elements, duplicate_chars
@@ -168,16 +171,28 @@ class FineWebQualityAnnotatorTransform(AbstractTableTransform):
             if index % 1000 == 999:
                 logger.debug(f"Processed {index + 1}/ {table_length} documents")
             doc_text = doc.as_py()
+            if doc_text.strip() == "":
+                logger.debug(f"Found document {index = } empty. Setting annotation values to -1.")
+                frac_line_punct_column[index] = -1
+                short_line_frac_column[index] = -1
+                dup_line_char_frac_column[index] = -1
+                new_line_ratio_column[index] = -1
+                continue
             lines = doc_text.split("\n")
+            # frac_line_punct_column = what % of lines end with END_PUNCTUATION(".", "?", "!", '"', "'")
             frac_line_punct_column[index] = sum(1 for line in lines if line.endswith(END_PUNCTUATION)) / len(lines)
+            # short_line_frac_column = what % of lines are <= short_line_length ( default 30)
             short_line_frac_column[index] = sum(1 for line in lines if len(line) <= self.short_line_length) / len(
                 lines
             )
             non_empty_lines = [line for line in lines if line.strip() != ""]
+            # find_duplicates returns number of duplicate lines & count of chars of those lines
             _, dup_chars = self.find_duplicates(non_empty_lines)
+            # dup_line_char_frac_column = what % chars are duplicate(calculated by checking duplicates at line level)
             dup_line_char_frac_column[index] = dup_chars / len(doc_text.replace("\n", ""))
             words = nltk.word_tokenize(doc_text)
             new_line_count = doc_text.count("\n")
+            # How many new line per character in absolute number
             new_line_ratio_column[index] = new_line_count / len(words)
 
         logger.debug(f"Processed {table_length}/ {table_length} documents")

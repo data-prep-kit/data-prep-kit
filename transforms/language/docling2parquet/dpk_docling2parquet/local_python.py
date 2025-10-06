@@ -17,7 +17,7 @@ import sys
 
 from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.utils import ParamsUtils
-from dpk_docling2parquet.transform_python import Docling2ParquetPythonTransformConfiguration
+from dpk_docling2parquet.runtime import Docling2ParquetPythonTransformConfiguration
 
 
 # create parameters

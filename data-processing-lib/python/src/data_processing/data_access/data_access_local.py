@@ -41,7 +41,7 @@ class DataAccessLocal(DataAccess):
         # If config is undefined, let is pass
         if config is None:
 #            valid_config = False
-            logger.info(f"data access factory {cli_arg_prefix}: Could not find a valid configuration")
+            logger.info(f"data access factory {cli_arg_prefix}: No config provided")
             return valid_config
 
         # If config is empty, fail
@@ -51,15 +51,19 @@ class DataAccessLocal(DataAccess):
             return valid_config
 
         if config.get("input_folder", "") == "":
-            valid_config = False
-            logger.error(
-                f"data access factory {cli_arg_prefix}: " "Could not find input folder in local config"
+            logger.info(
+                f"data access factory {cli_arg_prefix}: " "Could not find input folder in local config. "
+                "Defaulting to current directory"
             )
+            config["input_folder"] = os.getcwd()
+
         if config.get("output_folder", "") == "":
-            valid_config = False
-            logger.error(
-                f"data access factory {cli_arg_prefix}: " "Could not find output folder in local config"
+            logger.info(
+                f"data access factory {cli_arg_prefix}: " "Could not find output folder in local config. "
+                "Defaulting to current directory."
             )
+            config["output_folder"] = os.getcwd()
+
         return valid_config
 
 

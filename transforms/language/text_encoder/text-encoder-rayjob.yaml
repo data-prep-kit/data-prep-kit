@@ -142,7 +142,7 @@ spec:
     --runtime_worker_options '{"num_cpus": 9, "memory": 95000000000, "max_restarts": 0, "max_task_retries": 0,}'
     --runtime_creation_delay 3
     --runtime_num_workers $RUNTIME_NUM_WORKERS
-    --data_checkpointing True
+    --data_checkpointing False
 
 #    --data_max_files -1
 #    --data_num_samples -1

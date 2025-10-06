@@ -32,7 +32,7 @@ warnings.filterwarnings('ignore', message='Connecting to .* using SSL with verif
 
 short_name = "os"
 cli_prefix = f"{short_name}_"
-host_cli_param = f"{cli_prefix}host"
+endpoint_cli_param = f"{cli_prefix}endpoint"
 index_cli_param = f"{cli_prefix}index"
 docid_cli_param = f"{cli_prefix}document_id_column_name"
 embeddings_cli_param = f"{cli_prefix}embeddings_column_name"
@@ -42,7 +42,7 @@ delete_index_cli_param = f"{cli_prefix}delete_index"
 disable_security_cli_param = f"{cli_prefix}disable_security"
 verify_certs_cli_param = f"{cli_prefix}verify_certs"
 
-default_host = "localhost:9200"
+default_endpoint = "localhost:9200"
 default_username = "admin"
 default_port = "9200"
 default_docid_column_name = "document_id"
@@ -50,7 +50,7 @@ default_embeddings_column_name = "embeddings"
 default_content_column_name = "contents"
 default_filename = "filename"
 default_delete_index = False
-user = os.environ.get("OPENSEARH_USERID", "admin")
+user = os.environ.get("OPENSEARCH_USERID", "admin")
 
 filename_column_name_key = "filename"
 
@@ -77,7 +77,7 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
                         self.logger.error(
                             f"Environment variable OPENSEARCH_PASSWORD must be define. Raising Exception: {e}")
                         raise UnrecoverableException("Missing credentials")
-                    user_name = os.environ.get("OPENSEARH_USERID", "admin")
+                    user_name = os.environ.get("OPENSEARCH_USERID", "admin")
                     self.client = OpenSearch(
                         hosts=[{'host': self.host, 'port': self.port}],
                         http_compress=True,  # enables gzip compression for request bodies
@@ -95,7 +95,7 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
         super().__init__(config)
         self.logger = get_logger(__name__)
 
-        x = config.get(host_cli_param, default_host).split(':')
+        x = config.get(endpoint_cli_param, default_endpoint).split(':')
 
         self.doc_id_column = config.get(docid_cli_param, default_docid_column_name)
         self.index_name = config.get(index_cli_param, f"dpk_{datetime.now().strftime('%y%m%d%H%M%S')}")
@@ -148,7 +148,7 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
                     "rows_inserted": success,
                     "rows_failed": len(failed),
                     }
-        return [table], metadata
+        return [], metadata
 
     def create_index(self, body: Any = None) -> None:
         """
@@ -217,7 +217,7 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
         """
         Creates an index (k-NN vector index or regular index) and writes the data.
         The index is created only if it does not already exist.
-        Through an exception if error occurs.
+        Throw an exception if error occurs.
         :param docs: the documents to index
         :return: A tuple containing the number of success and failed docs.
         """
@@ -370,10 +370,10 @@ class OpenSearchTransformConfiguration(TransformConfiguration):
         By convention a common prefix should be used for all transform-specific CLI args
         """
         parser.add_argument(
-            f"--{host_cli_param}",
+            f"--{endpoint_cli_param}",
             type=str,
             required=False,
-            default=default_host,
+            default=default_endpoint,
             help="Specify the OpenSearch host:port. Defaults to localhost:9200"
         )
         parser.add_argument(

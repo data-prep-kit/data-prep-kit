@@ -21,7 +21,7 @@ from data_processing.utils import get_logger
 logger = get_logger(__name__)
 
 from dpk_opensearch.transform import (
-    host_cli_param, default_embeddings_column_name, index_cli_param, filename_column_name_key
+    endpoint_cli_param, default_embeddings_column_name, index_cli_param, filename_column_name_key
 )
 
 input_test_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "test-data", "input"))
@@ -39,7 +39,7 @@ class TestOpenSearch:
             index_name = f"dpk_test_{datetime.now().strftime('%y%m%d%H%M%S')}"
             self.x = OpenSearchTransform(config={index_cli_param: index_name})
         else:
-            self.x = OpenSearchTransform(config={host_cli_param: 'localhost:9200'})
+            self.x = OpenSearchTransform(config={endpoint_cli_param: 'localhost:9200'})
         try:
             self.x.check_index()
         except ConnectionError:
@@ -102,7 +102,7 @@ class TestOpenSearch:
     def test_delete_docs(self, deletion_func, caplog):
         tbl = pq.read_table(test_file)
         tbls, metadata = self.x.transform(tbl, test_file)
-        tbl = tbls[0]
+        assert len(tbls) == 0 
 
         filename = tbl[filename_column_name_key][0].as_py()
         assert metadata['rows_inserted'] == tbl.num_rows
@@ -145,7 +145,7 @@ class TestOpenSearch:
     def test_delete_nonexistentent_index(self, deletion_func, caplog):
         tbl = pq.read_table(test_file)
         tbls, metadata = self.x.transform(tbl, test_file)
-        tbl = tbls[0]
+        assert len (tbls) == 0
         assert metadata['rows_inserted'] == tbl.num_rows
         self.x.index_name = "nonexistentent"
         filename = tbl[filename_column_name_key][0].as_py()

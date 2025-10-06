@@ -235,7 +235,7 @@ dpk_code2parquet = "code/code2parquet/dpk_code2parquet"
 dpk_malware = "code/malware/dpk_malware"
 dpk_repo_level_order = "code/repo_level_order/dpk_repo_level_order"
 dpk_transform_chain = "chain/dpk_transform_chain"
-
+dpk_transform_opensearch = "universal/opensearch/dpk_opensearch"
 [tool.setuptools.package-data]
 #"*" = ["*.txt"]
 "dpk_rep_removal.rust" = ["**"]

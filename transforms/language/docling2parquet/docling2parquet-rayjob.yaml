@@ -65,9 +65,9 @@ spec:
                   memory: 16Gi
     workerGroupSpecs:
       - groupName: small-group
-        replicas: 5 # Initial number of worker nodes
-        minReplicas: 5
-        maxReplicas: 5
+        replicas: 1 # Initial number of worker nodes
+        minReplicas: 1
+        maxReplicas: 1
         rayStartParams: {}
         template:
           spec:
@@ -113,7 +113,7 @@ spec:
     --data_s3_config "{'input_folder': '$S3_BUCKET_PATH/$HTML_ZIP', 'output_folder': '$S3_BUCKET_PATH/$DOCLING_OUTPUT'}"
     --data_files_to_use "[ '.zip' ]" 
     --data_checkpointing False 
-    --runtime_num_workers 5
+    --runtime_num_workers 1
     --runtime_worker_options "{ 'num_cpus': 0.8, 'max_restarts': 0, 'max_task_retries': 0 }" 
     --data_max_files 2
 

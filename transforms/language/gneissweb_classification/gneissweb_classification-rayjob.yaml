@@ -119,6 +119,7 @@ spec:
     --data_checkpointing False 
     --runtime_num_workers 5
     --runtime_worker_options "{ 'num_cpus': 0.8, 'max_restarts': 0, 'max_task_retries': 0 }" 
-    --data_max_files 2
+
+#    --data_max_files 2
 
 

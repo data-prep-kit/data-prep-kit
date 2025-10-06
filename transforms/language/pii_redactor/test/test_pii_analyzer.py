@@ -12,6 +12,10 @@
 
 import pytest
 from dpk_pii_redactor.pii_analyzer import PIIAnalyzerEngine
+from data_processing.utils import get_logger
+
+
+logger = get_logger(__name__)
 
 
 @pytest.fixture(scope="module")
@@ -19,20 +23,24 @@ def analyzer():
     """
     Fixture to initialize PIIAnalyzerEngine once per module.
     """
-    supported_entities = ["PERSON", "EMAIL_ADDRESS", "DATE_TIME", "URL", "CREDIT_CARD", "PHONE_NUMBER", "LOCATION"]
+    supported_entities = ["PERSON", "EMAIL_ADDRESS", "DATE_TIME", "URL", "CREDIT_CARD", "PHONE_NUMBER", "LOCATION","CRYPTO"]
     score_threshold = 0.6
+    logger.info(f"{supported_entities=}")
     return PIIAnalyzerEngine(supported_entities=supported_entities, score_threshold=score_threshold)
 
 
 def test_analyse_text_for_pii_data(analyzer):
     input_text = (
-        "This is a sample test which has my name Sowmya and my email as sowmya@techiediver.com and "
-        "self.config"
-        "Born on 31.05.2021"
+        "This is a sample test which has my name Sowmya and my wallet is bc1qf2kdgu2vlctqlnlxk4smkxd68grl5q2we8dzfd " 
+        " my email as sowmya@techiediver.com "
     )
     result, entity_types = analyzer.analyze_text(input_text, language="en")
+    logger.info(f"{result=} {entity_types=}")
     assert result
     assert len(entity_types) > 0
+    assert "PERSON" in entity_types
+    assert "EMAIL_ADDRESS" in entity_types
+    assert "CRYPTO" in entity_types
 
 
 def test_analyse_results_of_non_pii_text_data(analyzer):

@@ -19,11 +19,27 @@ from unittest.mock import patch
 
 import pyarrow
 import pytest
-from data_processing.data_access import DataAccessLocal
+from data_processing.data_access import DataAccessLocal, DataAccessFactory
 from data_processing.utils import GB, MB, get_logger
 
 
 logger = get_logger(__name__)
+
+
+def test_no_io_config():
+    config = {"data_config": {"da_class": "data_processing.data_access.DataAccessLocal"},
+              "data_checkpoint": False,
+              }
+    factory = DataAccessFactory()
+    success = factory.apply_input_params(config)
+
+    assert success
+
+    da = factory.create_data_access()
+    assert type(da) == DataAccessLocal
+
+    assert da.get_input_folder() == os.getcwd()
+    assert da.get_output_folder() == os.getcwd()
 
 
 class TestInit:

@@ -13,7 +13,8 @@
 
 import ast
 import os
-
+import tempfile
+import pyarrow.parquet as pq
 import pyarrow as pa
 from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.test_support.abstract_test import _allowed_float_percent_diff
@@ -21,7 +22,7 @@ from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
 from docling_core.types.doc import DocItem, DoclingDocument, TextItem
-from dpk_docling2parquet.transform_python import Docling2ParquetPythonTransformConfiguration
+from dpk_docling2parquet.runtime import Docling2ParquetPythonTransformConfiguration
 from pydantic import ValidationError
 
 

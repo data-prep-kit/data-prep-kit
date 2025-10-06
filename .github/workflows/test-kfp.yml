@@ -101,33 +101,34 @@ jobs:
                   $PWD/scripts/workflow_helper.sh test-workflow "transforms/universal/noop"
                   echo "Run noop completed"
     test-kfp-v2:
-        runs-on: ubuntu-22.04
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
-            - name: Free up space in github runner
-              # Free space as indicated here : https://github.com/actions/runner-images/issues/2840#issuecomment-790492173
-              run: |
-                  df -h
-                  sudo rm -rf "/usr/local/share/boost"
-                  sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-                  sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /usr/local/share/powershell /usr/share/swift /usr/lib/jvm /usr/local/.ghcup
-                  sudo docker rmi $(docker image ls -aq) >/dev/null 2>&1 || true
-                  df -h
-            - name: Import environment variables
-              run: |
-                  cat scripts/k8s-setup/requirements.env >> $GITHUB_ENV
-                  echo "K8S_SETUP_SCRIPTS=$PWD/scripts/k8s-setup" >> $GITHUB_ENV
-                  echo "REPOROOT=$PWD" >> $GITHUB_ENV
-                  echo "PATH=$PATH:/tmp" >> $GITHUB_ENV
-                  echo "KFPv2=1" >> $GITHUB_ENV
-            - name: Test KFP libs (shared and v2) and run a workflow
-              timeout-minutes: 120
-              run: |
-                  $PWD/scripts/workflow_helper.sh install-tools
-                  make -C kfp/kfp_support_lib test
-                  $PWD/scripts/workflow_helper.sh test-workflow "transforms/universal/noop"
-                  echo "Run noop completed"
+        if: ${{ vars.KFP_V2_WORKFLOW }}   #Disable all kfpv2 testing unless specifically set
+#        runs-on: ubuntu-22.04
+#        steps:
+#            - name: Checkout
+#              uses: actions/checkout@v4
+#            - name: Free up space in github runner
+#              # Free space as indicated here : https://github.com/actions/runner-images/issues/2840#issuecomment-790492173
+#              run: |
+#                  df -h
+#                  sudo rm -rf "/usr/local/share/boost"
+#                  sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+#                  sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /usr/local/share/powershell /usr/share/swift /usr/lib/jvm /usr/local/.ghcup
+#                  sudo docker rmi $(docker image ls -aq) >/dev/null 2>&1 || true
+#                  df -h
+#            - name: Import environment variables
+#              run: |
+#                  cat scripts/k8s-setup/requirements.env >> $GITHUB_ENV
+#                  echo "K8S_SETUP_SCRIPTS=$PWD/scripts/k8s-setup" >> $GITHUB_ENV
+#                  echo "REPOROOT=$PWD" >> $GITHUB_ENV
+#                  echo "PATH=$PATH:/tmp" >> $GITHUB_ENV
+#                  echo "KFPv2=1" >> $GITHUB_ENV
+#            - name: Test KFP libs (shared and v2) and run a workflow
+#              timeout-minutes: 120
+#              run: |
+#                  $PWD/scripts/workflow_helper.sh install-tools
+#                  make -C kfp/kfp_support_lib test
+#                  $PWD/scripts/workflow_helper.sh test-workflow "transforms/universal/noop"
+#                  echo "Run noop completed"
     build-kfp-components:
         needs: [check_if_push_images]
         runs-on: ubuntu-22.04

@@ -7,5 +7,7 @@ numpy<1.29,>=1.22
 pydantic>=2.8.2
 presidio-analyzer>=2.2.355
 presidio-anonymizer>=2.2.355
+# Fixing issue with installation with venv as flair causes matplotlib to install older version and eventulaly fails
+matplotlib>3.10
 flair>=0.14.0
 pandas

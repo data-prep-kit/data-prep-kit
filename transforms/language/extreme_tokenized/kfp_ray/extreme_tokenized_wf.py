@@ -125,7 +125,7 @@ def extreme_tokenized(
     runtime_pipeline_id: str = "pipeline_id",
     # doc id parameters
     et_contents_column_name: str = "text",
-    et_arrow_path: str = "/home/ray/dpk_extreme_tokenized/arrow",
+    et_arrow_path: str = "test/extreme_tokenized/input/arrow",
     # additional parameters
     additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
 ):

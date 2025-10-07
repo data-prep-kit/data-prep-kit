@@ -19,6 +19,7 @@ import json
 from lance import FragmentMetadata
 import argparse
 import os
+import sys
 
 
 def setup_s3(access_key: str, secret_key: str, endpoint: str) -> fs.S3FileSystem:
@@ -126,6 +127,7 @@ def main(args):
     print(f"{lancedb_uri=}")
     print(f"{table.count_rows()=}")
     print(f"lance completed the commit.")
+    sys.exit(0)
 
 
 if __name__ == "__main__":

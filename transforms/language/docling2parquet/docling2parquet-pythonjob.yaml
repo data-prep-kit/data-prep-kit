@@ -18,8 +18,8 @@ spec:
     spec:
       containers:
       - name: docling-container
-        image: quay.io/dataprep1/data-prep-kit/docling2parquet-ray:latest
-    #        imagePullPolicy: Always
+        image: quay.io/dataprep1/data-prep-kit/docling2parquet-python:latest
+        imagePullPolicy: Always
         resources:
           limits:
             cpu: "10" # Allocate 8 CPU cores

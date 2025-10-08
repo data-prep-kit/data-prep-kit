@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: docling-container
-        image: quay.io/dataprep1/data-prep-kit/docling2parquet-python:latest
+        image: quay.io/dataprep1/data-prep-kit/docling2parquet-ray:latest
     #        imagePullPolicy: Always
         resources:
           limits:

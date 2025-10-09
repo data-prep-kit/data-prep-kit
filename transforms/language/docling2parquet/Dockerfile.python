@@ -1,4 +1,4 @@
-FROM docker.io/python:3.10.14-slim-bullseye
+FROM docker.io/python:3.12-slim
 
 RUN pip install --upgrade --no-cache-dir pip 
 
@@ -36,6 +36,14 @@ ENV PATH="/home/dpk/.local/bin:${PATH}"
 
 # Download models
 RUN docling-tools models download layout tableformer picture_classifier easyocr
+
+USER root
+RUN mkdir -p /home/dpk/.cache/huggingface/hub/models--ds4sd--docling-layout-heron/blobs && \
+   mkdir -p /home/dpk/.cache/huggingface/hub/models--ds4sd--docling-layout-heron/refs && \
+   chown -R dpk:root /home/dpk && \
+   chmod -R g=u /home/dpk
+USER dpk
+
 
 # Parallelism
 ENV OMP_NUM_THREADS=2

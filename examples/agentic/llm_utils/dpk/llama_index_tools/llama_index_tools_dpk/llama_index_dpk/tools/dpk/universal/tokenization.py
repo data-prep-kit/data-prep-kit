@@ -77,14 +77,14 @@ def tokenization(**kwargs: Any) -> str:
 
         if runtime_type.strip().lower() == "ray":
             from data_processing_ray.runtime.ray import RayTransformLauncher
-            from dpk_tokenization.ray.transform import TokenizationRayConfiguration
+            from dpk_tokenization.ray.runtime import TokenizationRayConfiguration
 
             sys.argv = ParamsUtils.dict_to_req(d=transform_params)
             launcher = RayTransformLauncher(TokenizationRayConfiguration())
 
         elif runtime_type.strip().lower() == "python":
             from data_processing.runtime.pure_python import PythonTransformLauncher
-            from dpk_tokenization.transform_python import TokenizationPythonConfiguration
+            from dpk_tokenization.runtime import TokenizationPythonConfiguration
 
             sys.argv = ParamsUtils.dict_to_req(d=transform_params)
             launcher = PythonTransformLauncher(TokenizationPythonConfiguration())

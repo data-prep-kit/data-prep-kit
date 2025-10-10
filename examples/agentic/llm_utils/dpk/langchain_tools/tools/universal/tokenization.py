@@ -85,7 +85,7 @@ class TokenizationTransform(BaseTool):  # type: ignore[override, override]
 
             if runtime_type.strip().lower() == "ray":
                 from data_processing_ray.runtime.ray import RayTransformLauncher
-                from dpk_tokenization.ray.runtime import TokenizationRayConfiguration
+                from dpk_tokenization.ray import TokenizationRayConfiguration
 
                 sys.argv = ParamsUtils.dict_to_req(d=transform_params)
                 launcher = RayTransformLauncher(TokenizationRayConfiguration())

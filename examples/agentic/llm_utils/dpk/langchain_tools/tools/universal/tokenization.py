@@ -92,7 +92,7 @@ class TokenizationTransform(BaseTool):  # type: ignore[override, override]
 
             elif runtime_type.strip().lower() == "python":
                 from data_processing.runtime.pure_python import PythonTransformLauncher
-                from dpk_tokenization.runtime import TokenizationPythonConfiguration
+                from dpk_tokenization import TokenizationPythonConfiguration
 
                 sys.argv = ParamsUtils.dict_to_req(d=transform_params)
                 launcher = PythonTransformLauncher(TokenizationPythonConfiguration())

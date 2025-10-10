@@ -13,7 +13,7 @@ spec:
       default: tekton-5
       # default: feature/tekton
   workspaces:
-    - name: rayjobs
+    - name: jobs
       description: A workspace to mount the job YAML.
   steps:
     - name: run-repo-job
@@ -21,7 +21,7 @@ spec:
       script: |
         #!/bin/sh
         df -h
-        git clone -b $(params.REPO_BRANCH) --depth 1 $(params.REPO_URL) /workspace/rayjobs/data-prep-kit
+        git clone -b $(params.REPO_BRANCH) --depth 1 $(params.REPO_URL) /workspace/jobs/data-prep-kit
         
 
 

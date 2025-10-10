@@ -11,7 +11,7 @@ spec:
     - name: DOCLING_OUTPUT
       type: string
   workspaces:
-    - name: rayjobs
+    - name: jobs
       description: A workspace to mount the job YAML.
   steps:
     - name: run-docling-job
@@ -26,7 +26,7 @@ spec:
 
       script: |
         #!/bin/sh
-        JOBFILE=/workspace/rayjobs/data-prep-kit/transforms/language/docling2parquet/docling2parquet-rayjob.yaml
+        JOBFILE=/workspace/jobs/data-prep-kit/transforms/language/docling2parquet/docling2parquet-rayjob.yaml
         ##############################################################################
         ## Most jobs follow the same pattern, so we can templatize this in the future
         JOBNAME=`yq '.metadata.name' $JOBFILE`

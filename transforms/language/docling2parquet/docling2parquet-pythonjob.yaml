@@ -53,9 +53,9 @@ spec:
             - "False"
             - "--runtime_num_processors"
             - "10"
+            - "--data_max_files"
+            - "2"
       restartPolicy: Never # Ensure the Job does not restart the container after completion
 
-#            - "--data_max_files"
-#            - "2"
 
   

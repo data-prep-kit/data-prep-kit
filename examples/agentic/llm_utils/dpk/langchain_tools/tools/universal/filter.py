@@ -80,7 +80,7 @@ class FilterTransform(BaseTool):
 
             elif runtime_type.strip().lower() == "python":
                 from data_processing.runtime.pure_python import PythonTransformLauncher
-                from dpk_filter.runtime import (
+                from dpk_filter import (
                     FilterPythonTransformConfiguration,
                 )
 

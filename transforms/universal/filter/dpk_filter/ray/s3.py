@@ -20,7 +20,7 @@ from dpk_filter.transform import (
     filter_criteria_cli_param,
     filter_logical_operator_cli_param,
 )
-from dpk_filter.ray.runtime import FilterRayTransformConfiguration
+from dpk_filter.ray import FilterRayTransformConfiguration
 
 
 # create parameters

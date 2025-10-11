@@ -1,7 +1,7 @@
 <p align="Left"> Distributed tokenization module for data sets using any Hugging Face compatible tokenizer.
     <br>
     Note: To use this module, users should login to their hugging face accounts, if promoted need to accept the terms & conditions (it is one time activity).
-    refer: <a href="https://huggingface.co/bigcode/starcoder">refer: bigcoder/starcoder</a> 
+    refer: <a href="https://huggingface.co/bigcode/starcoder">bigcoder/starcoder</a> 
     <br>
 </p>
 

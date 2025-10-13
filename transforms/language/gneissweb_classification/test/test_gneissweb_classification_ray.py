@@ -16,7 +16,7 @@ from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
 from data_processing_ray.runtime.ray import RayTransformLauncher
-from dpk_gneissweb_classification.ray.transform import ClassificationRayTransformConfiguration
+from dpk_gneissweb_classification.ray.runtime import ClassificationRayTransformConfiguration
 from dpk_gneissweb_classification.transform import (
     content_column_name_cli_param,
     model_credential_cli_param,

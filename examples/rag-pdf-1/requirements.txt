@@ -1,9 +1,9 @@
 ## Data prep kit
-data-prep-toolkit-transforms[ray,all]==1.1.0
+data-prep-toolkit-transforms[ray,all]==1.1.4
 
 # Milvus
 pymilvus
-pymilvus[model]
+pymilvus[model, milvus_lite]
 
 # datasets
 datasets

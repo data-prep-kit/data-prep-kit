@@ -403,9 +403,26 @@ class RayRemoteJobs:
         output_folder = output_folder if output_folder.endswith("/") else output_folder + "/"
         timestamp = time.strftime("%Y%m%d-%H%M%S")
         execution_log_path = f"{output_folder}execution_{timestamp}.log"
-        logger.info(f"saving execution log to {execution_log_path}")
-        data_access.save_file(path=execution_log_path, data=bytes(log, "UTF-8"))
+        logger.info(f"saving execution log to {execution_log_path}---Skipped")
+#        logger.info(f"saving execution log to {execution_log_path}")
+#        data_access.save_file(path=execution_log_path, data=bytes(log, "UTF-8"))
 
+        ## Add One last check for flagging run based on number of exceptions encountered
+        ## Those exceptions are in most cases considered non-fatal and allow the run to proceed but with mixed results
+        ## 
+        try:
+            import json
+            data_file, _=data_access.get_file(path=f"{output_folder}metadata.json")
+            _metastats=json.loads(data_file.decode())['job_output_stats']
+            if 'transform execution exception' in _metastats:
+                exceptions = _metastats['transform execution exception']
+                if exceptions > 0:
+                    logger.error(f"Flagging completed run due to {exceptions} exceptions: {_metastats}")
+                    sys.exit(1)
+            logger.info(f"Did not detect any exceptions in current job. job_output_stats: {_metastats}")
+        except Exception as e:
+            logger.error(f"Could not read/parse metadata.json: {str(e)}")
+            sys.exit(1)
 
 def _execute_remote_job(
     name: str,
@@ -485,14 +502,15 @@ def execute_ray_jobs(
         exit(1)
     # get config value
     config_value = KFPUtils.load_from_json(e_params[config].replace("'", '"'))
-    s3_creds = KFPUtils.load_from_json(e_params["data_s3_cred"].replace("'", '"'))
+    #s3_creds = KFPUtils.load_from_json(e_params["data_s3_cred"].replace("'", '"'))
     if type(config_value) is not list:
         # single request
         return _execute_remote_job(
             name=name,
             ns=ns,
             script=exec_script_name,
-            data_access_params={f"{cli_prefix}s3_config": config_value, f"{cli_prefix}s3_cred": s3_creds},
+#            data_access_params={f"{cli_prefix}s3_config": config_value, f"{cli_prefix}s3_cred": s3_creds},
+            data_access_params={f"{cli_prefix}s3_config": config_value},
             params=e_params,
             additional_params=additional_params,
             remote_jobs=remote_jobs,
@@ -510,7 +528,8 @@ def execute_ray_jobs(
                 name=name,
                 ns=ns,
                 script=exec_script_name,
-                data_access_params={f"{cli_prefix}s3_config": conf, f"{cli_prefix}s3_cred": s3_creds},
+#                data_access_params={f"{cli_prefix}s3_config": conf, f"{cli_prefix}s3_cred": s3_creds},
+                data_access_params={f"{cli_prefix}s3_config": conf},
                 params=launch_params,
                 additional_params=additional_params,
                 remote_jobs=remote_jobs,

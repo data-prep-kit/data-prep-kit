@@ -33,7 +33,10 @@ class TransformStatistics:
         :return: None
         """
         for key, val in stats.items():
-            self.stats[key] = self.stats.get(key, 0) + val
+            if isinstance(val, list):
+                self.stats[key]=self.stats.get(key, [])+ val
+            else:
+                self.stats[key] = self.stats.get(key, 0) + val
 
     def get_execution_stats(self) -> dict[str, Any]:
         """

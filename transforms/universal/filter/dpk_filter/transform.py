@@ -14,12 +14,10 @@
 import argparse
 import ast
 import json
-import pandas as pd
-from typing import Dict
+from typing import Any
 import duckdb
 import pyarrow as pa
 import os
-import string
 from data_processing.data_access import DataAccess
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
 from data_processing.utils import CLIArgumentProvider, TransformUtils, get_logger
@@ -93,10 +91,10 @@ class FilterTransform(AbstractTableTransform):
         self.doc_id_column_name = config.get(filter_doc_id_column_name_key, filter_doc_id_column_name_default)
 
         # ensure the path endswith("/") if they are not None
-        self.input_arrow_folder = config.get(filter_input_arrow_folder_key, None)
+        self.input_arrow_folder = config.get(filter_input_arrow_folder_key, "")
         if bool(self.input_arrow_folder.strip()):
             self.input_arrow_folder = self.input_arrow_folder if self.input_arrow_folder.endswith("/") else f"{self.input_arrow_folder}/"
-        self.output_arrow_folder = config.get(filter_output_arrow_folder_key, None)
+        self.output_arrow_folder = config.get(filter_output_arrow_folder_key, "")
         if bool(self.output_arrow_folder.strip()):
             self.output_arrow_folder = self.output_arrow_folder if self.output_arrow_folder.endswith("/") else f"{self.output_arrow_folder}/"
         
@@ -197,7 +195,10 @@ class FilterTransform(AbstractTableTransform):
         if file_name is not None:
             if not file_name.endswith(".parquet"):
                 self.logger.error(f"Error: input_file name doesn't end with '.parquet': {file_name}")
-                return [], {"wrong file tpye": 1}
+                if isinstance(table, pa.Table):
+                    return [table.schema.empty_table()], {"wrong file type": 1}
+                else:
+                    return [], {"wrong file type": 1}
         # move table under a different name, to avoid SQL query parsing error
         input_table = table
         total_docs = input_table.num_rows
@@ -213,7 +214,7 @@ class FilterTransform(AbstractTableTransform):
 
         # initialize the SQL statement used for filtering
         sql_statement = "SELECT * FROM input_table"
-        if len(self.filter_criteria) > 0:
+        if self.filter_criteria is not None and len(self.filter_criteria) > 0:
             # populate metadata with filtering stats for each filter criterion
             for filter_criterion in self.filter_criteria:
                 criterion_sql = f"{sql_statement} WHERE {filter_criterion}"
@@ -249,7 +250,7 @@ class FilterTransform(AbstractTableTransform):
         metadata["bytes_after_filter"] = filtered_table.nbytes
         
         if filtered_table_cols_dropped.num_rows == 0:
-            return [], metadata
+            return [table.schema.empty_table()], metadata
         else:
             # before returning the filtered table (parquet files) also filter the corresponding arrow and meta files
             if bool(self.input_arrow_folder.strip()):

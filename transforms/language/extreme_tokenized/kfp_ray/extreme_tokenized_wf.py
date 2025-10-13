@@ -114,6 +114,7 @@ def extreme_tokenized(
     # data access
     data_s3_config: str = "{'input_folder': 'test/extreme_tokenized/input/', 'output_folder': 'test/extreme_tokenized/output/'}",
     data_s3_secret: str = S3_SECRET,
+    other_secrets: dict = {},
     data_max_files: int = -1,
     data_num_samples: int = -1,
     data_checkpointing: bool = False,
@@ -124,7 +125,7 @@ def extreme_tokenized(
     runtime_pipeline_id: str = "pipeline_id",
     # doc id parameters
     et_contents_column_name: str = "text",
-    et_arrow_path: str = "/home/ray/dpk_extreme_tokenized/arrow",
+    et_arrow_path: str = "test/extreme_tokenized/input/arrow",
     # additional parameters
     additional_params: str = '{"wait_interval": 2, "wait_cluster_ready_tmout": 400, "wait_cluster_up_tmout": 300, "wait_job_ready_tmout": 400, "wait_print_tmout": 30, "http_retries": 5, "delete_cluster_delay_minutes": 0}',
 ):
@@ -209,9 +210,19 @@ def extreme_tokenized(
             ray_head_options=ray_head_options,
             ray_worker_options=ray_worker_options,
             server_url=server_url,
+            other_secrets=other_secrets,
             additional_params=additional_params,
         )
         ComponentUtils.add_settings_to_component(ray_cluster, ONE_HOUR_SEC * 2)
+        if os.getenv("KFPv2", "0") == "1":
+            from kfp import kubernetes
+
+            # FIXME: Due to kubeflow/pipelines#10914, secret names cannot be provided as pipeline arguments.
+            # As a workaround, the secret name is hard coded.
+            env2key = ComponentUtils.set_secret_key_to_env()
+            kubernetes.use_secret_as_env(task=ray_cluster, secret_name=S3_SECRET, secret_key_to_env=env2key)
+        else:
+            ComponentUtils.set_s3_env_vars_to_component(ray_cluster, data_s3_secret)
         ray_cluster.after(compute_exec_params)
         # Execute job
         execute_job = execute_ray_jobs_op(

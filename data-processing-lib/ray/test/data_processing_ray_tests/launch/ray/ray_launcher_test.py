@@ -24,9 +24,9 @@ from data_processing_ray.test_support.transform import NOOPRayTransformConfigura
  to run test using argparse we can simply overwrite sys.argv to supply required arguments
 """
 s3_cred = {
-    "access_key": "access",
-    "secret_key": "secret",
-    "url": "https://s3.us-east.cloud-object-storage.appdomain.cloud",
+    "S3_ACCESS_KEY": "access",
+    "S3_SECRET_KEY": "secret",
+    "S3_URL": "https://s3.us-east.cloud-object-storage.appdomain.cloud",
 }
 s3_conf = {
     "input_folder": "input_folder",
@@ -81,11 +81,14 @@ def test_launcher():
     res = TestLauncherRay().launch()
     assert 1 == res
     # Add S3 credentials
-    params["data_s3_cred"] = ParamsUtils.convert_to_ast(s3_cred)
+    ### S3 credential no longer supported as a command line parameter
+    from data_processing.utils import DPKConfig
+    for k,v in s3_cred.items():
+         DPKConfig.set_env_var(k, v)
     sys.argv = ParamsUtils.dict_to_req(d=params)
     res = TestLauncherRay().launch()
-
     assert 0 == res
+
     # Add local config, should fail because now three different configs exist
     params["data_local_config"] = ParamsUtils.convert_to_ast(local_conf)
     sys.argv = ParamsUtils.dict_to_req(d=params)
@@ -130,7 +133,7 @@ def test_local_config_validate():
         "runtime_creation_delay": 0,
         "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
     }
-    # invalid local configurations, driver launch should fail with any of these
+    # previously invalid local configurations, driver launch should no longer fail with missing input/output_folder
     local_conf_empty = {}
     local_conf_no_input = {"output_folder": "output_folder"}
     local_conf_no_output = {"input_folder": "input_folder"}
@@ -138,15 +141,15 @@ def test_local_config_validate():
     sys.argv = ParamsUtils.dict_to_req(d=params)
     print(f"parameters {sys.argv}")
     res = TestLauncherRay().launch()
-    assert 1 == res
+    assert 0 == res
     params["data_local_config"] = ParamsUtils.convert_to_ast(local_conf_no_input)
     sys.argv = ParamsUtils.dict_to_req(d=params)
     res = TestLauncherRay().launch()
-    assert 1 == res
+    assert 0 == res
     params["data_local_config"] = ParamsUtils.convert_to_ast(local_conf_no_output)
     sys.argv = ParamsUtils.dict_to_req(d=params)
     res = TestLauncherRay().launch()
-    assert 1 == res
+    assert 0 == res
     params["data_local_config"] = ParamsUtils.convert_to_ast(local_conf)
     sys.argv = ParamsUtils.dict_to_req(d=params)
     res = TestLauncherRay().launch()
@@ -159,7 +162,6 @@ def test_s3_config_validate():
         "run_locally": True,
         "data_max_files": -1,
         "data_checkpointing": False,
-        "data_s3_cred": ParamsUtils.convert_to_ast(s3_cred),
         "runtime_worker_options": ParamsUtils.convert_to_ast(worker_options),
         "runtime_num_workers": 5,
         "runtime_pipeline_id": "pipeline_id",
@@ -167,7 +169,7 @@ def test_s3_config_validate():
         "runtime_creation_delay": 0,
         "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
     }
-    # invalid local configurations, driver launch should fail with any of these
+    # invalid local configurations, driver launch should fail with missing input/output_folder
     s3_conf_empty = {}
     s3_conf_no_input = {"output_folder": "output_folder"}
     s3_conf_no_output = {"input_folder": "input_folder"}
@@ -175,7 +177,7 @@ def test_s3_config_validate():
     sys.argv = ParamsUtils.dict_to_req(d=params)
     print(f"parameters {sys.argv}")
     res = TestLauncherRay().launch()
-    assert 1 == res
+    assert 0 == res
     params["data_s3_config"] = ParamsUtils.convert_to_ast(s3_conf_no_input)
     sys.argv = ParamsUtils.dict_to_req(d=params)
     res = TestLauncherRay().launch()

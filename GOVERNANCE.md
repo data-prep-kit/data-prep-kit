@@ -29,7 +29,6 @@ Current committers (in alphabetic order):
 - [Shalisha Witherspoon](https://github.com/swith005)
 - [David Wood](https://github.com/daw3rd)
 - [Kun-Lung Wu](https://github.com/klwuibm)
-- [Yang Zhao](https://github.com/ian-cho)
 
 #### Process for becoming a committer
 
@@ -53,7 +52,7 @@ Current TSC members (in alphabetic order):
 
 - [Shahrokh Daijavad](https://github.com/shahrokhDaijavad)
 - [Nirmit Desai](https://github.com/nirmit-desai)
-- [Sophie Jin](https://github.com/sophie-jin)
+- [Adrian Lee](https://github.com/alee121)
 - [Jean-Claude Mamou](https://github.com/jcmamou)
 - [Maroun Touma](https://github.com/touma-I/)
 

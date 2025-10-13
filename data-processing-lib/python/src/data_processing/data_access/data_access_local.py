@@ -30,10 +30,46 @@ class DataAccessLocal(DataAccess):
     """
     Implementation of the Base Data access class for local folder data access.
     """
+    @classmethod
+    def validate_config(cls, config: dict[str, str], cli_arg_prefix: str='') -> bool:
+        """
+        Validate that
+        :param local_config: dictionary of local config
+        :return: True if local config is valid, False otherwise
+        """
+        valid_config = True
+        # If config is undefined, let is pass
+        if config is None:
+#            valid_config = False
+            logger.info(f"data access factory {cli_arg_prefix}: No config provided")
+            return valid_config
+
+        # If config is empty, fail
+        if not (config):
+            valid_config = False
+            logger.error(f"data access factory {cli_arg_prefix}: Could not find a valid configuration")
+            return valid_config
+
+        if config.get("input_folder", "") == "":
+            logger.info(
+                f"data access factory {cli_arg_prefix}: " "Could not find input folder in local config. "
+                "Defaulting to current directory"
+            )
+            config["input_folder"] = os.getcwd()
+
+        if config.get("output_folder", "") == "":
+            logger.info(
+                f"data access factory {cli_arg_prefix}: " "Could not find output folder in local config. "
+                "Defaulting to current directory."
+            )
+            config["output_folder"] = os.getcwd()
+
+        return valid_config
+
 
     def __init__(
         self,
-        local_config: dict[str, str] = None,
+        config: dict[str, str] = None,
         d_sets: list[str] = None,
         checkpoint: bool = False,
         m_files: int = -1,
@@ -54,12 +90,24 @@ class DataAccessLocal(DataAccess):
         """
         super().__init__(d_sets=d_sets, checkpoint=checkpoint, m_files=m_files, n_samples=n_samples, batch_size=batch_size,
                          files_to_use=files_to_use, files_to_checkpoint=files_to_checkpoint)
-        if local_config is None:
+
+        ######
+        ## data_config = {'input_folder': str= 'path to input folder',
+        ##               'output_folder': str='path to output folder',
+        ##              'cache' : bool = True | False}
+        ## Calling DataAccessLocal.validate_config should have caught this in a production setting
+        ## but we still allow the class to be created with no configuration defined. Why ?
+        self.tables = {}
+
+        if config is None:
             self.input_folder = None
             self.output_folder = None
+            self.cache = False
         else:
-            self.input_folder = os.path.abspath(local_config["input_folder"])
-            self.output_folder = os.path.abspath(local_config["output_folder"])
+            self.input_folder = os.path.abspath(config["input_folder"])
+            self.output_folder = os.path.abspath(config["output_folder"])
+            self.cache = config.get('cache', False)
+        ######
 
         logger.debug(f"Local input folder: {self.input_folder}")
         logger.debug(f"Local output folder: {self.output_folder}")
@@ -125,6 +173,10 @@ class DataAccessLocal(DataAccess):
         Returns:
             pyarrow.Table: PyArrow table if read successfully, None otherwise.
         """
+        # if the table exists in memory, use it for faster access
+        if self.tables.get(path):
+            logger.debug('Table found in memory') 
+            return self.tables[path], 0
 
         try:
             table = pq.read_table(path)
@@ -149,6 +201,10 @@ class DataAccessLocal(DataAccess):
                     - size (int): The size of the file (bytes).
                 If saving fails, file_info will be None.
         """
+        #save the table in memory for faster access
+        if self.cache:
+           self.tables[path] = table
+
         # Get table size in memory
         size_in_memory = table.nbytes
         try:

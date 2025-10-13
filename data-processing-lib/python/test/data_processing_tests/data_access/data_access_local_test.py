@@ -19,17 +19,34 @@ from unittest.mock import patch
 
 import pyarrow
 import pytest
-from data_processing.data_access import DataAccessLocal
+from data_processing.data_access import DataAccessLocal, DataAccessFactory
 from data_processing.utils import GB, MB, get_logger
 
 
 logger = get_logger(__name__)
 
 
+def test_no_io_config():
+    config = {"data_config": {"da_class": "data_processing.data_access.DataAccessLocal"},
+              "data_checkpoint": False,
+              }
+    factory = DataAccessFactory()
+    success = factory.apply_input_params(config)
+
+    assert success
+
+    da = factory.create_data_access()
+    assert type(da) == DataAccessLocal
+
+    assert da.get_input_folder() == os.getcwd()
+    assert da.get_output_folder() == os.getcwd()
+
+
 class TestInit:
     path_dict = {
         "input_folder": os.path.join(os.sep, "tmp", "input_guf"),
         "output_folder": os.path.join(os.sep, "tmp", "output_guf"),
+        "cache": True,
     }
     dal = DataAccessLocal(path_dict, d_sets=["dset1", "dset2"], checkpoint=True, m_files=-1)
     size_stat_dict_empty = {"max_file_size": 0.0, "min_file_size": float(GB), "total_file_size": 0.0}
@@ -464,9 +481,11 @@ class TestSavePyarrowTable(TestInit):
         with patch("os.path.getsize") as mock_getsize, patch("os.path.basename") as mock_basename:
             mock_getsize.return_value = 1024
             mock_basename.return_value = "test_file.parquet"
+            assert len(self.dal.tables) == 0
             size_in_memory, file_info, _ = self.dal.save_table(self.pq_file_path, self.table)
             os.remove(self.pq_file_path)
             # Assertions about return values
+            assert len(self.dal.tables) > 0
             assert size_in_memory == self.table.nbytes
             assert file_info == {"name": "test_file.parquet", "size": 1024}
 

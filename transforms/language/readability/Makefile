@@ -19,3 +19,10 @@ TRANSFORM_NAME=$(shell basename `pwd`)
 ################################################################################
 
 
+generate-expected:
+	make venv
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
+	        --readability_score_list "['reading_time_textstat','spache_readability_textstat','text_standard_textstat']" \
+             --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'test-data/expected2'}"
+

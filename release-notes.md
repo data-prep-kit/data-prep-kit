@@ -1,5 +1,77 @@
 # Data Prep Kit Release notes
 
+## Release 1.1.5 - 10/2/2025
+
+### Transforms
+
+1. Granite Docling Integration: Enabled document parsing via docling2parquet, with options for VLM pipeline compatibility.
+
+1. PII Redactor: Added support for cryptographic redaction.
+1. GneissWeb: Enhanced multithreading and optimized model loading for better performance.
+1. Filter Transform: Added safeguard to check if filter_criteria is None, preventing crashes when criteria are unset or empty.
+
+### General
+
+1. Python Multiprocessing: Introduced multiprocessing job support and resolved boto pickling errors for transform runtimes.
+
+
+## Release 1.1.4 - 9/15/2025
+
+### General
+
+1. Improved logging to remove access and secret keys from config when present for legacy runs.
+1. Resolved issues related to handling additional secrets when more than one secret added to config for kfp.
+
+
+### Transforms
+
+1. Added support for binary transforms and binary data in chained operations (new examples and test coverage provided).
+1. Updated filter transform to return an empty table while preserving the original schema when filtering results in empty table
+1. Updated tokenization2arrow to correctly process lists of texts.
+
+### Dependency updates
+
+1. Avoided using polars version 1.33 due to breaking changes.
+1. Removed lower bound constraint on boto3 dependency.
+
+## Release 1.1.3 - 8/18/2025
+
+## General
+
+1. Fixed the bug with MD file as input for docling2parquet 
+1. Adjust tagged dependencies to ensure notebooks work in google collab environment
+1. Prepare post1 release with patches 
+1. Parse metadata.json at end of the run and flag for exceptions, removing errors where logs would show failure, but KFP would show success
+1. Updated model_loader to utilize data_access_s3, enabling s3 I/O from different COS locations
+1. Removing non-required torch dependency
+1. Updated validation for data_access_local, allowing empty input_folder and/or output_folder (defaults to current directory)
+1. Fixed bug with dividing by 0 in fine web quality annotator
+
+## Release 1.1.2.post1 - 7/3/2025
+
+## General
+
+1. Patch filter failing when transform is used with default/empty configuration
+1. Patch PII requirements for pydantic to allow testing with Prefect
+
+## Release 1.1.2 - 7/3/2025
+
+## General
+
+1. Restructured data-access package to allow adding user specific connectors as external packages (e.g. lakehouse connector) 
+1. Removed credentials being utilized as transform/data access arguments and now passed set as environment variable
+1. Added runtime code location  environment variables to docker files to display real build information
+1. Added in-memory data access for caching reads/writes in DataAccessLocal, and in new DataAccessMemory class. 
+1. Added file batch processing for data access
+
+### Transforms
+
+1. Added transform chain module for running one more transforms in sequence, with support for parallel micro-batch execution
+1. Added fineweb_quality_annotator and gopher_repetition_annotator transforms
+1. Added model loader util for transforms utilizing models, enabling loading from COS, HuggingFace, and locally
+1. Updated KPF workflows to remove setting runtime code location, and set credentials via environment variables
+
+
 ## Release 1.1.1 - 4/9/2025
 
 ## General

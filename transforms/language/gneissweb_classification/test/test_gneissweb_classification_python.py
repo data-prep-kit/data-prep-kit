@@ -17,7 +17,7 @@ from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
-from dpk_gneissweb_classification.transform_python import ClassificationPythonTransformConfiguration
+from dpk_gneissweb_classification.runtime import ClassificationPythonTransformConfiguration
 
 
 class TestPythonClassificationTransform(AbstractTransformLauncherTest):

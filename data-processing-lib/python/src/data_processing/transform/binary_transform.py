@@ -11,6 +11,7 @@
 # limitations under the License.
 ################################################################################
 
+from abc import abstractmethod
 from typing import Any
 from data_processing.transform import AbstractTransform
 
@@ -29,6 +30,7 @@ class AbstractBinaryTransform(AbstractTransform):
         """
         self.config = config
 
+    @abstractmethod
     def transform_binary(self, file_name: str, byte_array: bytes) -> tuple[list[tuple[bytes, str]], dict[str, Any]]:
         """
         Converts input file into o or more output files.
@@ -39,17 +41,17 @@ class AbstractBinaryTransform(AbstractTransform):
                 to metadata.  Each element of the return list, is a tuple of the transformed bytes and a string
                 holding the extension to be used when writing out the new bytes.
         """
-        raise NotImplemented()
+        pass
 
     def flush_binary(self) -> tuple[list[tuple[bytes, str]], dict[str, Any]]:
         """
-        This is supporting method for transformers, that implement buffering of data, for example coalesce.
+        This is a supporting method for transformers that implement buffering of data, for example, coalesce.
         These transformers can have buffers containing data that were not written to the output immediately.
         Flush is the hook for them to return back locally stored data and their statistics.
         The majority of transformers are expected not to use such buffering and can use this default implementation.
         If there is an error, an exception must be raised - exit()ing is not generally allowed.
         :return: a tuple of a list of 0 or more tuples and a dictionary of statistics that will be propagated
-                to metadata.  Each element of the return list, is a tuple of the transformed bytes and a string
+                to metadata.  Each element of the return list is a tuple of the transformed bytes and a string
                 holding the extension to be used when writing out the new bytes.
         """
         return [], {}

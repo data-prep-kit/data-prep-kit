@@ -71,6 +71,9 @@ jobs:
                   echo "publish_images=$publish_images" >> "$GITHUB_OUTPUT"
     test-src:
         runs-on: ubuntu-22.04
+        env:
+#            OPENSEARCH_INITIAL_ADMIN_PASSWORD: ${{ secrets.OPENSEARCH_INITIAL_ADMIN_PASSWORD }}
+            OPENSEARCH_INITIAL_ADMIN_PASSWORD: ${RANDOM}$(date +%s)
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -83,9 +86,16 @@ jobs:
                   sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /usr/local/share/powershell /usr/share/swift /usr/local/.ghcup
                   sudo docker rmi $(docker image ls -aq) >/dev/null 2>&1 || true
                   df -h
+            - name: Setup opensearch local instance
+              # Setup a local instance of opensearch container
+              run: |
+                  git clone  https://github.com/opensearch-project/opensearch-build
+                  cd opensearch-build/docker/release/dockercomposefiles/
+                  docker compose -f opensearch-dashboards.yml up -d
             - name: Test transform source in transforms/universal/opensearch
               run: |
                   if [ -e "transforms/universal/opensearch/Makefile" ]; then
+                      export OPENSEARCH_PASSWORD=$OPENSEARCH_INITIAL_ADMIN_PASSWORD
                       make -C transforms/universal/opensearch DOCKER=docker test-src
                   else
                       echo "transforms/universal/opensearch/Makefile not found - source testing disabled for this transform."

@@ -30,8 +30,8 @@ test_file = os.path.join(input_test_dir, 'test1.parquet')
 class TestOpenSearch:
     def setup_method(self, method):
         # do not run as part of a git action for now
-        if os.environ.get('GITHUB_REPOSITORY', None):
-            pytest.skip("Skipping all tests running from github action")
+#        if os.environ.get('GITHUB_REPOSITORY', None):
+#            pytest.skip("Skipping all tests running from github action")
 
         logger.info("Testing connection to OpenSearch")
         if method.__name__ == "test_index_name":

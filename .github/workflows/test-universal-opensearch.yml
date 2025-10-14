@@ -89,7 +89,9 @@ jobs:
             - name: Setup opensearch local instance
               # Setup a local instance of opensearch container
               run: |
-                  git clone  https://github.com/opensearch-project/opensearch-build
+                  echo OPENSEARCH_INITIAL_ADMIN_PASSWORD = $OPENSEARCH_INITIAL_ADMIN_PASSWORD
+                  git clone https://github.com/opensearch-project/opensearch-build.git
+                  ls -l
                   cd opensearch-build/docker/release/dockercomposefiles/
                   docker compose -f opensearch-dashboards.yml up -d
             - name: Test transform source in transforms/universal/opensearch

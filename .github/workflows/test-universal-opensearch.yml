@@ -94,8 +94,11 @@ jobs:
                   git clone https://github.com/opensearch-project/opensearch-build.git
                   cd opensearch-build/docker/release/dockercomposefiles/
                   docker compose -f docker-compose-default.x.yml up -d
-                  echo "curl -k https://localhost:9200 -u 'admin:'${OPENSEARCH_INITIAL_ADMIN_PASSWORD}"
-#                  curl -k https://localhost:9200 -u 'admin:'${OPENSEARCH_INITIAL_ADMIN_PASSWORD}
+                  docker ps
+                  docker logs opensearch-dashboards
+                  sleep 60
+                  echo "curl -k https://localhost:9200 -u admin:${OPENSEARCH_INITIAL_ADMIN_PASSWORD}"
+                  curl -k https://localhost:9200 -u "admin:${OPENSEARCH_INITIAL_ADMIN_PASSWORD}"
             - name: Test transform source in transforms/universal/opensearch
               run: |
                   if [ -e "transforms/universal/opensearch/Makefile" ]; then

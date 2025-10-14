@@ -88,7 +88,7 @@ jobs:
             - name: Setup opensearch local instance
               # Setup a local instance of opensearch container
               run: |
-                  OPENSEARCH_INITIAL_ADMIN_PASSWORD=${RANDOM}$(date +%s)
+                  export OPENSEARCH_INITIAL_ADMIN_PASSWORD=${RANDOM}$(date +%s)
                   echo OPENSEARCH_INITIAL_ADMIN_PASSWORD = ${OPENSEARCH_INITIAL_ADMIN_PASSWORD}
                   echo "OPENSEARCH_INITIAL_ADMIN_PASSWORD=$OPENSEARCH_INITIAL_ADMIN_PASSWORD" >> $GITHUB_ENV
                   git clone https://github.com/opensearch-project/opensearch-build.git

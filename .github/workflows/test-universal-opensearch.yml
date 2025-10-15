@@ -82,8 +82,8 @@ jobs:
                   git clone https://github.com/opensearch-project/opensearch-build.git
                   cd opensearch-build/docker/release/dockercomposefiles/
                   docker compose -f docker-compose-default.x.yml up -d
-            - name: Sleep for 30 seconds
-              run: sleep 30s
+            - name: Sleep for 10 seconds
+              run: sleep 10s
               shell: bash
             - name: Verify running instance
               run: |

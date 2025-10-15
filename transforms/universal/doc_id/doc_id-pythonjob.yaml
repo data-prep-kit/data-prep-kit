@@ -1,0 +1,59 @@
+###
+# Usage:
+# export $(cat .env | xargs)
+# envsubst < doc_id-pythonjob.yaml | kubectl apply -f -
+# Required env. variables:
+#
+# S3_BUCKET_PATH=bucket-wikimedia-1
+# DOCLING_JOB_ID=p092517
+# HTML_ZIP=html_zip
+# DOCLING_OUTPUT=docling_md
+###
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: docidjob
+spec:
+  template:
+    spec:
+      containers:
+      - name: doc_id-container
+        image: quay.io/dataprep1/data-prep-kit/doc_id-python:1.1.6.dev0
+    #        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: "10" # Allocate 8 CPU cores
+          requests:
+            cpu: "10" # Request 8 CPU cores
+        env:
+          - name: DPK_LOG_LEVEL 
+            value: DEBUG
+          - name: S3_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: s3-secret
+                key: s3-key
+          - name: S3_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: s3-secret
+                key: s3-secret
+          - name: S3_ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                name: s3-secret
+                key: s3-endpoint
+        command: ["python","-m","dpk_doc_id.runtime"]
+        args:
+            - "--data_s3_config"
+            - "{'input_folder': '$S3_BUCKET_PATH/$DOCID_INPUT', 'output_folder': '$S3_BUCKET_PATH/$DOCID_OUTPUT'}"
+            - "--data_files_to_use"
+            - "[ '.parquet' ]" 
+            - "--doc_id_int"
+            - "True"
+            - "--data_max_files"
+            - "2"
+      restartPolicy: Never # Ensure the Job does not restart the container after completion
+
+  

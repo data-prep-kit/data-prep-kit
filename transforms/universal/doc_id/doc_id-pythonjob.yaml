@@ -18,9 +18,9 @@ spec:
   template:
     spec:
       containers:
-      - name: doc_id-container
+      - name: docid-container
         image: quay.io/dataprep1/data-prep-kit/doc_id-python:1.1.6.dev0
-    #        imagePullPolicy: Always
+        imagePullPolicy: Always
         resources:
           limits:
             cpu: "10" # Allocate 8 CPU cores

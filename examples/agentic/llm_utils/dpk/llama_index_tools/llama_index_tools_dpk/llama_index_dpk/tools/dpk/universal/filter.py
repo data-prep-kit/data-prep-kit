@@ -64,7 +64,7 @@ def filter(**kwargs: Any) -> str:
         add_transform_params(transform_params, kwargs)
 
         if runtime_type.strip().lower() == "ray":
-            from dpk_ededup.ray import FilterRayTransformConfiguration
+            from dpk_filter.ray import FilterRayTransformConfiguration
             from data_processing_ray.runtime.ray import RayTransformLauncher
 
             sys.argv = ParamsUtils.dict_to_req(d=transform_params)

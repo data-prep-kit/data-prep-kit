@@ -71,8 +71,6 @@ jobs:
                   echo "publish_images=$publish_images" >> "$GITHUB_OUTPUT"
     test-src:
         runs-on: ubuntu-22.04
-#        env:
-#            OPENSEARCH_INITIAL_ADMIN_PASSWORD: ${{ secrets.OPENSEARCH_INITIAL_ADMIN_PASSWORD }}
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -91,10 +89,6 @@ jobs:
               run: |
                   echo "docker ps -a"
                   docker ps -a
-                  echo "docker logs opensearch-node1"
-                  docker logs opensearch-node1
-                  echo "curl -k https://localhost:9200 -u admin:${OPENSEARCH_INITIAL_ADMIN_PASSWORD}"
-                  curl -k https://localhost:9200 -u "admin:${OPENSEARCH_INITIAL_ADMIN_PASSWORD}"
             - name: Test transform source in transforms/universal/opensearch
               run: |
                   if [ -e "transforms/universal/opensearch/Makefile" ]; then

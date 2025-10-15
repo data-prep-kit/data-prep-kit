@@ -76,40 +76,29 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4
-            - name: Free up space in github runner
-              # Free space as indicated here : https://github.com/actions/runner-images/issues/2840#issuecomment-790492173
-              run: |
-                  df -h
-                  sudo rm -rf "/usr/local/share/boost"
-                  sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-                  sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /usr/local/share/powershell /usr/share/swift /usr/local/.ghcup
-                  sudo docker rmi $(docker image ls -aq) >/dev/null 2>&1 || true
-                  df -h
             - name: Setup opensearch local instance
               # Setup a local instance of opensearch container
               run: |
                   export OPENSEARCH_INITIAL_ADMIN_PASSWORD=P_${RANDOM}$(date +%s)
-                  echo OPENSEARCH_INITIAL_ADMIN_PASSWORD = ${OPENSEARCH_INITIAL_ADMIN_PASSWORD}
                   echo "OPENSEARCH_INITIAL_ADMIN_PASSWORD=$OPENSEARCH_INITIAL_ADMIN_PASSWORD" >> $GITHUB_ENV
                   git clone https://github.com/opensearch-project/opensearch-build.git
                   cd opensearch-build/docker/release/dockercomposefiles/
                   docker compose -f docker-compose-default.x.yml up -d
-            - name: Sleep for 60 seconds
-              run: sleep 60s
+            - name: Sleep for 30 seconds
+              run: sleep 30s
               shell: bash
             - name: Verify running instance
               run: |
-                  echo "docker ps"
-                  docker ps
-                  echo "docker logs opensearch-dashboards"
-                  docker logs opensearch-dashboards
-                  echo "curl -k https://127.0.0.1:9200 -u admin:${OPENSEARCH_INITIAL_ADMIN_PASSWORD}"
+                  echo "docker ps -a"
+                  docker ps -a
+                  echo "docker logs opensearch-node1"
+                  docker logs opensearch-node1
+                  echo "curl -k https://localhost:9200 -u admin:{OPENSEARCH_INITIAL_ADMIN_PASSWORD}"
                   curl -k https://localhost:9200 -u "admin:${OPENSEARCH_INITIAL_ADMIN_PASSWORD}"
             - name: Test transform source in transforms/universal/opensearch
               run: |
                   if [ -e "transforms/universal/opensearch/Makefile" ]; then
                       export OPENSEARCH_PASSWORD="${{ env.OPENSEARCH_INITIAL_ADMIN_PASSWORD }}"
-                      echo "OPENSEARCH_PASSWORD = ${OPENSEARCH_PASSWORD}"
                       if [ -z "${OPENSEARCH_PASSWORD}" ]; then
                           echo "OPENSEARCH_PASSWORD environment variable not set - cannot run tests against OpenSearch"
                           exit 1

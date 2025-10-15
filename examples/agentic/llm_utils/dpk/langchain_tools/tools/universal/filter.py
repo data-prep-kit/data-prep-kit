@@ -72,7 +72,7 @@ class FilterTransform(BaseTool):
             add_transform_params(transform_params, kwargs)
 
             if runtime_type.strip().lower() == "ray":
-                from dpk_filter.ray import FilterRayTransformConfiguration
+                from dpk_ededup.ray.transform import FilterRayTransformConfiguration
                 from data_processing_ray.runtime.ray import RayTransformLauncher
 
                 sys.argv = ParamsUtils.dict_to_req(d=transform_params)
@@ -80,7 +80,7 @@ class FilterTransform(BaseTool):
 
             elif runtime_type.strip().lower() == "python":
                 from data_processing.runtime.pure_python import PythonTransformLauncher
-                from dpk_filter import (
+                from dpk_filter.transform_python import (
                     FilterPythonTransformConfiguration,
                 )
 

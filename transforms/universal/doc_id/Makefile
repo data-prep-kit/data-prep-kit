@@ -49,6 +49,13 @@ run-cli-ray-sample:
                 --run_locally True --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
                 --doc_id_int True
 
+run-cli-ray-depricated: 
+	make venv
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.transform \
+                --run_locally True --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
+                --doc_id_int True
+
 ## Used for local testing of the image on MacOS
 run-docker-python-sample:
 	make DOCKER_PLATFORM=linux/arm64 image-python

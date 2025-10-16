@@ -41,15 +41,14 @@ class AbstractTransformFileProcessor:
         if data_access_factory is None:
             self.logger.error("Transform file processor: data access factory is not specified")
             raise UnrecoverableException("data access factory is None")
+        self.data_access_factory=data_access_factory
         self.transform = None
         self.stats = None
         self.last_file_name = None
         self.last_extension = None
         self.last_file_name_next_index = None
-        self.data_access = data_access_factory.create_data_access()
         # Add data access and statistics to the processor parameters
         self.transform_params = transform_parameters
-        self.transform_params["data_access"] = self.data_access
         self.is_folder = is_folder
         self.curr_folder = None
 

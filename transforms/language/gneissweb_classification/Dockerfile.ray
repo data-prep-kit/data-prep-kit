@@ -16,7 +16,8 @@ ARG DPK_WHEEL_FILE_NAME
 # set up environment required to install and use huggingface and fasttext
 USER root
 RUN sudo apt update && sudo apt install gcc g++ -y
-RUN mkdir -p /home/ray/.cache/huggingface/hub && chmod -R 777 /home/ray/.cache/huggingface/hub
+RUN mkdir -p /home/ray/.cache/huggingface/hub && chmod -R 777 /home/ray/.cache
+RUN chown -R ray:root /home/ray/.cache
 USER ray
 
 # Copy and install data processing libraries 

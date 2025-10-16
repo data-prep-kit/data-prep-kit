@@ -44,7 +44,11 @@ from docling.datamodel.pipeline_options import (
     PdfPipelineOptions,
     TesseractCliOcrOptions,
     TesseractOcrOptions,
+    VlmPipelineOptions,
 )
+from docling.pipeline.vlm_pipeline import VlmPipeline
+from docling.datamodel import vlm_model_specs
+from docling.datamodel.base_models import InputFormat as VLMInputFormat
 from docling.document_converter import DocumentConverter, InputFormat, PdfFormatOption
 from docling.models.base_ocr_model import OcrOptions
 
@@ -63,7 +67,7 @@ docling2parquet_ocr_engine_key = f"ocr_engine"
 docling2parquet_bitmap_area_threshold_key = f"bitmap_area_threshold"
 docling2parquet_pdf_backend_key = f"pdf_backend"
 docling2parquet_double_precision_key = f"double_precision"
-
+docling2parquet_pipeline_key = f"pipeline"
 
 class docling2parquet_contents_types(str, enum.Enum):
     MARKDOWN = "text/markdown"
@@ -92,6 +96,14 @@ class docling2parquet_ocr_engine(str, enum.Enum):
         return str(self.value)
 
 
+class docling2parquet_pipeline(str, enum.Enum):
+    VLM = "vlm"
+    MULTI_STAGE = "multi_stage"
+
+    def __str__(self):
+        return str(self.value)
+
+
 docling2parquet_batch_size_default = -1
 docling2parquet_contents_type_default = docling2parquet_contents_types.MARKDOWN
 docling2parquet_do_table_structure_default = True
@@ -100,6 +112,7 @@ docling2parquet_bitmap_area_threshold_default = 0.05
 docling2parquet_ocr_engine_default = docling2parquet_ocr_engine.EASYOCR
 docling2parquet_pdf_backend_default = docling2parquet_pdf_backend.DLPARSE_V2
 docling2parquet_double_precision_default = 8
+docling2parquet_pipeline_default = docling2parquet_pipeline.MULTI_STAGE
 
 docling2parquet_batch_size_cli_param = f"{cli_prefix}{docling2parquet_batch_size_key}"
 docling2parquet_artifacts_path_cli_param = f"{cli_prefix}{docling2parquet_artifacts_path_key}"
@@ -117,6 +130,7 @@ docling2parquet_double_precision_cli_param = (
     f"{cli_prefix}{docling2parquet_double_precision_key}"
 )
 
+docling2parquet_pipeline_cli_param = f"{cli_prefix}{docling2parquet_pipeline_key}"
 
 class Docling2ParquetTransform(AbstractBinaryTransform):
     """ """
@@ -161,15 +175,11 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
         self.double_precision = config.get(
             docling2parquet_double_precision_key, docling2parquet_double_precision_default
         )
+        self.pipeline = config.get(docling2parquet_pipeline_key, docling2parquet_pipeline_default)
+        if not isinstance(self.pipeline, docling2parquet_pipeline):
+            self.pipeline = docling2parquet_pipeline[self.pipeline]
 
         logger.info("Initializing models")
-        pipeline_options = PdfPipelineOptions(
-            artifacts_path=self.artifacts_path,
-            do_table_structure=self.do_table_structure,
-            do_ocr=self.do_ocr,
-            ocr_options=self._get_ocr_engine(self.ocr_engine_name),
-        )
-        pipeline_options.ocr_options.bitmap_area_threshold = self.bitmap_area_threshold
 
         lock = MultiLock("dpk_docling2parquet_init")
         try:
@@ -179,15 +189,38 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
             locked = lock.acquire()
             logger.debug(f"Lock {lock.lock_filename} acquired.")
 
-            self._converter = DocumentConverter(
-                format_options={
-                    InputFormat.PDF: PdfFormatOption(
-                        pipeline_options=pipeline_options,
-                        backend=self._get_pdf_backend(self.pdf_backend_name),
-                    )
-                }
-            )
-            self._converter.initialize_pipeline(InputFormat.PDF)
+            if self.pipeline == docling2parquet_pipeline.VLM:
+                pipeline_options = VlmPipelineOptions(
+                    vlm_options=vlm_model_specs.GRANITEDOCLING_MLX,
+                )
+
+                self._converter = DocumentConverter(
+                    format_options={
+                        VLMInputFormat.PDF: PdfFormatOption(
+                            pipeline_cls=VlmPipeline,
+                            pipeline_options=pipeline_options,
+                        ),
+                    }
+                )
+
+            else:
+                pipeline_options = PdfPipelineOptions(
+                    artifacts_path=self.artifacts_path,
+                    do_table_structure=self.do_table_structure,
+                    do_ocr=self.do_ocr,
+                    ocr_options=self._get_ocr_engine(self.ocr_engine_name),
+                )
+                pipeline_options.ocr_options.bitmap_area_threshold = self.bitmap_area_threshold
+
+                self._converter = DocumentConverter(
+                    format_options={
+                        InputFormat.PDF: PdfFormatOption(
+                            pipeline_options=pipeline_options,
+                            backend=self._get_pdf_backend(self.pdf_backend_name),
+                        )
+                    }
+                )
+                self._converter.initialize_pipeline(InputFormat.PDF)
         finally:
             lock.release()
             logger.debug(f"Lock {lock.lock_filename} released.")
@@ -239,11 +272,15 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
                 doc.export_to_dict(), double_precision=self.double_precision
             )
         else:
-            raise RuntimeError(f"Uknown contents_type {self.contents_type}.")
+            raise RuntimeError(f"Unknown contents_type {self.contents_type}.")
         num_pages = len(doc.pages)
         num_tables = len(doc.tables)
         num_doc_elements = len(doc.texts)
-        document_hash = str(doc.origin.binary_hash)  # we turn the uint64 hash into str, because it is easier to handle for pyarrow
+
+        if self.pipeline == 'vlm':
+            document_hash = conv_res.input.document_hash
+        else:
+            document_hash = str(doc.origin.binary_hash)  # we turn the uint64 hash into str, because it is easier to handle for pyarrow
 
         self._update_metrics(num_pages=num_pages, elapse_time=elapse_time)
 
@@ -499,6 +536,13 @@ class Docling2ParquetTransformConfiguration(TransformConfiguration):
             required=False,
             help="If set, all floating points (e.g. bounding boxes) are rounded to this precision. For tests it is advised to use 0.",
             default=docling2parquet_double_precision_default,
+        )
+        parser.add_argument(
+            f"--{docling2parquet_pipeline_cli_param}",
+            type=docling2parquet_pipeline,
+            choices=list(docling2parquet_pipeline),
+            help="The pipeline to use - multi_stage or vlm (granite-docling)",
+            default=docling2parquet_pipeline_default,
         )
 
     def apply_input_params(self, args: Namespace) -> bool:

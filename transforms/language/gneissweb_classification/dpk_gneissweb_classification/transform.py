@@ -73,6 +73,13 @@ class ClassificationTransform(AbstractTableTransform):
         self.model_credential = config.get(model_credential_cli_param, os.environ.get('HF_READ_ACCESS_TOKEN', None))
         self.model_file_name = ast.literal_eval(config.get(model_file_name_cli_param)[0])
         self.model_url = ast.literal_eval(config.get(model_url_cli_param)[0])
+        self.model =[]
+        for url, model_filename in zip(self.model_url, self.model_file_name):
+            self.logger.info(f"Loading Model: {url=}, {model_filename=} ")
+            model = load_model(url, 'fasttext', self.model_credential, model_filename=model_filename)
+            self.model.append(model)
+            self.logger.info(f"Loading Model: {url=}, {model_filename=} complete")
+
         self.n_processes = config.get(n_processes_cli_param, default_n_processes)
         self.content_column_name = config.get(content_column_name_cli_param, default_content_column_name)
         self.output_label_column_name = ast.literal_eval(config.get(output_label_column_name_cli_param, default_output_label_column_name)[0])
@@ -95,32 +102,18 @@ class ClassificationTransform(AbstractTableTransform):
                     f"column to store score of label ({score_column_name}) already exist"
                 )
         self.logger.debug(f"Transforming one table with {len(table)} rows")
-        for url, file_name, label_column_name, score_column_name in zip(self.model_url, self.model_file_name,self.output_label_column_name,self.output_score_column_name):
-            if self.n_processes <= 1:
-                model = load_model(url, 'fasttext', self.model_credential, model_filename=file_name)
-                nlp_classfication = FastTextModel(model, url)
-
-            else:
-                # Suppress memory consumption as the main process does not actually use this model when multiprocessing
-                nlp_classfication = None
-            if self.n_processes <= 1:
-                table, stats = get_label_ds_pa(
+        for model, url, label_column_name, score_column_name in zip(self.model, 
+                                                                    self.model_url, 
+                                                                    self.output_label_column_name,
+                                                                    self.output_score_column_name):
+            table, stats = get_label_ds_pa(
                     table,
-                    nlp_classfication,
-                    self.content_column_name,
-                    label_column_name,
-                    score_column_name,
-                )
-            else:
-                table, stats = get_label_ds_pa_parallel(
-                    table,
-                    self.content_column_name,
-                    label_column_name,
-                    score_column_name,
-                    self.n_processes,
+                    model, 
                     url,
-                    file_name,
-                    self.model_credential,
+                    self.content_column_name,
+                    label_column_name,
+                    score_column_name,
+                    self.n_processes
                 )
             
         self.logger.debug(f"Transformed one table with {len(table)} rows")

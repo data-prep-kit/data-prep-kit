@@ -14,8 +14,10 @@
 from typing import Any
 
 import pyarrow as pa
+import multiprocessing
+from concurrent.futures import ThreadPoolExecutor
 from data_processing.utils import TransformUtils, get_dpk_logger
-from dpk_gneissweb_classification.classification_models import ClassificationModel
+from dpk_gneissweb_classification.classification_models import FastTextModel
 
 
 logger = get_dpk_logger()
@@ -23,19 +25,30 @@ logger = get_dpk_logger()
 
 def get_label_ds_pa(
     table: pa.table,
-    nlp: ClassificationModel,
+    model: Any,
+    url: str,
     content_column_name: str,
     output_label_column_name: str,
     output_score_column_name: str,
+    max_workers=1
 ) -> tuple[pa.table, dict[str, Any]]:
-    detected_label = pa.Table.from_pylist(
-        list(
-            map(
-                lambda r: {"label": r[0], "score": r[1]},
-                map(nlp.detect_label, table[content_column_name].to_pylist()),
+    nlp = FastTextModel(model, url)
+    logger.debug(f"Classifying with {max_workers} threads")
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:     # Set max_workers for desired thread count
+        detected_label = pa.Table.from_pylist(
+            list(
+                map(
+                    lambda r: {"label": r[0], "score": r[1]},
+                    list(executor.map(nlp.detect_label, table[content_column_name].to_pylist())),
+                )
             )
         )
-    )
+    logger.debug(f"Classifying with {max_workers} threads completed")
+
+
+
+
+
     stats = pa.table([detected_label["label"]], names=["label"]).group_by("label").aggregate([("label", "count")])
     stats_dict = {}
     for batch in stats.to_batches():

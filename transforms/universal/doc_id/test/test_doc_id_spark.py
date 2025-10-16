@@ -17,7 +17,7 @@ from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
 from data_processing_spark.runtime.spark import SparkTransformLauncher
-from dpk_doc_id.spark.transform import (
+from dpk_doc_id.spark.runtime import (
     DocIDSparkTransformConfiguration,
     doc_column_name_cli_param,
     hash_column_name_cli_param,

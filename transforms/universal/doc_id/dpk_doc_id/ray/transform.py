@@ -15,9 +15,19 @@
 ## Maintained for backwards compatibility with existing workflows
 import warnings
 
-warnings.warn(f"This module is deprecated and will be removed in a future version. Use .runtime in the future to avoid disruption in the future.", DeprecationWarning, stacklevel=2)
-from runtime import DocIDRayTransformRuntimeConfiguration
-from data_processing_ray.runtime.ray import RayTransformLauncher,
+from data_processing.utils import get_logger
+logger = get_logger(__name__)
+
+
+warnings.warn(
+    f"This module is deprecated and will be removed in a future version. Use python -m dpk_doc_id.ray.runtime to avoid disruption in the future.", 
+     DeprecationWarning, stacklevel=2
+    )
+logger.warning(
+    f"This module is deprecated and will be removed in a future version. Use python -m dpk_doc_id.ray.runtime to avoid disruption in the future."
+    )
+from dpk_doc_id.ray.runtime import DocIDRayTransformRuntimeConfiguration
+from data_processing_ray.runtime.ray import RayTransformLauncher
 
 
 if __name__ == "__main__":

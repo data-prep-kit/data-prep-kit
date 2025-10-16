@@ -17,7 +17,7 @@ from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
 from data_processing_ray.runtime.ray import RayTransformLauncher
-from dpk_blocklist.ray.transform import BlockListRayConfiguration
+from dpk_blocklist.ray.runtime import BlockListRayConfiguration
 from dpk_blocklist.transform import (
     annotation_column_name_cli_param,
     annotation_column_name_default,

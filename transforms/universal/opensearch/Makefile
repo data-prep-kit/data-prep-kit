@@ -21,9 +21,10 @@ TRANSFORM_NAME=$(shell basename `pwd`)
 #### user defined Target
 
 run-cli-sample:
-	@# Help: Run the NOOP transform in a python runtime to read data in test-data/input and write to output directory.
+	@# Help: Run the opensearch transform in a python runtime to read data in test-data/input and write to output directory.
 	$(MAKE) venv
 	source venv/bin/activate && \
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
-             --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  
+             --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
+			 --os_index "test-index"   
 

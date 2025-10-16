@@ -1,11 +1,11 @@
-# OpenSource Transform 
+# OpenSearch Transform 
 Please see the set of
 [transform project conventions](../../README.md#transform-project-conventions)
 for details on general project conventions, transform configuration,
 testing and IDE set up.
 
 ## Summary 
-The opensearch transform creates and inserts data into an index.
+The OpenSearch transform creates and inserts data into an index.
 If an embeddings column is present, a [k-NN vector index](https://docs.opensearch.org/latest/vector-search/creating-vector-index/) is created; otherwise, a regular index is used.
 
 ## Output Format
@@ -36,28 +36,37 @@ The following command line arguments are available in addition to the options pr
                         If True, the OpenSearch client and server should use correct SSL certificates
 ```
 
-If `os_disable_security` option is `False`, set OpenSearch credentials via the following environment 
+If the `os_disable_security` option is `False`, set OpenSearch credentials via the following environment 
 variables before running:
 
 ```bash
 export OPENSEARCH_USERID=admin
-export OPENSEARCH_PASSWORD=""
+export OPENSEARCH_PASSWORD="Mypass1word"
 ```
+Please note that the password is the **same** password that you have set for the OpenSearch server (see below)
+# Local OpenSearch execution
 
-# Local Opensearch execution
+If you don't have an Openearch server, you can install it according to these [instructions](https://docs.opensearch.org/latest/install-and-configure/install-opensearch/index/). 
 
-If you don't have Opensearch server, you can install it according to the [instructions](https://docs.opensearch.org/latest/install-and-configure/install-opensearch/index/). 
+Probably, the simplest way is to execute OpenSearch in Docker containers:
 
-Probably, the simplest way is to execute Opensearch in Docker containers:
 ```bash
 git clone   https://github.com/opensearch-project/opensearch-build
-export OPENSEARCH_INITIAL_ADMIN_PASSWORD=mypassword
+export OPENSEARCH_INITIAL_ADMIN_PASSWORD=Mypass1word
 cd opensearch-build/docker/release/dockercomposefiles/
 docker-compose -f docker-compose-default.x.yml up -d 
 ```
 
-If you want, you can execute Opensearch **without** security protections (developer, demo mode)
+Please note that the password has to contain at least 8 characters, including uppercase and lowercase letters, and a number. 
+Also, since docker-compose is downloading the image from Docker Hub by default, you may run into a docker credential issue (rate limit) for an unauthenticated account. In this case, please login to docker before the docker-compose command above:
 ```bash
-docker-compose -f ./unsecured-docker-compose.yaml up -d
+docker login docker.io -u yourdockerusername -p yourdockerpassword
+```
+
+If you want, you can execute OpenSearch **without** security protections (developer, demo mode). The yml file below is provided in the DPK repo and is not in the `opensearch-build/docker/release/dockercomposefiles/` directory above. 
+```bash
+docker-compose -f ./unsecured-docker-compose.yml up -d
 ```
 In this case, you don't need a username and a password to access the OpenSearch REST API or its dashboard.
+
+You can check the OpenSearch dashboard by logging into: http://localhost:5601/ after the server has started. 

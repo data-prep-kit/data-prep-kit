@@ -17,7 +17,7 @@ from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.runtime.pure_python.runtime_configuration import (
     PythonTransformRuntimeConfiguration,
 )
-from data_processing.utils import get_logger
+from data_processing.utils import get_logger, ParamsUtils
 from dpk_blocklist.transform import BlockListConfiguration
 
 
@@ -37,17 +37,10 @@ class Blocklist:
             del self.params["output_folder"]
         except:
             pass
-        try:
-            worker_options = {k: self.params[k] for k in ("num_cpus", "memory")}
-            self.params["runtime_worker_options"] = ParamsUtils.convert_to_ast(worker_options)
-            del self.params["num_cpus"]
-            del self.params["memory"]
-        except:
-            pass
 
     def transform(self):
         sys.argv = ParamsUtils.dict_to_req(d=(self.params))
-        launcher = RayTransformLauncher(BlockListConfiguration())
+        launcher = PythonTransformLauncher(BlockListPythonTransformConfiguration())
         return_code = launcher.launch()
         return return_code
 

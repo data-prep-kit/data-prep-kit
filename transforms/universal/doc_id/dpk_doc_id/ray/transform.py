@@ -13,7 +13,9 @@
 
 ## Depricated code
 ## Maintained for backwards compatibility with existing workflows
+import warnings
 
+warnings.warn(f"This module is deprecated and will be removed in a future version. Use .runtime in the future to avoid disruption in the future.", DeprecationWarning, stacklevel=2)
 from runtime import DocIDRayTransformRuntimeConfiguration
 from data_processing_ray.runtime.ray import RayTransformLauncher,
 

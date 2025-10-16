@@ -16,7 +16,7 @@ import uuid
 from typing import Any, Union
 
 from data_processing.data_access import DataAccess
-from data_processing.utils import CLIArgumentProvider, get_logger
+from data_processing.utils import CLIArgumentProvider, get_dpk_logger
 
 
 class DataAccessFactoryBase(CLIArgumentProvider):
@@ -41,7 +41,7 @@ class DataAccessFactoryBase(CLIArgumentProvider):
         self.files_to_checkpoint = []
         self.cli_arg_prefix = cli_arg_prefix
         self.params = {}
-        self.logger = get_logger(__name__ + str(uuid.uuid4()))
+        self.logger = get_dpk_logger(__name__ + str(uuid.uuid4()))
 
     def add_input_params(self, parser: argparse.ArgumentParser) -> None:
         """

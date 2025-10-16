@@ -17,11 +17,11 @@ from data_processing.runtime.pure_python import (
     PythonTransformRuntimeConfiguration,
     Transform,
 )
-from data_processing.utils import ParamsUtils, get_logger
+from data_processing.utils import ParamsUtils, get_dpk_logger
 from dpk_lang_id.transform import LangIdentificationTransformConfiguration
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class LangIdentificationPythonTransformConfiguration(PythonTransformRuntimeConfiguration):

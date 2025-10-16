@@ -14,7 +14,7 @@
 import os
 import gc
 import concurrent.futures
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 
 class ParallelTransformsChain:
     def __init__(self, data_access, transforms, max_workers=4):
@@ -26,7 +26,7 @@ class ParallelTransformsChain:
         self.data_access = data_access
         self.transforms = transforms
         self.max_workers = max_workers
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def run(self):
         batches = list(self.data_access.get_batches_to_process())

@@ -21,8 +21,8 @@ import ast
 
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
 from data_processing.utils import CLIArgumentProvider, TransformUtils
-from data_processing.utils import get_logger
-logger = get_logger(__name__,"DEBUG")
+from data_processing.utils import get_dpk_logger
+logger = get_dpk_logger(__name__,"DEBUG")
 
 
 short_name = "collapse"
@@ -92,9 +92,9 @@ class CollapseTransformConfiguration(TransformConfiguration):
             name=short_name,
             transform_class=CollapseTransform,
         )
-        from data_processing.utils import get_logger
+        from data_processing.utils import get_dpk_logger
 
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def add_input_params(self, parser: ArgumentParser) -> None:
         """

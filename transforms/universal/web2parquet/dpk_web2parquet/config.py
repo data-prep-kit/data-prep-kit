@@ -15,7 +15,7 @@ from argparse import ArgumentParser, Namespace
 
 from data_processing.transform import TransformConfiguration
 from data_processing.utils import CLIArgumentProvider
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from dpk_web2parquet.transform import Web2ParquetTransform
 
 short_name = "web2parquet"
@@ -26,7 +26,7 @@ downloads_cli_param = f"{cli_prefix}downloads"
 folder_cli_param = f"{cli_prefix}folder"
 
 
-logger = get_logger(__name__,"DEBUG")
+logger = get_dpk_logger(__name__,"DEBUG")
     
 class Web2ParquetTransformConfiguration(TransformConfiguration):
 

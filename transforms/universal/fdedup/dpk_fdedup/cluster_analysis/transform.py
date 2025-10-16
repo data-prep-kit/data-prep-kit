@@ -23,7 +23,7 @@ from data_processing.utils import (
     CLIArgumentProvider,
     TransformUtils,
     UnrecoverableException,
-    get_logger,
+    get_dpk_logger,
 )
 from dpk_fdedup.Murmur_MH import Murmur_MH
 
@@ -113,7 +113,7 @@ class ClusterAnalysisTransform(AbstractFolderTransform):
         self.data_access = config.get("data_access")
         if self.data_access is None:
             raise UnrecoverableException("Could not get a pointer to the data access object inside the transform.")
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def transform(self, folder_name: str) -> tuple[list[tuple[bytes, str]], dict[str, Any]]:
         self.logger.debug(f"Cluster analysis for folder {folder_name}")
@@ -297,7 +297,7 @@ class ClusterAnalysisTransformConfiguration(TransformConfiguration):
             transform_class=ClusterAnalysisTransform,
             remove_from_metadata=[],
         )
-        self.logger = get_logger(__name__, level="INFO")
+        self.logger = get_dpk_logger(__name__, level="INFO")
 
     def add_input_params(self, parser: ArgumentParser) -> None:
         """

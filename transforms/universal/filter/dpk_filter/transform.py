@@ -22,7 +22,7 @@ import os
 import string
 from data_processing.data_access import DataAccess
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import CLIArgumentProvider, TransformUtils, get_logger
+from data_processing.utils import CLIArgumentProvider, TransformUtils, get_dpk_logger
 
 
 short_name = "filter"
@@ -82,7 +82,7 @@ class FilterTransform(AbstractTableTransform):
         these will be provided by that class with help from the RayMutatingDriver.
         """
         super().__init__(config)
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
         self.data_access: DataAccess = config.get("data_access", None)
         if self.data_access is None:
             self.logger.warning(f"data_access is not provided.")

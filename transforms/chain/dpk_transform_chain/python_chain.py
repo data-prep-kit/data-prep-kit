@@ -14,13 +14,13 @@
 
 import os
 import gc
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 
 class TransformsChain:
     def __init__(self, data_access, transforms):
         self.data_access = data_access
         self.transforms = transforms
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def run(self):
         for batch_files in self.data_access.get_batches_to_process():

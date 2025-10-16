@@ -20,7 +20,7 @@ import pyarrow as pa
 import pyarrow.compute as pc
 from data_processing.data_access import DataAccessFactory
 from data_processing.transform import AbstractTableTransform
-from data_processing.utils import TransformUtils, get_logger
+from data_processing.utils import TransformUtils, get_dpk_logger
 from dpk_extreme_tokenized.common import (
     arrow_path_cli_param,
     arrow_path_default,
@@ -33,7 +33,7 @@ from dpk_extreme_tokenized.common import (
 )
 
 
-logger = get_logger(__name__, level="INFO")
+logger = get_dpk_logger(__name__, level="INFO")
 
 
 class ExtremeTokenizedTransform(AbstractTableTransform):

@@ -20,7 +20,7 @@ from datetime import datetime
 import yaml
 from data_processing.data_access import DataAccessFactoryBase
 from data_processing.transform import TransformStatistics, AbstractFolderTransform
-from data_processing.utils import GB, get_logger
+from data_processing.utils import GB, get_dpk_logger
 from data_processing_spark.runtime.spark import (
     SparkTransformExecutionConfiguration,
     SparkTransformFileProcessor,
@@ -30,7 +30,7 @@ from pyspark import SparkConf, SparkContext
 from pyspark.sql import SparkSession
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 def _init_spark(runtime_config: SparkTransformRuntimeConfiguration) -> SparkSession:

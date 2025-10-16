@@ -74,9 +74,9 @@ class BlockListRuntime(DefaultRayTransformRuntime):
             ls_known_selector: A flag on whether return rows with valid or invalid languages
         """
         super().__init__(params)
-        from data_processing.utils import get_logger
+        from data_processing.utils import get_dpk_logger
 
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def get_transform_config(
         self,

@@ -16,12 +16,12 @@ from data_processing.runtime.pure_python import (
     PythonTransformLauncher,
     PythonTransformRuntimeConfiguration,
 )
-from data_processing.utils import get_logger, ParamsUtils
+from data_processing.utils import get_dpk_logger, ParamsUtils
 
 from dpk_filter.transform import FilterTransformConfiguration
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class FilterPythonTransformConfiguration(PythonTransformRuntimeConfiguration):

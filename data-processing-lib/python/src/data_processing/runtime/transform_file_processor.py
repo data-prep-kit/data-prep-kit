@@ -16,7 +16,7 @@ from typing import Any
 import os
 
 from data_processing.data_access import DataAccessFactoryBase
-from data_processing.utils import TransformUtils, UnrecoverableException, get_logger
+from data_processing.utils import TransformUtils, UnrecoverableException, get_dpk_logger
 
 
 class AbstractTransformFileProcessor:
@@ -36,7 +36,7 @@ class AbstractTransformFileProcessor:
         :param transform_parameters: Transform parameters
         :param is_folder: folder transform flag
         """
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
         # validate parameters
         if data_access_factory is None:
             self.logger.error("Transform file processor: data access factory is not specified")

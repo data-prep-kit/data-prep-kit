@@ -12,56 +12,47 @@
 ################################################################################
 
 import logging
+from pythonjsonlogger.json import JsonFormatter
 import os
 
-from data_processing.utils import DPKConfig
+DPK_LOGGER_NAME = "dpk"
 
 
-def get_log_level(name: str = None) -> str:
-    if name is None:
-        level_name = DPKConfig.DEFAULT_LOG_LEVEL
-    else:
-        name = name.upper().replace('.', '_')
-        name = "DPK_" + name + "_LOG_LEVEL"
-        level_name = os.environ.get(name, DPKConfig.DEFAULT_LOG_LEVEL)
-    return level_name
+def get_dpk_logger() -> logging.Logger:
+    dpk_log_level = os.environ.get("DPK_LOG_LEVEL", "INFO")
+    dpk_log_file = os.environ.get("DPK_LOG_FILE", None)
+    dpk_log_propagation = os.environ.get("DPK_LOG_PROPAGATION", False)
+
+    logger = logging.getLogger(DPK_LOGGER_NAME)
+    logger.propagate = dpk_log_propagation
+    logger.setLevel(dpk_log_level.upper())
 
 
-__logger_cache = {}
+    formatter = JsonFormatter(
+        fmt="%(asctime)s %(name)s %(levelname)s %(message)s",
+        datefmt="%H:%M:%S",
+        rename_fields={"asctime": "time", "name": "logger", "levelname": "logLevel"}
+    )
 
+    def add_handler_once(handler_cls, tag_name, **kwargs):
+        if not any(getattr(h, "_tag", None) == tag_name for h in logger.handlers):
+            handler = handler_cls(**kwargs)
+            handler.setFormatter(formatter)
+            handler._tag = tag_name  # custom attribute to identify it later
+            logger.addHandler(handler)
 
-def get_logger(name: str, level=None, file=None) -> logging.Logger:
-    logger = __logger_cache.get(name, None)
-    if logger is not None:
-        return logger
-    logger = logging.getLogger(name)
-    if level is None:
-        level = get_log_level(name)
-    logger.setLevel(level)
-    c_handler = logging.StreamHandler()
-    if level == "DEBUG":
-        # When debugging, include the source link that pycharm understands.
-        msgfmt = '%(asctime)s %(levelname)s - %(message)s at "%(pathname)s:%(lineno)d"'
-    else:
-        msgfmt = "%(asctime)s %(levelname)s - %(message)s"
-    timefmt = "%H:%M:%S"
-
-    c_format = logging.Formatter(msgfmt, timefmt)
-    c_handler.setFormatter(c_format)
-    logger.addHandler(c_handler)
-
-    if file is not None:
-        f_handler = logging.FileHandler(file)
-        f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-        f_handler.setFormatter(f_format)
-        logger.addHandler(f_handler)
-
-    # Add handlers to the logger
-    __logger_cache[name] = logger
+    add_handler_once(logging.StreamHandler, "stream_handler")
+    if dpk_log_file:
+        os.makedirs(os.path.dirname(dpk_log_file) or ".", exist_ok=True)
+        add_handler_once(logging.FileHandler, "file_handler", filename=dpk_log_file, mode="a")
     return logger
 
 
-# logger = get_logger("main")
+# Test logging
+# logger = get_dpk_logger()
+# logger.info("Hello, JSON world!", extra={"transaction_ID": "TRANSACTION999", "user_id": "USER999"})
+#
+# logger.debug("debug message")
 # logger.info("info message")
-# logger.warning("info message")
-# logger.error("info message")
+# logger.warning("warning message")
+# logger.error("error message")

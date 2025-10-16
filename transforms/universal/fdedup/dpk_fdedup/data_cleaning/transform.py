@@ -19,7 +19,7 @@ import polars as pl
 import pyarrow as pa
 from data_processing.data_access import DataAccessFactory
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import CLIArgumentProvider, get_logger
+from data_processing.utils import CLIArgumentProvider, get_dpk_logger
 
 
 short_name = "fdclean"
@@ -81,7 +81,7 @@ class DataCleaningTransform(AbstractTableTransform):
         defined by the companion runtime, ClusterAnalysisTransformRuntime.
         """
         super().__init__(config)
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
         self.document_id_column = config.get(document_id_column_key, document_id_column_default)
         self.duplicate_list_location = config.get(duplicate_list_location_key, duplicate_list_location_default)
         self.operation_mode = config.get(operation_mode_key, operation_mode_default)
@@ -138,7 +138,7 @@ class DataCleaningTransformConfiguration(TransformConfiguration):
             remove_from_metadata=[dataclean_data_factory_key],
         )
         self.daf = DataAccessFactory(cli_arg_prefix="dcdata_")
-        self.logger = get_logger(__name__, level="INFO")
+        self.logger = get_dpk_logger(__name__, level="INFO")
 
     def add_input_params(self, parser: ArgumentParser) -> None:
         """

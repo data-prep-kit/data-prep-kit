@@ -45,9 +45,9 @@ class TextEncoderTransform(AbstractTableTransform):
         # Make sure that the param name corresponds to the name used in apply_input_params method
         # of TextEncoderTransform class
         super().__init__(config)
-        from data_processing.utils import get_logger
+        from data_processing.utils import get_dpk_logger
 
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
         self.model_name = config.get(model_name_key, default_model_name)
         self.content_column_name = config.get(content_column_name_key, default_content_column_name)
@@ -88,9 +88,9 @@ class TextEncoderTransformConfiguration(TransformConfiguration):
             transform_class=TextEncoderTransform,
             # remove_from_metadata=[pwd_key],
         )
-        from data_processing.utils import get_logger
+        from data_processing.utils import get_dpk_logger
 
-        self.logger = get_logger(__name__ + "cfg")  # workaround issue #481
+        self.logger = get_dpk_logger(__name__ + "cfg")  # workaround issue #481
 
     def add_input_params(self, parser: ArgumentParser) -> None:
         """

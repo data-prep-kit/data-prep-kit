@@ -26,10 +26,10 @@ from data_processing.runtime.pure_python import (
     PythonTransformRuntimeConfiguration,
 )
 from data_processing.transform import AbstractTransform, TransformStatistics, AbstractFolderTransform
-from data_processing.utils import GB, get_logger
+from data_processing.utils import GB, get_dpk_logger
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 def _execution_resources() -> dict[str, Any]:

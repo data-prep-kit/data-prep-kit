@@ -22,7 +22,7 @@ from dpk_doc_id.transform import (
     int_column_name_cli_param,
     start_id_cli_param,
 )
-from dpk_doc_id.transform_python import DocIDPythonTransformRuntimeConfiguration
+from dpk_doc_id.runtime import DocIDPythonTransformRuntimeConfiguration
 
 
 # create parameters

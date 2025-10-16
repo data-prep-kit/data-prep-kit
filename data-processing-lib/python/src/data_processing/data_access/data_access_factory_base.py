@@ -41,7 +41,7 @@ class DataAccessFactoryBase(CLIArgumentProvider):
         self.files_to_checkpoint = []
         self.cli_arg_prefix = cli_arg_prefix
         self.params = {}
-        self.logger = get_dpk_logger(__name__ + str(uuid.uuid4()))
+        self.logger = get_dpk_logger()
 
     def add_input_params(self, parser: argparse.ArgumentParser) -> None:
         """

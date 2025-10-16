@@ -23,7 +23,7 @@ from psutil import cpu_count
 from dpk_rep_removal.make_suffix_array import make_suffix_array
 from data_processing.transform import AbstractTableTransform
 from data_processing.utils import get_dpk_logger
-logging = get_dpk_logger(__name__, level="INFO")
+logging = get_dpk_logger()
 
 
 class RepRemovalTransform(AbstractTableTransform):

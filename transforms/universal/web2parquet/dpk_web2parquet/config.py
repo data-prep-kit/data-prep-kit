@@ -26,7 +26,7 @@ downloads_cli_param = f"{cli_prefix}downloads"
 folder_cli_param = f"{cli_prefix}folder"
 
 
-logger = get_dpk_logger(__name__,"DEBUG")
+logger = get_dpk_logger()
     
 class Web2ParquetTransformConfiguration(TransformConfiguration):
 

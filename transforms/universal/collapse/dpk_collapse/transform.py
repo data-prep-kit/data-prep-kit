@@ -22,7 +22,7 @@ import ast
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
 from data_processing.utils import CLIArgumentProvider, TransformUtils
 from data_processing.utils import get_dpk_logger
-logger = get_dpk_logger(__name__,"DEBUG")
+logger = get_dpk_logger()
 
 
 short_name = "collapse"

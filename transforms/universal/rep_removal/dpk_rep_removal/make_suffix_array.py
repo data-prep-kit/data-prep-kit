@@ -39,7 +39,7 @@ import numpy as np
 import multiprocessing as mp
 from dpk_rep_removal.utils import calculate_timeout
 from data_processing.utils import get_dpk_logger
-logger = get_dpk_logger(__name__, level="INFO")
+logger = get_dpk_logger()
 
 pwd = os.path.dirname(__file__)
 dedup_program = f"{pwd}/rust/target/release/dedup_dataset"

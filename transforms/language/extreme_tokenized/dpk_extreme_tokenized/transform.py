@@ -33,7 +33,7 @@ from dpk_extreme_tokenized.common import (
 )
 
 
-logger = get_dpk_logger(__name__, level="INFO")
+logger = get_dpk_logger()
 
 
 class ExtremeTokenizedTransform(AbstractTableTransform):

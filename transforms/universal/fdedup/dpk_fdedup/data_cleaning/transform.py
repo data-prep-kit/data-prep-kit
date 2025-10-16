@@ -138,7 +138,7 @@ class DataCleaningTransformConfiguration(TransformConfiguration):
             remove_from_metadata=[dataclean_data_factory_key],
         )
         self.daf = DataAccessFactory(cli_arg_prefix="dcdata_")
-        self.logger = get_dpk_logger(__name__, level="INFO")
+        self.logger = get_dpk_logger()
 
     def add_input_params(self, parser: ArgumentParser) -> None:
         """

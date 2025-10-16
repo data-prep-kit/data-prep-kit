@@ -52,7 +52,8 @@ def get_dpk_logger() -> logging.Logger:
 # logger = get_dpk_logger()
 # logger.info("Hello, JSON world!", extra={"transaction_ID": "TRANSACTION999", "user_id": "USER999"})
 #
-# logger.debug("debug message")
-# logger.info("info message")
-# logger.warning("warning message")
-# logger.error("error message")
+# logger2 = get_dpk_logger()
+# logger2.debug("debug message")
+# logger2.info("info message")
+# logger2.warning("warning message")
+# logger2.error("error message")

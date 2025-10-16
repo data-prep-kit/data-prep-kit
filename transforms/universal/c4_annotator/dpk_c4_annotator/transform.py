@@ -27,7 +27,7 @@ from data_processing.utils import CLIArgumentProvider, TransformUtils, get_dpk_l
 from numpy.random import default_rng
 
 
-logger = get_dpk_logger(__name__, level="INFO")
+logger = get_dpk_logger()
 from typing import Any
 
 

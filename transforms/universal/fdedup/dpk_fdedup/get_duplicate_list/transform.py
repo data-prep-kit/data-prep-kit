@@ -134,7 +134,7 @@ class GetDuplicateListTransformConfiguration(TransformConfiguration):
             transform_class=GetDuplicateListTransform,
             remove_from_metadata=[],
         )
-        self.logger = get_dpk_logger(__name__, level="INFO")
+        self.logger = get_dpk_logger()
 
     def add_input_params(self, parser: ArgumentParser) -> None:
         """

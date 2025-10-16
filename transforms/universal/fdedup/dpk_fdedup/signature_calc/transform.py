@@ -434,7 +434,7 @@ class SignatureCalculationTransformConfiguration(TransformConfiguration):
 
         from data_processing.utils import get_dpk_logger
 
-        self.logger = get_dpk_logger(__name__, level="INFO")
+        self.logger = get_dpk_logger()
 
     def add_input_params(self, parser: ArgumentParser) -> None:
         """

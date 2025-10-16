@@ -54,7 +54,6 @@ from docling.models.base_ocr_model import OcrOptions
 
 
 logger = get_dpk_logger()
-# logger = get_dpk_logger(__name__, level="DEBUG")
 
 shortname = "docling2parquet"
 cli_prefix = f"{shortname}_"

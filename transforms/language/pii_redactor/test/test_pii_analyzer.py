@@ -12,10 +12,10 @@
 
 import pytest
 from dpk_pii_redactor.pii_analyzer import PIIAnalyzerEngine
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 
 
-logger = get_logger(__name__)
+logger = get_logger()
 
 
 @pytest.fixture(scope="module")

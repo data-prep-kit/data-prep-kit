@@ -38,7 +38,7 @@ def compare_tables(input_table, output_table):
     )
 
 
-logger = get_dpk_logger("test")
+logger = get_dpk_logger()
 
 
 def test_sort_by_path():

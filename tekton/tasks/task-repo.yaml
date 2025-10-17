@@ -6,12 +6,14 @@ spec:
   params:
     - name: REPO_URL
       type: string
-      default: https://github.com/data-prep-kit/data-prep-kit.git
+      default: https://github.com/touma-I/data-prep-kit-pkg.git
+#      default: https://github.com/data-prep-kit/data-prep-kit.git
     - name: REPO_BRANCH
       type: string
-      default: feature/tekton
+      default: tekton-5
+      # default: feature/tekton
   workspaces:
-    - name: rayjobs
+    - name: jobs
       description: A workspace to mount the job YAML.
   steps:
     - name: run-repo-job
@@ -19,7 +21,7 @@ spec:
       script: |
         #!/bin/sh
         df -h
-        git clone -b $(params.REPO_BRANCH) --depth 1 $(params.REPO_URL) /workspace/rayjobs/data-prep-kit
+        git clone -b $(params.REPO_BRANCH) --depth 1 $(params.REPO_URL) /workspace/jobs/data-prep-kit
         
 
 

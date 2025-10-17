@@ -21,7 +21,7 @@ from dpk_doc_id.transform import (
     id_generator_key,
     int_column_name_key,
 )
-from dpk_doc_id.transform_python import DocIDTransform
+from dpk_doc_id import DocIDTransform
 
 
 # create parameters

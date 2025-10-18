@@ -14,7 +14,7 @@ original data:
 `hashlib.sha256(doc.encode("utf-8")).hexdigest()`. To store this hash in the data specify the desired column name using
 the `hash_column` parameter.
 * **Adding an Integer Document ID**: to each document. The integer ID is unique across all rows and tables processed by
-the `transform()` method. To store this ID in the data, specify the desired column name using the `int_id_column`
+the `transform()` method. To store this ID in the data, specify the desired column name using the `int_column`
 parameter.
 
 Document IDs are essential for tracking annotations linked to specific documents. They are also required for processes
@@ -31,7 +31,7 @@ columns, this transform can be used to generate them.
 | Output Column Name | Data Type | Description                                 |
 |--------------------|-----------|---------------------------------------------|
 | hash_column        | str       | Unique hash assigned to each document       |
-| int_id_column      | uint64    | Unique integer ID assigned to each document |
+| int_column      | uint64    | Unique integer ID assigned to each document |
 
 ## Configuration and Command Line Options
 
@@ -40,10 +40,10 @@ configuration for values are as follows:
 
 * _doc_column_ - specifies name of the column containing the document (required for ID generation)
 * _hash_column_ - specifies name of the column created to hold the string document id, if None, id is not generated
-* _int_id_column_ - specifies name of the column created to hold the integer document id, if None, id is not generated
+* _int_column_ - specifies name of the column created to hold the integer document id, if None, id is not generated
 * _start_id_ - an id from which ID generator starts () 
 
-At least one of _hash_column_ or _int_id_column_ must be specified.
+At least one of _hash_column_ or _int_column_ must be specified.
 
 ## Usage
 

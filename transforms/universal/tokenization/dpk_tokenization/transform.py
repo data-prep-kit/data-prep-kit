@@ -23,11 +23,7 @@ import os
 import pyarrow as pa
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
 from data_processing.utils import load_model
-from dpk_tokenization.utils import (
-    is_valid_argument_string,
-    split_text,
-    string_to_kwargs,
-)
+from dpk_tokenization.utils import is_valid_argument_string, split_text, string_to_kwargs
 
 
 CHUNK_CHECKPOINT_INTERVAL = 100
@@ -63,30 +59,20 @@ class TokenizationTransform(AbstractTableTransform):
         # overwrite tokenizer
         if self.tokenizer_args is not None:
             kwargs = string_to_kwargs(self.tokenizer_args)
-            self.tokenizer = load_model(
-                self.tokenizer,
-                "tokenizer",
-                os.environ.get("HF_READ_ACCESS_TOKEN"),
-                **kwargs,
-            )
+            self.tokenizer = load_model(self.tokenizer, 'tokenizer', os.environ.get("HF_READ_ACCESS_TOKEN"), **kwargs)
 
         else:
-            self.tokenizer = load_model(
-                self.tokenizer, "tokenizer", os.environ.get("HF_READ_ACCESS_TOKEN")
-            )
+            self.tokenizer = load_model(self.tokenizer, 'tokenizer', os.environ.get("HF_READ_ACCESS_TOKEN"))
 
-    def transform(
-        self, table: pa.Table, file_name: str = None
-    ) -> tuple[list[pa.Table], dict[str, Any]]:
+
+    def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
         """
         Put Transform-specific to convert one Table to 0 or more tables. It also returns
         a dictionary of execution statistics - arbitrary dictionary
         This implementation makes no modifications so effectively implements a copy of the
         input parquet to the output folder, without modification.
         """
-        self.logger.debug(
-            f"Transforming one table with {len(table)} rows using tokenizer {self.tokenizer}"
-        )
+        self.logger.debug(f"Transforming one table with {len(table)} rows using tokenizer {self.tokenizer}")
 
         # Tracking token count + document_id for non-empty row/doc:
         token_count = []
@@ -107,18 +93,12 @@ class TokenizationTransform(AbstractTableTransform):
             if type(doc_content) is list:
                 try:
                     try:
-                        doc_content = "\n\n".join(doc_content)
+                        doc_content='\n\n'.join(doc_content)
                     except TypeError as e:
-                        self.logger.warning(
-                            f"Using `{self.none_substitute}` When joining list at row {idx} due to: {e}"
-                        )
-                        doc_content = "\n\n".join(
-                            [str(s or self.none_substitute) for s in doc_content]
-                        )
+                        self.logger.warning(f"Using `{self.none_substitute}` When joining list at row {idx} due to: {e}")
+                        doc_content='\n\n'.join([str(s or self.none_substitute) for s in doc_content])
                 except Exception as ex:
-                    self.logger.error(
-                        f"Skipping -Failed in joining list at row {idx} in {file_name} due to: {ex}"
-                    )
+                    self.logger.error(f"Skipping -Failed in joining list at row {idx} in {file_name} due to: {ex}")
                     empty_doc_ids.append(doc_id)
                     continue
             doc_length = len(doc_content)
@@ -134,15 +114,11 @@ class TokenizationTransform(AbstractTableTransform):
                     start_time = time.time()
                     token_line = []
                     doc_len_so_far = 0
-                    for chunk_idx, chunk in enumerate(
-                        split_text(doc_content, self.chunk_size)
-                    ):
+                    for chunk_idx, chunk in enumerate(split_text(doc_content, self.chunk_size)):
                         token_line.extend(self.tokenizer(chunk)["input_ids"])
                         doc_len_so_far += len(chunk)
 
-                        if (chunk_idx + 1) % CHUNK_CHECKPOINT_INTERVAL == 0 or (
-                            doc_len_so_far == doc_length
-                        ):
+                        if (chunk_idx + 1) % CHUNK_CHECKPOINT_INTERVAL == 0 or (doc_len_so_far == doc_length):
                             elapse_time = int(time.time() - start_time)
                             self.logger.debug(
                                 f"row_idx: {idx:5,} "
@@ -155,9 +131,7 @@ class TokenizationTransform(AbstractTableTransform):
                     token_line = self.tokenizer(doc_content)["input_ids"]
             except Exception as e:
                 # skip failed row/doc, treat it as `empty` and move on:
-                self.logger.warning(
-                    f"Failed in tokenizing `{doc_content:.100}` due to:\n {e}"
-                )
+                self.logger.warning(f"Failed in tokenizing `{doc_content}` due to:\n {e}")
                 empty_doc_ids.append(doc_id)
                 continue
 
@@ -180,9 +154,7 @@ class TokenizationTransform(AbstractTableTransform):
                 "token_count": token_count,
             }
         )
-        self.logger.debug(
-            f"Done with the transformed table with {table.num_rows:,} rows"
-        )
+        self.logger.debug(f"Done with the transformed table with {table.num_rows:,} rows")
 
         metadata = {
             "num_files": 1,
@@ -293,9 +265,7 @@ class TokenizationTransformConfiguration(TransformConfiguration):
                 return False
 
         if args.tkn_doc_id_column is None or args.tkn_doc_content_column is None:
-            self.logger.error(
-                f"Values for `--tkn_doc_id_column` and `--tkn_doc_content_column` must be provided"
-            )
+            self.logger.error(f"Values for `--tkn_doc_id_column` and `--tkn_doc_content_column` must be provided")
             return False
 
         # For MVP1: only support english text:

@@ -54,7 +54,7 @@ archive1.zip		redp5110-ch1.pdf
 
 Next we run `docling2parquet` on the data in the `input` folder.
 ```shell
-python -m dpk_docling2parquet.runtime \
+python -m dpk_docling2parquet.transform_python \
     --data_local_config "{ 'input_folder': 'input', 'output_folder': 'output'}" \
     --data_files_to_use "['.pdf', '.zip']" 
 ```

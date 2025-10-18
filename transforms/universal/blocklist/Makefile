@@ -13,27 +13,7 @@ TRANSFORM_NAME=$(shell basename `pwd`)
 
 ################################################################################
 
-TRANSFORM_PYTHON_SRC="-m dpk_$(TRANSFORM_NAME).runtime"
-TRANSFORM_RAY_SRC="-m dpk_$(TRANSFORM_NAME).ray.runtime"
-
-run-cli-sample:
-	make venv
-	source venv/bin/activate && \
-	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
-             --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
-             --blocklist_blocked_domain_list_path "test-data/domains/arjel" \
-             --blocklist_annotation_column_name "blocklisted" \
-			 --blocklist_source_url_column_name "title"
-
-
-run-ray-cli-sample:
-	make venv
-	source venv/bin/activate && \
-	$(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.runtime \
-        --run_locally True \
-        --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
-        --blocklist_blocked_domain_list_path "test-data/domains/arjel" \
-        --blocklist_annotation_column_name "blocklisted" \
-		--blocklist_source_url_column_name "title" \
+TRANSFORM_PYTHON_SRC="-m dpk_$(TRANSFORM_NAME).transform_python"
+TRANSFORM_RAY_SRC="-m dpk_$(TRANSFORM_NAME).ray.transform"
 
 

@@ -4,7 +4,7 @@ Please see the set of
 [transform project conventions](../../README.md#transform-project-conventions)
 for details on general project conventions, transform configuration,
 testing and IDE set up.
-<p align="Left"> Note: In case, the tokenizer is not available for download without authentication users should login to their hugging face accounts, if promoted need to accept the terms & conditions (it is one time activity).
+<p align="Left"> Note: In case the tokenizer is not available for download without authentication, users should login to their Hugging Face accounts, and if promoted, they need to accept the terms & conditions (it is one time activity).
   refer: <a href="https://huggingface.co/bigcode/starcoder">bigcoder/starcoder</a> 
     <br>
 </p>

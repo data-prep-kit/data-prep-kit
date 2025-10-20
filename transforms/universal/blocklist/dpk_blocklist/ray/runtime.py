@@ -14,12 +14,12 @@
 from typing import Any
 
 from data_processing.data_access import DataAccessFactoryBase
+from data_processing.utils import get_logger
 from data_processing_ray.runtime.ray import (
     DefaultRayTransformRuntime,
     RayTransformLauncher,
-)
-from data_processing_ray.runtime.ray.runtime_configuration import (
     RayTransformRuntimeConfiguration,
+    Transform,
 )
 from dpk_blocklist.transform import (
     BlockListConfiguration,
@@ -32,50 +32,23 @@ from dpk_blocklist.transform import (
 from ray.actor import ActorHandle
 
 
-class Blocklist:
-    def __init__(self, **kwargs):
-        self.params = {}
-        for key in kwargs:
-            self.params[key] = kwargs[key]
-        # if input_folder and output_folder are specified, then assume it is represent data_local_config
-        try:
-            local_conf = {k: self.params[k] for k in ("input_folder", "output_folder")}
-            self.params["data_local_config"] = ParamsUtils.convert_to_ast(local_conf)
-            del self.params["input_folder"]
-            del self.params["output_folder"]
-        except:
-            pass
-        try:
-            worker_options = {k: self.params[k] for k in ("num_cpus", "memory")}
-            self.params["runtime_worker_options"] = ParamsUtils.convert_to_ast(worker_options)
-            del self.params["num_cpus"]
-            del self.params["memory"]
-        except:
-            pass
-
-    def transform(self):
-        sys.argv = ParamsUtils.dict_to_req(d=(self.params))
-        launcher = RayTransformLauncher(BlockListConfiguration())
-        return_code = launcher.launch()
-        return return_code
+logger = get_logger(__name__)
 
 
 class BlockListRuntime(DefaultRayTransformRuntime):
     """
-    BlockList runtime runtime support
+    BlockList runtime support
     """
 
     def __init__(self, params: dict[str, Any]):
         """
-        Create filter runtime
+        Create blocklist runtime
         :param params: parameters, that should include
-            ls_lang_column_key: name of the column with language
-            ls_allowed_langs_file_key: location of the allowed languages file
-            ls_known_selector: A flag on whether return rows with valid or invalid languages
+            blocked_domain_list_path_key: path to domain blocklist files
+            annotation_column_name_key: name of the annotation column
+            source_url_column_name_key: name of the source URL column
         """
         super().__init__(params)
-        from data_processing.utils import get_logger
-
         self.logger = get_logger(__name__)
 
     def get_transform_config(
@@ -84,13 +57,24 @@ class BlockListRuntime(DefaultRayTransformRuntime):
         statistics: ActorHandle,
         files: list[str],
     ) -> dict[str, Any]:
-
+        """
+        Set environment for blocklist execution
+        :param data_access_factory - data access factory
+        :param statistics - reference to the statistics object
+        :param files - list of files to process
+        :return: dictionary of blocklist init params
+        """
         return self.params
 
 
 class BlockListRayConfiguration(RayTransformRuntimeConfiguration):
     def __init__(self):
         super().__init__(transform_config=BlockListConfiguration(), runtime_class=BlockListRuntime)
+
+
+class Blocklist(Transform):
+    def __init__(self, **kwargs):
+        super().__init__(BlockListConfiguration(), **kwargs)
 
 
 if __name__ == "__main__":

@@ -11,25 +11,36 @@
 # limitations under the License.
 ################################################################################
 
-## Depricated code
-## Maintained for backwards compatibility with existing workflows
-import warnings
-
+from data_processing.runtime.pure_python import (
+    PythonTransformLauncher,
+    PythonTransformRuntimeConfiguration,
+    Transform,
+)
 from data_processing.utils import get_logger
+from dpk_blocklist.transform import BlockListConfiguration
+
+
 logger = get_logger(__name__)
 
 
-warnings.warn(
-    f"This module is deprecated and will be removed in a future version. Use python -m dpk_doc_id.ray.runtime to avoid disruption in the future.", 
-     DeprecationWarning, stacklevel=2
-    )
-logger.warning(
-    f"This module is deprecated and will be removed in a future version. Use python -m dpk_doc_id.ray.runtime to avoid disruption in the future."
-    )
-from dpk_doc_id.ray.runtime import DocIDRayTransformRuntimeConfiguration
-from data_processing_ray.runtime.ray import RayTransformLauncher
+class BlockListPythonTransformConfiguration(PythonTransformRuntimeConfiguration):
+    """
+    Implements the PythonTransformConfiguration for BlockList as required by the PythonTransformLauncher.
+    """
+
+    def __init__(self):
+        """
+        Initialization
+        """
+        super().__init__(transform_config=BlockListConfiguration())
+
+
+class Blocklist(Transform):
+    def __init__(self, **kwargs):
+        super().__init__(BlockListConfiguration(), **kwargs)
 
 
 if __name__ == "__main__":
-    launcher = RayTransformLauncher(DocIDRayTransformRuntimeConfiguration())
+    launcher = PythonTransformLauncher(BlockListPythonTransformConfiguration())
+    logger.info("Launching blocklist transform")
     launcher.launch()

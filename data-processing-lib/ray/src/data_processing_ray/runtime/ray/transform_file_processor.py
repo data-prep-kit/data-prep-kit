@@ -38,6 +38,10 @@ class RayTransformFileProcessor(AbstractTransformFileProcessor):
             transform_parameters=dict(params.get("transform_params", {})),
             is_folder=params.get("is_folder", False)
         )
+        # Add data access and statistics to the processor parameters
+        self.data_access = self.data_access_factory.create_data_access()
+        self.transform_params["data_access"] = self.data_access
+
         # Create statistics
         self.stats = params.get("statistics", None)
         if self.stats is None:

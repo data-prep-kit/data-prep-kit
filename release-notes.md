@@ -1,5 +1,20 @@
 # Data Prep Kit Release notes
 
+## Release 1.1.5 - 10/2/2025
+
+### Transforms
+
+1. Granite Docling Integration: Enabled document parsing via docling2parquet, with options for VLM pipeline compatibility.
+
+1. PII Redactor: Added support for cryptographic redaction.
+1. GneissWeb: Enhanced multithreading and optimized model loading for better performance.
+1. Filter Transform: Added safeguard to check if filter_criteria is None, preventing crashes when criteria are unset or empty.
+
+### General
+
+1. Python Multiprocessing: Introduced multiprocessing job support and resolved boto pickling errors for transform runtimes.
+
+
 ## Release 1.1.4 - 9/15/2025
 
 ### General

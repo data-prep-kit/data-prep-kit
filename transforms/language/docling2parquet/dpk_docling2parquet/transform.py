@@ -286,12 +286,12 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
                 # save_to_list_binary
                 with open(page_image_filename, "rb") as f:
                     data = f.read()
-                    image_binaries.append([data])
+                    image_binaries.append(data)
 
         logger.info(f"num image binaries: {len(image_binaries)}")
         return image_binaries
 
-    def _convert_picture_items(self, conv_res) -> list:
+    def _convert_picture_items(self, conv_res) -> (list, int):
         # Save images of figures
         image_binaries = []
         picture_counter = 0
@@ -306,9 +306,9 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
                     # save_to_list_binary
                     with open(element_image_filename, "rb") as f:
                         data = f.read()
-                        image_binaries.append([data])
+                        image_binaries.append(data)
 
-        return image_binaries
+        return image_binaries, picture_counter
 
     def _convert_docling2parquet(
         self, doc_filename: str, ext: str, content_bytes: bytes
@@ -337,11 +337,13 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
         num_doc_elements = len(doc.texts)
 
         image_bins = []
+        picture_counter = 0
         if self.generate_page_images:
             image_bins += self._convert_page_images(conv_res)
 
         if self.generate_picture_images:
-            image_bins += self._convert_picture_items(conv_res)
+            ib, picture_counter = self._convert_picture_items(conv_res)
+            image_bins += ib
 
         if self.pipeline == 'vlm':
             document_hash = conv_res.input.document_hash
@@ -367,6 +369,9 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
 
         if len(image_bins) > 0:
             file_data["image_bins"] = image_bins
+
+            if picture_counter > 0:
+                file_data["num_pictures"] = picture_counter
 
         return file_data
 

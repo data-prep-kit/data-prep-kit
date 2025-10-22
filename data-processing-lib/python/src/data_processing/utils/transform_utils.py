@@ -21,7 +21,12 @@ from typing import Any
 import mmh3
 import pyarrow as pa
 import pyarrow.parquet as pq
+import pyarrow.json as pj
+import zipfile
 
+
+from data_processing.utils import get_logger
+logger = get_logger(__name__)
 
 RANDOM_SEED = 42
 LOCAL_TO_DISK = 2
@@ -131,6 +136,46 @@ class TransformUtils:
             )
 
     @staticmethod
+    def convert_ndjson_to_arrow(data: bytes) -> pa.Table:
+        """
+        Convert ndjson byte array to table
+        :param data: byte array
+        :return: table or None if the conversion failed
+        """
+        try:
+            table = pj.read_json(io.BytesIO(data))
+        except Exception as e:
+            logger.error(f"Could not convert bytes from ndjson to pyarrow: {e}")
+            table = None
+        return table
+    
+
+    @staticmethod
+    def convert_zip_to_arrow(data: bytes) -> pa.Table:
+        """
+        Convert zip file byte array to table. Currently only supports ndjson zipped files
+        :param data: byte array
+        :return: table or None if the conversion failed
+        """
+        table = None
+        with zipfile.ZipFile(io.BytesIO(data)) as opened_zip:
+            zip_namelist = opened_zip.namelist()
+            for archive_filename in zip_namelist:
+                logger.debug(f"Processing archive {archive_filename} with extention {TransformUtils.get_file_extension(archive_filename)[1]}")
+                with opened_zip.open(archive_filename) as file:
+                    try:
+                        # Read the content of the file
+                        content_bytes = file.read()
+                        if TransformUtils.get_file_extension(archive_filename)[1] in [".ndjson", ".jsonl"]:
+                            x = TransformUtils.convert_ndjson_to_arrow(content_bytes)
+                            table =x if table is None else pa.concat_tables([table, x])
+                    except Exception as e:
+                        logger.error(f"Failed to read/convert {archive_filename}: {e}")
+                        return None
+        return table
+                    
+
+    @staticmethod
     def convert_binary_to_arrow(data: bytes, schema: pa.schema = None) -> pa.Table:
         """
         Convert byte array to table
@@ -138,9 +183,6 @@ class TransformUtils:
         :param schema: optional Arrow table schema used for reading table, default None
         :return: table or None if the conversion failed
         """
-        from data_processing.utils import get_logger
-
-        logger = get_logger(__name__)
         try:
             reader = pa.BufferReader(data)
             table = pq.read_table(reader, schema=schema)

@@ -306,9 +306,9 @@ class SimilarityTransformConfiguration(TransformConfiguration):
             transform_class=SimilarityTransform,
             remove_from_metadata=[ES_PWD_KEY],
         )
-        from data_processing.utils import get_logger
+        from data_processing.utils import get_dpk_logger
 
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
 
     def add_input_params(self, parser: ArgumentParser) -> None:

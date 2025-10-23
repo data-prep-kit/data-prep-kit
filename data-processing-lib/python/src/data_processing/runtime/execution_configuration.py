@@ -15,10 +15,10 @@ import argparse
 import ast
 import os
 
-from data_processing.utils import CLIArgumentProvider, ParamsUtils, get_logger
+from data_processing.utils import CLIArgumentProvider, ParamsUtils, get_dpk_logger
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 runtime_cli_prefix = "runtime_"

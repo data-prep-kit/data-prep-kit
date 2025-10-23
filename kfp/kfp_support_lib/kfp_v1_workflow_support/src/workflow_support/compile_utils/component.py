@@ -15,7 +15,7 @@ import json
 import os
 
 import kfp.dsl as dsl
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from kubernetes import client as k8s_client
 from kubernetes.client import (
     V1Affinity,
@@ -28,7 +28,7 @@ from kubernetes.client import (
 from runtime_utils import KFPUtils
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 # Default path for KFP component specification files
 DEFAULT_KFP_COMPONENT_SPEC_PATH = "../../../../kfp/kfp_ray_components/"

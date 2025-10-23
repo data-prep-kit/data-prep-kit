@@ -20,7 +20,7 @@ from dpk_fdedup.cluster_analysis.transform import (
     num_segments_key,
 )
 from data_processing.data_access import DataAccess
-from data_processing.utils import CLIArgumentProvider, get_logger
+from data_processing.utils import CLIArgumentProvider, get_dpk_logger
 from data_processing_ray.runtime.ray import (
     DefaultRayTransformRuntime,
     RayTransformLauncher,
@@ -28,7 +28,7 @@ from data_processing_ray.runtime.ray import (
 )
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class ClusterAnalysisRayRuntime(DefaultRayTransformRuntime):
@@ -38,7 +38,7 @@ class ClusterAnalysisRayRuntime(DefaultRayTransformRuntime):
 
     def __init__(self, params: dict[str, Any]):
         super().__init__(params=params)
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def get_folders(self, data_access: DataAccess) -> list[str]:
         """

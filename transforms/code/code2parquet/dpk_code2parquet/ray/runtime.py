@@ -17,7 +17,7 @@ from typing import Any
 
 import ray
 from data_processing.data_access import DataAccessFactoryBase
-from data_processing.utils import ParamsUtils, get_logger
+from data_processing.utils import ParamsUtils, get_dpk_logger
 from data_processing_ray.runtime.ray import (
     DefaultRayTransformRuntime,
     RayTransformLauncher,
@@ -86,9 +86,9 @@ class CodeToParquetRuntime(DefaultRayTransformRuntime):
             ingest_snapshot_key: snapshot
         """
         super().__init__(params)
-        from data_processing.utils import get_logger
+        from data_processing.utils import get_dpk_logger
 
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def get_transform_config(
         self,

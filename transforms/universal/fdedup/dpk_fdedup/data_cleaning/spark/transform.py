@@ -23,7 +23,7 @@ from dpk_fdedup.data_cleaning.transform import (
 )
 from data_processing.data_access import DataAccessFactoryBase
 from data_processing.transform import TransformStatistics
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from data_processing_spark.runtime.spark import (
     DefaultSparkTransformRuntime,
     SparkTransformLauncher,
@@ -31,7 +31,7 @@ from data_processing_spark.runtime.spark import (
 )
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class DataCleaningSparkRuntime(DefaultSparkTransformRuntime):
@@ -41,7 +41,7 @@ class DataCleaningSparkRuntime(DefaultSparkTransformRuntime):
 
     def __init__(self, params: dict[str, Any]):
         super().__init__(params=params)
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def get_transform_config(
         self, partition: int, data_access_factory: DataAccessFactoryBase, statistics: TransformStatistics

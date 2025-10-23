@@ -15,7 +15,7 @@ import os
 import gc
 import concurrent.futures
 from pathlib import Path
-from data_processing.utils import get_logger, TransformUtils
+from data_processing.utils import get_dpk_logger, TransformUtils
 
 
 class ParallelTransformsChain:
@@ -28,7 +28,7 @@ class ParallelTransformsChain:
         self.data_access = data_access
         self.transforms = transforms
         self.max_workers = max_workers
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def run(self):
         batches = list(self.data_access.get_batches_to_process())

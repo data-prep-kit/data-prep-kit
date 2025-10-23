@@ -92,9 +92,9 @@ class ProfilerRuntime(DefaultRayTransformRuntime):
         """
         super().__init__(params)
         self.aggregators = []
-        from data_processing.utils import get_logger
+        from data_processing.utils import get_dpk_logger
 
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def get_transform_config(
         self, data_access_factory: DataAccessFactoryBase, statistics: ActorHandle, files: list[str]

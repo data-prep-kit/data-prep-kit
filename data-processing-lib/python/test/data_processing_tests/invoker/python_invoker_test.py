@@ -14,10 +14,10 @@
 import os
 
 from data_processing.runtime.pure_python import execute_python_transform
-from data_processing.utils import TransformsConfiguration, get_logger
+from data_processing.utils import TransformsConfiguration, get_dpk_logger
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 def test_configuration():

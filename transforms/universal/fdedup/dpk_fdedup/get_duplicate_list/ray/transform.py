@@ -15,7 +15,7 @@ import os
 from typing import Any
 
 from data_processing.data_access import DataAccess
-from data_processing.utils import CLIArgumentProvider, get_logger
+from data_processing.utils import CLIArgumentProvider, get_dpk_logger
 from data_processing_ray.runtime.ray import (
     DefaultRayTransformRuntime,
     RayTransformLauncher,
@@ -27,7 +27,7 @@ from dpk_fdedup.get_duplicate_list.transform import (
 )
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class GetDuplicateListRayRuntime(DefaultRayTransformRuntime):
@@ -37,7 +37,7 @@ class GetDuplicateListRayRuntime(DefaultRayTransformRuntime):
 
     def __init__(self, params: dict[str, Any]):
         super().__init__(params=params)
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def get_folders(self, data_access: DataAccess) -> list[str]:
         """

@@ -15,11 +15,11 @@ import json
 import os
 from enum import Enum
 
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 
 
 default_configuration = f"{os.path.abspath(os.path.dirname(__file__))}/transform_configuration.json"
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 # Supported runtimes

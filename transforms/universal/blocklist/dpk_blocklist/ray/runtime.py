@@ -14,7 +14,7 @@
 from typing import Any
 
 from data_processing.data_access import DataAccessFactoryBase
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from data_processing_ray.runtime.ray import (
     DefaultRayTransformRuntime,
     RayTransformLauncher,
@@ -31,8 +31,7 @@ from dpk_blocklist.transform import (
 )
 from ray.actor import ActorHandle
 
-
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class BlockListRuntime(DefaultRayTransformRuntime):
@@ -49,7 +48,7 @@ class BlockListRuntime(DefaultRayTransformRuntime):
             source_url_column_name_key: name of the source URL column
         """
         super().__init__(params)
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def get_transform_config(
         self,

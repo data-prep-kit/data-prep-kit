@@ -17,7 +17,7 @@ import time
 from typing import Any
 
 from data_processing.data_access import DataAccess, DataAccessFactory
-from data_processing.utils import ParamsUtils, get_logger
+from data_processing.utils import ParamsUtils, get_dpk_logger
 from python_apiserver_client import KubeRayAPIs
 from python_apiserver_client.params import (
     DEFAULT_HEAD_START_PARAMS,
@@ -37,7 +37,7 @@ from runtime_utils import KFPUtils
 
 cli_prefix = "KFP"
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class RayRemoteJobs:

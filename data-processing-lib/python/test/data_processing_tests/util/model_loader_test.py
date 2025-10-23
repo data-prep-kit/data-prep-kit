@@ -15,10 +15,10 @@ import os
 import tempfile
 from pathlib import Path
 from transformers import AutoTokenizer
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from data_processing.utils import load_model
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 def test_load_hf():

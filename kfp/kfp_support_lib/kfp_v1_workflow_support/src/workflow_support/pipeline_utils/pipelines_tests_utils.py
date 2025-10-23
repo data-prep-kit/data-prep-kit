@@ -14,11 +14,11 @@
 import os
 import sys
 
-from data_processing.utils import get_logger, str2bool
+from data_processing.utils import get_dpk_logger, str2bool
 from workflow_support.pipeline_utils import PipelinesUtils
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 def run_test(pipeline_package_path: str, endpoint: str = "http://localhost:8080/", overwrite: bool = True):

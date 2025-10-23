@@ -152,8 +152,8 @@ class ProfilerTransformConfigurationBase(TransformConfiguration):
             name=short_name,
             transform_class=transform_class,
         )
-        from data_processing.utils import get_logger
-        self.logger = get_logger(__name__)
+        from data_processing.utils import get_dpk_logger
+        self.logger = get_dpk_logger()
         self.print_config = print_config
 
     def add_input_params(self, parser: ArgumentParser) -> None:

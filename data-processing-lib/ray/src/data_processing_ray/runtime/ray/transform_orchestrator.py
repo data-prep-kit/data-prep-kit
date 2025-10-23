@@ -42,10 +42,10 @@ def orchestrate(
     :return: 0 - success or 1 - failure
     """
 
-    from data_processing.utils import get_logger
+    from data_processing.utils import get_dpk_logger
     from ray.util.metrics import Gauge
 
-    logger = get_logger(__name__)
+    logger = get_dpk_logger()
     start_ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     start_time = time.time()
     logger.info(f"orchestrator started at {start_ts}")

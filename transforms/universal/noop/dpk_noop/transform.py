@@ -83,9 +83,9 @@ class NOOPTransformConfiguration(TransformConfiguration):
             transform_class=NOOPTransform,
             remove_from_metadata=[pwd_key],
         )
-        from data_processing.utils import get_logger
+        from data_processing.utils import get_dpk_logger
 
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def add_input_params(self, parser: ArgumentParser) -> None:
         """

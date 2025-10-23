@@ -223,13 +223,13 @@ from .transform import *
 import sys
 from dpk_digest.transform import DigestTransform
 from data_processing.transform import TransformConfiguration
-from data_processing.utils import ParamsUtils, CLIArgumentProvider, get_logger
+from data_processing.utils import ParamsUtils, CLIArgumentProvider, get_dpk_logger
 from argparse import ArgumentParser, Namespace
 from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.runtime.pure_python.runtime_configuration import (
     PythonTransformRuntimeConfiguration,)
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 class DigestConfiguration(TransformConfiguration):
     def __init__(self):
@@ -317,12 +317,12 @@ class Digest:
 ################################################################################
 import sys
 
-from data_processing.utils import ParamsUtils, get_logger
+from data_processing.utils import ParamsUtils, get_dpk_logger
 from data_processing_ray.runtime.ray import RayTransformLauncher
 from data_processing_ray.runtime.ray.runtime_configuration import RayTransformRuntimeConfiguration
 from dpk_digest.runtime import DigestConfiguration
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 class DigestRayRuntime(RayTransformRuntimeConfiguration):
 

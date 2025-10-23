@@ -20,10 +20,10 @@ from data_processing.runtime.pure_python import (
     orchestrate,
 )
 from data_processing.runtime.transform_launcher import AbstractTransformLauncher
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class PythonTransformLauncher(AbstractTransformLauncher):

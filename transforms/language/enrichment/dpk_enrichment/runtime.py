@@ -17,10 +17,10 @@ from data_processing.runtime.pure_python.runtime_configuration import (
 )
 
 from data_processing.transform import TransformConfiguration
-from data_processing.utils import get_logger, CLIArgumentProvider, UnrecoverableException, ParamsUtils
+from data_processing.utils import get_dpk_logger, CLIArgumentProvider, UnrecoverableException, ParamsUtils
 from dpk_enrichment.transform import EnrichmentTransform, get_transform_params, short_name
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 class EnrichmentConfiguration(TransformConfiguration):
     """
@@ -32,8 +32,8 @@ class EnrichmentConfiguration(TransformConfiguration):
             name=short_name,
             transform_class=EnrichmentTransform,
         )
-        from data_processing.utils import get_logger
-        self.logger = get_logger(__name__)
+        from data_processing.utils import get_dpk_logger
+        self.logger = get_dpk_logger()
 
     def add_input_params(self, parser: argparse.ArgumentParser) -> None:
         """

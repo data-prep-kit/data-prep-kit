@@ -15,10 +15,10 @@ import argparse
 from typing import Any
 
 from data_processing.runtime import TransformExecutionConfiguration, runtime_cli_prefix
-from data_processing.utils import CLIArgumentProvider, get_logger
+from data_processing.utils import CLIArgumentProvider, get_dpk_logger
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class SparkTransformExecutionConfiguration(TransformExecutionConfiguration):

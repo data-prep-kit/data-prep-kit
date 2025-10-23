@@ -20,10 +20,10 @@ import pyarrow
 #from data_access import DataAccess
 #from arrow_s3 import ArrowS3
 from data_processing.data_access import ArrowS3, DataAccess
-from data_processing.utils import DPKConfig, TransformUtils, get_logger
+from data_processing.utils import DPKConfig, TransformUtils, get_dpk_logger
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class DPKConfigS3(DPKConfig):

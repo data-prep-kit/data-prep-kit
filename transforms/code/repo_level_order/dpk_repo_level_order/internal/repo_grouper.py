@@ -17,7 +17,7 @@ from typing import List
 import pandas as pd
 import pyarrow as pa
 import ray
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 
 
 class GroupByRepo:
@@ -38,7 +38,7 @@ class GroupByRepo:
     ):
         self.repo_column_name = repo_column_name
         self.output_dir = output_dir
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
         self.data_access = data_access
         self.enable_superrows = True
         self.table_mapper = table_mapper

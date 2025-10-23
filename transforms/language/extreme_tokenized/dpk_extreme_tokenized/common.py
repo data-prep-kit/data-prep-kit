@@ -11,13 +11,13 @@
 # limitations under the License.
 ################################################################################
 
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 
 
 short_name = "et"
 cli_prefix = short_name + "_"
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 # TODO: these go away configuration keys
 contents_column_name_key = "contents_column_name"

@@ -17,10 +17,10 @@ import re
 import sys
 from typing import Any
 
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from python_apiserver_client.params import EnvVarFrom,EnvVarSource
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 S3_ACCESS_SECRET: str = "s3_access"
@@ -151,10 +151,10 @@ class KFPUtils:
         """
         import sys
 
-        from data_processing.utils import GB, get_logger
+        from data_processing.utils import GB, get_dpk_logger
         from runtime_utils import KFPUtils
 
-        logger = get_logger(__name__)
+        logger = get_dpk_logger()
 
         # convert input
         w_options = KFPUtils.load_from_json(worker_options.replace("'", '"'))

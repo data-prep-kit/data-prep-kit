@@ -11,7 +11,7 @@
 # limitations under the License.
 ################################################################################
 
-from data_processing.utils import CLIArgumentProvider, get_logger
+from data_processing.utils import CLIArgumentProvider, get_dpk_logger
 from data_processing_ray.runtime.ray.runtime_configuration import (
     RayTransformRuntimeConfiguration,
 )
@@ -19,7 +19,7 @@ from data_processing_ray.runtime.ray.transform_launcher import RayTransformLaunc
 from dpk_fdedup.signature_calc.transform import SignatureCalculationTransformConfiguration
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class SignatureCalculationRayTransformConfiguration(RayTransformRuntimeConfiguration):

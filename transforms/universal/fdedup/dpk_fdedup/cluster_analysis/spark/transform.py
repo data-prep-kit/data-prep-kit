@@ -20,7 +20,7 @@ from dpk_fdedup.cluster_analysis.transform import (
     num_segments_key,
 )
 from data_processing.data_access import DataAccess
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from data_processing_spark.runtime.spark import (
     DefaultSparkTransformRuntime,
     SparkTransformLauncher,
@@ -28,7 +28,7 @@ from data_processing_spark.runtime.spark import (
 )
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class ClusterAnalysisSparkRuntime(DefaultSparkTransformRuntime):
@@ -38,7 +38,7 @@ class ClusterAnalysisSparkRuntime(DefaultSparkTransformRuntime):
 
     def __init__(self, params: dict[str, Any]):
         super().__init__(params=params)
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def get_folders(self, data_access: DataAccess) -> list[str]:
         """

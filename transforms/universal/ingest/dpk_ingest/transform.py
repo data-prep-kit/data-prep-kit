@@ -13,7 +13,8 @@
 
 from argparse import ArgumentParser, Namespace
 from typing import Any
-
+import zipfile
+import io
 import pyarrow as pa
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
 from data_processing.utils import (
@@ -68,19 +69,19 @@ class IngestTransform(AbstractTableTransform):
         self.curr_file=file_name
         def _new_row(file_name, byte_array):
             import uuid
-            return pa.Table.from_pydict({
+            return pa.Table.from_pylist([{
                 'file_name': file_name,
-                'UUID': str(uuid.uuid4()),
+                'docuument_id': str(uuid.uuid4()),
                 'contents': byte_array 
-                })
+                }])
 
         if TransformUtils.get_file_extension(file_name)[1] == ".zip":
-            logger.debug(f"Iterating through zip file {file_name=} .")
+            logger.info(f"Iterating through zip file {file_name=} .")
             table = None
             with zipfile.ZipFile(io.BytesIO(byte_array)) as opened_zip:
                 zip_namelist = opened_zip.namelist()
                 for archive_doc_filename in zip_namelist:    
-                    logger.debug("Processing " f"{file_name}/{archive_doc_filename} ")
+                    logger.info("Processing " f"{file_name}/{archive_doc_filename} ")
                     with opened_zip.open(archive_doc_filename) as file:
                         try:
                             # Read the content of the file
@@ -91,21 +92,20 @@ class IngestTransform(AbstractTableTransform):
                                 table = pa.concat_tables([table, _new_row(f"{file_name}/{archive_doc_filename}", content_bytes)])
                         except Exception as e:
                             logger.error(f" skipping {archive_doc_filename} in {file_name} due to {str(e)}")
-                return [table], {}
+                return [(TransformUtils.convert_arrow_to_binary(table=table), ".parquet")], {}
 
         else:
             try:
                 if self.buffer is not None:
-                    logger.debug(f"Starting buffer with {file_name}")
+                    logger.debug(f"Added new row {file_name} to existing buffer buffer with {self.buffer.num_rows}")
                     self.buffer = pa.concat_tables([self.buffer, _new_row(file_name, byte_array)])
                 else:
-                    logger.debug(f"concatenating buffer with {self.buffer.num_rows} rows to table with {table.num_rows} rows")
+                    logger.debug(f"Starting buffer with {file_name}")
                     self.buffer = _new_row(file_name, byte_array)
                 ## Wait for flush when folder change before writing new parquet file
             except Exception as _:  # Can happen if schemas are different
                 # Raise unrecoverable error to stop the execution
                 logger.warning(f"table in {file_name} can't be merged with the buffer")
-                logger.warning(f"incoming table columns {table.schema.names} ")
                 logger.warning(f"buffer columns {self.buffer.schema.names}")
                 raise UnrecoverableException()
             return [], {}

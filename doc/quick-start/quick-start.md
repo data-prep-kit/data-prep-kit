@@ -62,7 +62,9 @@ python -m ipykernel install --user --name=data-prep-kit --display-name "dataprep
 
 ### Logging environment variables
 Data-prep-kit uses a single logger named `dpk` for all components. 
-- You can set its log level using the `DPK_LOG_LEVEL` environment variable. The default level is `INFO`.
+- You can set its log level using the `DPK_LOG_LEVEL` environment variable. The default level is `INFO`. The oter 
+possible values are defined in the `logging` module, see the 
+[standard logger levels and their applicability](https://docs.python.org/3/howto/logging.html#logging-basic-tutorial)
 - To store logs in a file, set the `DPK_LOG_FILE` environment variable to the desired file name. The default is `None`, 
 which means logs are not written to a file.
 - To propagate log messages to the `root` logger, set the `DPK_LOG_PROPAGATION` environment variable to `True`.

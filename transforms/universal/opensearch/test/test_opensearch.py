@@ -12,6 +12,7 @@
 ################################################################################
 from dpk_opensearch.transform import OpenSearchTransform
 from opensearchpy.exceptions import ConnectionError
+import pyarrow
 import pyarrow.parquet as pq
 import os
 import pytest
@@ -98,14 +99,22 @@ class TestOpenSearch:
         assert f"{self.x.index_name} created" in text
         assert f"Successfully indexed {tbl.num_rows} documents" in text
 
+    def add_filename_column(self, tbl: pyarrow.Table, filename: str) -> pyarrow.Table:
+        if filename_column_name_key not in tbl.schema.names:
+            # Add filename column to the schema
+            new_column = pyarrow.array([filename] * tbl.num_rows)
+            return tbl.append_column(filename_column_name_key, new_column)
+        return tbl
+
     @pytest.mark.parametrize("deletion_func", ["delete_docs_by_field_value", "delete_documents"])
     def test_delete_docs(self, deletion_func, caplog):
         tbl = pq.read_table(test_file)
+        filename = os.path.basename(test_file)
+        tbl = self.add_filename_column(tbl, filename)
         tbls, metadata = self.x.transform(tbl, test_file)
-        assert len(tbls) == 0 
-
-        filename = tbl[filename_column_name_key][0].as_py()
+        assert len(tbls) == 0
         assert metadata['rows_inserted'] == tbl.num_rows
+
         if deletion_func == "delete_documents":
             del_metadata = self.x.delete_documents([filename])
             assert del_metadata['deleted_count'] == 1
@@ -121,6 +130,8 @@ class TestOpenSearch:
     @pytest.mark.parametrize("deletion_func", ["delete_docs_by_field_value", "delete_documents"])
     def test_delete_nonexistent_docs(self, deletion_func, caplog):
         tbl = pq.read_table(test_file)
+        filename = os.path.basename(test_file)
+        tbl = self.add_filename_column(tbl, filename)
         _, metadata = self.x.transform(tbl, test_file)
         assert metadata['rows_inserted'] == tbl.num_rows
         if deletion_func == "delete_documents":
@@ -136,6 +147,8 @@ class TestOpenSearch:
 
     def test_delete_nonexistent_column(self, caplog):
         tbl = pq.read_table(test_file)
+        filename = os.path.basename(test_file)
+        tbl = self.add_filename_column(tbl, filename)
         _, metadata = self.x.transform(tbl, test_file)
         assert metadata['rows_inserted'] == tbl.num_rows
         assert (0 == self.x.delete_docs_by_field_value(field_name="nonexistent_column", value="nonexistent_file"))
@@ -144,6 +157,8 @@ class TestOpenSearch:
     @pytest.mark.parametrize("deletion_func", ["delete_docs_by_field_value", "delete_documents"])
     def test_delete_nonexistentent_index(self, deletion_func, caplog):
         tbl = pq.read_table(test_file)
+        filename = os.path.basename(test_file)
+        tbl = self.add_filename_column(tbl, filename)
         tbls, metadata = self.x.transform(tbl, test_file)
         assert len (tbls) == 0
         assert metadata['rows_inserted'] == tbl.num_rows
@@ -175,4 +190,3 @@ class TestOpenSearch:
         with pytest.raises(Exception):
             self.x.create_index(config)
         assert "resource_already_exists_exception" in caplog.text
-

@@ -21,7 +21,7 @@ from data_processing.utils import get_logger
 from dpk_ingest.transform import IngestTransformConfiguration
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class IngestPythonTransformConfiguration(PythonTransformRuntimeConfiguration):

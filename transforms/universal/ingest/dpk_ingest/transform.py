@@ -25,7 +25,7 @@ from data_processing.utils import (
 from data_processing.utils import TransformUtils, get_logger
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 shortname = "ingest"
 cli_prefix = f"{shortname}_"

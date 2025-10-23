@@ -103,11 +103,11 @@ class EdedupRayRuntime(DefaultRayTransformRuntime):
             hash_cpu - cpus per hash instance
             num_hashes - number of hashes
         """
-        from data_processing.utils import get_logger
+        from data_processing.utils import get_dpk_logger
 
         super().__init__(params)
         self.filters = []
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def get_transform_config(
         self, data_access_factory: DataAccessFactoryBase, statistics: ActorHandle, files: list[str]

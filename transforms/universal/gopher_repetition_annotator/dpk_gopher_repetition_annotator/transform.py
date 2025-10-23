@@ -19,7 +19,7 @@ import nltk
 import pyarrow as pa
 from data_processing.data_access import DataAccessFactory
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import CLIArgumentProvider, TransformUtils, get_logger, MultiLock
+from data_processing.utils import CLIArgumentProvider, TransformUtils, get_dpk_logger, MultiLock
 from typing import Any
 
 short_name = "gra"
@@ -184,7 +184,7 @@ class GopherRepetitionAnnotatorTransform(AbstractTableTransform):
         these will be provided by that class with help from the RayMutatingDriver.
         """
         super().__init__(config)
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
         self.contents_column_name = config.get(contents_column_name_key, contents_column_name_default)
         self.dup_line_frac_cname = config.get(dup_line_frac_cname_key, dup_line_frac_cname_default)
         self.dup_para_frac_cname = config.get(dup_para_frac_cname_key, dup_para_frac_cname_default)

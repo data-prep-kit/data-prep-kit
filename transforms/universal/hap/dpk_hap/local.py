@@ -15,8 +15,8 @@ import os
 from data_processing.data_access import DataAccessLocal
 from dpk_hap.transform import HAPTransform
 
-from data_processing.utils import get_logger
-logger = get_logger(__name__)
+from data_processing.utils import get_dpk_logger
+logger = get_dpk_logger()
 
 
 # create parameters

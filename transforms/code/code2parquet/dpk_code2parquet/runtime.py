@@ -19,7 +19,7 @@ from data_processing.runtime.pure_python import (
     PythonTransformRuntimeConfiguration,
     Transform,
 )
-from data_processing.utils import ParamsUtils, get_logger
+from data_processing.utils import ParamsUtils, get_dpk_logger
 from dpk_code2parquet.transform import (
     CodeToParquetTransform,
     CodeToParquetTransformConfiguration,
@@ -33,7 +33,7 @@ from dpk_code2parquet.transform import (
 )
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class CodeToParquetPythonConfiguration(PythonTransformRuntimeConfiguration):

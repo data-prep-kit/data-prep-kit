@@ -17,11 +17,11 @@ import nltk
 import pyarrow as pa
 from data_processing.data_access import DataAccessFactory
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import CLIArgumentProvider, TransformUtils, get_logger
+from data_processing.utils import CLIArgumentProvider, TransformUtils, get_dpk_logger
 from data_processing.utils.multilock import MultiLock
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 from typing import Any
 
 

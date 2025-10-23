@@ -21,7 +21,7 @@ from data_processing.transform import AbstractTableTransform, TransformConfigura
 from data_processing.utils import (
     CLIArgumentProvider,
     TransformUtils,
-    get_logger,
+    get_dpk_logger,
     str2bool,
 )
 from dpk_license_select.transformer import (
@@ -30,7 +30,7 @@ from dpk_license_select.transformer import (
 )
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 LICENSE_SELECT_PARAMS = "license_select_params"
 

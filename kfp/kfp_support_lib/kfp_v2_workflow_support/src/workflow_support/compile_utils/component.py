@@ -16,12 +16,12 @@ import os
 from typing import Dict
 
 import kfp.dsl as dsl
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 
 from kfp import kubernetes
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 RUN_NAME = "KFP_RUN_NAME"

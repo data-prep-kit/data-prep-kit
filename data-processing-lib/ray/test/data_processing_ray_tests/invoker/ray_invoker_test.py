@@ -13,11 +13,11 @@
 
 import os
 
-from data_processing.utils import ParamsUtils, TransformsConfiguration, get_logger
+from data_processing.utils import ParamsUtils, TransformsConfiguration, get_dpk_logger
 from data_processing_ray.runtime.ray import execute_ray_transform
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 def test_configuration():

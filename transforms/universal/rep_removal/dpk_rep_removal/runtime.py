@@ -14,13 +14,13 @@ import sys
 from psutil import cpu_count
 from dpk_rep_removal.transform import RepRemovalTransform
 from data_processing.transform import TransformConfiguration
-from data_processing.utils import ParamsUtils, CLIArgumentProvider, get_logger
+from data_processing.utils import ParamsUtils, CLIArgumentProvider, get_dpk_logger
 from argparse import ArgumentParser, Namespace
 from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.runtime.pure_python.runtime_configuration import (
     PythonTransformRuntimeConfiguration,)
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 # defaults - these are the values used
 cli_prefix = "rep_removal_"

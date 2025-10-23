@@ -14,11 +14,11 @@
 from typing import Any
 
 import pyarrow as pa
-from data_processing.utils import TransformUtils, get_logger
+from data_processing.utils import TransformUtils, get_dpk_logger
 from dpk_lang_id.lang_models import LangModel
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 def get_lang_ds_pa(

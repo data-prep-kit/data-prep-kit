@@ -19,7 +19,7 @@ from data_processing.runtime.pure_python.runtime_configuration import (
     PythonTransformRuntimeConfiguration,
 )
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import CLIArgumentProvider, ParamsUtils, get_logger
+from data_processing.utils import CLIArgumentProvider, ParamsUtils, get_dpk_logger
 from data_processing_ray.runtime.ray import RayTransformLauncher
 from data_processing_ray.runtime.ray.runtime_configuration import (
     RayTransformRuntimeConfiguration,
@@ -27,7 +27,7 @@ from data_processing_ray.runtime.ray.runtime_configuration import (
 from dpk_doc_chunk.transform import DocChunkTransformConfiguration
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class DocChunkRayTransformConfiguration(RayTransformRuntimeConfiguration):

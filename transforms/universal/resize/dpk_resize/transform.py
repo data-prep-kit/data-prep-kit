@@ -21,10 +21,10 @@ from data_processing.utils import (
     MB,
     CLIArgumentProvider,
     UnrecoverableException,
-    get_logger,
+    get_dpk_logger,
 )
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 max_rows_per_table_key = "max_rows_per_table"
 max_mbytes_per_table_key = "max_mbytes_per_table"

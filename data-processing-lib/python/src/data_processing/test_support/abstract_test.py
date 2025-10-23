@@ -18,10 +18,10 @@ from filecmp import dircmp
 
 import pyarrow as pa
 from data_processing.data_access import DataAccessLocal
-from data_processing.utils import TransformUtils, get_logger
+from data_processing.utils import TransformUtils, get_dpk_logger
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 _allowed_float_percent_diff = 0.01  # A number between 0 and 1.
 _percent_parquet_size_diff_allowed = 0.03  # 3% seems like the minimum, but somewhat arbitrary

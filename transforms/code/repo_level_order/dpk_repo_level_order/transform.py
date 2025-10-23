@@ -19,7 +19,7 @@ from typing import Any
 import pyarrow as pa
 from data_processing.data_access import DataAccessFactoryBase
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import CLIArgumentProvider, get_logger, str2bool
+from data_processing.utils import CLIArgumentProvider, get_dpk_logger, str2bool
 from data_processing_ray.runtime.ray import DefaultRayTransformRuntime, RayUtils
 from data_processing_ray.runtime.ray.runtime_configuration import (
     RayTransformRuntimeConfiguration,
@@ -103,9 +103,9 @@ class RepoLevelOrderTransform(AbstractTableTransform):
         # of RepoLevelOrderTransformConfiguration class
         super().__init__(config)
 
-        from data_processing.utils import get_logger
+        from data_processing.utils import get_dpk_logger
 
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
         self.config = config
         self.grouping_column = config.get(grouping_column_key, repo_column_default_value)
         store_params = config.get(store_params_key)
@@ -184,7 +184,7 @@ class RepoLevelOrderTransformConfiguration(TransformConfiguration):
             remove_from_metadata=[store_params_key],
         )
 
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def add_input_params(self, parser: ArgumentParser) -> None:
         """

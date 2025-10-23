@@ -19,8 +19,8 @@ from data_processing.test_support.transform import NOOPPythonTransformConfigurat
 from data_processing.utils import ParamsUtils
 from data_processing.utils import DPKConfig
 
-from data_processing.utils import get_logger
-logger = get_logger(__name__)
+from data_processing.utils import get_dpk_logger
+logger = get_dpk_logger()
 
 """
  see: https://stackoverflow.com/questions/55259371/pytest-testing-parser-error-unrecognised-arguments

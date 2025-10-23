@@ -16,7 +16,7 @@ import sys
 from typing import Any
 
 from data_processing.data_access import DataAccessFactoryBase
-from data_processing.utils import ParamsUtils, get_logger
+from data_processing.utils import ParamsUtils, get_dpk_logger
 from data_processing_ray.runtime.ray import RayTransformLauncher
 from data_processing_ray.runtime.ray import (
     DefaultRayTransformRuntime,
@@ -35,7 +35,7 @@ from dpk_proglang_select.transform import (
 from ray.actor import ActorHandle
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class ProgLangSelectRuntime(DefaultRayTransformRuntime):
@@ -52,9 +52,9 @@ class ProgLangSelectRuntime(DefaultRayTransformRuntime):
             ls_known_selector: A flag on whether return rows with valid or invalid languages
         """
         super().__init__(params)
-        from data_processing.utils import get_logger
+        from data_processing.utils import get_dpk_logger
 
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def get_transform_config(
         self,

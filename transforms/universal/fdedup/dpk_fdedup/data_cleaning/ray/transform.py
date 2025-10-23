@@ -24,7 +24,7 @@ from dpk_fdedup.data_cleaning.transform import (
     duplicate_list_location_key,
 )
 from data_processing.data_access import DataAccessFactoryBase
-from data_processing.utils import CLIArgumentProvider, get_logger
+from data_processing.utils import CLIArgumentProvider, get_dpk_logger
 from data_processing_ray.runtime.ray import (
     DefaultRayTransformRuntime,
     RayTransformLauncher,
@@ -35,7 +35,7 @@ from data_processing_ray.runtime.ray.runtime_configuration import (
 from ray.actor import ActorHandle
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class DataCleaningRayTransform(DataCleaningTransform):
@@ -75,9 +75,9 @@ class DataCleaningRuntime(DefaultRayTransformRuntime):
             ingest_snapshot_key: snapshot
         """
         super().__init__(params)
-        from data_processing.utils import get_logger
+        from data_processing.utils import get_dpk_logger
 
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def get_transform_config(
         self,

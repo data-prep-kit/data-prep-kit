@@ -10,12 +10,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ################################################################################
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from data_processing_spark.runtime.spark import SparkTransformLauncher, SparkTransformRuntimeConfiguration
 from dpk_resize.transform import ResizeTransformConfiguration
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class ResizeSparkTransformConfiguration(SparkTransformRuntimeConfiguration):

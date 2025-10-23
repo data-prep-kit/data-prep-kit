@@ -14,7 +14,7 @@
 import time
 
 import requests
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from python_apiserver_client.params import (
     Cluster,
     RayJobInfo,
@@ -27,7 +27,7 @@ from python_apiserver_client.params import (
 )
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 _headers = {"Content-Type": "application/json", "accept": "application/json"}

@@ -21,7 +21,7 @@ from typing import Any, Optional
 
 import pyarrow as pa
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import CLIArgumentProvider, TransformUtils, get_logger
+from data_processing.utils import CLIArgumentProvider, TransformUtils, get_dpk_logger
 from dpk_pii_redactor.pii_analyzer import PIIAnalyzerEngine
 from dpk_pii_redactor.pii_anonymizer import PIIAnonymizer
 
@@ -62,7 +62,7 @@ class PIIRedactorTransform(AbstractTableTransform):
     def __init__(self, config: dict):
         super().__init__(config)
 
-        self.log = get_logger(__name__)
+        self.log = get_dpk_logger()
         self.supported_entities = config.get(supported_entities_key, default_supported_entities)
         self.redaction_operator = config.get(redaction_operator_key, default_anonymizer_operator)
         self.doc_contents_key = config.get(doc_transformed_contents_key)

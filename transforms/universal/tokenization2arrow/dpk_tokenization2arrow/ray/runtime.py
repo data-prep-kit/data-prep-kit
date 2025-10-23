@@ -13,7 +13,7 @@
 
 import sys
 
-from data_processing.utils import ParamsUtils, get_logger
+from data_processing.utils import ParamsUtils, get_dpk_logger
 from data_processing_ray.runtime.ray import RayTransformLauncher
 from data_processing_ray.runtime.ray.runtime_configuration import (
     RayTransformRuntimeConfiguration,
@@ -21,7 +21,7 @@ from data_processing_ray.runtime.ray.runtime_configuration import (
 from dpk_tokenization2arrow.transform import Tokenization2ArrowTransformConfiguration
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class Tokenization2ArrowRayConfiguration(RayTransformRuntimeConfiguration):

@@ -62,10 +62,10 @@ class ProfilerRuntime(DefaultSparkTransformRuntime):
             aggregator_cpu - cpus per hash instance
             num_aggregators - number of aggregators
         """
-        from data_processing.utils import get_logger
+        from data_processing.utils import get_dpk_logger
         super().__init__(params=params)
         self.aggregator = None
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def get_transform_config(
             self, partition: int, data_access_factory: DataAccessFactoryBase, statistics: TransformStatistics

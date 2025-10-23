@@ -17,9 +17,9 @@ import pyarrow.parquet as pq
 import os
 import pytest
 
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 
-logger = get_logger(__name__)
+logger = get_dpk_logger(__name__)
 
 from dpk_opensearch.transform import (
     endpoint_cli_param, default_embeddings_column_name, index_cli_param, filename_column_name_key

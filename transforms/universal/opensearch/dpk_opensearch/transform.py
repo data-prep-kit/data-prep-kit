@@ -23,7 +23,7 @@ from opensearchpy import OpenSearch, helpers
 
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
 from data_processing.utils import CLIArgumentProvider
-from data_processing.utils import UnrecoverableException, get_logger
+from data_processing.utils import UnrecoverableException, get_dpk_logger
 from dpk_opensearch.sink_handler import SinkHandler
 
 # Suppress SSL warnings for self-signed certificates
@@ -93,7 +93,7 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
                 raise UnrecoverableException(f"Failed to create OpenSearch client due to {e}")
 
         super().__init__(config)
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger(__name__)
 
         x = config.get(endpoint_cli_param, default_endpoint).split(':')
 
@@ -361,7 +361,7 @@ class OpenSearchTransformConfiguration(TransformConfiguration):
             remove_from_metadata=[],
         )
 
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger(__name__)
 
     def add_input_params(self, parser: ArgumentParser) -> None:
         """

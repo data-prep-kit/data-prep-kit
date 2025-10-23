@@ -17,11 +17,11 @@ from data_processing.runtime.pure_python import (
     Transform,
 )
 
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from dpk_opensearch.transform import OpenSearchTransformConfiguration
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger(__name__)
 
 
 class OpenSearchPythonTransformConfiguration(PythonTransformRuntimeConfiguration):

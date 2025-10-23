@@ -40,12 +40,12 @@ from data_processing.runtime.pure_python.runtime_configuration import (
     PythonTransformRuntimeConfiguration,
 )
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import CLIArgumentProvider, get_logger, str2bool
+from data_processing.utils import CLIArgumentProvider, get_dpk_logger, str2bool
 import timeout_timer
 from scancode import api
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 logging.getLogger('bs4').setLevel(logging.ERROR)
 logging.getLogger('timeout_timer').setLevel(logging.ERROR)
 warnings.simplefilter('ignore', DeprecationWarning)

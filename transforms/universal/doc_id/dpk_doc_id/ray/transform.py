@@ -15,8 +15,8 @@
 ## Maintained for backwards compatibility with existing workflows
 import warnings
 
-from data_processing.utils import get_logger
-logger = get_logger(__name__)
+from data_processing.utils import get_dpk_logger
+logger = get_dpk_logger()
 
 
 warnings.warn(

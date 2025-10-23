@@ -32,7 +32,7 @@ import pyarrow as pa
 import tempfile
 import os
 from data_processing.transform import AbstractBinaryTransform, TransformConfiguration
-from data_processing.utils import TransformUtils, get_logger, str2bool
+from data_processing.utils import TransformUtils, get_dpk_logger, str2bool
 from data_processing.utils.cli_utils import CLIArgumentProvider
 from data_processing.utils.multilock import MultiLock
 from docling.backend.docling_parse_backend import DoclingParseDocumentBackend
@@ -55,8 +55,7 @@ from docling.models.base_ocr_model import OcrOptions
 from docling_core.types.doc import ImageRefMode, PictureItem, TableItem
 
 
-logger = get_logger(__name__)
-# logger = get_logger(__name__, level="DEBUG")
+logger = get_dpk_logger()
 
 shortname = "docling2parquet"
 cli_prefix = f"{shortname}_"

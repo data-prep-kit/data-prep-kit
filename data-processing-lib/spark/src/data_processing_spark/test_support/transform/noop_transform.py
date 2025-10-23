@@ -13,12 +13,12 @@
 from data_processing.test_support.transform.noop_transform import (
     NOOPTransformConfiguration,
 )
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from data_processing_spark.runtime.spark import SparkTransformLauncher
 from data_processing_spark.runtime.spark import SparkTransformRuntimeConfiguration
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class NOOPSparkTransformConfiguration(SparkTransformRuntimeConfiguration):

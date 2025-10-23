@@ -15,13 +15,13 @@ import datetime
 import time
 from typing import Any, Optional
 
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from kfp_server_api import models
 
 from kfp import Client
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class PipelinesUtils:

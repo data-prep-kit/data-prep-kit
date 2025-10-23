@@ -29,10 +29,10 @@ class AbstractTableTransform(AbstractBinaryTransform):
         """
         Initialize based on the dictionary of configuration information.
         """
-        from data_processing.utils import get_logger
+        from data_processing.utils import get_dpk_logger
 
         super().__init__(config)
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def transform_binary(self, file_name: str, byte_array: bytes) -> tuple[list[tuple[bytes, str]], dict[str, Any]]:
         """

@@ -24,7 +24,7 @@ from data_processing.utils import (
     CLIArgumentProvider,
     TransformUtils,
     UnrecoverableException,
-    get_logger,
+    get_dpk_logger,
     str2bool,
 )
 
@@ -52,7 +52,7 @@ class HashFilter:
         """
         initialize set of local hashes
         """
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
         self.actor_id = params.get("id", 1)
         data_access_factory = params.get("data_access_factory", None)
         if data_access_factory is None:
@@ -202,9 +202,9 @@ class EdedupTransformConfigurationBase(TransformConfiguration):
             name=short_name,
             transform_class=transform_class,
         )
-        from data_processing.utils import get_logger
+        from data_processing.utils import get_dpk_logger
 
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def add_input_params(self, parser: ArgumentParser) -> None:
         """

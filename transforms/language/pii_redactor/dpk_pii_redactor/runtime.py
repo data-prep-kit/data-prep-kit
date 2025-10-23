@@ -14,11 +14,11 @@ from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.runtime.pure_python.runtime_configuration import (
     PythonTransformRuntimeConfiguration,
 )
-from data_processing.utils import ParamsUtils, get_logger
+from data_processing.utils import ParamsUtils, get_dpk_logger
 from dpk_pii_redactor.transform import PIIRedactorTransformConfiguration
 
 
-log = get_logger(__name__)
+log = get_dpk_logger()
 
 
 class PIIRedactorPythonTransformConfiguration(PythonTransformRuntimeConfiguration):

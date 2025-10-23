@@ -22,7 +22,7 @@ from data_processing.runtime.pure_python.runtime_configuration import (
     PythonTransformRuntimeConfiguration,
 )
 from data_processing.transform import TransformConfiguration
-from data_processing.utils import CLIArgumentProvider, ParamsUtils, get_logger, str2bool
+from data_processing.utils import CLIArgumentProvider, ParamsUtils, get_dpk_logger, str2bool
 from dpk_readability.common import (
     automated_readability_index_textstat,
     cli_prefix,
@@ -47,7 +47,7 @@ from dpk_readability.common import (
 from dpk_readability.transform import ReadabilityTransform
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class ReadabilityTransformConfiguration(TransformConfiguration):

@@ -17,14 +17,14 @@ https://github.com/sahajsoft/pii-detection-and-anonymizer/blob/main/src/recogniz
 """
 from typing import List, Optional, Set, Tuple
 
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from flair.data import Sentence
 from flair.models import SequenceTagger
 from presidio_analyzer import AnalysisExplanation, EntityRecognizer, RecognizerResult
 from presidio_analyzer.nlp_engine import NlpArtifacts
 
 
-log = get_logger(__name__)
+log = get_dpk_logger()
 
 
 class FlairRecognizer(EntityRecognizer):

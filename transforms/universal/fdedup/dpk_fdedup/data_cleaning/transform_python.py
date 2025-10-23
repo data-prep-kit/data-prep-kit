@@ -28,10 +28,10 @@ from data_processing.runtime.pure_python.runtime_configuration import (
     PythonTransformRuntimeConfiguration,
 )
 from data_processing.transform import TransformStatistics
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class DataCleaningPythonRuntime(DefaultPythonTransformRuntime):
@@ -41,7 +41,7 @@ class DataCleaningPythonRuntime(DefaultPythonTransformRuntime):
 
     def __init__(self, params: dict[str, Any]):
         super().__init__(params=params)
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def get_transform_config(
         self, data_access_factory: DataAccessFactoryBase, statistics: TransformStatistics, files: list[str]

@@ -22,7 +22,7 @@ import warnings
 import pandas as pd
 import pyarrow as pa
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import TransformUtils, get_logger
+from data_processing.utils import TransformUtils, get_dpk_logger
 
 
 class BLOOMTransform(AbstractTableTransform):
@@ -83,7 +83,7 @@ class BLOOMTransform(AbstractTableTransform):
         return [out_table], metadata
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class BLOOMTransformConfiguration(TransformConfiguration):

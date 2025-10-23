@@ -17,11 +17,11 @@ from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.runtime.pure_python.runtime_configuration import (
     PythonTransformRuntimeConfiguration,
 )
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from dpk_web2parquet.config import Web2ParquetTransformConfiguration
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class Web2ParquetPythonTransformConfiguration(PythonTransformRuntimeConfiguration):

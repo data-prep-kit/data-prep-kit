@@ -12,7 +12,7 @@
 ################################################################################
 
 import sys, os
-from data_processing.utils import ParamsUtils, get_logger
+from data_processing.utils import ParamsUtils, get_dpk_logger
 from data_processing_ray.runtime.ray import RayTransformLauncher
 from data_processing_ray.runtime.ray.runtime_configuration import (
     RayTransformRuntimeConfiguration,
@@ -24,7 +24,7 @@ from dpk_doc_quality.transform import (
     text_lang_cli_param,
 )
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class DocQualityRayTransformConfiguration(RayTransformRuntimeConfiguration):

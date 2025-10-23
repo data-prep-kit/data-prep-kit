@@ -17,10 +17,10 @@ from functools import partial
 import pyarrow as pa
 import multiprocessing
 
-from data_processing.utils import TransformUtils, get_logger, load_model
+from data_processing.utils import TransformUtils, get_dpk_logger, load_model
 from dpk_gneissweb_classification.classification_models import ClassificationModel, FastTextModel
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 global_model: ClassificationModel = None
 

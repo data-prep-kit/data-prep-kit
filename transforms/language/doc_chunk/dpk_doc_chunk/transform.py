@@ -17,7 +17,7 @@ from typing import Any
 
 import pyarrow as pa
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import CLIArgumentProvider, TransformUtils, get_logger
+from data_processing.utils import CLIArgumentProvider, TransformUtils, get_dpk_logger
 from dpk_doc_chunk.chunkers import ChunkingExecutor, DLJsonChunker, LIMarkdown, LITokenTextSplitter
 
 
@@ -81,7 +81,7 @@ class DocChunkTransform(AbstractTableTransform):
         # Make sure that the param name corresponds to the name used in apply_input_params method
         # of DocChunkTransformConfiguration class
         super().__init__(config)
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
         self.chunking_type = config.get(chunking_type_key, default_chunking_type)
 
@@ -172,7 +172,7 @@ class DocChunkTransformConfiguration(TransformConfiguration):
             transform_class=DocChunkTransform,
         )
 
-        self.logger = get_logger(__name__ + "cfg")  # workaround issue #481
+        self.logger = get_dpk_logger() 
 
     def add_input_params(self, parser: ArgumentParser) -> None:
         """

@@ -12,7 +12,7 @@
 ################################################################################
 
 
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from data_processing_ray.runtime.ray import RayTransformLauncher
 from data_processing_ray.runtime.ray.runtime_configuration import (
     RayTransformRuntimeConfiguration,
@@ -21,7 +21,7 @@ from dpk_html2parquet.transform import Html2ParquetTransform, Html2ParquetTransf
 
 from ray.util.metrics import Counter, Gauge
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 class Html2ParquetRayTransform(Html2ParquetTransform):
     def __init__(self, config: dict):

@@ -18,9 +18,9 @@ import pandas as pd
 import pyarrow as pa
 import torch
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import GB, TransformUtils, get_logger, load_model
+from data_processing.utils import GB, TransformUtils, get_dpk_logger, load_model
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 device = "cuda:0" if torch.cuda.is_available() else "cpu"

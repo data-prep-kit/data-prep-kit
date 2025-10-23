@@ -20,10 +20,10 @@ from unittest.mock import patch
 import pyarrow
 import pytest
 from data_processing.data_access import DataAccessLocal, DataAccessFactory
-from data_processing.utils import GB, MB, get_logger
+from data_processing.utils import GB, MB, get_dpk_logger
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 def test_no_io_config():

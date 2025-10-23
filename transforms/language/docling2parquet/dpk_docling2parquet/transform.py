@@ -273,9 +273,10 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
         # This is implemented in the ray version
         pass
 
-    def _convert_page_images(self, conv_res) -> list:
+    def _convert_page_images(self, conv_res) -> (list, list):
         # Save page images
         image_binaries = []
+        orig_image_filepaths = []
         with tempfile.TemporaryDirectory() as temp_dir_path:
             for page_no, page in conv_res.document.pages.items():
                 page_no = page.page_no
@@ -287,13 +288,15 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
                 with open(page_image_filename, "rb") as f:
                     data = f.read()
                     image_binaries.append(data)
+                    orig_image_filepaths.append(page_image_filename)
 
         logger.info(f"num image binaries: {len(image_binaries)}")
-        return image_binaries
+        return image_binaries, orig_image_filepaths
 
-    def _convert_picture_items(self, conv_res) -> (list, int):
+    def _convert_picture_items(self, conv_res) -> (list, int, list):
         # Save images of figures
         image_binaries = []
+        orig_image_filepaths = []
         picture_counter = 0
         with tempfile.TemporaryDirectory() as temp_dir_path:
             for element, _level in conv_res.document.iterate_items():
@@ -307,8 +310,9 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
                     with open(element_image_filename, "rb") as f:
                         data = f.read()
                         image_binaries.append(data)
+                        orig_image_filepaths.append(element_image_filename)
 
-        return image_binaries, picture_counter
+        return image_binaries, picture_counter, orig_image_filepaths
 
     def _convert_docling2parquet(
         self, doc_filename: str, ext: str, content_bytes: bytes
@@ -337,13 +341,17 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
         num_doc_elements = len(doc.texts)
 
         image_bins = []
+        image_paths = []
         picture_counter = 0
         if self.generate_page_images:
-            image_bins += self._convert_page_images(conv_res)
+            ib, paths = self._convert_page_images(conv_res)
+            image_bins += ib
+            image_paths += paths
 
         if self.generate_picture_images:
-            ib, picture_counter = self._convert_picture_items(conv_res)
+            ib, picture_counter, paths = self._convert_picture_items(conv_res)
             image_bins += ib
+            image_paths += paths
 
         if self.pipeline == 'vlm':
             document_hash = conv_res.input.document_hash
@@ -369,10 +377,11 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
 
         if len(image_bins) > 0:
             file_data["image_bins"] = image_bins
+            file_data["orig_image_fpaths"] = image_paths
 
             if picture_counter > 0:
                 file_data["num_pictures"] = picture_counter
-
+                
         return file_data
 
     def _detect_mime(self, file_name: str, content_bytes: bytes) -> tuple[str|None, str]:

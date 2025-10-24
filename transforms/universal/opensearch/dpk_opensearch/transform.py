@@ -93,7 +93,7 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
                 raise UnrecoverableException(f"Failed to create OpenSearch client due to {e}")
 
         super().__init__(config)
-        self.logger = get_dpk_logger(__name__)
+        self.logger = get_dpk_logger()
 
         x = config.get(endpoint_cli_param, default_endpoint).split(':')
 
@@ -361,7 +361,7 @@ class OpenSearchTransformConfiguration(TransformConfiguration):
             remove_from_metadata=[],
         )
 
-        self.logger = get_dpk_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def add_input_params(self, parser: ArgumentParser) -> None:
         """

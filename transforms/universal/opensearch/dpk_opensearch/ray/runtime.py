@@ -20,7 +20,7 @@ from data_processing_ray.runtime.ray import (
 from dpk_opensearch.transform import OpenSearchTransformConfiguration
 
 
-logger = get_dpk_logger(__name__)
+logger = get_dpk_logger()
 
 
 class OpenSearchRayTransformConfiguration(RayTransformRuntimeConfiguration):

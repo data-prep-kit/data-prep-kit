@@ -427,8 +427,23 @@ class TestReadPyarrowTable(TestInit):
     table = pyarrow.Table.from_pydict(mapping=data, schema=schema)
 
     # Write the table to a parquet file
-    pq_file_path = os.path.join(os.sep, "tmp", "tst_file.parquet")
+    pq_file_path = os.path.join(os.sep, "tmp", "test_file.parquet")
     pyarrow.parquet.write_table(table, pq_file_path)
+
+    @pytest.mark.parametrize(
+        "path, expected_error",
+        [
+            ("non_existent_file.parquet", FileNotFoundError),
+            ("invalid_file.txt", IOError),
+            ("malformed_parquet.parquet", pyarrow.ArrowException),
+        ],
+    )
+    def test_error_handling(self, path, expected_error):
+        with patch("pyarrow.parquet.read_table") as mock_read_table:
+            mock_read_table.side_effect = expected_error
+            table, _ = self.dal.get_table(path)
+            assert table is None
+            assert mock_read_table.called_once_with(path)
 
     def test_successful_read(self):
         table, _ = self.dal.get_table(self.pq_file_path)

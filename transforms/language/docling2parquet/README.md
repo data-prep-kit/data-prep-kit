@@ -37,42 +37,49 @@ Please see the configuration section for specifying the input files.
 
 ## Output format
 
-The output table will contain following columns
+The output table will contain following columns*
 
-| output column name | data type | description |
-|-|-|-|
-| source_filename | string | the basename of the source archive or file |
-| filename | string | the basename of the document file |
-| contents | string | the content of the document |
-| document_id | string | the document id, a random uuid4  |
-| document_hash | string | the document hash of the input content |
-| ext | string | the detected file extension |
-| hash | string | the hash of the `contents` column |
-| size | string | the size of `contents` |
-| date_acquired | date | the date when the transform was executing |
-| num_pages | number | number of pages in the document |
-| num_tables | number | number of tables in the document |
-| num_doc_elements | number | number of document elements in the document |
-| document_convert_time | float | time taken to convert the document in seconds |
+| output column name    | data type | description                                                                |
+|-----------------------|-----------|----------------------------------------------------------------------------|
+| source_filename       | string    | the basename of the source archive or file                                 |
+| filename              | string    | the basename of the document file                                          |
+| contents              | string    | the content of the document                                                |
+| document_id           | string    | the document id, a random uuid4                                            |
+| document_hash         | string    | the document hash of the input content                                     |
+| ext                   | string    | the detected file extension                                                |
+| hash                  | string    | the hash of the `contents` column                                          |
+| size                  | string    | the size of `contents`                                                     |
+| date_acquired         | date      | the date when the transform was executing                                  |
+| num_pages             | number    | number of pages in the document                                            |
+| num_tables            | number    | number of tables in the document                                           |
+| num_doc_elements      | number    | number of document elements in the document                                |
+| document_convert_time | float     | time taken to convert the document in seconds                              |
+| *image_bins           | list      | list of image binaries extracted from pictures and/or pages                |
+| *orig_image_fpaths    | list      | list containing original images paths from extracted pictures and/or pages |
+| *num_pictures         | number    | number of pictures extracted from document                                 |
 
+<p>* columns only added with specific configuration parameters set for generating picture/page images</p> 
 
 ## Configuration
 
 The transform can be initialized with the following parameters.
 
-| Parameter  | Default  | Description  |
-|------------|----------|--------------|
-| `data_files_to_use`          | - | The files extensions to be considered when running the transform. Example value `['.pdf','.docx','.pptx','.zip']`. For all the supported input formats, see the section above. |
-| `batch_size`                 | -1 | Number of documents to be saved in the same result table. A value of -1 will generate one result file for each input file. |
-| `artifacts_path`             | <unset> | Path where to Docling models artifacts are located, if unset they will be downloaded and fetched from the [HF_HUB_CACHE](https://huggingface.co/docs/huggingface_hub/en/guides/manage-cache) folder. |
-| `contents_type`         | `text/markdown`        | The output type for the `contents` column. Valid types are `text/markdown`, `text/plain` and `application/json`. |
-| `do_table_structure`         | `True`        | If true, detected tables will be processed with the table structure model. |
-| `do_ocr`                     | `True`        | If true, optical character recognition (OCR) will be used to read the content of bitmap parts of the document. |
-| `ocr_engine`                 | `easyocr`     | The OCR engine to use. Valid values are `easyocr`, `tesseract`, `tesseract_cli`. |
-| `bitmap_area_threshold`      | `0.05`        | Threshold for running OCR on bitmap figures embedded in document. The threshold is computed as the fraction of the area covered by the bitmap, compared to the whole page area. |
-| `pdf_backend`                | `dlparse_v2`  | The PDF backend to use. Valid values are `dlparse_v2`, `dlparse_v1`, `pypdfium2`. |
-| `double_precision`           | `8`           | If set, all floating points (e.g. bounding boxes) are rounded to this precision. For tests it is advised to use 0. |
-
+| Parameter                 | Default         | Description                                                                                                                                                                                          |
+|---------------------------|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `data_files_to_use`       | -               | The files extensions to be considered when running the transform. Example value `['.pdf','.docx','.pptx','.zip']`. For all the supported input formats, see the section above.                       |
+| `batch_size`              | -1              | Number of documents to be saved in the same result table. A value of -1 will generate one result file for each input file.                                                                           |
+| `artifacts_path`          | <unset>         | Path where to Docling models artifacts are located, if unset they will be downloaded and fetched from the [HF_HUB_CACHE](https://huggingface.co/docs/huggingface_hub/en/guides/manage-cache) folder. |
+| `contents_type`           | `text/markdown` | The output type for the `contents` column. Valid types are `text/markdown`, `text/plain` and `application/json`.                                                                                     |
+| `do_table_structure`      | `True`          | If true, detected tables will be processed with the table structure model.                                                                                                                           |
+| `do_ocr`                  | `True`          | If true, optical character recognition (OCR) will be used to read the content of bitmap parts of the document.                                                                                       |
+| `ocr_engine`              | `easyocr`       | The OCR engine to use. Valid values are `easyocr`, `tesseract`, `tesseract_cli`.                                                                                                                     |
+| `bitmap_area_threshold`   | `0.05`          | Threshold for running OCR on bitmap figures embedded in document. The threshold is computed as the fraction of the area covered by the bitmap, compared to the whole page area.                      |
+| `pdf_backend`             | `dlparse_v2`    | The PDF backend to use. Valid values are `dlparse_v2`, `dlparse_v1`, `pypdfium2`.                                                                                                                    |
+| `double_precision`        | `8`             | If set, all floating points (e.g. bounding boxes) are rounded to this precision. For tests it is advised to use 0.                                                                                   |
+| `pipeline`                | `multi_stage`   | The pipeline to use - multi_stage or vlm (granite-docling)                                                                                                                                           |
+| `generate_picture_images` | `False`         | If true, generates image binaries for pictures extracted from the document.                                                                                                                          |
+| `generate_page_images`    | `False`         | If true, generates image binaries for each page of the document.                                                                                                                                     |
+| `images_scale`            | `2.0`           | sets the image resolution scale                                                                                                                                                                      |
 
 Example
 

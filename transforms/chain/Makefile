@@ -9,7 +9,6 @@ venv::
 	@# Help: Create the virtual environment using pyproject.toml
 	$(PYTHON) -m venv venv
 	source venv/bin/activate; \
-	$(PYTHON) -m pip install easyocr numpy<2.0.0; \
 	$(PYTHON) -m pip install -e $(REPOROOT)/data-processing-lib; \
 	$(PYTHON) -m pip install -e "$(REPOROOT)/transforms[lang_id, doc_quality, docling2parquet, doc_chunk]"; \
 	$(PYTHON) -m pip install -r $(REPOROOT)/transforms/language/lang_id/requirements.txt; \

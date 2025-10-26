@@ -51,6 +51,12 @@ class TestOpenSearch:
         self.x.drop_index()
         assert self.x.check_index() is False
 
+    @pytest.fixture(autouse=True)
+    def setup_logger(self, caplog):
+        logger.addHandler(caplog.handler)
+        yield
+        logger.removeHandler(caplog.handler)
+
     @pytest.mark.parametrize("apply_knn", [True, False])
     def test_upload(self, apply_knn, caplog):
         """

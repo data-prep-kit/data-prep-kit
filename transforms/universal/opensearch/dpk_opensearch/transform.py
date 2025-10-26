@@ -103,8 +103,8 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
         self.content_column = config.get(content_column_name_cli_param, default_content_column_name)
         self.dimension_size = config.get(dimension_size_cli_param)
         self.delete_index = config.get(delete_index_cli_param, default_delete_index)
-        self.verify_certs = config.get("verify_certs", False)
-        self.disable_security = config.get("disable_security", False)
+        self.verify_certs = config.get(verify_certs_cli_param, False)
+        self.disable_security = config.get(disable_security_cli_param, False)
         self.apply_knn = False
 
         self.host = x[0]

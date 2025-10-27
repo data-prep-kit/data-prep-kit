@@ -69,7 +69,8 @@ all = { file = [
 "universal/collapse/requirements.txt",
 "universal/blocklist/requirements.txt",
 "universal/fineweb_quality_annotator/requirements.txt",
-"universal/gopher_repetition_annotator/requirements.txt"
+"universal/gopher_repetition_annotator/requirements.txt",
+"universal/dom2parquet/requirements.txt"
 ]}
 
 language = { file = [
@@ -106,7 +107,8 @@ language = { file = [
 "universal/rep_removal/requirements.txt",
 "universal/tokenization2arrow/requirements.txt",
 "universal/collapse/requirements.txt",
-"universal/blocklist/requirements.txt"
+"universal/blocklist/requirements.txt",
+"universal/dom2parquet/requirements.txt"
 ]}
 
 code = { file = [
@@ -134,7 +136,8 @@ code = { file = [
 "universal/collapse/requirements.txt",
 "universal/blocklist/requirements.txt",
 "universal/fineweb_quality_annotator/requirements.txt",
-"universal/gopher_repetition_annotator/requirements.txt"
+"universal/gopher_repetition_annotator/requirements.txt",
+"universal/dom2parquet/requirements.txt"
 
 ]}
 
@@ -161,6 +164,7 @@ code2parquet = {file =  ["code/code2parquet/requirements.txt"]}
 malware = {file =  ["code/code2parquet/requirements.txt"]}
 code_profiler = { file = ["code/code_profiler/requirements.txt"]}
 repo_level_order = { file= ["code/repo_level_order/requirements.txt"]}
+dom2parquet = {file= ["universal/dom2parquet/requirements.txt"]}
 
 profiler = { file = ["universal/profiler/requirements.txt"]}
 resize = { file = ["universal/resize/requirements.txt"]}
@@ -232,6 +236,7 @@ dpk_code2parquet = "code/code2parquet/dpk_code2parquet"
 dpk_malware = "code/malware/dpk_malware"
 dpk_repo_level_order = "code/repo_level_order/dpk_repo_level_order"
 dpk_transform_chain = "chain/dpk_transform_chain"
+dpk_dom2parquet = "universal/dom2parquet/dpk_dom2parquet"
 
 [tool.setuptools.package-data]
 #"*" = ["*.txt"]

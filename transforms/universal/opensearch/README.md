@@ -5,8 +5,9 @@ for details on general project conventions, transform configuration,
 testing and IDE set up.
 
 ## Summary 
-The OpenSearch transform creates and inserts data into an index.
-If an embeddings column is present, a [k-NN vector index](https://docs.opensearch.org/latest/vector-search/creating-vector-index/) is created; otherwise, a regular index is used.
+The OpenSearch Transform takes a table and pushes its rows into an OpenSearch index. If the table includes a column with embeddings (i.e., lists of floats), the transform sets up a k-NN vector index so you can run similarity searches. If there’s no embeddings column, it just creates a regular keyword-based index.
+You can control the index name, document ID column, and which columns hold the content and embeddings. The transform also lets you delete an existing index before writing, and configure security settings depending on whether your OpenSearch server uses authentication and SSL.
+This transform is useful when you want to make your data searchable—either by keywords or by vector similarity—using OpenSearch.
 
 ## Output Format
 None

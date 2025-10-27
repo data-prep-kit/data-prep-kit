@@ -13,9 +13,9 @@
 import os
 import tempfile
 import shutil
-from data_processing.utils import ParamsUtils, get_logger
+from data_processing.utils import ParamsUtils, get_dpk_logger
 from data_processing.utils.model_loader_registry import MODEL_LOADERS
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 def load_model(model_path_or_url: str, model_type: str, token: str = None, **kwargs):

@@ -21,12 +21,12 @@ from data_processing.utils import (
     PipInstaller,
     TransformRuntime,
     TransformsConfiguration,
-    get_logger,
+    get_dpk_logger,
 )
 
 
 project = "https://github.com/data-prep-kit/data-prep-kit.git"
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 def _import_class(name):

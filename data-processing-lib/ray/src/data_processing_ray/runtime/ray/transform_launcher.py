@@ -18,7 +18,7 @@ import time
 import ray
 from data_processing.data_access import DataAccessFactory, DataAccessFactoryBase
 from data_processing.runtime.transform_launcher import AbstractTransformLauncher
-from data_processing.utils import get_logger, str2bool
+from data_processing.utils import get_dpk_logger, str2bool
 from data_processing_ray.runtime.ray import (
     RayTransformExecutionConfiguration,
     RayTransformRuntimeConfiguration,
@@ -26,7 +26,7 @@ from data_processing_ray.runtime.ray import (
 )
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class RayTransformLauncher(AbstractTransformLauncher):

@@ -13,14 +13,14 @@
 
 
 from data_processing.test_support.transform import NOOPTransformConfiguration
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from data_processing_ray.runtime.ray import (
     RayTransformLauncher,
     RayTransformRuntimeConfiguration,
 )
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class NOOPRayTransformConfiguration(RayTransformRuntimeConfiguration):

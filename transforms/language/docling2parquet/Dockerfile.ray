@@ -38,6 +38,21 @@ ENV PATH="/home/ray/.local/bin:${PATH}"
 
 # Download models
 RUN docling-tools models download layout tableformer picture_classifier easyocr
+#Models downloaded into: /home/ray/.cache/docling/models.
+#Docling can now be configured for running offline using the local artifacts.
+#Using the CLI: `docling --artifacts-path=/home/ray/.cache/docling/models FILE`
+
+
+##2025-09-28 05:15:02,587 - WARNING - Ignored error while writing commit hash to /home/ray/.cache/huggingface/hub/models--ds4sd--docling-layout-heron/refs/main: [Errno 13] Permission denied: '/home/ray/.cache/huggingface/hub/models--ds4sd--docling-layout-heron/refs/main'.
+##PermissionError: [Errno 13] Permission denied: '/home/ray/.cache/huggingface/hub/models--ds4sd--docling-layout-heron/blobs'
+# Fix permissions on huggingface cache for docling models
+# This is needed since the model download above seems to create files with wrong permission acceass on OCP.
+USER root
+RUN mkdir -p /home/ray/.cache/huggingface/hub/models--ds4sd--docling-layout-heron/blobs && \
+   mkdir -p /home/ray/.cache/huggingface/hub/models--ds4sd--docling-layout-heron/refs && \
+   chown -R ray:root /home/ray/.cache && \
+   chmod -R g=u /home/ray/.cache
+USER ray
 
 # Parallelism
 ENV OMP_NUM_THREADS=2

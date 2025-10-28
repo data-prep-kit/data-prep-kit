@@ -38,7 +38,7 @@ spec:
     - name: S3_BUCKET_PATH
       description: Bucket name or bucket name and path for the root S3 folder 
       type: string
-    - name: HTML_ZIP
+    - name: DOCLING_INPUT
       type: string
       description: The input folder for the docling transform
     - name: DOCLING_OUTPUT

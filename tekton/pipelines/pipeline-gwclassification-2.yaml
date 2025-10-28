@@ -9,7 +9,7 @@ spec:
     - name: S3_BUCKET_PATH
       description: Bucket name or bucket name and path for the root S3 folder (e.g.. bucket-wikimedia-1 or bucket-wikimedia-1/run1, etc) 
       type: string
-    - name: HTML_ZIP
+    - name: DOCLING_INPUT
       type: string
       description: The input folder for the docling transform
     - name: DOCLING_OUTPUT
@@ -45,8 +45,8 @@ spec:
       params:
         - name: S3_BUCKET_PATH
           value: "$(params.S3_BUCKET_PATH)"
-        - name: HTML_ZIP
-          value: "$(params.HTML_ZIP)"
+        - name: DOCLING_INPUT
+          value: "$(params.DOCLING_INPUT)"
         - name: DOCLING_OUTPUT
           value: "$(params.DOCLING_OUTPUT)"
     - name: execute-ededup-task

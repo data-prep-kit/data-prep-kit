@@ -5,7 +5,7 @@
 # Required env. variables:
 #
 # S3_BUCKET_PATH=bucket-wikimedia-1
-# HTML_ZIP=html_zip
+# DOCLING_INPUT=html_zip
 # DOCLING_OUTPUT=docling_md
 ###
 
@@ -46,7 +46,7 @@ spec:
         command: ["python","-m","dpk_docling2parquet.runtime"]
         args:
             - "--data_s3_config"
-            - "{'input_folder': '$S3_BUCKET_PATH/$HTML_ZIP', 'output_folder': '$S3_BUCKET_PATH/$DOCLING_OUTPUT'}"
+            - "{'input_folder': '$S3_BUCKET_PATH/$DOCLING_INPUT', 'output_folder': '$S3_BUCKET_PATH/$DOCLING_OUTPUT'}"
             - "--data_files_to_use"
             - "[ '.zip' ]" 
             - "--data_checkpointing"

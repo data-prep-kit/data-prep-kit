@@ -6,7 +6,7 @@ spec:
   params:
     - name: S3_BUCKET_PATH
       type: string
-    - name: HTML_ZIP
+    - name: DOCLING_INPUT
       type: string
     - name: DOCLING_OUTPUT
       type: string
@@ -19,8 +19,8 @@ spec:
       env:
         - name: S3_BUCKET_PATH
           value: $(params.S3_BUCKET_PATH)
-        - name: HTML_ZIP
-          value: $(params.HTML_ZIP)
+        - name: DOCLING_INPUT
+          value: $(params.DOCLING_INPUT)
         - name: DOCLING_OUTPUT
           value: $(params.DOCLING_OUTPUT)
 

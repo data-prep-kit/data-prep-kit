@@ -13,7 +13,7 @@ spec:
   params:
       - name: S3_BUCKET_PATH
         value: "bucket-wikimedia-1" 
-      - name: HTML_ZIP
+      - name: DOCLING_INPUT
         value: "html_zip"
       - name: DOCLING_OUTPUT
         value: "U_$UP/R_$RP/docling_md"  

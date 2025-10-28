@@ -17,7 +17,7 @@ from data_processing.runtime.pure_python import (
     PythonTransformRuntimeConfiguration,
     Transform,
 )
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from dpk_ingest.transform import IngestTransformConfiguration
 
 

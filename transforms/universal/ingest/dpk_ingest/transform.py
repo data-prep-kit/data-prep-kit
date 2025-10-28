@@ -20,9 +20,9 @@ from data_processing.transform import AbstractTableTransform, TransformConfigura
 from data_processing.utils import (
     CLIArgumentProvider,
     UnrecoverableException,
-    get_logger,
+    get_dpk_logger,
+    TransformUtils
 )
-from data_processing.utils import TransformUtils, get_logger
 
 
 logger = get_dpk_logger()
@@ -72,7 +72,7 @@ class IngestTransform(AbstractTableTransform):
             return pa.Table.from_pylist([{
                 'file_name': file_name,
                 'docuument_id': str(uuid.uuid4()),
-                'contents': byte_array 
+                'binary_contents': byte_array 
                 }])
 
         if TransformUtils.get_file_extension(file_name)[1] == ".zip":

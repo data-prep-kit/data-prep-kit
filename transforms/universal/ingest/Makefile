@@ -18,7 +18,14 @@ TRANSFORM_PYTHON_SRC="-m dpk_$(TRANSFORM_NAME).runtime"
 generate-expected:
 	$(MAKE) venv
 	source venv/bin/activate && \
-	DPK_DPK_RESIZE_TRANSFORM_LOG_LEVEL=DEBUG $(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
              --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'test-data/expected'}" \
 			 --data_files_to_use="['.txt','.zip']"
 
+
+generate-test:
+	$(MAKE) venv
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
+             --data_local_config "{ 'input_folder' : 'test-data/testin', 'output_folder' : 'test-data/testout'}" \
+			 --data_files_to_use="['.pdf']"

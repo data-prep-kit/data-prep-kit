@@ -22,7 +22,8 @@ from data_processing.utils import get_dpk_logger
 logger = get_dpk_logger()
 
 from dpk_opensearch.transform import (
-    endpoint_cli_param, default_embeddings_column_name, index_cli_param, filename_column_name_key
+    endpoint_cli_param, default_embeddings_column_name, index_cli_param, filename_column_name_key,
+    vector_method_cli_param, disable_security_cli_param
 )
 
 input_test_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "test-data", "input"))
@@ -35,12 +36,13 @@ class TestOpenSearch:
 #            pytest.skip("Skipping all tests running from github action")
 
         logger.info("Testing connection to OpenSearch")
+        vector_method = '{"name": "disk_ann", "engine": "jvector", "space_type": "l2", "parameters": {"m": 32, "ef_construction": 200}}'
         if method.__name__ == "test_index_name":
             from datetime import datetime
             index_name = f"dpk_test_{datetime.now().strftime('%y%m%d%H%M%S')}"
-            self.x = OpenSearchTransform(config={index_cli_param: index_name})
+            self.x = OpenSearchTransform(config={index_cli_param: index_name, vector_method_cli_param:vector_method})
         else:
-            self.x = OpenSearchTransform(config={endpoint_cli_param: 'localhost:9200'})
+            self.x = OpenSearchTransform(config={endpoint_cli_param: 'localhost:9200', vector_method_cli_param:vector_method})
         try:
             self.x.check_index()
         except ConnectionError:

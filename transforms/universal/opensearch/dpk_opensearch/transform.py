@@ -15,6 +15,7 @@ import pyarrow as pa
 from typing import Any, Dict
 import warnings
 import os
+import json
 from urllib3.exceptions import InsecureRequestWarning
 from argparse import ArgumentParser, Namespace
 from datetime import datetime, timezone
@@ -41,6 +42,7 @@ content_column_name_cli_param = f"{cli_prefix}content_column_name"
 delete_index_cli_param = f"{cli_prefix}delete_index"
 disable_security_cli_param = f"{cli_prefix}disable_security"
 verify_certs_cli_param = f"{cli_prefix}verify_certs"
+vector_method_cli_param = f"{cli_prefix}vector_method"
 
 default_endpoint = "localhost:9200"
 default_username = "admin"
@@ -105,7 +107,9 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
         self.delete_index = config.get(delete_index_cli_param, default_delete_index)
         self.verify_certs = config.get(verify_certs_cli_param, False)
         self.disable_security = config.get(disable_security_cli_param, False)
+        self.vector_method = config.get(vector_method_cli_param, None)
         self.apply_knn = False
+
 
         self.host = x[0]
         self.port = x[1] if len(x) > 1 else default_port
@@ -186,6 +190,8 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
                     }
                 }
             }
+            if self.vector_method:
+                index_body["mappings"]["properties"][self.embeddings_column]["method"] = json.loads(self.vector_method)
             return  index_body
         except Exception as e:
             self.logger.error(f"Failed to create knn index {self.index_name} configuration due to {e}")
@@ -423,7 +429,16 @@ class OpenSearchTransformConfiguration(TransformConfiguration):
         parser.add_argument(
             f"--{verify_certs_cli_param}",
             default=False,
+            required=False,
             help="If True, the OpenSearch client and server should use correct SSL certificates.",
+        )
+        parser.add_argument(
+            f"--{vector_method_cli_param}",
+            type=str,
+            required=False,
+            help=('Vector index method parameters. For knn vector, it can be missed, '
+                  'or see https://docs.opensearch.org/latest/mappings/supported-field-types/knn-methods-engines/'
+                  ' for jVector,we use {"name": "disk_ann", "engine": "jvector", "space_type": "l2", "parameters": {"m": 32, "ef_construction": 200}'),
         )
 
     def apply_input_params(self, args: Namespace) -> bool:

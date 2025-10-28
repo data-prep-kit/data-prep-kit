@@ -17,7 +17,7 @@ from typing import Any
 import pyarrow as pa
 from data_processing.data_access import DataAccessLocal
 from data_processing.transform import AbstractTableTransform
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from dpk_connector import crawl
 from dpk_web2parquet.utils import *
 
@@ -25,7 +25,7 @@ from dpk_web2parquet.utils import *
 
 user_agent = "Mozilla/5.0 (X11; Linux i686; rv:125.0) Gecko/20100101 Firefox/125.0"
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 class Web2ParquetTransform(AbstractTableTransform):
     """

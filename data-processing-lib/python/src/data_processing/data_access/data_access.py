@@ -15,7 +15,7 @@ from abc import ABC, abstractmethod
 import random
 from typing import Any
 import pyarrow as pa
-from data_processing.utils import KB, MB, GB, TransformUtils, get_logger
+from data_processing.utils import KB, MB, GB, TransformUtils, get_dpk_logger
 
 
 class DataAccess(ABC):
@@ -51,7 +51,7 @@ class DataAccess(ABC):
         self.files_to_checkpoint = files_to_checkpoint
         self.batch_size = batch_size
         self._files_cached = None  # records files to process for batching
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     @abstractmethod
     def get_output_folder(self) -> str:

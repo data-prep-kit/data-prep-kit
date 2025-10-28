@@ -16,12 +16,12 @@ import json
 from typing import Any, Optional
 
 import kfp_server_api
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 
 from kfp import Client
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class PipelinesUtils:

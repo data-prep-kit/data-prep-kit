@@ -19,7 +19,7 @@ from data_processing.runtime.pure_python import (
     PythonTransformRuntimeConfiguration,
     Transform,
 )
-from data_processing.utils import ParamsUtils, get_logger
+from data_processing.utils import ParamsUtils, get_dpk_logger
 from dpk_proglang_select.transform import (
     ProgLangSelectTransformConfiguration,
     lang_allowed_langs_file_key,
@@ -28,7 +28,7 @@ from dpk_proglang_select.transform import (
 )
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class ProgLangSelectPythonConfiguration(PythonTransformRuntimeConfiguration):

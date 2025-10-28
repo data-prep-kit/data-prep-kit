@@ -14,7 +14,7 @@ import time
 
 from data_processing.data_access import DataAccessFactory, DataAccessFactoryBase
 from data_processing.runtime.transform_launcher import AbstractTransformLauncher
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from data_processing_spark.runtime.spark import (
     SparkTransformExecutionConfiguration,
     orchestrate,
@@ -22,7 +22,7 @@ from data_processing_spark.runtime.spark import (
 from data_processing_spark.runtime.spark import SparkTransformRuntimeConfiguration
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class SparkTransformLauncher(AbstractTransformLauncher):

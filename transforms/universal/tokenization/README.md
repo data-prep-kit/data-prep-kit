@@ -1,5 +1,9 @@
 <p align="Left"> Distributed tokenization module for data sets using any Hugging Face compatible tokenizer.
-    <br> 
+    <br>
+     <br>
+    Note: In case the tokenizer is not available for download without authentication, users should login to their Hugging Face accounts, and if prompted, they need to accept the terms & conditions (it is one time activity).
+    refer: <a href="https://huggingface.co/bigcode/starcoder">bigcoder/starcoder</a> 
+    <br>
 </p>
 
 

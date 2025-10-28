@@ -17,7 +17,7 @@ import polars as pl
 import pyarrow as pa
 import textstat
 from data_processing.transform import AbstractTableTransform
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from dpk_readability.common import (
     automated_readability_index_textstat,
     coleman_liau_index_textstat,
@@ -39,7 +39,7 @@ from dpk_readability.common import (
 )
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class ReadabilityTransform(AbstractTableTransform):

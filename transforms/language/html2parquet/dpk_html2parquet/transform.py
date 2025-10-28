@@ -21,7 +21,7 @@ from typing import Any
 import pyarrow as pa
 import trafilatura
 from data_processing.transform import AbstractBinaryTransform, TransformConfiguration
-from data_processing.utils import CLIArgumentProvider, TransformUtils, get_logger
+from data_processing.utils import CLIArgumentProvider, TransformUtils, get_dpk_logger
 
 
 # disabled for now
@@ -157,7 +157,7 @@ class Html2ParquetTransform(AbstractBinaryTransform):
 
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 short_name = "html2parquet"
 cli_prefix = f"{short_name}_"

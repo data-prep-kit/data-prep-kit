@@ -17,7 +17,7 @@ from typing import Any
 
 import polars as pl
 from data_processing.transform import AbstractFolderTransform, TransformConfiguration
-from data_processing.utils import CLIArgumentProvider, TransformUtils, get_logger
+from data_processing.utils import CLIArgumentProvider, TransformUtils, get_dpk_logger
 
 
 short_name = "fdlist"
@@ -74,7 +74,7 @@ class GetDuplicateListTransform(AbstractFolderTransform):
         self.consolidated_filename = config.get(consolidated_filename_key, consolidated_filename_default)
         self.sort_output = config.get(sort_output_key, sort_output_default)
         self.data_access = config.get("data_access")
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def transform(self, folder_name: str) -> tuple[list[tuple[bytes, str]], dict[str, Any]]:
         self.logger.info(f"Get Duplicate List for folder {folder_name}")
@@ -134,7 +134,7 @@ class GetDuplicateListTransformConfiguration(TransformConfiguration):
             transform_class=GetDuplicateListTransform,
             remove_from_metadata=[],
         )
-        self.logger = get_logger(__name__, level="INFO")
+        self.logger = get_dpk_logger()
 
     def add_input_params(self, parser: ArgumentParser) -> None:
         """

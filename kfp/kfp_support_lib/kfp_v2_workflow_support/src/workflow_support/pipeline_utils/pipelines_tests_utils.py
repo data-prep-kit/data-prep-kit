@@ -14,12 +14,12 @@
 import os
 import sys
 
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 
 from . import PipelinesUtils
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 def run_test(pipeline_package_path: str, endpoint: str = "http://localhost:8080/"):

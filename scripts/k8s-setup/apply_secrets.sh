@@ -27,9 +27,9 @@ else
   metadata:
       name: s3-secret
   data:
-      S3_ENDPOINT: "${S3_ENDPOINT_BASE64}"
-      S3_ACCESS_KEY: "${S3_ACCESS_KEY_BASE64}"
-      S3_SECRET_KEY: "${S3_SECRET_KEY_BASE64}"
+      s3-endpoint: "${S3_ENDPOINT_BASE64}"
+      s3-key: "${S3_ACCESS_KEY_BASE64}"
+      s3-secret: "${S3_SECRET_KEY_BASE64}"
   kind: Secret
   type: Opaque
 EOF

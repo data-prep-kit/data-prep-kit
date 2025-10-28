@@ -35,6 +35,10 @@ The following command line arguments are available in addition to the options pr
                         environment variables must be defined.
   --os_verify_certs OS_VERIFY_CERTS
                         If True, the OpenSearch client and server should use correct SSL certificates
+  --vector_method_cli_param OS_VECTOR_METHOD
+                        Defines the vector storage parameters. For teh standard knn plugin, ,it can be None, or see
+                        the other options at https://docs.opensearch.org/latest/mappings/supported-field-types/knn-methods-engines/
+                        for jVector we use {"name": "disk_ann", "engine": "jvector", "space_type": "l2", "parameters": {"m": 32, "ef_construction": 200}}
 ```
 
 If the `os_disable_security` option is `False`, set OpenSearch credentials via the following environment 
@@ -71,3 +75,13 @@ docker-compose -f ./unsecured-docker-compose.yml up -d
 In this case, you don't need a username and a password to access the OpenSearch REST API or its dashboard.
 
 You can check the OpenSearch dashboard by logging into: http://localhost:5601/ after the server has started. 
+
+## Installation of jVector
+Unfortunately, the standard knn plugin and jVector plugin cannot coexist on the same OpenSearch server, therefore before 
+installation of jVector plugin the knn plugin should be removed, see https://github.com/opensearch-project/opensearch-jvector/blob/main/DEVELOPER_GUIDE.md#install-jvector-knn-within-your-existing-opensearch-cluster-installation
+- ssh to your Opensearch node
+- ./bin/opensearch-plugin remove opensearch-neural-search (opensearch-neural-search depends on opensearch-knn and prevents its removing)
+- ./bin/opensearch-plugin remove opensearch-knn
+- ./bin/opensearch-plugin install org.opensearch.plugin:opensearch-jvector-plugin:3.2.0.0 (the pligin version should much the Opensearch version up to the third digit)
+- exist from the Opensearch node, and restart it
+

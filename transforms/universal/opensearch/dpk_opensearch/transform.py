@@ -110,7 +110,6 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
         self.vector_method = config.get(vector_method_cli_param, None)
         self.apply_knn = False
 
-
         self.host = x[0]
         self.port = x[1] if len(x) > 1 else default_port
         set_client()
@@ -438,7 +437,7 @@ class OpenSearchTransformConfiguration(TransformConfiguration):
             required=False,
             help=('Vector index method parameters. For knn vector, it can be missed, '
                   'or see https://docs.opensearch.org/latest/mappings/supported-field-types/knn-methods-engines/'
-                  ' for jVector,we use {"name": "disk_ann", "engine": "jvector", "space_type": "l2", "parameters": {"m": 32, "ef_construction": 200}'),
+                  ' for jVector,we use {"name": "disk_ann", "engine": "jvector", "space_type": "l2", "parameters": {"m": 32, "ef_construction": 200}}'),
         )
 
     def apply_input_params(self, args: Namespace) -> bool:

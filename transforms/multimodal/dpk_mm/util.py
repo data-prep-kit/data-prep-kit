@@ -73,7 +73,7 @@ class Schema:
 
 from data_processing.utils import get_dpk_logger
 
-logger = get_logger(__file__)
+logger = get_dpk_logger()
 
 
 class JsonUtils:

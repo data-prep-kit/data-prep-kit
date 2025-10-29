@@ -10,7 +10,7 @@
 # limitations under the License.
 ################################################################################
 
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from data_processing_ray.runtime.ray import RayTransformLauncher
 from data_processing_ray.runtime.ray import (
     RayTransformRuntimeConfiguration,
@@ -18,7 +18,7 @@ from data_processing_ray.runtime.ray import (
 )
 from dpk_mm.nsfw.transform import NsfwTransformConfiguration
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class NsfwRayTransformConfiguration(RayTransformRuntimeConfiguration):

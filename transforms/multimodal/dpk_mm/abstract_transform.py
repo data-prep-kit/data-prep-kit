@@ -35,7 +35,7 @@ class AbstractMultimodalTransform(AbstractTableTransform):
         """
         """
         super().__init__(config)
-        from data_processing.utils import get_logger
+        from data_processing.utils import get_dpk_logger
         self.batch_size = config.get(batch_size_key,batch_size_default)
         self.logger = get_logger(__name__ + "transform")
 
@@ -298,7 +298,7 @@ class AbstractMultimodalTransformConfiguration(TransformConfiguration):
             transform_class=transform_class,
             remove_from_metadata=remove_from_metadata
         )
-        from data_processing.utils import get_logger
+        from data_processing.utils import get_dpk_logger
         self.cli_prefix = name + "_"
         self.logger = get_logger(__name__ + "config")
 

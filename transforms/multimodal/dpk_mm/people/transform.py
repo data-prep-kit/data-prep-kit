@@ -28,8 +28,8 @@ import time
 import random
 import os
 
-from data_processing.utils import get_logger
-logger = get_logger(__name__)
+from data_processing.utils import get_dpk_logger
+logger = get_dpk_logger()
 
 
 shortname = "people"

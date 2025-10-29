@@ -71,7 +71,7 @@ class Schema:
     }
 
 
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 
 logger = get_logger(__file__)
 

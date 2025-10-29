@@ -21,7 +21,7 @@ from data_processing.utils import ParamsUtils, get_logger
 from dpk_mm.faces.transform import FacesTransformConfiguration
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class FacesPythonTransformConfiguration(PythonTransformRuntimeConfiguration):

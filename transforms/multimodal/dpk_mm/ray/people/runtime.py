@@ -11,7 +11,7 @@
 ################################################################################
 import sys
 
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from data_processing_ray.runtime.ray import RayTransformLauncher
 from data_processing_ray.runtime.ray import (
     RayTransformRuntimeConfiguration,
@@ -20,7 +20,7 @@ from data_processing_ray.runtime.ray import (
 
 from dpk_mm.people.transform import PeopleTransformConfiguration
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class PeopleRayTransformConfiguration(RayTransformRuntimeConfiguration):

@@ -17,11 +17,11 @@ from data_processing.runtime.pure_python import (
     PythonTransformRuntimeConfiguration,
     Transform
 )
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from dpk_mm.nsfw.transform import NsfwTransformConfiguration
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class NsfwPythonTransformConfiguration(PythonTransformRuntimeConfiguration):

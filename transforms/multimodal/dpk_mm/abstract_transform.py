@@ -37,7 +37,7 @@ class AbstractMultimodalTransform(AbstractTableTransform):
         super().__init__(config)
         from data_processing.utils import get_dpk_logger
         self.batch_size = config.get(batch_size_key,batch_size_default)
-        self.logger = get_logger(__name__ + "transform")
+        self.logger = get_dpk_logger()
 
     def transform_binary(self, file_name: str, byte_array: bytes) -> tuple[list[tuple[bytes, str]], dict[str, Any]]:
         '''
@@ -300,7 +300,7 @@ class AbstractMultimodalTransformConfiguration(TransformConfiguration):
         )
         from data_processing.utils import get_dpk_logger
         self.cli_prefix = name + "_"
-        self.logger = get_logger(__name__ + "config")
+        self.logger = get_dpk_logger()
 
     def add_input_params(self, parser: ArgumentParser) -> None:
         """

@@ -1,6 +1,6 @@
 services:
   opensearch-node1:
-    image: opensearchproject/opensearch:latest
+    image: opensearchproject/opensearch:3.2.0
     container_name: opensearch-node1
     environment:
       - discovery.type=single-node
@@ -20,7 +20,7 @@ services:
       retries: 5
 
   opensearch-dashboards:
-    image: opensearchproject/opensearch-dashboards:latest
+    image: opensearchproject/opensearch-dashboards:3.2.0
     container_name: opensearch-dashboards
     ports:
       - 5601:5601

@@ -36,7 +36,7 @@ The following command line arguments are available in addition to the options pr
   --os_verify_certs OS_VERIFY_CERTS
                         If True, the OpenSearch client and server should use correct SSL certificates
   --vector_method_cli_param OS_VECTOR_METHOD
-                        Defines the vector storage parameters. For teh standard knn plugin, ,it can be None, or see
+                        Defines the vector storage parameters. For the standard knn plugin, ,it can be None, or see
                         the other options at https://docs.opensearch.org/latest/mappings/supported-field-types/knn-methods-engines/
                         for jVector we use {"name": "disk_ann", "engine": "jvector", "space_type": "l2", "parameters": {"m": 32, "ef_construction": 200}}
 ```
@@ -51,15 +51,12 @@ export OPENSEARCH_PASSWORD="Mypass1word"
 Please note that the password is the **same** password that you have set for the OpenSearch server (see below)
 # Local OpenSearch execution
 
-If you don't have an Openearch server, you can install it according to these [instructions](https://docs.opensearch.org/latest/install-and-configure/install-opensearch/index/). 
+If you don't have an OpenSearch server, you can install it according to these [instructions](https://docs.opensearch.org/latest/install-and-configure/install-opensearch/index/). 
 
 Probably, the simplest way is to execute OpenSearch in Docker containers:
 
 ```bash
-git clone   https://github.com/opensearch-project/opensearch-build
-export OPENSEARCH_INITIAL_ADMIN_PASSWORD=Mypass1word
-cd opensearch-build/docker/release/dockercomposefiles/
-docker-compose -f docker-compose-default.x.yml up -d 
+docker-compose -f docker-compose-default.3.2.0.yml up -d 
 ```
 
 Please note that the password has to contain at least 8 characters, including uppercase and lowercase letters, and a number. 
@@ -70,7 +67,7 @@ docker login docker.io -u yourdockerusername -p yourdockerpassword
 
 If you want, you can execute OpenSearch **without** security protections (developer, demo mode). The yml file below is provided in the DPK repo and is not in the `opensearch-build/docker/release/dockercomposefiles/` directory above. 
 ```bash
-docker-compose -f ./unsecured-docker-compose.yml up -d
+docker-compose -f ./unsecured-docker-compose.3.2.0.yml up -d
 ```
 In this case, you don't need a username and a password to access the OpenSearch REST API or its dashboard.
 

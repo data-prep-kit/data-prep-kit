@@ -79,9 +79,7 @@ jobs:
               run: |
                   export OPENSEARCH_INITIAL_ADMIN_PASSWORD=R_${RANDOM}_s_$(date +%s)
                   echo "OPENSEARCH_INITIAL_ADMIN_PASSWORD=$OPENSEARCH_INITIAL_ADMIN_PASSWORD" >> $GITHUB_ENV
-                  git clone https://github.com/opensearch-project/opensearch-build.git
-                  cd opensearch-build/docker/release/dockercomposefiles/
-                  docker compose -f docker-compose-default.x.yml up -d
+                  docker compose -f transforms/universal/opensearch/docker-compose-default.3.2.0.yml up -d
             - name: Sleep for 10 seconds
               run: sleep 10s
               shell: bash

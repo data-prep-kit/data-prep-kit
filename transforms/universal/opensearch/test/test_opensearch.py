@@ -10,12 +10,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ################################################################################
+import subprocess
+from contextlib import contextmanager
+import time
+
 from dpk_opensearch.transform import OpenSearchTransform
 from opensearchpy.exceptions import ConnectionError
 import pyarrow
 import pyarrow.parquet as pq
 import os
 import pytest
+import requests
+from requests.auth import HTTPBasicAuth
 
 from data_processing.utils import get_dpk_logger
 
@@ -29,6 +35,127 @@ from dpk_opensearch.transform import (
 input_test_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "test-data", "input"))
 test_file = os.path.join(input_test_dir, 'test1.parquet')
 
+# The configuration order is critical — the default configuration is expected to run first,
+# because the jVector setup depends on the plugin being deployed on the server,
+# which is handled in the _configure_opensearch method below.
+OPENSEARCH_CONFIGS = [
+    {"name": "default", "vector_method": '{}'},
+    {"name": "jvector", "vector_method": '{"name": "disk_ann", "engine": "jvector", "space_type": "l2", "parameters": {"m": 32, "ef_construction": 200}}'},
+]
+
+
+@contextmanager
+def _configure_opensearch(cfg):
+    """
+    Configures Opensearch server based on the vector name.
+    """
+    def run_subprocess(cmd_args):
+        try:
+            proc = subprocess.run(cmd_args,
+                check=True, input="y\n", capture_output=True, text=True
+            )
+            return proc
+        except Exception as e:
+            logger.error(f"Running subprocess failed with error: {e}")
+
+    def is_green_status():
+        """
+        Checks the status of the opensearch container.
+        Returns if status is green and False otherwise.
+        """
+
+
+        try:
+            pwd = os.getenv("OPENSEARCH_PASSWORD")
+        except KeyError as e:
+            logger.error(
+                f"Environment variable OPENSEARCH_PASSWORD must be define. Raising Exception: {e}")
+
+        url = "https://localhost:9200/_cluster/health"
+        params = {
+            "wait_for_status": "green",
+            "timeout": "60s"
+        }
+        auth = HTTPBasicAuth("admin", pwd)
+        try:
+            response = requests.get(url, params=params, auth=auth,
+                                    verify=False)
+            if response.status_code == 200:
+                data = response.json()
+                if "status" not in data:
+                    return False
+                return (data["status"] == "green")
+            return False
+        except Exception:
+            return False
+
+    def wait_for_healthy(timeout: float = 120.0, interval: float = 10.0) -> bool:
+        """
+        Polls until docker reports the container state is green.
+        Returns True on success, False on timeout.
+        """
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            is_green = is_green_status()
+            if is_green:
+                return True
+            time.sleep(interval)
+        return False
+
+    def get_opensearch_containers() -> list:
+        try:
+            pwd = os.getenv("OPENSEARCH_PASSWORD")
+        except KeyError as e:
+            logger.error(
+                f"Environment variable OPENSEARCH_PASSWORD must be define. Raising Exception: {e}")
+
+        auth = HTTPBasicAuth("admin", pwd)
+        params = {"h": "name"}  # Only return node names
+        url = "https://localhost:9200/_cat/nodes"
+
+        response = requests.get(url, params=params, auth=auth, verify=False)
+        response.raise_for_status()
+        # Split lines into a list of node names
+        return [name.strip() for name in response.text.splitlines() if name.strip()]
+
+
+
+    if cfg["name"] == "jvector":
+        containers = get_opensearch_containers()
+        for container in containers:
+            logger.info(f"starting jVector plugin configuration in {containers} container")
+            cmd = ("cd /usr/share/opensearch &&"
+                   "./bin/opensearch-plugin remove opensearch-neural-search && "
+                   "./bin/opensearch-plugin remove opensearch-knn && "
+                   "./bin/opensearch-plugin install --batch org.opensearch.plugin:opensearch-jvector-plugin:3.2.0.0")
+            proc = run_subprocess(["docker", "exec", container, "bash", "-c", cmd])
+            if proc.returncode != 0:
+                logger.error("Error in jVector plugin configuration")
+                raise RuntimeError
+
+            proc = run_subprocess(["docker", "restart", container])
+            if proc.returncode != 0:
+                logger.error("Error in restarting opensearch")
+                raise RuntimeError
+
+        wait_for_healthy(timeout=180, interval=5)
+
+    yield
+
+
+@pytest.fixture(scope="class", params=OPENSEARCH_CONFIGS, ids=lambda c: c["name"])
+def setup_env(request):
+    cfg = request.param
+    os.environ["VECTOR_METHOD"] = cfg["vector_method"]
+
+    with _configure_opensearch(cfg):
+        yield cfg  # make cfg available to tests
+
+    os.environ.pop("VECTOR_METHOD", None)
+
+
+
+@pytest.mark.usefixtures("setup_env")
 class TestOpenSearch:
     def setup_method(self, method):
         # do not run as part of a git action for now
@@ -36,13 +163,15 @@ class TestOpenSearch:
 #            pytest.skip("Skipping all tests running from github action")
 
         logger.info("Testing connection to OpenSearch")
-        vector_method = '{"name": "disk_ann", "engine": "jvector", "space_type": "l2", "parameters": {"m": 32, "ef_construction": 200}}'
+        config = {endpoint_cli_param: 'localhost:9200'}
+        vector_method = os.getenv("VECTOR_METHOD")
+        if vector_method != '{}':
+            config[vector_method_cli_param] = vector_method
         if method.__name__ == "test_index_name":
             from datetime import datetime
             index_name = f"dpk_test_{datetime.now().strftime('%y%m%d%H%M%S')}"
-            self.x = OpenSearchTransform(config={index_cli_param: index_name, vector_method_cli_param:vector_method})
-        else:
-            self.x = OpenSearchTransform(config={endpoint_cli_param: 'localhost:9200', vector_method_cli_param:vector_method})
+            config[index_cli_param] = index_name
+        self.x = OpenSearchTransform(config=config)
         try:
             self.x.check_index()
         except ConnectionError:
@@ -71,6 +200,7 @@ class TestOpenSearch:
         logger.info("Create index and confirm all rows are inserted")
         tbl = pq.read_table(test_file)
         if not apply_knn:
+            logger.info("apply_knn is True")
             tbl = tbl.drop(["embeddings"])
         _, metadata = self.x.transform(tbl, test_file)
         assert (metadata["rows_processed"] == tbl.num_rows)

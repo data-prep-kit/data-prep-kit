@@ -50,6 +50,7 @@ def _configure_opensearch(cfg):
     Configures Opensearch server based on the vector name.
     """
     def run_subprocess(cmd_args):
+        proc = None
         try:
             proc = subprocess.run(cmd_args,
                 check=True, input="y\n", capture_output=True, text=True
@@ -57,6 +58,7 @@ def _configure_opensearch(cfg):
             return proc
         except Exception as e:
             logger.error(f"Running subprocess failed with error: {e}")
+            logger.error(proc.stderr)
 
     def is_green_status():
         """

@@ -50,40 +50,40 @@ def _configure_opensearch(cfg):
     Configures Opensearch server based on the vector name.
     """
     def run_subprocess(cmd_args):
-        proc = None
         try:
             proc = subprocess.run(cmd_args,
-                check=True, input="y\n", text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+                check=True, input="y\n", capture_output=True, text=True
             )
             return proc
         except Exception as e:
             logger.error(f"Running subprocess failed with error: {e}")
-            logger.error(proc.stdout)
-            raise e
 
+    def perform_request(url: str, params: dict) -> requests.models.Response:
+        """
+        Perform http request and return the response.
+        """
+        try:
+            pwd = os.getenv("OPENSEARCH_PASSWORD")
+        except KeyError as e:
+            logger.error(
+                f"Environment variable OPENSEARCH_PASSWORD must be define. Raising Exception: {e}")
+        auth = HTTPBasicAuth("admin", pwd)
+        response = requests.get(url, params=params, auth=auth, verify=False)
+        response.raise_for_status()
+        return response
 
     def is_green_status():
         """
         Checks the status of the opensearch container.
         Returns if status is green and False otherwise.
         """
-
-
-        try:
-            pwd = os.getenv("OPENSEARCH_PASSWORD")
-        except KeyError as e:
-            logger.error(
-                f"Environment variable OPENSEARCH_PASSWORD must be define. Raising Exception: {e}")
-
         url = "https://localhost:9200/_cluster/health"
         params = {
             "wait_for_status": "green",
             "timeout": "60s"
         }
-        auth = HTTPBasicAuth("admin", pwd)
         try:
-            response = requests.get(url, params=params, auth=auth,
-                                    verify=False)
+            response = perform_request(url=url, params=params)
             if response.status_code == 200:
                 data = response.json()
                 if "status" not in data:
@@ -91,12 +91,13 @@ def _configure_opensearch(cfg):
                 return (data["status"] == "green")
             return False
         except Exception:
+            # the server might not be ready
             return False
 
     def wait_for_healthy(timeout: float = 120.0, interval: float = 10.0) -> bool:
         """
-        Polls until docker reports the container state is green.
-        Returns True on success, False on timeout.
+        Polls until the opensearch cluster is ready.
+        Returns True if successful; raises an exception if the timeout is exceeded.
         """
         deadline = time.time() + timeout
         while time.time() < deadline:
@@ -104,53 +105,38 @@ def _configure_opensearch(cfg):
             if is_green:
                 return True
             time.sleep(interval)
-        return False
+        logger.error("timeout waiting for opensearch server to be ready!")
+        raise RuntimeError
 
     def get_opensearch_containers() -> list:
-        try:
-            pwd = os.getenv("OPENSEARCH_PASSWORD")
-        except KeyError as e:
-            logger.error(
-                f"Environment variable OPENSEARCH_PASSWORD must be define. Raising Exception: {e}")
-
-        auth = HTTPBasicAuth("admin", pwd)
         params = {"h": "name"}  # Only return node names
         url = "https://localhost:9200/_cat/nodes"
-
-        response = requests.get(url, params=params, auth=auth, verify=False)
-        response.raise_for_status()
+        response = perform_request(url=url, params=params)
         # Split lines into a list of node names
         return [name.strip() for name in response.text.splitlines() if name.strip()]
 
+    def configure_opensearch_container(container: str) -> None:
+        cmd = ("cd /usr/share/opensearch && "
+               "./bin/opensearch-plugin remove opensearch-neural-search && "
+               "./bin/opensearch-plugin remove opensearch-knn && "
+               "./bin/opensearch-plugin install --batch org.opensearch.plugin:opensearch-jvector-plugin:3.2.0.0")
+        proc = run_subprocess(["docker", "exec", container, "bash", "-c", cmd])
+        if proc.returncode != 0:
+            logger.error("Error in jVector plugin configuration")
+            raise RuntimeError
 
+        proc = run_subprocess(["docker", "restart", container])
+        if proc.returncode != 0:
+            logger.error("Error in restarting opensearch")
+            raise RuntimeError
 
     if cfg["name"] == "jvector":
         containers = get_opensearch_containers()
         for container in containers:
-            logger.info(f"starting jVector plugin configuration in {containers} container")
-            cmd = ("cd /usr/share/opensearch && "
-                   "./bin/opensearch-plugin remove opensearch-neural-search && "
-                   "./bin/opensearch-plugin remove opensearch-knn && ")
-            proc = run_subprocess(["docker", "exec", container, "bash", "-c", cmd])
-            if proc.returncode != 0:
-                logger.error("Error in knn plugin uninstalling")
-                raise RuntimeError
-            proc = run_subprocess(["docker", "restart", container])
-            if proc.returncode != 0:
-                logger.error("Error in restarting opensearch")
-                raise RuntimeError
-            cmd =  ("cd /usr/share/opensearch &&  " 
-                     "./bin/opensearch-plugin install --batch org.opensearch.plugin:opensearch-jvector-plugin:3.2.0.0")
-            proc = run_subprocess(["docker", "exec", container, "bash", "-c", cmd])
-            if proc.returncode != 0:
-                logger.error("Error in jVector plugin installation")
-                raise RuntimeError
-            if proc.returncode != 0:
-                logger.error("Error in restarting opensearch")
-                raise RuntimeError
+            logger.info(f"Starting jVector plugin configuration in {container} container")
+            configure_opensearch_container(container)
 
-        wait_for_healthy(timeout=180, interval=5)
-
+    wait_for_healthy(timeout=180, interval=5)
     yield
 
 

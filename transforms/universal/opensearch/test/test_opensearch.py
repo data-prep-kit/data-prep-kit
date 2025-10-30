@@ -50,6 +50,7 @@ def _configure_opensearch(cfg):
     Configures Opensearch server based on the vector name.
     """
     def run_subprocess(cmd_args):
+        proc = None
         try:
             proc = subprocess.run(cmd_args,
                 check=True, input="y\n", capture_output=True, text=True
@@ -121,12 +122,12 @@ def _configure_opensearch(cfg):
                "./bin/opensearch-plugin remove opensearch-knn && "
                "./bin/opensearch-plugin install --batch org.opensearch.plugin:opensearch-jvector-plugin:3.2.0.0")
         proc = run_subprocess(["docker", "exec", container, "bash", "-c", cmd])
-        if proc.returncode != 0:
+        if proc is None or proc.returncode != 0:
             logger.error("Error in jVector plugin configuration")
             raise RuntimeError
 
         proc = run_subprocess(["docker", "restart", container])
-        if proc.returncode != 0:
+        if proc is None or proc.returncode != 0:
             logger.error("Error in restarting opensearch")
             raise RuntimeError
 
@@ -136,7 +137,7 @@ def _configure_opensearch(cfg):
             logger.info(f"Starting jVector plugin configuration in {container} container")
             configure_opensearch_container(container)
 
-    wait_for_healthy(timeout=180, interval=5)
+    wait_for_healthy(timeout=240, interval=5)
     yield
 
 

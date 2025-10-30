@@ -120,6 +120,7 @@ def _configure_opensearch(cfg):
         cmd = ("cd /usr/share/opensearch && "
                "./bin/opensearch-plugin remove opensearch-neural-search && "
                "./bin/opensearch-plugin remove opensearch-knn && "
+               "rm -rf /usr/share/opensearch/data/* && "
                "./bin/opensearch-plugin install --batch org.opensearch.plugin:opensearch-jvector-plugin:3.2.0.0")
         proc = run_subprocess(["docker", "exec", container, "bash", "-c", cmd])
         if proc is None or proc.returncode != 0:

@@ -53,12 +53,13 @@ def _configure_opensearch(cfg):
         proc = None
         try:
             proc = subprocess.run(cmd_args,
-                check=True, input="y\n", capture_output=True, text=True
+                check=True, input="y\n", capture_output=True, text=True, stderr=subprocess.STDOUT
             )
             return proc
         except Exception as e:
             logger.error(f"Running subprocess failed with error: {e}")
-            logger.error(proc.stderr)
+            logger.error(proc.stdout)
+
 
     def is_green_status():
         """

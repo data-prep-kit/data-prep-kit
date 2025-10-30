@@ -53,7 +53,7 @@ def _configure_opensearch(cfg):
         proc = None
         try:
             proc = subprocess.run(cmd_args,
-                check=True, input="y\n", capture_output=True, text=True, stderr=subprocess.STDOUT
+                check=True, input="y\n", text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
             )
             return proc
         except Exception as e:

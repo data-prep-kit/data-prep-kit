@@ -59,6 +59,7 @@ def _configure_opensearch(cfg):
         except Exception as e:
             logger.error(f"Running subprocess failed with error: {e}")
             logger.error(proc.stdout)
+            raise e
 
 
     def is_green_status():
@@ -127,16 +128,23 @@ def _configure_opensearch(cfg):
         containers = get_opensearch_containers()
         for container in containers:
             logger.info(f"starting jVector plugin configuration in {containers} container")
-            cmd = ("cd /usr/share/opensearch &&"
+            cmd = ("cd /usr/share/opensearch && "
                    "./bin/opensearch-plugin remove opensearch-neural-search && "
-                   "./bin/opensearch-plugin remove opensearch-knn && "
-                   "./bin/opensearch-plugin install --batch org.opensearch.plugin:opensearch-jvector-plugin:3.2.0.0")
+                   "./bin/opensearch-plugin remove opensearch-knn && ")
             proc = run_subprocess(["docker", "exec", container, "bash", "-c", cmd])
             if proc.returncode != 0:
-                logger.error("Error in jVector plugin configuration")
+                logger.error("Error in knn plugin uninstalling")
                 raise RuntimeError
-
             proc = run_subprocess(["docker", "restart", container])
+            if proc.returncode != 0:
+                logger.error("Error in restarting opensearch")
+                raise RuntimeError
+            cmd =  ("cd /usr/share/opensearch &&  " 
+                     "./bin/opensearch-plugin install --batch org.opensearch.plugin:opensearch-jvector-plugin:3.2.0.0")
+            proc = run_subprocess(["docker", "exec", container, "bash", "-c", cmd])
+            if proc.returncode != 0:
+                logger.error("Error in jVector plugin installation")
+                raise RuntimeError
             if proc.returncode != 0:
                 logger.error("Error in restarting opensearch")
                 raise RuntimeError

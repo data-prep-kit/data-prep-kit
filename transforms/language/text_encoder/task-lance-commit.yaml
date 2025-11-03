@@ -9,16 +9,16 @@ spec:
       type: string
     - name: LANCEDB_URI
       type: string
-    - name: LANCE_DATASET_URI
+    - name: LANCEDB_DATA_URI
       type: string
     - name: LANCEDB_TABLE_NAME
       type: string
-    - name: FRAGMENTS_JSON_FOLDER
+    - name: LANCEDB_FRAGMENTS_JSON_FOLDER
       type: string
-    - name: LANCEDB_TABLE_SCHEMA
+    - name: LANCEDB_TABLE_SCHEMA_FOLDER
       type: string
   workspaces:
-    - name: rayjobs
+    - name: jobs
       description: A workspace to mount the job YAML.
   steps:
     - name: run-lance-commit-job
@@ -28,19 +28,24 @@ spec:
           value: $(params.LANCEDB_STORAGE_TYPE)
         - name: LANCEDB_URI
           value: $(params.LANCEDB_URI)
-        - name: LANCE_DATASET_URI
-          value: $(params.LANCE_DATASET_URI)
+        - name: LANCEDB_DATA_URI
+          value: $(params.LANCEDB_DATA_URI)
         - name: LANCEDB_TABLE_NAME
           value: $(params.LANCEDB_TABLE_NAME)
-        - name: FRAGMENTS_JSON_FOLDER
-          value: $(params.FRAGMENTS_JSON_FOLDER)
-        - name: LANCEDB_TABLE_SCHEMA
-          value: $(params.LANCEDB_TABLE_SCHEMA)
+        - name: LANCEDB_FRAGMENTS_JSON_FOLDER
+          value: $(params.LANCEDB_FRAGMENTS_JSON_FOLDER)
+        - name: LANCEDB_TABLE_SCHEMA_FOLDER
+          value: $(params.LANCEDB_TABLE_SCHEMA_FOLDER)
       script: |
         #!/bin/sh
-        envsubst < /workspace/rayjobs/data-prep-kit/transforms/language/text_encoder/lance-commit-rayjob.yaml > /workspace/rayjobs/lance-commit-task.yaml
-        cat /workspace/rayjobs/lance-commit-task.yaml
-        kubectl apply -f /workspace/rayjobs/lance-commit-task.yaml
-        echo "Watiing for Kubernetes job/lance-commit-task to finish or timeout after 24h..."
-        kubectl wait --for=jsonpath='{.status.jobDeploymentStatus}'=Complete rayjob/rayjob-lance-commit --timeout=24h
-        echo "Kubernetes job/rayjob-lance-commit completed. Check log for completion status..."
+        JOBFILE=/workspace/jobs/data-prep-kit/transforms/language/text_encoder/lance-commit-rayjob.yaml
+        ##############################################################################
+        ## Most jobs follow the same pattern, so we can templatize this in the future
+        JOBNAME=`yq '.metadata.name' $JOBFILE`
+        TMPFILE=$(mktemp)
+        envsubst < "$JOBFILE" > "$TMPFILE"
+        cat "$TMPFILE" && kubectl apply -f "$TMPFILE"
+        echo "Watiing for Kubernetes rayjob/$JOBNAME to finish or timeout after 24h..."
+        kubectl wait --for=jsonpath='{.status.jobDeploymentStatus}'=Complete rayjob/$JOBNAME --timeout=24h
+        echo "Kubernetes rayjob/$JOBNAME completed. Check log for completion status..."
+        ##############################################################################

@@ -13,15 +13,22 @@
 
 import os
 import sys
+import shutil
 
 from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.utils import ParamsUtils
-from dpk_text_encoder.transform_python import TextEncoderPythonTransformConfiguration
+from dpk_text_encoder.transform import (
+    model_name_cli_param,
+    content_column_name_cli_param,
+    output_embeddings_column_name_cli_param,
+    embeddings_in_parquet_cli_param
+)
+from dpk_text_encoder.runtime import TextEncoderPythonTransformConfiguration
 
 
 # create parameters
-input_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "test-data", "input"))
-output_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "output"))
+input_folder = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "test-data", "input"))
+output_folder = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "output"))
 local_conf = {
     "input_folder": input_folder,
     "output_folder": output_folder,
@@ -34,11 +41,20 @@ params = {
     "runtime_pipeline_id": "pipeline_id",
     "runtime_job_id": "job_id",
     "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
+    "data_checkpointing": False,
     # text_encoder params
+    embeddings_in_parquet_cli_param: True,
+    model_name_cli_param: "ibm-granite/granite-embedding-small-english-r2",
+    content_column_name_cli_param: "contents",
+    output_embeddings_column_name_cli_param: "embeddings",
 }
 if __name__ == "__main__":
     # Set the simulated command line args
     sys.argv = ParamsUtils.dict_to_req(d=params)
+    # rm output_folder if exists already
+    if os.path.exists(output_folder):
+        shutil.rmtree(output_folder) 
+    os.makedirs(output_folder)
     # create launcher
     launcher = PythonTransformLauncher(runtime_config=TextEncoderPythonTransformConfiguration())
     # Launch the ray actor(s) to process the input

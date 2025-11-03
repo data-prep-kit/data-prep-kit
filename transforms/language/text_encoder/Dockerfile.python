@@ -1,14 +1,20 @@
-FROM docker.io/python:3.10.14-slim-bullseye
+FROM docker.io/python:3.12-slim
 
 RUN pip install --upgrade --no-cache-dir pip 
 
 # install pytest
 RUN pip install --no-cache-dir pytest
 
+RUN \
+    apt-get update \
+    # for opencv, towhee
+    && apt-get install -y libgl1 libglib2.0-0 curl vim wget \
+    && apt-get clean
+
 # Create a user and use it to run the transform
-RUN useradd -ms /bin/bash dpk
-USER dpk
+RUN useradd -d /home/dpk -ms /bin/bash -g root dpk
 WORKDIR /home/dpk
+USER dpk
 
 ARG PIP_INSTALL_EXTRA_ARGS
 ARG DPK_WHEEL_FILE_NAME
@@ -21,20 +27,25 @@ RUN  pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}
 # END OF STEPS destined for a data-prep-kit base image 
 
 COPY --chown=dpk:root dpk_text_encoder/ dpk_text_encoder/
+COPY --chown=dpk:root test-data/ test-data/
 COPY --chown=dpk:root requirements.txt requirements.txt
 RUN pip install ${PIP_INSTALL_EXTRA_ARGS} --no-cache-dir -r requirements.txt
 
 # Set environment
-ENV PYTHONPATH /home/dpk
+ENV PYTHONPATH=/home/dpk
+ENV PATH="/home/dpk/.local/bin:${PATH}" 
+ENV HOME=/home/dpk
 
 # Put these at the end since they seem to upset the docker cache.
 ARG BUILD_DATE
 ARG GIT_COMMIT
 ARG TRANSFORM_PATH
 ARG GIT_URL
-ENV GIT_URL $GIT_URL
-ENV TRANSFORM_PATH $TRANSFORM_PATH
-ENV BUILD_DATE $BUILD_DATE
-ENV GIT_COMMIT $GIT_COMMIT
+ENV GIT_URL=$GIT_URL
+ENV TRANSFORM_PATH=$TRANSFORM_PATH
+ENV BUILD_DATE=$BUILD_DATE
+ENV GIT_COMMIT=$GIT_COMMIT
 LABEL build-date=$BUILD_DATE
 LABEL git-commit=$GIT_COMMIT
+
+CMD ["/bin/bash"]

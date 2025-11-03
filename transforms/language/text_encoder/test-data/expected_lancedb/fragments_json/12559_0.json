@@ -1,0 +1,1 @@
+{"dataset": "test", "fragment": ["{\"id\": 0, \"files\": [{\"fields\": [0, 1, 2], \"column_indices\": [0, 1, 2], \"file_major_version\": 2, \"file_minor_version\": 0, \"file_size_bytes\": 81245, \"base_id\": null, \"path\": \"10000001100000011001010196ef934b1a9f0f7bb3a46cca63.lance\"}], \"physical_rows\": 15, \"deletion_file\": null, \"row_id_meta\": null}"]}

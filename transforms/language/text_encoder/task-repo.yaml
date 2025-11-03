@@ -3,8 +3,17 @@ kind: Task
 metadata:
   name: repo
 spec:
+  params:
+    - name: REPO_URL
+      type: string
+      default: https://github.com/klwuibm/data-prep-kit-pkg.git
+#      default: https://github.com/data-prep-kit/data-prep-kit.git
+    - name: REPO_BRANCH
+      type: string
+      default: "text_encoder"
+      # default: feature/tekton
   workspaces:
-    - name: rayjobs
+    - name: jobs
       description: A workspace to mount the job YAML.
   steps:
     - name: run-repo-job
@@ -12,7 +21,7 @@ spec:
       script: |
         #!/bin/sh
         df -h
-        git clone -b text_encoder --depth 1 https://github.com/klwuibm/data-prep-kit.git /workspace/rayjobs/data-prep-kit
+        git clone -b $(params.REPO_BRANCH)--depth 1 $(params.REPO_URL) /workspace/jobs/data-prep-kit
 
 
 

@@ -96,8 +96,8 @@ def commit_fragments(s3: fs.S3FileSystem, all_fragments_json: list, schema_folde
     print(f"lance commit successful.")
 
 def main(args):
-    lancedb_storage_type = args.lancedb_storage_type
-    if lancedb_storage_type == 's3':
+    lanceDB_storage_type = args.lanceDB_storage_type
+    if lanceDB_storage_type == 's3':
         s3_access_key=os.environ.get('S3_ACCESS_KEY')
         s3_secret_key=os.environ.get('S3_SECRET_KEY')
         s3_endpoint=os.environ.get('S3_ENDPOINT')
@@ -114,65 +114,69 @@ def main(args):
     else:
         s3 = fs.LocalFileSystem()
     # read in fragments json files
-    fragments_json_folder = args.fragments_json_folder
-    all_fragments_json = get_fragments_json(s3, fragments_json_folder)
-    lancedb_table_schema_folder = args.lancedb_table_schema_folder
-    lance_dataset_uri = args.lance_dataset_uri
-    commit_fragments(s3, all_fragments_json, lancedb_table_schema_folder, lance_dataset_uri)
+    lanceDB_fragments_json_folder = args.lanceDB_fragments_json_folder
+    all_fragments_json = get_fragments_json(s3, lanceDB_fragments_json_folder)
+    lanceDB_table_schema_folder = args.lanceDB_table_schema_folder
+    lanceDB_data_uri = args.lanceDB_data_uri
+    commit_fragments(s3, all_fragments_json, lanceDB_table_schema_folder, lanceDB_data_uri)
 
-    lancedb_uri = args.lancedb_uri
-    db = lancedb.connect(lancedb_uri)
-    table_name = args.lancedb_table_name
+    lanceDB_uri = args.lanceDB_uri
+    db = lancedb.connect(lanceDB_uri)
+    table_name = args.lanceDB_table_name
     table = db.open_table(table_name)
-    print(f"{lancedb_uri=}")
+    print(f"{lanceDB_uri=}")
     print(f"{table.count_rows()=}")
     print(f"lance completed the commit.")
-    sys.exit(0)
+    # sys.exit(0)
 
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Commit lance fragments written by parallel jobs into lancedb table.")
+def parse_args(args_list):
+    parser = argparse.ArgumentParser(description="Commit lance fragments written by parallel jobs into lanceDB table.")
     parser.add_argument(
-        f"--lancedb_storage_type",
+        f"--lanceDB_storage_type",
         type=str,
         required=False,
         default='local',
-        help="lancedb storage type: local or s3"
+        help="lanceDB storage type: local or s3"
     )
     parser.add_argument(
-        f"--lancedb_uri",
+        f"--lanceDB_uri",
         type=str,
         required=False,
-        default='/Users/kun-lungwu-m1/outer/text-encoder/data-prep-kit/transforms/language/text_encoder/output/test.db/',
-        help="lancedb uri, path to the lancedb uri, start with s3:// if it is a COS path"
+        default="",
+        help="lanceDB uri, path to the lanceDB uri, start with s3:// if it is a COS path"
     )
     parser.add_argument(
-        f"--lancedb_table_name",
+        f"--lanceDB_table_name",
         type=str,
         required=False,
         default="test",
-        help="lancedb table name"
+        help="lanceDB table name"
     )
     parser.add_argument(
-        f"--lance_dataset_uri",
+        f"--lanceDB_data_uri",
         type=str,
         required=False,
-        default="/Users/kun-lungwu-m1/outer/text-encoder/data-prep-kit/transforms/language/text_encoder/output/test.db/test.lance",
+        default="",
         help="lance dataset uri path to /table_name.lance"
     )
     parser.add_argument(
-        f"--fragments_json_folder",
+        f"--lanceDB_fragments_json_folder",
         type=str,
         required=False,
-        default="/Users/kun-lungwu-m1/outer/text-encoder/data-prep-kit/transforms/language/text_encoder/output/fragments_json/",
+        default="",
         help="folder path storing the fragments json files"
     )
     parser.add_argument(
-        f"--lancedb_table_schema_folder",
+        f"--lanceDB_table_schema_folder",
         type=str,
         required=False,
-        default="/Users/kun-lungwu-m1/outer/text-encoder/data-prep-kit/transforms/language/text_encoder/output/",
-        help="folder path storing empty output parquet with lancedb table schema"
+        default="",
+        help="folder path storing empty output parquet with lanceDB table schema"
     )
-    args = parser.parse_args()
-    main(args)
+    return parser.parse_args(args_list)
+
+if __name__ == "__main__":
+    import sys
+    # When run from the command line, it uses sys.argv[1:]
+    parsed_args = parse_args(sys.argv[1:]) 
+    main(parsed_args)

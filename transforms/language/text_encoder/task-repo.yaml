@@ -6,7 +6,7 @@ spec:
   params:
     - name: REPO_URL
       type: string
-      default: https://github.com/klwuibm/data-prep-kit-pkg.git
+      default: https://github.com/klwuibm/data-prep-kit.git
 #      default: https://github.com/data-prep-kit/data-prep-kit.git
     - name: REPO_BRANCH
       type: string

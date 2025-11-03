@@ -7,10 +7,9 @@ spec:
     - name: REPO_URL
       type: string
       default: https://github.com/klwuibm/data-prep-kit.git
-#      default: https://github.com/data-prep-kit/data-prep-kit.git
     - name: REPO_BRANCH
       type: string
-      default: "text_encoder"
+      default: text_encoder
       # default: feature/tekton
   workspaces:
     - name: jobs
@@ -21,7 +20,7 @@ spec:
       script: |
         #!/bin/sh
         df -h
-        git clone -b $(params.REPO_BRANCH) --depth 1 $(params.REPO_URL) /workspace/jobs/data-prep-kit
+        git clone -b "$(params.REPO_BRANCH)" --depth 1 "$(params.REPO_URL)" /workspace/jobs/data-prep-kit
 
 
 

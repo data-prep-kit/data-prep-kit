@@ -21,7 +21,7 @@ spec:
       script: |
         #!/bin/sh
         df -h
-        git clone -b $(params.REPO_BRANCH)--depth 1 $(params.REPO_URL) /workspace/jobs/data-prep-kit
+        git clone -b $(params.REPO_BRANCH) --depth 1 $(params.REPO_URL) /workspace/jobs/data-prep-kit
 
 
 

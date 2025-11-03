@@ -20,7 +20,14 @@ spec:
       script: |
         #!/bin/sh
         df -h
-        git clone -b "$(params.REPO_BRANCH)" --depth 1 "$(params.REPO_URL)" /workspace/jobs/data-prep-kit
+        REPO_URL_VAR="$(params.REPO_URL)"
+        REPO_BRANCH_VAR="$(params.REPO_BRANCH)"
+        TARGET_DIR="/workspace/jobs/data-prep-kit"
+
+        echo "Cloning branch: $REPO_BRANCH_VAR from URL: $REPO_URL_VAR to $TARGET_DIR"
+        
+        # Use the local shell variables, which the shell understands perfectly.
+        git clone -b "${REPO_BRANCH_VAR}" --depth 1 "${REPO_URL_VAR}" "${TARGET_DIR}"
 
 
 

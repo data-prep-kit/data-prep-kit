@@ -12,9 +12,9 @@ spec:
     pipeline: "24h"  # Set to 0 to disable timeout
   params:
       - name: TEXT_ENCODER_LANCEDB_DATA_URI
-        value: "s3://bucket-wikimedia-1/bucket-wikimedia-1/DPK_tests/text_encoder/tekton_tests/lance/tekton_tests.db/tekton_tests.lance/"
+        value: "s3://bucket-wikimedia-1/DPK_tests/text_encoder/tekton_tests/lance/tekton_tests.db/tekton_tests.lance/"
       - name: TEXT_ENCODER_LANCEDB_FRAGMENTS_JSON_FOLDER
-        value: "bucket-wikimedia-1/bucket-wikimedia-1/DPK_tests/text_encoder/tekton_tests/lance/tekton_tests_fragments_json/"
+        value: "bucket-wikimedia-1/DPK_tests/text_encoder/tekton_tests/lance/tekton_tests_fragments_json/"
       - name: TEXT_ENCODER_LANCEDB_TABLE_NAME
         value: "tekton_tests"
       - name: TEXT_ENCODER_MODEL_NAME
@@ -32,9 +32,9 @@ spec:
       - name: LANCEDB_STORAGE_TYPE
         value: "s3"
       - name: LANCEDB_URI
-        value: "s3://bucket-wikimedia-1/bucket-wikimedia-1/DPK_tests/text_encoder/tekton_tests/lance/tekton_tests.db/"
+        value: "s3://bucket-wikimedia-1/DPK_tests/text_encoder/tekton_tests/lance/tekton_tests.db/"
       - name: LANCEDB_DATA_URI
-        value: "s3://bucket-wikimedia-1/bucket-wikimedia-1/DPK_tests/text_encoder/tekton_tests/lance/tekton_tests.db/tekton_tests.lance/"
+        value: "s3://bucket-wikimedia-1/DPK_tests/text_encoder/tekton_tests/lance/tekton_tests.db/tekton_tests.lance/"
       - name: LANCEDB_TABLE_NAME
         value: "tekton_tests"
       - name: LANCEDB_FRAGMENTS_JSON_FOLDER

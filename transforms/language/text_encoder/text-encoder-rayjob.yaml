@@ -154,7 +154,7 @@ spec:
     --text_encoder_lanceDB_batch_size 1024
     --text_encoder_embedding_batch_size 8
     --text_encoder_lanceDB_table_name "$TEXT_ENCODER_LANCEDB_TABLE_NAME"
-    --text_encoder_lanceDB_fragments_json_folder "$TEXT_ENCODER_LANCEDB_FRAGMENT_JSON_FOLDER"
+    --text_encoder_lanceDB_fragments_json_folder "$TEXT_ENCODER_LANCEDB_FRAGMENTS_JSON_FOLDER"
     --text_encoder_lanceDB_data_uri "$TEXT_ENCODER_LANCEDB_DATA_URI"
     --data_s3_config '{"input_folder": "$TEXT_ENCODER_INPUT_FOLDER", "output_folder": "$TEXT_ENCODER_OUTPUT_FOLDER"}'
     --runtime_worker_options '{"num_cpus": 6, "memory": 20000000000, "max_restarts": 0, "max_task_retries": 0,}'

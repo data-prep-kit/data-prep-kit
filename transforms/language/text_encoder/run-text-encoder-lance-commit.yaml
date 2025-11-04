@@ -38,7 +38,7 @@ spec:
       - name: LANCEDB_TABLE_NAME
         value: "tekton_tests"
       - name: LANCEDB_FRAGMENTS_JSON_FOLDER
-        value: "bucket-wikimedia-1/bucket-wikimedia-1/DPK_tests/text_encoder/tekton_tests/lance/tekton_tests_fragments_json/"
+        value: "bucket-wikimedia-1/DPK_tests/text_encoder/tekton_tests/lance/tekton_tests_fragments_json/"
       - name: LANCEDB_TABLE_SCHEMA_FOLDER
         value: "bucket-wikimedia-1/DPK_tests/text_encoder/tekton_tests/input_parquets_tmp4embeddings/"
   workspaces:

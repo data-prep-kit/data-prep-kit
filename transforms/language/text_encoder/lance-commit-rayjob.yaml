@@ -81,11 +81,11 @@ spec:
   # The command to execute the Python script
   entrypoint: >
     python3 -m dpk_text_encoder.lance_commit
-    --lancedb_storage_type '$LANCEDB_STORAGE_TYPE'
-    --lancedb_uri "$LANCEDB_URI"
-    --lance_dataset_uri "$LANCEDB_DATASET_URI"
-    --lancedb_table_name "$LANCEDB_TABLE_NAME"
-    --fragments_json_folder "$LANCEDB_FRAGMENTS_JSON_FOLDER"
-    --lancedb_table_schema "$LANCEDB_TABLE_SCHEMA_FOLDER"
+    --lanceDB_storage_type '$LANCEDB_STORAGE_TYPE'
+    --lanceDB_uri "$LANCEDB_URI"
+    --lanceDB_data_uri "$LANCEDB_DATA_URI"
+    --lanceDB_table_name "$LANCEDB_TABLE_NAME"
+    --lanceDB_fragments_json_folder "$LANCEDB_FRAGMENTS_JSON_FOLDER"
+    --lanceDB_table_schema_folder "$LANCEDB_TABLE_SCHEMA_FOLDER"
 
 

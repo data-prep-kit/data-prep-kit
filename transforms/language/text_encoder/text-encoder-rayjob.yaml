@@ -141,7 +141,7 @@ spec:
     --text_encoder_model_name "$TEXT_ENCODER_MODEL_NAME"
     --text_encoder_content_column_name "$TEXT_ENCODER_CONTENT_COLUMN_NAME"
     --text_encoder_output_embeddings_column_name "embeddings"
-    --text_encoder_lanceDB_batch_size 1024
+    --text_encoder_lanceDB_batch_size 128
     --text_encoder_embedding_batch_size 8
     --text_encoder_lanceDB_table_name "$TEXT_ENCODER_LANCEDB_TABLE_NAME"
     --text_encoder_lanceDB_fragments_json_folder "$TEXT_ENCODER_LANCEDB_FRAGMENTS_JSON_FOLDER"

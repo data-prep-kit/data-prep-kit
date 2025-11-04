@@ -55,11 +55,6 @@ spec:
                     secretKeyRef:
                       name: s3-secret
                       key: s3-endpoint      
-                - name: HF_TOKEN
-                  valueFrom:
-                    secretKeyRef:
-                      name: hf-secret
-                      key: hf-token
                 - name: HF_HOME
                   value: /tmp/.cache
                 - name: WORKER_CPU_REQUEST
@@ -125,11 +120,6 @@ spec:
                       secretKeyRef:
                         name: s3-secret
                         key: s3-endpoint      
-                  - name: HF_TOKEN
-                    valueFrom:
-                      secretKeyRef:
-                        name: klwu-huggingface-token
-                        key: HF_TOKEN
                   - name: HF_HOME
                     value: /tmp/.cache
                 image: quay.io/dataprep1/data-prep-kit/text_encoder-ray:latest

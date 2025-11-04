@@ -55,11 +55,6 @@ spec:
                     secretKeyRef:
                       name: s3-secret
                       key: s3-endpoint      
-                - name: HF_TOKEN
-                  valueFrom:
-                    secretKeyRef:
-                      name: hf-secret
-                      key: hf-token
                 - name: HF_HOME
                   value: /tmp/.cache
                 - name: WORKER_CPU_REQUEST

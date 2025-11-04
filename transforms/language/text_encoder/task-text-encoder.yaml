@@ -60,7 +60,7 @@ spec:
         TMPFILE=$(mktemp)
         envsubst < "$JOBFILE" > "$TMPFILE"
         cat "$TMPFILE" && kubectl apply -f "$TMPFILE"
-        echo "Watiing for Kubernetes rayjob/$JOBNAME to finish or timeout after 24h..."
+        echo "Wating for Kubernetes rayjob/$JOBNAME to finish or timeout after 24h..."
         kubectl wait --for=jsonpath='{.status.jobDeploymentStatus}'=Complete rayjob/$JOBNAME --timeout=24h
         echo "Kubernetes rayjob/$JOBNAME completed. Check log for completion status..."
         ##############################################################################

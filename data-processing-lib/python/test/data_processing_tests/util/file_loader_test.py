@@ -12,7 +12,7 @@
 ################################################################################
 
 import tempfile, os
-from data_processing.utils import get_logger, TransformUtils
+from data_processing.utils import get_dpk_logger, TransformUtils
 from data_processing.data_access import DataAccessLocal
 from data_processing.transform import AbstractTableTransform
 from typing import Any
@@ -21,7 +21,7 @@ import pyarrow as pa
 import json
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 expected_schema = pa.schema([
     ('document_id', pa.int64()),

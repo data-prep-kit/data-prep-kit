@@ -1,0 +1,27 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: repo
+spec:
+  params:
+    - name: REPO_URL
+      type: string
+      default: https://github.com/touma-I/data-prep-kit-pkg.git
+#      default: https://github.com/data-prep-kit/data-prep-kit.git
+    - name: REPO_BRANCH
+      type: string
+      default: tekton-5
+      # default: feature/tekton
+  workspaces:
+    - name: jobs
+      description: A workspace to mount the job YAML.
+  steps:
+    - name: run-repo-job
+      image: quay.io/dataprep1/data-prep-kit/kubectl:latest
+      script: |
+        #!/bin/sh
+        df -h
+        git clone -b $(params.REPO_BRANCH) --depth 1 $(params.REPO_URL) /workspace/jobs/data-prep-kit
+        
+
+

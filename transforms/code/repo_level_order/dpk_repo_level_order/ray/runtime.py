@@ -44,7 +44,7 @@ class RepoLevelOrderRuntime(DefaultRayTransformRuntime):
             store_params - A dictionary to create/update store, used by transform and runtime.
 
         """
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
         super().__init__(params)
 
         self.stage_one_only = self.params[stage_one_only_key]

@@ -29,7 +29,7 @@ from data_processing.transform import (
     AbstractTableTransform,
     TransformConfiguration,
 )
-from data_processing.utils import CLIArgumentProvider, get_logger
+from data_processing.utils import CLIArgumentProvider, get_dpk_logger
 from dpk_code_profiler.higher_order_concepts import *
 from dpk_code_profiler.profiler_report import *
 from dpk_code_profiler.semantic_concepts import *
@@ -176,7 +176,7 @@ class CodeProfilerTransform(AbstractTableTransform):
             "Scala": "scala",
             "TypeScript": "typescript",
         }
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
         self.ruleset_file = os.path.dirname(os.path.abspath(__file__))
 
         # Semantic profiling related inits

@@ -13,7 +13,7 @@
 
 import sys
 
-from data_processing.utils import ParamsUtils, get_logger
+from data_processing.utils import ParamsUtils, get_dpk_logger
 
 
 try:
@@ -31,7 +31,7 @@ from dpk_docling2parquet.transform import (
 from ray.util.metrics import Counter, Gauge
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class Docling2ParquetRayTransform(Docling2ParquetTransform):

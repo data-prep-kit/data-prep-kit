@@ -28,8 +28,6 @@ class DPKConfig:
 
     HUGGING_FACE_TOKEN = _get_first_env_var(["DPK_HUGGING_FACE_TOKEN"])
     """ Set from DPK_HUGGING_FACE_TOKEN env var(s) """
-    DEFAULT_LOG_LEVEL = os.environ.get("DPK_LOG_LEVEL", "INFO")
-    """ Set from DPK_LOG_LEVEL env var(s) """
 
 
     @staticmethod

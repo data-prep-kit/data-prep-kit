@@ -18,7 +18,7 @@ from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.runtime.pure_python.runtime_configuration import (
     PythonTransformRuntimeConfiguration,
 )
-from data_processing.utils import ParamsUtils, get_logger
+from data_processing.utils import ParamsUtils, get_dpk_logger
 from dpk_doc_quality.transform import (
     DocQualityTransformConfiguration,
     bad_word_filepath_cli_param,
@@ -26,7 +26,7 @@ from dpk_doc_quality.transform import (
 )
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class DocQualityPythonTransformConfiguration(PythonTransformRuntimeConfiguration):

@@ -20,10 +20,10 @@ from typing import Any
 import pyarrow as pa
 import pyarrow.parquet as pq
 from data_processing.data_access import DataAccess
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class DataAccessLocal(DataAccess):

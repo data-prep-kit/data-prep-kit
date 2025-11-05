@@ -17,11 +17,11 @@ from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.runtime.pure_python.runtime_configuration import (
     PythonTransformRuntimeConfiguration,
 )
-from data_processing.utils import ParamsUtils, get_logger
+from data_processing.utils import ParamsUtils, get_dpk_logger
 from dpk_bloom.transform import BLOOMTransformConfiguration
 #from transform import BLOOMTransformConfiguration
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class BLOOMPythonTransformConfiguration(PythonTransformRuntimeConfiguration):

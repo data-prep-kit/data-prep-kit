@@ -21,7 +21,7 @@ import dpk_fdedup.data_cleaning.transform
 import dpk_fdedup.get_duplicate_list.transform
 import dpk_fdedup.signature_calc.transform
 from data_processing.runtime.pure_python import PythonTransformLauncher
-from data_processing.utils import ParamsUtils, get_logger, str2bool
+from data_processing.utils import ParamsUtils, get_dpk_logger, str2bool
 from dpk_fdedup.cluster_analysis.transform_python import (
     ClusterAnalysisPythonTransformConfiguration,
 )
@@ -60,7 +60,7 @@ ARGS_MAP = {
 class ServiceOrchestrator:
     def __init__(self, global_params: argparse.Namespace = None):
         self.global_params = global_params
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def orchestrate(self) -> int:
         service_list = self.global_params.services.split(",")

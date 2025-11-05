@@ -14,11 +14,11 @@
 import re
 from typing import Any
 
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from transformers import AutoTokenizer
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 def split_text(text: str, chunk_size: int) -> str:

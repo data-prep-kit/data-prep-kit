@@ -1,9 +1,10 @@
-FROM docker.io/python:3.10.14-slim-bullseye
+FROM docker.io/python:3.12-slim
 
 RUN pip install --upgrade --no-cache-dir pip 
 
 # install pytest
 RUN pip install --no-cache-dir pytest
+
 
 RUN \
     apt-get update \
@@ -12,9 +13,9 @@ RUN \
     && apt-get clean
 
 # Create a user and use it to run the transform
-RUN useradd -ms /bin/bash dpk
-USER dpk
+RUN useradd -d /home/dpk -ms /bin/bash -g root dpk
 WORKDIR /home/dpk
+USER dpk
 
 ARG PIP_INSTALL_EXTRA_ARGS
 ARG DPK_WHEEL_FILE_NAME
@@ -31,11 +32,20 @@ COPY --chown=dpk:root requirements.txt requirements.txt
 RUN pip install ${PIP_INSTALL_EXTRA_ARGS} -r requirements.txt
 
 # Set environment
-ENV PYTHONPATH /home/dpk
+ENV PYTHONPATH=/home/dpk
 ENV PATH="/home/dpk/.local/bin:${PATH}" 
+ENV HOME=/home/dpk
 
 # Download models
 RUN docling-tools models download layout tableformer picture_classifier easyocr
+
+USER root
+RUN mkdir -p /home/dpk/.cache/huggingface/hub/models--ds4sd--docling-layout-heron/blobs && \
+   mkdir -p /home/dpk/.cache/huggingface/hub/models--ds4sd--docling-layout-heron/refs && \
+   chown -R dpk:root /home/dpk/.cache && \
+   chmod -R g=u /home/dpk
+USER dpk
+
 
 # Parallelism
 ENV OMP_NUM_THREADS=2
@@ -46,8 +56,8 @@ ARG GIT_COMMIT
 ARG TRANSFORM_PATH
 ARG GIT_URL
 ENV GIT_URL $GIT_URL
-ENV TRANSFORM_PATH $TRANSFORM_PATH
-ENV BUILD_DATE $BUILD_DATE
-ENV GIT_COMMIT $GIT_COMMIT
+ENV TRANSFORM_PATH=$TRANSFORM_PATH
+ENV BUILD_DATE=$BUILD_DATE
+ENV GIT_COMMIT=$GIT_COMMIT
 LABEL build-date=$BUILD_DATE
 LABEL git-commit=$GIT_COMMIT

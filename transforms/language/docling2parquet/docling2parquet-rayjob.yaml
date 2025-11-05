@@ -1,0 +1,121 @@
+###
+# Usage:
+# export $(cat .env | xargs)
+# envsubst < docling2parquet-rayjob.yaml | kubectl apply -f -
+###
+apiVersion: ray.io/v1alpha1
+kind: RayJob
+metadata:
+  name: rayjob-docling # Name of your RayCluster
+spec:
+  shutdownAfterJobFinishes: true
+  ttlSecondsAfterFinished: 10
+  rayClusterSpec:
+    rayVersion: '2.36.1' # Specify the Ray version
+    headGroupSpec:
+      # Service type for the head node, can be ClusterIP or NodePort
+      serviceType: ClusterIP
+      # Ray container image for the head node
+      rayStartParams:
+        dashboard-host: '0.0.0.0'
+      template:
+        spec:
+          containers:
+            - name: ray-head
+              env:
+                - name: DPK_LOG_LEVEL 
+                  value: DEBUG
+                - name: HF_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: hf-secret
+                      key: hf-token
+                - name: S3_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: s3-secret
+                      key: s3-key
+                - name: S3_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: s3-secret
+                      key: s3-secret
+                - name: S3_ENDPOINT
+                  valueFrom:
+                    secretKeyRef:
+                      name: s3-secret
+                      key: s3-endpoint
+                - name: WORKER_CPU_REQUEST
+                  valueFrom:
+                    resourceFieldRef:
+                      resource: requests.cpu
+              image: quay.io/dataprep1/data-prep-kit/docling2parquet-ray:latest
+              imagePullPolicy: Always
+              ports:
+                - containerPort: 6379 # Ray port
+                  name: ray-client
+                - containerPort: 8265 # Ray Dashboard port
+                  name: dashboard
+              resources:
+                requests:
+                  cpu: 8
+                  memory: 16Gi
+                limits:
+                  cpu: 8
+                  memory: 16Gi
+    workerGroupSpecs:
+      - groupName: small-group
+        replicas: 5 # Initial number of worker nodes
+        minReplicas: 5
+        maxReplicas: 5
+        rayStartParams: {}
+        template:
+          spec:
+            containers:
+              - name: ray-worker
+                env:
+                  - name: DPK_LOG_LEVEL 
+                    value: DEBUG
+                  - name: HF_TOKEN
+                    valueFrom:
+                      secretKeyRef:
+                        name: hf-secret
+                        key: hf-token
+                  - name: S3_ACCESS_KEY
+                    valueFrom:
+                      secretKeyRef:
+                        name: s3-secret
+                        key: s3-key
+                  - name: S3_SECRET_KEY
+                    valueFrom:
+                      secretKeyRef:
+                        name: s3-secret
+                        key: s3-secret
+                  - name: S3_ENDPOINT
+                    valueFrom:
+                      secretKeyRef:
+                        name: s3-secret
+                        key: s3-endpoint
+                image: quay.io/dataprep1/data-prep-kit/docling2parquet-ray:latest
+                imagePullPolicy: Always
+                resources:
+                  requests:
+                    cpu: 1
+                    memory: 32Gi
+                  limits:
+                    cpu: 1
+                    memory: 32Gi
+  # Job details
+  # The command to execute the Python script
+  entrypoint: >
+    python -m dpk_docling2parquet.ray.runtime
+    --run_locally False
+    --data_s3_config "{'input_folder': '$S3_BUCKET_PATH/$DOCLING_INPUT', 'output_folder': '$S3_BUCKET_PATH/$DOCLING_OUTPUT'}"
+    --data_files_to_use "[ '.zip' ]" 
+    --data_checkpointing False 
+    --runtime_num_workers 5
+    --runtime_worker_options "{ 'num_cpus': 0.8, 'max_restarts': 0, 'max_task_retries': 0 }" 
+    --data_max_files 2
+
+
+

@@ -68,9 +68,9 @@ class CodeToParquetTransform(AbstractBinaryTransform):
                     of language names keyed to a list of extensions, from this json file.  The file is read using
                     the DataAccessFactory, under the code2parquet_data_factory key.
         """
-        from data_processing.utils import get_logger
+        from data_processing.utils import get_dpk_logger
 
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
         super().__init__(config)
         self.languages_supported = config.get(supported_languages_key, None)
         if self.languages_supported is None:
@@ -162,9 +162,9 @@ class CodeToParquetTransformConfiguration(TransformConfiguration):
             transform_class=transform_class,
             remove_from_metadata=[data_factory_key],
         )
-        from data_processing.utils import get_logger
+        from data_processing.utils import get_dpk_logger
 
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
         self.daf = None
 
     def add_input_params(self, parser: ArgumentParser) -> None:

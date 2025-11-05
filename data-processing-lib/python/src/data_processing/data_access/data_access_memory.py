@@ -13,9 +13,9 @@
 from typing import Any
 import pyarrow as pa
 from data_processing.data_access import DataAccess
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 class DataAccessMemory(DataAccess):
     """
@@ -56,7 +56,7 @@ class DataAccessMemory(DataAccess):
         self.tables = {}
         self.config = config
         self.checkpoint = checkpoint
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
         self.logger.debug(f"Local checkpoint: {self.checkpoint}")
 

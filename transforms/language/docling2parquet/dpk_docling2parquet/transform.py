@@ -29,9 +29,10 @@ try:
 except:
     from pandas.io.json import dumps as ujson_dumps
 import pyarrow as pa
-import numpy as np
+import tempfile
+import os
 from data_processing.transform import AbstractBinaryTransform, TransformConfiguration
-from data_processing.utils import TransformUtils, get_logger, str2bool
+from data_processing.utils import TransformUtils, get_dpk_logger, str2bool
 from data_processing.utils.cli_utils import CLIArgumentProvider
 from data_processing.utils.multilock import MultiLock
 from docling.backend.docling_parse_backend import DoclingParseDocumentBackend
@@ -51,10 +52,10 @@ from docling.datamodel import vlm_model_specs
 from docling.datamodel.base_models import InputFormat as VLMInputFormat
 from docling.document_converter import DocumentConverter, InputFormat, PdfFormatOption
 from docling.models.base_ocr_model import OcrOptions
+from docling_core.types.doc import ImageRefMode, PictureItem, TableItem
 
 
-logger = get_logger(__name__)
-# logger = get_logger(__name__, level="DEBUG")
+logger = get_dpk_logger()
 
 shortname = "docling2parquet"
 cli_prefix = f"{shortname}_"
@@ -68,6 +69,9 @@ docling2parquet_bitmap_area_threshold_key = f"bitmap_area_threshold"
 docling2parquet_pdf_backend_key = f"pdf_backend"
 docling2parquet_double_precision_key = f"double_precision"
 docling2parquet_pipeline_key = f"pipeline"
+docling2parquet_generate_picture_images_key = f"generate_picture_images"
+docling2parquet_generate_page_images_key = f"generate_page_images"
+docling2parquet_images_scale_key = f"images_scale"
 
 class docling2parquet_contents_types(str, enum.Enum):
     MARKDOWN = "text/markdown"
@@ -113,6 +117,9 @@ docling2parquet_ocr_engine_default = docling2parquet_ocr_engine.EASYOCR
 docling2parquet_pdf_backend_default = docling2parquet_pdf_backend.DLPARSE_V2
 docling2parquet_double_precision_default = 8
 docling2parquet_pipeline_default = docling2parquet_pipeline.MULTI_STAGE
+docling2parquet_generate_picture_images_default = False
+docling2parquet_generate_page_images_default = False
+docling2parquet_images_scale_default = 2.0
 
 docling2parquet_batch_size_cli_param = f"{cli_prefix}{docling2parquet_batch_size_key}"
 docling2parquet_artifacts_path_cli_param = f"{cli_prefix}{docling2parquet_artifacts_path_key}"
@@ -131,6 +138,10 @@ docling2parquet_double_precision_cli_param = (
 )
 
 docling2parquet_pipeline_cli_param = f"{cli_prefix}{docling2parquet_pipeline_key}"
+
+docling2parquet_generate_picture_images_cli_param = f"{cli_prefix}{docling2parquet_generate_picture_images_key}"
+docling2parquet_generate_page_images_cli_param = f"{cli_prefix}{docling2parquet_generate_page_images_key}"
+docling2parquet_images_scale_cli_param = f"{cli_prefix}{docling2parquet_images_scale_key}"
 
 class Docling2ParquetTransform(AbstractBinaryTransform):
     """ """
@@ -179,6 +190,13 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
         if not isinstance(self.pipeline, docling2parquet_pipeline):
             self.pipeline = docling2parquet_pipeline[self.pipeline]
 
+        self.generate_picture_images = config.get(docling2parquet_generate_picture_images_key,
+                                                  docling2parquet_generate_picture_images_default)
+        self.generate_page_images = config.get(docling2parquet_generate_page_images_key,
+                                               docling2parquet_generate_page_images_default)
+        self.images_scale = config.get(docling2parquet_images_scale_key,
+                                       docling2parquet_images_scale_default)
+
         logger.info("Initializing models")
 
         lock = MultiLock("dpk_docling2parquet_init")
@@ -211,6 +229,9 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
                     ocr_options=self._get_ocr_engine(self.ocr_engine_name),
                 )
                 pipeline_options.ocr_options.bitmap_area_threshold = self.bitmap_area_threshold
+                pipeline_options.images_scale = self.images_scale
+                pipeline_options.generate_page_images = self.generate_page_images
+                pipeline_options.generate_picture_images = self.generate_picture_images
 
                 self._converter = DocumentConverter(
                     format_options={
@@ -251,6 +272,47 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
         # This is implemented in the ray version
         pass
 
+    def _convert_page_images(self, conv_res) -> (list, list):
+        # Save page images
+        image_binaries = []
+        orig_image_filepaths = []
+        with tempfile.TemporaryDirectory() as temp_dir_path:
+            for page_no, page in conv_res.document.pages.items():
+                page_no = page.page_no
+                page_image_filename = os.path.join(temp_dir_path, f"image_{page_no}.png")
+                with open(page_image_filename, "wb") as fp:
+                    page.image.pil_image.save(fp, format="PNG")
+
+                # save_to_list_binary
+                with open(page_image_filename, "rb") as f:
+                    data = f.read()
+                    image_binaries.append(data)
+                    orig_image_filepaths.append(page_image_filename)
+
+        logger.info(f"num image binaries: {len(image_binaries)}")
+        return image_binaries, orig_image_filepaths
+
+    def _convert_picture_items(self, conv_res) -> (list, int, list):
+        # Save images of figures
+        image_binaries = []
+        orig_image_filepaths = []
+        picture_counter = 0
+        with tempfile.TemporaryDirectory() as temp_dir_path:
+            for element, _level in conv_res.document.iterate_items():
+                if isinstance(element, PictureItem):
+                    picture_counter += 1
+                    element_image_filename = (os.path.join(temp_dir_path, f"picture_item_{picture_counter}.png"))
+                    with open(element_image_filename, "wb") as fp:
+                        element.get_image(conv_res.document).save(fp, "PNG")
+
+                    # save_to_list_binary
+                    with open(element_image_filename, "rb") as f:
+                        data = f.read()
+                        image_binaries.append(data)
+                        orig_image_filepaths.append(element_image_filename)
+
+        return image_binaries, picture_counter, orig_image_filepaths
+
     def _convert_docling2parquet(
         self, doc_filename: str, ext: str, content_bytes: bytes
     ) -> dict:
@@ -277,6 +339,19 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
         num_tables = len(doc.tables)
         num_doc_elements = len(doc.texts)
 
+        image_bins = []
+        image_paths = []
+        picture_counter = 0
+        if self.generate_page_images:
+            ib, paths = self._convert_page_images(conv_res)
+            image_bins += ib
+            image_paths += paths
+
+        if self.generate_picture_images:
+            ib, picture_counter, paths = self._convert_picture_items(conv_res)
+            image_bins += ib
+            image_paths += paths
+
         if self.pipeline == 'vlm':
             document_hash = conv_res.input.document_hash
         else:
@@ -299,6 +374,13 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
             "document_convert_time": elapse_time,
         }
 
+        if len(image_bins) > 0:
+            file_data["image_bins"] = image_bins
+            file_data["orig_image_fpaths"] = image_paths
+
+            if picture_counter > 0:
+                file_data["num_pictures"] = picture_counter
+                
         return file_data
 
     def _detect_mime(self, file_name: str, content_bytes: bytes) -> tuple[str|None, str]:
@@ -543,6 +625,24 @@ class Docling2ParquetTransformConfiguration(TransformConfiguration):
             choices=list(docling2parquet_pipeline),
             help="The pipeline to use - multi_stage or vlm (granite-docling)",
             default=docling2parquet_pipeline_default,
+        )
+        parser.add_argument(
+            f"--{docling2parquet_generate_picture_images_cli_param}",
+            type=str2bool,
+            help="If true, decides which elements are enriched with images",
+            default=docling2parquet_generate_picture_images_default,
+        )
+        parser.add_argument(
+            f"--{docling2parquet_generate_page_images_cli_param}",
+            type=str2bool,
+            help="If true, decides which elements are enriched with images",
+            default=docling2parquet_generate_page_images_default,
+        )
+        parser.add_argument(
+            f"--{docling2parquet_images_scale_cli_param}",
+            type=float,
+            help="sets the image resolution scale",
+            default=docling2parquet_images_scale_default,
         )
 
     def apply_input_params(self, args: Namespace) -> bool:

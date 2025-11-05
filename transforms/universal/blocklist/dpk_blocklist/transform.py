@@ -13,17 +13,16 @@
 
 import re
 from argparse import ArgumentParser, Namespace
-from typing import Any
 from urllib.parse import urlparse
-
+import os
 import pyarrow as pa
 import pygtrie
 from data_processing.data_access import DataAccess, DataAccessFactory
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import CLIArgumentProvider, TransformUtils, get_logger
+from data_processing.utils import CLIArgumentProvider, TransformUtils, get_dpk_logger
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 from typing import Any
 
 
@@ -47,6 +46,23 @@ def _get_domain_list(domain_list_url: str, data_access: DataAccess) -> set[str]:
     logger.info(f"Added {len(domain_list)} domains to domain list")
     return domain_list
 
+def _get_domain_list_local(domain_list_path: str) -> set[str]:
+    from data_processing.data_access import DataAccessLocal
+
+    domain_list = set()
+    da_config = {
+        "config": {
+            "input_folder": f"{domain_list_path}",
+            "output_folder": f"{domain_list_path}",
+        }
+    }
+
+    data_access = DataAccessLocal(**da_config)
+    blocklist_file_dict, _ = data_access.get_folder_files(domain_list_path)
+    for file_name, file_contents in blocklist_file_dict.items():
+        domain_list.update(_extract_domain_list(file_contents))
+    logger.info(f"Added {len(domain_list)} domains to domain list")
+    return domain_list
 
 short_name = "blocklist"
 cli_prefix = short_name + "_"
@@ -105,13 +121,19 @@ class BlockListTransform(AbstractTableTransform):
         url = config.get(blocked_domain_list_path_key, None)
         if url is None:
             raise RuntimeError(f"Missing configuration value for key {blocked_domain_list_path_key}")
-        data_access = config.get(blocklist_data_access_key, None)
-        if data_access is None:
-            daf = config.get(blocklist_data_factory_key, None)
-            if daf is None:
-                raise RuntimeError(f"Missing configuration value for key {blocklist_data_factory_key}")
-            data_access = daf.create_data_access()
-        domain_list = _get_domain_list(url, data_access)
+
+        if os.path.exists(url):
+            logger.info(f"Blocked domain list found locally from {url}")
+            domain_list = _get_domain_list_local(url)
+
+        else:
+            data_access = config.get(blocklist_data_access_key, None)
+            if data_access is None:
+                daf = config.get(blocklist_data_factory_key, None)
+                if daf is None:
+                    raise RuntimeError(f"Missing configuration value for key {blocklist_data_factory_key}")
+                data_access = daf.create_data_access()
+            domain_list = _get_domain_list(url, data_access)
         # build trie structure for block listing
         logger.info(f"Loading trie with {len(domain_list)} items.")
         # logger.info(f"Loading trie with {domain_list}.")

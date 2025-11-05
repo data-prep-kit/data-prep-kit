@@ -12,12 +12,12 @@
 ################################################################################
 import sys
 
-from data_processing.utils import ParamsUtils, get_logger
+from data_processing.utils import ParamsUtils, get_dpk_logger
 from data_processing_ray.runtime.ray import RayTransformLauncher
 from data_processing_ray.runtime.ray.runtime_configuration import RayTransformRuntimeConfiguration
 from dpk_rep_removal.runtime import RepRemovalTransformConfiguration
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class RepRemovalRayTransformConfiguration(RayTransformRuntimeConfiguration):

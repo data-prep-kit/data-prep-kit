@@ -20,11 +20,11 @@ from data_processing.runtime.pure_python import (
     PythonTransformRuntimeConfiguration,
     DefaultPythonTransformRuntime)
 from data_processing.transform import AbstractFolderTransform
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from data_processing.test_support.transform import NOOPTransformConfiguration
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class NOOPFolderTransform(AbstractFolderTransform):

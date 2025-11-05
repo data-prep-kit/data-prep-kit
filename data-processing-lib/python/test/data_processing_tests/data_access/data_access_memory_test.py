@@ -14,9 +14,9 @@
 import os
 import pyarrow
 from data_processing.data_access import DataAccessLocal, DataAccessMemory, DataAccessFactory
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 path = os.path.join(os.path.dirname(__file__), "../../../test-data/data_processing/input/")
 def test_save_get_table():

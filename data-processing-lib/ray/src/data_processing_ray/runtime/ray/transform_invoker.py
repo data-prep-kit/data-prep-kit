@@ -18,13 +18,13 @@ from data_processing.utils import (
     PipInstaller,
     TransformRuntime,
     TransformsConfiguration,
-    get_logger,
+    get_dpk_logger,
 )
 from data_processing_ray.runtime.ray import RayTransformLauncher
 
 
 project = "https://github.com/data-prep-kit/data-prep-kit.git"
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 def execute_ray_transform(

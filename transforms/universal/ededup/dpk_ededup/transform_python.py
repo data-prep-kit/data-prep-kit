@@ -64,11 +64,11 @@ class EdedupRuntime(DefaultPythonTransformRuntime):
     """
 
     def __init__(self, params: dict[str, Any]):
-        from data_processing.utils import get_logger
+        from data_processing.utils import get_dpk_logger
 
         super().__init__(params=params)
         self.filter = None
-        self.logger = get_logger(__name__)
+        self.logger = get_dpk_logger()
 
     def get_transform_config(
         self, data_access_factory: DataAccessFactoryBase, statistics: TransformStatistics, files: list[str]

@@ -16,11 +16,11 @@ from data_processing.runtime.pure_python import (
     PythonTransformLauncher,
     PythonTransformRuntimeConfiguration,
 )
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from dpk_proglang_select.transform import ProgLangSelectTransformConfiguration
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class ProgLangSelectPythonConfiguration(PythonTransformRuntimeConfiguration):

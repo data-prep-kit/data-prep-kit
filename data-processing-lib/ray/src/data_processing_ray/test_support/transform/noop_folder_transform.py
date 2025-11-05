@@ -13,7 +13,7 @@
 
 
 from data_processing.test_support.transform import NOOPFolderTransform, NOOPTransformConfiguration
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from data_processing_ray.runtime.ray import (
     RayTransformLauncher,
     RayTransformRuntimeConfiguration,
@@ -22,7 +22,7 @@ from data_processing_ray.runtime.ray import (
 from data_processing.data_access import DataAccess
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 
 class NOOPFolderRayRuntime(DefaultRayTransformRuntime):

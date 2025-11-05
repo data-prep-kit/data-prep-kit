@@ -18,7 +18,7 @@ from typing import Any
 import pyarrow as pa
 from data_processing.data_access import DataAccess, DataAccessFactory
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import CLIArgumentProvider, TransformUtils, get_logger
+from data_processing.utils import CLIArgumentProvider, TransformUtils, get_dpk_logger
 from dpk_doc_quality.doc_c4_statistics import (
     c4_contain_pattern_ratio,
     c4_contains_ldnoobw_words,
@@ -34,7 +34,7 @@ from dpk_doc_quality.doc_Gopher_statistics import (
 )
 
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 short_name = "docq"
 cli_prefix = f"{short_name}_"

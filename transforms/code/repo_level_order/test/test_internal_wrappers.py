@@ -16,7 +16,7 @@ from data_processing.test_support.transform.table_transform_test import (
     AbstractTableTransformTest,
 )
 from data_processing.transform import AbstractTableTransform
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from dpk_repo_level_order.internal.repo_level_wrappers import (
     get_dominant_language_func,
     get_sorting_func,
@@ -38,7 +38,7 @@ def compare_tables(input_table, output_table):
     )
 
 
-logger = get_logger("test")
+logger = get_dpk_logger()
 
 
 def test_sort_by_path():

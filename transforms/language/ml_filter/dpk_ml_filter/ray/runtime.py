@@ -15,12 +15,12 @@ from data_processing_ray.runtime.ray.runtime_configuration import (
     RayTransformRuntimeConfiguration,
 )
 
-from data_processing.utils import get_logger
+from data_processing.utils import get_dpk_logger
 from dpk_ml_filter.runtime import MLFilterConfiguration
 
 from data_processing.data_access.data_access_factory import DataAccessFactory
 
-logger = get_logger(__name__)
+logger = get_dpk_logger()
 
 class MLFilterRayRuntime(RayTransformRuntimeConfiguration):
     def __init__(self):

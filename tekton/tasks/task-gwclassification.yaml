@@ -1,0 +1,41 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: gwclassification
+spec:
+  params:
+    - name: S3_BUCKET_PATH
+      type: string
+    - name: GW_MATH_INPUT
+      type: string
+    - name: GW_MATH_OUTPUT
+      type: string
+  workspaces:
+    - name: jobs
+      description: A workspace to mount the job YAML.
+  steps:
+    - name: run-gw-classification-job
+      image: quay.io/dataprep1/data-prep-kit/kubectl:latest
+      env:
+        - name: S3_BUCKET_PATH
+          value: $(params.S3_BUCKET_PATH)
+        - name: GW_MATH_INPUT
+          value: $(params.GW_MATH_INPUT)
+        - name: GW_MATH_OUTPUT
+          value: $(params.GW_MATH_OUTPUT)
+      script: |
+        #!/bin/sh
+        JOBFILE=/workspace/jobs/data-prep-kit/transforms/language/gneissweb_classification/gneissweb_classification-rayjob.yaml
+        ##############################################################################
+        ## Most jobs follow the same pattern, so we can templatize this in the future
+        JOBNAME=`yq '.metadata.name' $JOBFILE`
+        TMPFILE=$(mktemp)
+        envsubst < "$JOBFILE" > "$TMPFILE"
+        cat "$TMPFILE" && kubectl apply -f "$TMPFILE"
+        echo "Watiing for Kubernetes rayjob/$JOBNAME to finish or timeout after 24h..."
+        kubectl wait --for=jsonpath='{.status.jobDeploymentStatus}'=Complete rayjob/$JOBNAME --timeout=24h
+        echo "Kubernetes rayjob/$JOBNAME completed. Check log for completion status..."
+        ##############################################################################
+
+
+        

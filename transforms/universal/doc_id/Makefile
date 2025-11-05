@@ -26,38 +26,35 @@ run-cli-python-sample:
 	source venv/bin/activate && \
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
                 --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
-            	--doc_id_hash hash_column \
-				--doc_id_int int_id_column
-
-
+                --doc_id_int True
 
 run-cli-python-s3: 
 	make venv
 	source venv/bin/activate && \
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
                 --data_s3_config "{ 'input_folder' : 'cloud-object-storage-cos-standard-k1l/doc-id-test-data/input', 'output_folder' : 'cloud-object-storage-cos-standard-k1l/doc-id-output'}"  \
-                --doc_id_int int_id
+                --doc_id_int True
 
 run-cli-spark-sample: 
 	make venv
 	source venv/bin/activate && \
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).spark.runtime \
                 --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
-                --doc_id_int int_id
+                --doc_id_int True
 
 run-cli-ray-sample: 
 	make venv
 	source venv/bin/activate && \
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.runtime \
                 --run_locally True --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
-                --doc_id_int int_id
+                --doc_id_int True
 
 run-cli-ray-depricated: 
 	make venv
 	source venv/bin/activate && \
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.transform \
                 --run_locally True --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
-                --doc_id_int int_id
+                --doc_id_int True
 
 ## Used for local testing of the image on MacOS
 run-docker-python-sample:
@@ -66,17 +63,5 @@ run-docker-python-sample:
 	$(DOCKER) run -v ./test-data:/test-data -v ./output:/output -it localhost/doc_id-python \
                 python -m dpk_$(TRANSFORM_NAME).runtime \
                 --data_local_config "{ 'input_folder' : '/test-data/input', 'output_folder' : '/output'}"  \
-                --doc_id_int int_id
-
-run-cli-python-jsonl: 
-	make venv
-	source venv/bin/activate && \
-	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
-                --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
-                --doc_id_hash_column uuid \
-				--doc_id_doc_column messages \
-				--data_files_to_use "['.jsonl']"
-
-
-
+                --doc_id_int True
 

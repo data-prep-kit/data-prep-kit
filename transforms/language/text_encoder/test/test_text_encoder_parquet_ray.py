@@ -13,32 +13,47 @@
 
 import os
 
-from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
-from dpk_text_encoder.transform_python import TextEncoderPythonTransformConfiguration
+from data_processing_ray.runtime.ray import RayTransformLauncher
+from dpk_text_encoder.ray.runtime import TextEncoderRayTransformConfiguration
 
 
-class TestPythonTextEncoderTransform(AbstractTransformLauncherTest):
+basedir = os.path.abspath(os.path.dirname(__file__))
+input_dir = os.path.normpath(os.path.join(basedir, "../test-data/input"))
+output_dir = os.path.normpath(os.path.join(basedir, "../output"))
+expected_dir = os.path.normpath(os.path.join(basedir, "../test-data/expected_parquet"))
+
+
+text_encoder_params = {
+    "data_local_config": {"input_folder": input_dir, "output_folder": output_dir},
+    "text_encoder_model_name": "ibm-granite/granite-embedding-small-english-r2",
+    "text_encoder_embeddings_in_parquet": True,
+    "text_encoder_content_column_name": "contents",
+    "text_encoder_output_embeddings_column_name": "embeddings",
+    "text_encoder_embedding_batch_size": 5,
+    "run_locally": True
+}
+
+
+class TestRayTextEncoderTransform(AbstractTransformLauncherTest):
     """
     Extends the super-class to define the test data for the tests defined there.
     The name of this class MUST begin with the word Test so that pytest recognizes it as a test class.
     """
 
     def get_test_transform_fixtures(self) -> list[tuple]:
-        basedir = "../test-data"
-        basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))
         fixtures = []
-        launcher = PythonTransformLauncher(TextEncoderPythonTransformConfiguration())
+        launcher = RayTransformLauncher(TextEncoderRayTransformConfiguration())
         fixtures.append(
             (
                 launcher,
-                {},
-                basedir + "/input",
-                basedir + "/expected",
+                text_encoder_params,
+                input_dir,
+                expected_dir,
                 # this is added as a fixture to remove these columns from comparison
                 ["embeddings"],
-            ),
+            )
         )
         return fixtures

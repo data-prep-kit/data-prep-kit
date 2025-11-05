@@ -1,6 +1,6 @@
 [project]
 name = "data_prep_toolkit_transforms"
-version = "1.1.6"
+version = "1.1.6.dev0"
 requires-python = ">=3.10,<3.13"
 keywords = ["transforms", "data preprocessing", "data preparation", "llm", "generative", "ai", "fine-tuning", "llmapps" ]
 description = "Data Preparation Toolkit Transforms using Ray"
@@ -69,9 +69,7 @@ all = { file = [
 "universal/collapse/requirements.txt",
 "universal/blocklist/requirements.txt",
 "universal/fineweb_quality_annotator/requirements.txt",
-"universal/gopher_repetition_annotator/requirements.txt",
-"universal/opensearch/requirements.txt",
-    
+"universal/gopher_repetition_annotator/requirements.txt"
 ]}
 
 language = { file = [
@@ -108,8 +106,7 @@ language = { file = [
 "universal/rep_removal/requirements.txt",
 "universal/tokenization2arrow/requirements.txt",
 "universal/collapse/requirements.txt",
-"universal/blocklist/requirements.txt",
-"universal/opensearch/requirements.txt"
+"universal/blocklist/requirements.txt"
 ]}
 
 code = { file = [
@@ -137,14 +134,8 @@ code = { file = [
 "universal/collapse/requirements.txt",
 "universal/blocklist/requirements.txt",
 "universal/fineweb_quality_annotator/requirements.txt",
-"universal/gopher_repetition_annotator/requirements.txt",
-"universal/opensearch/requirements.txt"
-]}
+"universal/gopher_repetition_annotator/requirements.txt"
 
-images = { file = [
-"images/faces/requirements.txt",
-"images/nsfw/requirements.txt",
-"images/people/requirements.txt"
 ]}
 
 gneissweb = { file = [
@@ -171,7 +162,6 @@ malware = {file =  ["code/code2parquet/requirements.txt"]}
 code_profiler = { file = ["code/code_profiler/requirements.txt"]}
 repo_level_order = { file= ["code/repo_level_order/requirements.txt"]}
 
-opensearch = { file = ["universal/opensearch/requirements.txt"]}
 profiler = { file = ["universal/profiler/requirements.txt"]}
 resize = { file = ["universal/resize/requirements.txt"]}
 doc_chunk = { file = ["language/doc_chunk/requirements.txt"]}
@@ -201,10 +191,6 @@ collapse = { file = ["universal/collapse/requirements.txt"]}
 blocklist = { file = ["universal/blocklist/requirements.txt"]}
 gopher_repetition_annotator = { file = ["universal/gopher_repetition_annotator/requirements.txt"]}
 fineweb_quality_annotator = { file = ["universal/fineweb_quality_annotator/requirements.txt"]}
-
-faces = { file = ["images/faces/requirements.txt"]}
-nsfw = { file = ["images/nsfw/requirements.txt"]}
-people = { file = ["images/people/requirements.txt"]}
 
 
 [tool.setuptools.package-dir]
@@ -246,11 +232,7 @@ dpk_code2parquet = "code/code2parquet/dpk_code2parquet"
 dpk_malware = "code/malware/dpk_malware"
 dpk_repo_level_order = "code/repo_level_order/dpk_repo_level_order"
 dpk_transform_chain = "chain/dpk_transform_chain"
-dpk_faces = "images/faces/dpk_faces"
-dpk_nsfw = "images/nsfw/dpk_nsfw"
-dpk_people = "images/people/dpk_people"
 
-dpk_transform_opensearch = "universal/opensearch/dpk_opensearch"
 [tool.setuptools.package-data]
 #"*" = ["*.txt"]
 "dpk_rep_removal.rust" = ["**"]

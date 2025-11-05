@@ -47,7 +47,7 @@ If you have already stored embeddings in parquet, you can also use this transfor
 | `output_embeddings_column_name` | `"embeddings"` | Column name to store the embeddings in the output table. |
 | `lanceDB_data_uri`  | `"" ` | Path for lanceDB data. If stored in S3-like cloud object store, start with `"s3://..."` |
 | `lanceDB_batch_size` | 524288 | The output table is buffered until it has at least 524288 records. |
-| `lanceDB_fragments_json_folder` | `"" ` | A folder to store fragments related json info for the final lance_commit step. |
+| `lanceDB_fragments_json_folder` | `"" ` | A folder to store fragments related json info for the final `lance_commit` step. |
 | `lanceDB_table_name` | `"" ` | The name of the lance table. |
 | `embedding_batch_size` | 8 | The number of documents as a batch to create embeddings in a `model.encode()`. |
 | `embeddings_exist` | False | Flag indicating if embeddings already exist in parquet files. |
@@ -64,15 +64,15 @@ lancedb table to be available. To run `lance_commit.py`, the following paramters
 | `lanceDB_uri` | `""` | The lanceDB uri for setting up connection to the database. |
 | `lanceDB_data_uri` | `""` | The lanceDB data path. |
 | `lanceDB_table_name` | `""` | The name of the lanceDB table. |
-| `lanceDB_fragments_json_folder` | The fragment json folder for `lance_commit.py`. |
-| `lanceDB_table_schema_folder` | The folder containing the schema for the records stored in lanceDB. |
+| `lanceDB_fragments_json_folder` |`""`| The fragment json folder for `lance_commit.py`. |
+| `lanceDB_table_schema_folder` | `""` | The folder containing the schema for the records stored in lanceDB. |
 
 
 ## Usage
 
 ### Launched Command Line Options 
 
-When invoking the CLI, the parameters must be set as `--text_encoder_<name>`, e.g. `--text_encoder_lanceDB_data_uri "s3://my_project/lance/my_table.db/my_table.lance/"`.
+When invoking the CLI, the parameters must be set as `--text_encoder_<name>`, e.g. `--text_encoder_lanceDB_data_uri "s3://my_project/lance/my_table.db/my_table.lance/"`. After embeddings are created and stored in a lancedb table, the parameters for `lance_commit` doesn't need the prefix, e.g., please see the `make run-python-cli-sample-lancedb:` in the [Makefile](Makefile)
 
 ### Code example
 
@@ -89,18 +89,23 @@ substituting the name of this transform image and runtime as appropriate.
 Following [the testing strategy of data-processing-lib](../../../data-processing-lib/doc/transform-testing.md)
 
 Currently we have:
-- [Unit test](test/test_text_encoder_python.py)
+- [Unit test](test/test_text_encoder_lancedb.py)
 
+## Running Text Encoder and Lance Commit via a Tekton Pipeline Example
+
+
+Please see the general [Tekton](../../tekton/README.md) example that shows a Tekton pipeline consisting of tasks that involve different transforms. A Tekton pipeline, which runs on a cluster in a cloud, can also be defined within the `text_encoder` transform. For example, once you login to a cluster, you can do `kubectl apply -f [run-text-encoder-lance-commit.yaml](run-text-encoder-lance-commit.yaml)` to launch a pipeline that is defined in `pipeline-text-encoder-lance-commit.yaml`, which starts with creating a repo, defined in `task-repo.yaml`, then launching a text-encoder ray job, defined in `task-text-encoder.yaml` and `text-encoder-rayjob.yaml`, and finally launching a lance-commit ray job, defined in `task-lance-commit.yaml` and `lance-commit-rayjob.yaml`
 
 
 # TextEncoder Ray Transform 
+
 Please see the set of
 [transform project conventions](../../README.md#transform-project-conventions)
 for details on general project conventions, transform configuration,
 testing and IDE set up.
 
 ## Summary 
-This project wraps the text_encoder transform with a Ray runtime.
+This project wraps the text_encoder transform with a Ray runtime. It creates embeddings, or taking existing embeddings already created and stored in parquet files, and stores the embeddings together with the other columns into a lancedb table. Alternatively, it can create and store embeddings in parquet files.
 
 ## Configuration and command line Options
 

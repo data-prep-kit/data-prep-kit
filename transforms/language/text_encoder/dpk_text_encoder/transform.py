@@ -19,7 +19,6 @@ import numpy as np
 import random
 import lance
 import os
-import ray
 import json
 from pathlib import Path
 from typing import List
@@ -30,6 +29,12 @@ from data_processing.transform import AbstractTableTransform, TransformConfigura
 from data_processing.utils import CLIArgumentProvider, TransformUtils, get_logger
 from sentence_transformers import SentenceTransformer
 from data_processing.data_access import DataAccess
+
+try:
+    import ray
+    RAY_INSTALLED = True
+except ImportError:
+    RAY_INSTALLED = False
 
 
 short_name = "text_encoder"
@@ -115,9 +120,10 @@ class TextEncoderTransform(AbstractTableTransform):
         self.output_embeddings_column_name = config.get(
             output_embeddings_column_name_key, default_output_embeddings_column_name
         )
-        if ray.is_initialized():
+        if RAY_INSTALLED:
+            if ray.is_initialized():
             # keep the actor_id for creating part of the frangments_json file written by individual workers
-            self.actor_id = ray.get_runtime_context().get_actor_id()
+                self.actor_id = ray.get_runtime_context().get_actor_id()
         else:
             self.actor_id = os.getpid()
 

@@ -2,7 +2,7 @@
 
 The transformation framework is designed to operate on arbitrary arrays of
 bytes with a specialization for columnar data, generally contained
-in [parquet](https://arrow.apache.org/docs/python/parquet.html) files and read as [pyarrow tables](https://arrow.apache.org/docs/python/index.html).
+in [parquet](https://arrow.apache.org/docs/python/parquet.html) files and read as [pyarrow tables](https://arrow.apache.org/docs/python/index.html). A new feature is that all transforms now support [JSON Lines (jsonl)](https://jsonlines.org/), [Newline Delimited JSON (ndjson)](https://github.com/ndjson/ndjson-spec) and zip files, in addition to parquet files as input format. 
 
 In general, transforms can be written to process any type of
 binary data, to be interpreted by the transform.

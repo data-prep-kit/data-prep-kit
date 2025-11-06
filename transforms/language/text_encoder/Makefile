@@ -13,6 +13,12 @@ TRANSFORM_NAME=$(shell basename `pwd`)
 
 ################################################################################
 
+TRANSFORM_PYTHON_SRC="-m dpk_$(TRANSFORM_NAME).runtime"
+TRANSFORM_RAY_SRC="-m dpk_$(TRANSFORM_NAME).ray.runtime"
+
+
+
+
 
 LINUX_WITH_CPU_TORCH?=true
 OS := $(shell uname -s)

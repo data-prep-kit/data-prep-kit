@@ -554,14 +554,14 @@ class TextEncoderTransformConfiguration(TransformConfiguration):
             type=str,
             required=False,
             default=default_model_name,
-            help=f"Name of the HF model to use for encoding the text. The default model is {default_model_name}",
+            help="Name of the HF model to use for encoding the text.",
         )
         parser.add_argument(
             f"--{model_max_seq_length_cli_param}",
             type=int,
             required=False,
             default=default_model_max_seq_length,
-            help={f"Max number of tokens to use for the model"},
+            help="Max number of tokens to use for the model",
         )
         parser.add_argument(
             f"--{lanceDB_data_uri_cli_param}",

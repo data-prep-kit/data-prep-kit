@@ -124,8 +124,10 @@ class TextEncoderTransform(AbstractTableTransform):
             if ray.is_initialized():
             # keep the actor_id for creating part of the frangments_json file written by individual workers
                 self.actor_id = ray.get_runtime_context().get_actor_id()
+            else:
+                self.actor_id = "xxx"
         else:
-            self.actor_id = os.getpid()
+            self.actor_id = "xxx"
 
         if torch.cuda.is_available():
             self.logger.info(f"GPU is available!")

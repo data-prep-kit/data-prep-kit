@@ -12,6 +12,13 @@ include $(REPOROOT)/transforms/.make.cicd.targets
 TRANSFORM_NAME=$(shell basename `pwd`)
 
 ################################################################################
+
+# Developers should adapt this according to their implementation if they do not follow the proposed template
+# We continue to refine this. The current settings are based on current template
+TRANSFORM_PYTHON_SRC="-m dpk_$(TRANSFORM_NAME).runtime"
+TRANSFORM_RAY_SRC="-m dpk_$(TRANSFORM_NAME).ray.runtime"
+TRANSFORM_SPARK_SRC="-m dpk_$(TRANSFORM_NAME).spark.runtime"
+
 # large files are stored in seperate git repo or can be obtained from HF
 models: models/yolov8m_200e.pt models/yolov8m-seg.pt models/yolov8n-face.pt
 

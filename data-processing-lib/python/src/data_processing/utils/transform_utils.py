@@ -21,7 +21,12 @@ from typing import Any
 import mmh3
 import pyarrow as pa
 import pyarrow.parquet as pq
+import pyarrow.json as pj
+import zipfile
 
+
+from data_processing.utils import get_dpk_logger
+logger = get_dpk_logger()
 
 RANDOM_SEED = 42
 LOCAL_TO_DISK = 2
@@ -129,6 +134,53 @@ class TransformUtils:
             raise Exception(
                 f"Not all required columns are present in the table - " f"required {required}, present {columns}"
             )
+
+    @staticmethod
+    def convert_ndjson_to_arrow(data: bytes) -> pa.Table:
+        """
+        Convert ndjson byte array to table
+        :param data: byte array
+        :return: table or None if the conversion failed
+        """
+        try:
+            table = pj.read_json(io.BytesIO(data))
+        except Exception as e:
+            logger.warning(f"Could not convert bytes from ndjson to pyarrow- Retrying with bigger block size: {type(e)}-{e}")
+            try:
+                block_size=10 * 1024 * 1024
+                logger.debug(f"Retrying with block size {block_size:,} ")                
+                read_options = pj.ReadOptions(block_size=10 * 1024 * 1024) 
+                table = pj.read_json(io.BytesIO(data), read_options=read_options)
+            except Exception as e:  
+                logger.error(f"Could not convert bytes from ndjson to pyarrow: {type(e)}-{e}")                
+                table = None
+        return table
+    
+
+    @staticmethod
+    def convert_zip_to_arrow(data: bytes) -> pa.Table:
+        """
+        Convert zip file byte array to table. Currently only supports ndjson zipped files
+        :param data: byte array
+        :return: table or None if the conversion failed
+        """
+        table = None
+        with zipfile.ZipFile(io.BytesIO(data)) as opened_zip:
+            zip_namelist = opened_zip.namelist()
+            for archive_filename in zip_namelist:
+                logger.debug(f"Processing archive {archive_filename} with extention {TransformUtils.get_file_extension(archive_filename)[1]}")
+                with opened_zip.open(archive_filename) as file:
+                    try:
+                        # Read the content of the file
+                        content_bytes = file.read()
+                        if TransformUtils.get_file_extension(archive_filename)[1] in [".ndjson", ".jsonl"]:
+                            x = TransformUtils.convert_ndjson_to_arrow(content_bytes)
+                            table =x if table is None else pa.concat_tables([table, x])
+                    except Exception as e:
+                        logger.error(f"Failed to read/convert {archive_filename}: {e}")
+                        return None
+        return table
+                    
 
     @staticmethod
     def convert_binary_to_arrow(data: bytes, schema: pa.schema = None) -> pa.Table:

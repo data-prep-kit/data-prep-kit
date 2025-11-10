@@ -118,6 +118,17 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 
 </details>
 
+## Logging configuration
+DPK uses a unified logger - `dpk`. It can be configured, by setting the following environment variables
+
+| Variable name | Default value | Description                                                                                                         |
+|--|-----------|---------------------------------------------------------------------------------------------------------------------|
+|DPK_LOG_LEVEL | INFO      | The loggger level                                                                                                   |
+|DPK_LOG_FILE | None      | The path to the log file, if set the log message will be stored in the file                                         |
+| DPK_LOG_HANDLER | ""        | If set to `JSON` (case insensitive) the logs will be in JSON format                                                 |
+| DPK_LOG_PROPAGATION| "" | If set to any value of "true", "1", "yes", or "on", the logger will propagate all log messages to its parent logger |
+
+
 ## Contributing
 
 Contributors are welcome to add new modules to expand to other data modalities as well as add runtime support for existing modules! Please read [this](CONTRIBUTING.md) for details.

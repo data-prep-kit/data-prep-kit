@@ -25,9 +25,7 @@ logger = get_dpk_logger()
 
 class OpenSearchRayTransformConfiguration(RayTransformRuntimeConfiguration):
     """
-    Implements the RayTransformConfiguration for NOOP as required by the RayTransformLauncher.
-    NOOP does not use a RayRuntime class so the superclass only needs the base
-    python-only configuration.
+    Implements the RayTransformConfiguration for OpenSearch as required by the RayTransformLauncher.
     """
 
     def __init__(self):
@@ -44,5 +42,5 @@ class OpenSearch(Transform):
 
 if __name__ == "__main__":
     launcher = RayTransformLauncher(OpenSearchRayTransformConfiguration())
-    logger.info("Launching noop transform")
+    logger.info("Launching OpenSearch transform")
     launcher.launch()

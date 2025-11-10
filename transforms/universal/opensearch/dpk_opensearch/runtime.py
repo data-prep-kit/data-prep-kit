@@ -26,7 +26,7 @@ logger = get_dpk_logger()
 
 class OpenSearchPythonTransformConfiguration(PythonTransformRuntimeConfiguration):
     """
-    Implements the PythonTransformConfiguration for NOOP as required by the PythonTransformLauncher.
+    Implements the PythonTransformConfiguration for OpenSearch as required by the PythonTransformLauncher.
     """
 
     def __init__(self):

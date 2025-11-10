@@ -55,7 +55,7 @@ class AbstractTableTransform(AbstractBinaryTransform):
             self.logger.warning(f"Get wrong file type {file_name}")
             return [], {"wrong file type": 1}
         if table is None:
-            self.logger.warning("Transformation of file to table failed")
+            self.logger.warning(f"Failed to load pyarrow from file: {file_name}")
             return [], {"failed_reads": 1}
         # Ensure that table is not empty
         if table.num_rows == 0:

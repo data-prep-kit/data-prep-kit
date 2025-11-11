@@ -19,6 +19,10 @@ transform-tests:
 	-rm -rf test-code-*.yml
 	$(MAKE) TRANSFORM_SUBDIR=code .transform-tests 
 	$(MAKE) TRANSFORM_SUBDIR=code .transform-kfp-tests
+	-rm -rf test-images-*.yml
+	$(MAKE) TRANSFORM_SUBDIR=images .transform-tests
+	$(MAKE) TRANSFORM_SUBDIR=images .transform-kfp-tests
+	
 
 # Expects
 #   TRANSFORM_SUBDIR  transforms subdirectory (such as universal)

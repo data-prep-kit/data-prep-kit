@@ -22,16 +22,13 @@ class Transform:
     """
     Used for streamlining API when calling transforms from notebook
     """
-#    def __init__(self, transform_config, runtime_class, **kwargs):
     def __init__(self, transform_config, **kwargs):
         """
         Cound be involed using TransformConfiguration and Runtime class 
         exaamples for invocation:
-#            super().__init(DocIDTransformConfiguration(), DocIDRuntime, **kwargs)
             super().__init(DocIDTransformConfiguration(), **kwargs)
         """
         self.params = {}
-#        self.runtime = PythonTransformRuntimeConfiguration(transform_config, runtime_class)
         self.runtime = PythonTransformRuntimeConfiguration(transform_config)
         for key in kwargs:
             self.params[key] = kwargs[key]

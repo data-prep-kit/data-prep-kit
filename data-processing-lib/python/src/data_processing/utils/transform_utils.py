@@ -145,8 +145,15 @@ class TransformUtils:
         try:
             table = pj.read_json(io.BytesIO(data))
         except Exception as e:
-            logger.error(f"Could not convert bytes from ndjson to pyarrow: {e}")
-            table = None
+            logger.warning(f"Could not convert bytes from ndjson to pyarrow- Retrying with bigger block size: {type(e)}-{e}")
+            try:
+                block_size=10 * 1024 * 1024
+                logger.debug(f"Retrying with block size {block_size:,} ")                
+                read_options = pj.ReadOptions(block_size=10 * 1024 * 1024) 
+                table = pj.read_json(io.BytesIO(data), read_options=read_options)
+            except Exception as e:  
+                logger.error(f"Could not convert bytes from ndjson to pyarrow: {type(e)}-{e}")                
+                table = None
         return table
     
 

@@ -70,7 +70,7 @@ all = { file = [
 "universal/blocklist/requirements.txt",
 "universal/fineweb_quality_annotator/requirements.txt",
 "universal/gopher_repetition_annotator/requirements.txt",
-
+"universal/opensearch/requirements.txt",
 
 "images/faces/requirements.txt",
 "images/nsfw/requirements.txt",
@@ -111,7 +111,8 @@ language = { file = [
 "universal/rep_removal/requirements.txt",
 "universal/tokenization2arrow/requirements.txt",
 "universal/collapse/requirements.txt",
-"universal/blocklist/requirements.txt"
+"universal/blocklist/requirements.txt",
+"universal/opensearch/requirements.txt"
 ]}
 
 code = { file = [
@@ -139,8 +140,8 @@ code = { file = [
 "universal/collapse/requirements.txt",
 "universal/blocklist/requirements.txt",
 "universal/fineweb_quality_annotator/requirements.txt",
-"universal/gopher_repetition_annotator/requirements.txt"
-
+"universal/gopher_repetition_annotator/requirements.txt",
+"universal/opensearch/requirements.txt"
 ]}
 
 images = { file = [
@@ -173,6 +174,7 @@ malware = {file =  ["code/code2parquet/requirements.txt"]}
 code_profiler = { file = ["code/code_profiler/requirements.txt"]}
 repo_level_order = { file= ["code/repo_level_order/requirements.txt"]}
 
+opensearch = { file = ["universal/opensearch/requirements.txt"]}
 profiler = { file = ["universal/profiler/requirements.txt"]}
 resize = { file = ["universal/resize/requirements.txt"]}
 doc_chunk = { file = ["language/doc_chunk/requirements.txt"]}
@@ -251,6 +253,7 @@ dpk_faces = "images/faces/dpk_faces"
 dpk_nsfw = "images/nsfw/dpk_nsfw"
 dpk_people = "images/people/dpk_people"
 
+dpk_transform_opensearch = "universal/opensearch/dpk_opensearch"
 [tool.setuptools.package-data]
 #"*" = ["*.txt"]
 "dpk_rep_removal.rust" = ["**"]

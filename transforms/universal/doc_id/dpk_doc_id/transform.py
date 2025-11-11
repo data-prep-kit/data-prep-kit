@@ -94,14 +94,25 @@ class DocIDTransformBase(AbstractTableTransform):
         This implementation makes no modifications so effectively implements a copy of the
         input parquet to the output folder, without modification.
         """
-        TransformUtils.validate_columns(table=table, required=[self.doc_column])
-
         if self.hash_column is not None:
+            import hashlib, json
+            TransformUtils.validate_columns(table=table, required=[self.doc_column])
             # add doc id column
             docs = table[self.doc_column]
             doc_ids = [""] * table.num_rows
             for n in range(table.num_rows):
-                doc_ids[n] = TransformUtils.str_to_hash(docs[n].as_py())
+                try:
+                      doc_ids[n] = TransformUtils.str_to_hash(docs[n].as_py())
+                except AttributeError as e:                    
+                    ### Raised exception if a list type is encountered
+                    doc_ids[n] = \
+                        hashlib.sha256(json.dumps(docs[n].as_py(), sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()[:16]
+
+            prev_col_name=f"{self.hash_column}.original" 
+            if prev_col_name not in table.column_names:
+                new_columns = [prev_col_name if col_name==self.hash_column else col_name for col_name in table.column_names]
+                if new_columns != table.column_names:
+                    table = table.rename_columns(new_columns)
             table = TransformUtils.add_column(table=table, name=self.hash_column, content=doc_ids)
         if self.int_column is not None:
             # add integer document id

@@ -35,11 +35,6 @@ for i in $(find transforms  -maxdepth 2 -mindepth 2 -type d | grep -v venv); do
     category=$(basename $category)
     workflows=.github/workflows/test-$category-$transform.yml
     is_blacklisted=$(echo $KFP_BLACK_LIST | grep $transform)     
-    if [ -d $i/kfp_ray -a -z "$is_blacklisted" ]; then
-    	workflows="$workflows .github/workflows/test-$category-$transform-kfp.yml"
-    else
-	echo KFP workflow for $transform is not expected. 
-    fi
     for workflow in $workflows; do
 	if [ ! -e $workflow ] && [ -e transforms/$category/$transform/Makefile ]; then 
 	    echo Missing $workflow for transform $category/$transform 

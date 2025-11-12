@@ -72,9 +72,7 @@ all = { file = [
 "universal/gopher_repetition_annotator/requirements.txt",
 "universal/opensearch/requirements.txt",
 
-"images/faces/requirements.txt",
-"images/nsfw/requirements.txt",
-"images/people/requirements.txt"
+
 ]}
 
 language = { file = [

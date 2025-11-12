@@ -52,8 +52,7 @@ If you have already stored embeddings in parquet, you can also use this transfor
 | `embedding_batch_size` | 8 | The number of documents as a batch to create embeddings in a `model.encode()`. |
 | `embeddings_exist` | False | Flag indicating if embeddings already exist in parquet files. |
 | `embeddings_in_parquet` | False | Flag indicating if embeddings are to be stored in parquet files. | 
-| `embeddings_in_chunks` | False | Flag indicating if each document is to be chunked first for chunk embeddings. |
-| `embeddings_max_num_chunks` | 2 | If to be chunked first, the max num of chunks for each document. |
+
 
 If the embeddings are to be stored in, or converted from parquet to, lancedb, a `lance_commit.py` needs to be executed to allow the
 lancedb table to be available. To run `lance_commit.py`, the following paramters can be specified.

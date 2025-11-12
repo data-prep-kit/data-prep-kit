@@ -13,6 +13,8 @@
 
 import logging
 from datetime import datetime
+import sys
+
 from pythonjsonlogger.json import JsonFormatter
 import os
 import traceback
@@ -23,6 +25,11 @@ from rich.theme import Theme
 from rich.text import Text
 
 DPK_LOGGER_NAME = "dpk"
+DPK_LOG_LEVEL = "DPK_LOG_LEVEL"
+DPK_LOG_FILE = "DPK_LOG_FILE"
+DPK_LOG_JSON_HANDLER = "DPK_LOG_JSON_HANDLER"
+DPK_LOG_PROPAGATION = "DPK_LOG_PROPAGATION"
+DEFAULT_LOG_LEVEL = "INFO"
 
 theme = Theme({
     "debug": "white",
@@ -40,7 +47,7 @@ console = Console(theme=theme, force_terminal=True, color_system="auto")
 
 class PrefectStyleRichHandler(RichHandler):
     """
-    RichHandler that builds the full log line (time, [LEVEL], logger:lineno - message)
+    RichHandler that builds the full log line (time, [LEVEL], fileName:lineno - message)
     with styles pulled from the console theme.
     """
     level_map = {
@@ -62,7 +69,7 @@ class PrefectStyleRichHandler(RichHandler):
             lvl = Text(f" [{record.levelname}]", style=level_style)
 
             # --- Logger + line ---
-            logger_part = Text(f" {record.name}:{record.lineno} - ", style="logger")
+            logger_part = Text(f" {record.pathname}:{record.lineno} - ", style="logger")
 
             # --- Message ---
             msg = Text(str(record.getMessage()), style="color(255)")
@@ -96,10 +103,10 @@ class PrefectStyleRichHandler(RichHandler):
             self.handleError(record)
 
 def get_dpk_logger(name = DPK_LOGGER_NAME ) -> logging.Logger:
-    dpk_log_level = os.environ.get("DPK_LOG_LEVEL", "INFO")
-    dpk_log_file = os.environ.get("DPK_LOG_FILE", None)
-    dpk_log_handler = os.environ.get("DPK_LOG_HANDLER", "").lower()
-    dpk_log_propagation = os.environ.get("DPK_LOG_PROPAGATION", "").lower() in ("true", "1", "yes", "on")
+    dpk_log_level = os.environ.get(DPK_LOG_LEVEL, DEFAULT_LOG_LEVEL)
+    dpk_log_file = os.environ.get(DPK_LOG_FILE, None)
+    dpk_json_log_handler = os.environ.get(DPK_LOG_JSON_HANDLER, "").lower() in ("true", "1", "yes", "on")
+    dpk_log_propagation = os.environ.get(DPK_LOG_PROPAGATION, "").lower() in ("true", "1", "yes", "on")
 
     logger = logging.getLogger(name)
     logger.propagate = dpk_log_propagation
@@ -117,8 +124,8 @@ def get_dpk_logger(name = DPK_LOGGER_NAME ) -> logging.Logger:
             handler._tag = tag_name
             logger.addHandler(handler)
 
-    if dpk_log_handler == "json":
-        stream_handler = logging.StreamHandler()
+    if dpk_json_log_handler :
+        stream_handler = logging.StreamHandler(sys.stdout)
         stream_handler.setLevel(dpk_log_level)
         stream_handler.setFormatter(json_formatter)
         add_handler_once(stream_handler, "dpk_stream_handler")

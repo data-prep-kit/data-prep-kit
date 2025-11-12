@@ -25,8 +25,8 @@ from dpk_text_encoder.transform import (
 )
 
 # create parameters
-input_folder = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "test-data", "input"))
-output_folder = os.path.normpath(os.path.join(os.path.dirname(__file__), "../output"))
+input_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "test-data", "input"))
+output_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "../output"))
 local_conf = {
     "input_folder": input_folder,
     "output_folder": output_folder,

@@ -14,51 +14,35 @@ import lancedb
 import lance
 from pyarrow import fs
 import io
+import os
 import pyarrow.parquet as pq
 import json
+from data_processing.data_access import DataAccess, DataAccessS3, DataAccessLocal
 from lance import FragmentMetadata
 import argparse
-import os
 import sys
 
 
-def setup_s3(access_key: str, secret_key: str, endpoint: str) -> fs.S3FileSystem:
-    try:
-        s3 = fs.S3FileSystem(
-            access_key=access_key,
-            secret_key=secret_key,
-            request_timeout=10,
-            connect_timeout=10,
-            retry_strategy=fs.AwsStandardS3RetryStrategy(max_attempts=10),
-            endpoint_override=endpoint,
-        )
-    except Exception as e:
-        print(f"Error: Incorrect parameters for setting up fs.S3FileSystem(). {e}")
-        print(f"{access_key=} {secret_key=} {endpoint=}")
-        exit(1)
-    return s3
-
-def get_fragments_json(s3: fs.S3FileSystem, json_folder: str) -> list:
+def get_fragments_json(s3: DataAccess, json_folder: str) -> list:
     all_fragments_json = []
     # read in the fragment jsons
     total_rows = 0
-    files = [file for file in s3.get_file_info(fs.FileSelector(json_folder))]
+    files, _ = s3._list_files_folder(json_folder)
     for j, file in enumerate(files):
-        if file.type == fs.FileType.File and file.path.endswith(".json"):
+        if file['name'].endswith(".json"):
             try:
-                with s3.open_input_stream(file.path) as f:
-                    # Read the content as bytes
-                    json_bytes = f.readall()
-                    # Decode the bytes to a UTF-8 string
-                    json_string = json_bytes.decode('utf-8')
-                    # Parse the JSON string
-                    data = json.loads(json_string)
-                    fragment = data['fragment']
-                    for index, json_str in enumerate(fragment):
-                        data_dict = json.loads(json_str)
-                        if "physical_rows" in data_dict.keys():
-                            total_rows += data_dict["physical_rows"]
-                    all_fragments_json += fragment
+                # Read the content as bytes
+                json_bytes, _ = s3.get_file(file['name'])
+                # Decode the bytes to a UTF-8 string
+                json_string = json_bytes.decode('utf-8')
+                # Parse the JSON string
+                data = json.loads(json_string)
+                fragment = data['fragment']
+                for index, json_str in enumerate(fragment):
+                    data_dict = json.loads(json_str)
+                    if "physical_rows" in data_dict.keys():
+                        total_rows += data_dict["physical_rows"]
+                all_fragments_json += fragment
             except Exception as e:
                 print(f"cannot get json loaded: {e}")
                 pass
@@ -66,22 +50,21 @@ def get_fragments_json(s3: fs.S3FileSystem, json_folder: str) -> list:
     print(f"{total_rows=}")
     return all_fragments_json
 
-def commit_fragments(s3: fs.S3FileSystem, all_fragments_json: list, schema_folder: str, dataset_uri:str):
+def commit_fragments(s3: DataAccess, all_fragments_json: list, schema_folder: str, dataset_uri:str):
 
     all_fragments = [FragmentMetadata.from_json(f) for f in all_fragments_json]
-    files = [file for file in s3.get_file_info(fs.FileSelector(schema_folder, recursive=True))]
+    files, _ = s3._list_files_folder(schema_folder)
     for file in files:
-        if file.type == fs.FileType.File and file.path.endswith(".parquet"):
+        if file['name'].endswith(".parquet"):
             try:
-                print(f"{file.path=}")
-                with s3.open_input_stream(file.path) as f: 
-                    parquet_bytes = f.readall()
-                    # Create a BytesIO object from the bytes, which is seekable
-                    buffer = io.BytesIO(parquet_bytes)
-                    table = pq.read_table(buffer)
-                    schema = table.schema
-                    print(f"find schema for the lance fragments")
-                    break
+                print(f"{file=}")
+                parquet_bytes, _ = s3.get_file(file['name'])
+                # Create a BytesIO object from the bytes, which is seekable
+                buffer = io.BytesIO(parquet_bytes)
+                table = pq.read_table(buffer)
+                schema = table.schema
+                print(f"find schema for the lance fragments")
+                break
             except Exception as e: 
                 print(f"read schema failed: {e=}")  
     print(f"{schema=}")
@@ -98,21 +81,13 @@ def commit_fragments(s3: fs.S3FileSystem, all_fragments_json: list, schema_folde
 def main(args):
     lanceDB_storage_type = args.lanceDB_storage_type
     if lanceDB_storage_type == 's3':
-        s3_access_key=os.environ.get('S3_ACCESS_KEY')
-        s3_secret_key=os.environ.get('S3_SECRET_KEY')
-        s3_endpoint=os.environ.get('S3_ENDPOINT')
-        if s3_access_key is None:
-            print(f"Error: need to provide s3_access_key via env S3_ACCESS_KEY")
-            exit(1)
-        if s3_secret_key is None:
-            print(f"Error: need to provide s3_secret_key via env S3_SECRET_KEY")
-            exit(1)
-        if s3_endpoint is None:
-            print(f"Error: need to provide s3_endpoint via env S3_ENDPOINT")
-            exit(1)
-        s3 = setup_s3(s3_access_key, s3_secret_key, s3_endpoint)
+        config = {}
+        config['access_key'] = os.environ['S3_ACCESS_KEY'] 
+        config['secret_key'] = os.environ['S3_SECRET_KEY']
+        config['url'] = os.environ['S3_ENDPOINT']
+        s3 = DataAccessS3(config)
     else:
-        s3 = fs.LocalFileSystem()
+        s3 = DataAccessLocal()
     # read in fragments json files
     lanceDB_fragments_json_folder = args.lanceDB_fragments_json_folder
     all_fragments_json = get_fragments_json(s3, lanceDB_fragments_json_folder)

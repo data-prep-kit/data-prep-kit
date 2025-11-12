@@ -20,9 +20,9 @@ from data_processing.test_support.launch.transform_test import (
 from dpk_text_encoder.runtime import TextEncoderPythonTransformConfiguration
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-input_dir = os.path.normpath(os.path.join(basedir, "../test-data/input"))
-output_dir = os.path.normpath(os.path.join(basedir, "../output"))
-expected_dir = os.path.normpath(os.path.join(basedir, "../test-data/expected_parquet"))
+input_dir = os.path.abspath(os.path.join(basedir, "../test-data/input"))
+output_dir = os.path.abspath(os.path.join(basedir, "../output"))
+expected_dir = os.path.abspath(os.path.join(basedir, "../test-data/expected_parquet"))
 
 
 text_encoder_params = {

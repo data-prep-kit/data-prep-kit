@@ -49,8 +49,6 @@ embedding_batch_size_key="embedding_batch_size"
 lanceDB_fragments_json_folder_key="lanceDB_fragments_json_folder"
 lanceDB_table_name_key="lanceDB_table_name"
 embeddings_exist_key="embeddings_exist"
-embeddings_in_chunks_key="embeddings_in_chunks"
-embeddings_max_num_chunks_key="embeddings_max_num_chunks"
 embeddings_in_parquet_key="embeddings_in_parquet"
 model_max_seq_length_key="model_max_seq_length"
 
@@ -63,8 +61,6 @@ embedding_batch_size_cli_param = f"{cli_prefix}{embedding_batch_size_key}"
 lanceDB_fragments_json_folder_cli_param = f"{cli_prefix}{lanceDB_fragments_json_folder_key}"
 lanceDB_table_name_cli_param = f"{cli_prefix}{lanceDB_table_name_key}"
 embeddings_exist_cli_param = f"{cli_prefix}{embeddings_exist_key}"
-embeddings_in_chunks_cli_param = f"{cli_prefix}{embeddings_in_chunks_key}"
-embeddings_max_num_chunks_cli_param = f"{cli_prefix}{embeddings_max_num_chunks_key}"
 embeddings_in_parquet_cli_param = f"{cli_prefix}{embeddings_in_parquet_key}"
 model_max_seq_length_cli_param = f"{cli_prefix}{model_max_seq_length_key}"
 
@@ -77,9 +73,7 @@ default_embedding_batch_size = 8
 default_lanceDB_fragments_json_folder = ""
 default_lanceDB_table_name = ""
 default_embeddings_exist = False
-default_embeddings_in_chunks = False
 default_embeddings_in_parquet = False
-default_embeddings_max_num_chunks = 2
 default_model_max_seq_length = 2048
 
 
@@ -96,9 +90,7 @@ class TextEncoderTransform(AbstractTableTransform):
         lanceDB_fragments_json_folder: str,
         lanceDB_table_name: str,
         embeddings_exist: bool,
-        embeddings_in_chunks: bool,
         embeddings_in_parquet: bool,
-        embeddings_max_num_chunks: int,
         model_max_seq_length: int
     """
 
@@ -143,14 +135,9 @@ class TextEncoderTransform(AbstractTableTransform):
         self.embeddings_in_parquet = config.get(embeddings_in_parquet_key, default_embeddings_in_parquet)
         self.logger.info(f"{self.embeddings_in_parquet=}")
 
-        self.embeddings_in_chunks = config.get(embeddings_in_chunks_key, default_embeddings_in_chunks)
-        self.logger.info(f"{self.embeddings_in_chunks=}")
       
         self.model_max_seq_length = config.get(model_max_seq_length_key, default_model_max_seq_length)
         self.logger.info(f"{self.model_max_seq_length=}")
-
-        self.embeddings_max_num_chunks = config.get(embeddings_max_num_chunks_key, default_embeddings_max_num_chunks)
-        self.logger.info(f"{self.embeddings_max_num_chunks=}")
 
         if not self.embeddings_exist:
             self.model = SentenceTransformer(self.model_name)
@@ -266,17 +253,8 @@ class TextEncoderTransform(AbstractTableTransform):
         if not self.lanceDB_buffer:
             return  # No data to flush
         
-        # reorder the schema order in a few tables in the lanceDB_buffer.
-        # if self.lanceDB_table_name == "gneissweb":
-        #     self._reorder_table_lanceDB_buffer()
-
-        # casting watsonnlp_top_category0 and others to string as some of them might be null
-
         # Concatenate all buffered tables
         try:
-            # if self.lanceDB_table_name == "gneissweb":
-            #     columns_to_cast = ['watsonnlp_top_category0', 'watsonnlp_top_category1', 'watsonnlp_top_category2', 'watsonnlp_top_category3']
-            #     self._cast_columns_in_schema(columns_to_cast)
             combined_table = pa.concat_tables(self.lanceDB_buffer)
         except Exception as e:
             self.logger.error(f"pa.concat_tables failed: {e}")
@@ -322,115 +300,8 @@ class TextEncoderTransform(AbstractTableTransform):
         self.output_files_buffer = []
         del combined_table
 
-    def _chunk_document(self, text: str, chunk_size: int, overlap_size: int) -> List[str]:
-        """
-        Chunk document into smaller pieces with overlap.
-        
-        Args:
-            text: Input document text
-            chunk_size: Size of each chunk in characters.
-            overlap_size: overlap between chunks
-            
-        Returns:
-            List of text chunks
-        """
-        
-        # If document is shorter than chunk_size, return as single chunk
-        if len(text) <= chunk_size:
-            return [text.strip()]
-        
-        chunks = []
-        start = 0
-        
-        while start < len(text) and len(chunks) < self.embeddings_max_num_chunks:
-            end = start + chunk_size
-            
-            # If not the last chunk, try to break at word boundary
-            if end < len(text):
-                # Look backwards for a space to avoid breaking words
-                space_pos = text.rfind(' ', start, end)
-                if space_pos > start:  # Found a space
-                    end = space_pos
-            
-            chunk = text[start:end].strip()
-            if chunk:  # Only add non-empty chunks
-                chunks.append(chunk)
-            
-            # Move start position (with overlap)
-            start = end - overlap_size
-            
-            # Prevent infinite loop if overlap is too large
-            if len(chunks) > 1 and start <= len(text) - len(chunks[-1]):
-                start = end
-        
-        return chunks
-
-
-    def get_chunk_embeddings(self, all_chunks: List[str], batch_size: int = 16) -> np.ndarray:
-        """
-        Get embeddings for all chunks in batches for better efficiency.
-        
-        Args:
-            all_chunks: List of all text chunks
-            batch_size: Number of chunks to process at once
-            
-        Returns:
-            Array of embeddings, shape (num_chunks, embedding_dim)
-        """
-        if not all_chunks:
-            raise ValueError("No chunks provided")
-        
-        all_embeddings = []
-        
-        # Process in batches
-        for i in range(0, len(all_chunks), batch_size):
-            batch = all_chunks[i:i + batch_size]
-            
-            # Generate embeddings for batch
-            batch_embeddings = self.model.encode(
-                batch, 
-                convert_to_numpy=True
-            )
-            all_embeddings.append(batch_embeddings)
-        
-        return np.vstack(all_embeddings)
-
-
-    def _compute_embeddings_in_chunks(self, docs: list, batch_size: int) -> list[list[float]]:
-        """
-        Take a list of docs, chunk each and append them into all chunks, do embeddings for all chunks in batches and
-        finally average chunks of each doc into document-level embeddings and return a list of lists 
-        """
-        # first phase: chunking docs into all chunks
-        all_chunks = []
-        doc_chunk_counts = []
-        max_seq_length = self.model.max_seq_length
-        chars_per_token = 4
-        chunk_size = int(0.8 * max_seq_length * chars_per_token)
-        overlap_size = int(0.10*chunk_size)
-        for document in docs:
-            chunks = self._chunk_document(document, chunk_size, overlap_size)
-            all_chunks.extend(chunks)
-            doc_chunk_counts.append(len(chunks))
-
-        self.logger.info(f"{len(all_chunks)=}")
-        # Second phase: process all chunks in batches into all_chunk_embeddings
-        document_embeddings = []
-        if all_chunks:
-            all_chunk_embeddings = self.get_chunk_embeddings(all_chunks, batch_size)
-
-            # group and average chunk-level embeddings back to document-level embeddings
-            chunk_idx = 0
-            for chunk_count in doc_chunk_counts:
-                if chunk_count > 0:
-                    doc_chunk_embeddings = all_chunk_embeddings[chunk_idx:chunk_idx + chunk_count]
-                    averaged_embedding = np.mean(doc_chunk_embeddings, axis=0)
-                    document_embeddings.append(averaged_embedding.tolist())
-                    chunk_idx += chunk_count
-        self.logger.info(f"{len(document_embeddings)=}")
-        return document_embeddings
-
-    # This function is used to create embeddings for a list of documents without chunking
+    
+    # This function is used to create embeddings for a list of documents
     def _compute_embeddings(self, docs: list, embed_batch_size: int) -> list[list[float]]:
         all_embeddings_batches = [] # Temporary list to hold NumPy arrays
 
@@ -478,20 +349,13 @@ class TextEncoderTransform(AbstractTableTransform):
 
         if not self.embeddings_exist:
             documents = table.column(self.content_column_name).to_pylist()
-            if self.embeddings_in_chunks:
-                self.logger.info(f"compute embeddings_in_chunks for {file_name}")
-                embeddings = self._compute_embeddings_in_chunks(documents, self.embedding_batch_size)
-            else:
-                self.logger.info(f"compute embeddings without chunking for {file_name}")
-                embeddings = self._compute_embeddings(documents, self.embedding_batch_size)
-            # embedding_dtype = pa.list_(pa.float16(), len(embeddings[0]))
-            # embeddings_float16 = [np.array(emb, dtype=np.float16) for emb in embeddings]
-            # embeddings_pa_array = pa.array(embeddings_float16, type=embedding_dtype)
+            self.logger.info(f"compute embeddings for {file_name}.")
+            embeddings = self._compute_embeddings(documents, self.embedding_batch_size)
             embeddings_pa_array = self._converting_embeddings_list_to_pa_array(embeddings)
             new_table = table.add_column(len(table.schema), self.output_embeddings_column_name, embeddings_pa_array)
         else:
             embeddings = table.column(self.output_embeddings_column_name).to_pylist()
-            assert len(embeddings) > 0, f"No embbeddings are loaded from input parquet"
+            assert len(embeddings) > 0, f"Embeddings are not available in parquet."
             embeddings_pa_array = self._converting_embeddings_list_to_pa_array(embeddings)
             new_table = table.set_column(len(table.schema)-1, self.output_embeddings_column_name, embeddings_pa_array)
         
@@ -604,20 +468,6 @@ class TextEncoderTransformConfiguration(TransformConfiguration):
             required=False,
             default=default_embeddings_exist,
             help="A flag indicating whether or not embeddings exist in parquet",
-        )
-        parser.add_argument(
-            f"--{embeddings_in_chunks_cli_param}",
-            type=bool,
-            required=False,
-            default=default_embeddings_in_chunks,
-            help="A flag to indicate whether or not embeddings should be created by chunking the text first",
-        )
-        parser.add_argument(
-            f"--{embeddings_max_num_chunks_cli_param}",
-            type=int,
-            required=False,
-            default=default_embeddings_max_num_chunks,
-            help="max num of chunks to create chunk-embeddings for a document",
         )
         parser.add_argument(
             f"--{embeddings_in_parquet_cli_param}",

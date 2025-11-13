@@ -2,9 +2,7 @@
 usage() {
 cat << EOF
 Check that each transform in transforms/<category>/<transform> has a corresponding 
-  .github/workflows/test-<category>-<transforms>.yml file and,
-  .github/workflows/test-<category>-<transforms>-kfp.yml file if 
-	there is a kfp_ray directory for the transform, and
+  .github/workflows/test-<category>-<transforms>.yml file and
 	the transform is not in the kfp black list.
 Options:
    -show-kfp-black-list: prints the space separate list of transform 

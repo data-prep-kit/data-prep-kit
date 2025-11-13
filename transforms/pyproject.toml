@@ -1,6 +1,6 @@
 [project]
 name = "data_prep_toolkit_transforms"
-version = "1.1.6.dev0"
+version = "1.1.6.dev2"
 requires-python = ">=3.10,<3.13"
 keywords = ["transforms", "data preprocessing", "data preparation", "llm", "generative", "ai", "fine-tuning", "llmapps" ]
 description = "Data Preparation Toolkit Transforms using Ray"
@@ -71,10 +71,7 @@ all = { file = [
 "universal/fineweb_quality_annotator/requirements.txt",
 "universal/gopher_repetition_annotator/requirements.txt",
 "universal/opensearch/requirements.txt",
-
-"images/faces/requirements.txt",
-"images/nsfw/requirements.txt",
-"images/people/requirements.txt"
+    
 ]}
 
 language = { file = [

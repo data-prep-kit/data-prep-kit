@@ -200,53 +200,6 @@ class TextEncoderTransform(AbstractTableTransform):
         if self.lanceDB_total_rows >= self.lanceDB_batch_size:
             self._lanceDB_flush()
     
-    def _rearrange_table_order(self, table: pa.Table, desired_order: list[str]) -> pa.Table:
-        selected_columns = [table.field(col) for col in desired_order]
-        selected_arrays = [table.column(col) for col in desired_order]
-        return pa.Table.from_arrays(selected_arrays, schema=pa.schema(selected_columns))
-
-    # This function is used to reorder the schema order in a table for some special cases
-    # The cases are due to the last few snapshots of the Gneissweb dataset.
-    def _reorder_table_lanceDB_buffer(self):
-        buffer = []
-        for table in self.lanceDB_buffer:
-            # find the schema that starts with "text"
-            if 'text' == table.schema.names[0]:
-                desired_order = table.column_names
-                break
-        for table in self.lanceDB_buffer:
-            if table.column_names != desired_order:
-                table = self._rearrange_table_order(table, desired_order)
-            buffer.append(table)
-        self.lanceDB_buffer = buffer
-
-
-    def _cast_columns_in_schema(self, columns_to_cast):
-        buffer = []
-        for table in self.lanceDB_buffer:
-            for col_name in columns_to_cast:
-                col_index = table.column_names.index(col_name)
-                original_field = table.schema.field(col_name)
-                original_array = table.column(col_name)
-
-                if original_field.type != pa.string():
-                    # print(f"  Casting '{col_name}' from {original_field.type} to {pa.string()}")
-                    # 1. Cast the array data
-                    casted_array = original_array.cast(pa.string())
-                    
-                    # 2. Create the new field definition for this column
-                    # Preserve nullability from the original field
-                    new_field = pa.field(col_name, pa.string(), nullable=original_field.nullable)
-                    
-                    # 3. Replace the column in the table (creates a new table)
-                    table = table.set_column(col_index, new_field, casted_array)
-                # else:
-                #     print(f"  Column '{col_name}' already {target_type}, no cast needed.")
-                #     pass
-            buffer.append(table)        
-        self.lanceDB_buffer = buffer
-
-
 
     def _lanceDB_flush(self):
         """Flush the accumulated table data to LanceDB when buffer is full."""

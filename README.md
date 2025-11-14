@@ -25,10 +25,10 @@ Data Prep Kit can readily scale from a commodity laptop all the way to data cent
 ## Features <a name = "features"></a>
 
 - The kit provides a growing set of [modules/transforms](#table) targeting laptop-scale to datacenter-scale processing.
-- The data modalities supported _today_ are: Natural Language and Code.
+- The data modalities supported _today_ are: Natural Language, Code, and Image (added in Nov. 2025). 
 - The modules are built on common frameworks for Python, Ray and Spark runtimes for scaling up data processing.
-- The kit provides a framework for developing custom transforms for processing parquet files. 
-- The kit uses [Kubeflow Pipelines](https://www.kubeflow.org/docs/components/pipelines/v1/introduction/)-based [workflow automation](kfp/doc/simple_transform_pipeline.md).
+- The kit provides a framework for developing custom transforms for processing Parquet files. Support to include ZIP, NDJSON, and JSON formats in addition to Parquet was added in Nov. 2025. 
+- The kit uses [Kubeflow Pipelines](https://www.kubeflow.org/docs/components/pipelines/v1/introduction/)-based [workflow automation](kfp/doc/simple_transform_pipeline.md). In Nov. 2025, Kubernetes deployment YAMLs for [Tekton](https://tekton.dev/) were introduced, simplifying pipeline composition without relying on the Kubeflow Pipelines (KFP) infrastructure.
 
 
 ## Installation
@@ -95,6 +95,10 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 | [Bloom filter](transforms/universal/bloom/README.md)                         | :white_check_mark: |  |                    |  |
 | [Collapse(column concatenation)](transforms/universal/collapse/README.md)                         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Blocklist](transforms/universal/blocklist/README.md)                         | :white_check_mark: |  :white_check_mark: |                    | :white_check_mark: |
+| [C4 annotator](transforms/universal/c4_annotator/README.md)                         | :white_check_mark: |  :white_check_mark: |                    | :white_check_mark: |
+| [Fineweb quality annotator](transforms/universal/fineweb_quality_annotator/README.md)                         | :white_check_mark: |  :white_check_mark: |                    | :white_check_mark: |
+| [Gopher repetition annotator](transforms/universal/gopher_repetition_annotator/README.md)                         | :white_check_mark: |  :white_check_mark: |                    | :white_check_mark: |
+| [Opensearch](transforms/universal/opensearch/README.md)                         | :white_check_mark: |  :white_check_mark: |                    | |
 **Language-only**                                                                    |                    |                    |                    |                    |
 | [Language identification](transforms/language/lang_id/README.md)              | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Document quality](transforms/language/doc_quality/README.md)                 | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
@@ -115,6 +119,10 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 | [Semantic file ordering](transforms/code/repo_level_ordering/ray/README.md)          |                    | :white_check_mark: |                    |                    |
 | [License Select Annotation](transforms/code/license_select/README.md)         | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | [Code profiler](transforms/code/code_profiler/README.md)                             | :white_check_mark: | :white_check_mark: |                    |  |
+**Images**                                                                         |                    |                     |             |                    |
+| [Faces](transforms/images/README.md)  | :white_check_mark: | :white_check_mark: |                    |  |
+| [NSFW(Not Safe For Work)](transforms/images/README.md)  | :white_check_mark: | :white_check_mark: |                    |  |
+| [People](transforms/images/README.md)  | :white_check_mark: | :white_check_mark: |                    |  |
 
 </details>
 

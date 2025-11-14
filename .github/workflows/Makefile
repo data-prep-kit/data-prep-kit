@@ -11,14 +11,14 @@ LANG_TRANSFORMS=doc_chunk doc_quality lang_id docling2parquet pii_redactor text_
 
 transform-tests:
 	-rm -rf test-universal-*.yml
-	$(MAKE) TRANSFORM_SUBDIR=universal .transform-tests 
-	$(MAKE) TRANSFORM_SUBDIR=universal .transform-kfp-tests
+	$(MAKE) TRANSFORM_SUBDIR=universal .transform-tests
 	-rm -rf test-language-*.yml
-	$(MAKE) TRANSFORM_SUBDIR=language .transform-tests 
-	$(MAKE) TRANSFORM_SUBDIR=language .transform-kfp-tests
+	$(MAKE) TRANSFORM_SUBDIR=language .transform-tests
 	-rm -rf test-code-*.yml
-	$(MAKE) TRANSFORM_SUBDIR=code .transform-tests 
-	$(MAKE) TRANSFORM_SUBDIR=code .transform-kfp-tests
+	$(MAKE) TRANSFORM_SUBDIR=code .transform-tests
+	-rm -rf test-images-*.yml
+	$(MAKE) TRANSFORM_SUBDIR=images .transform-tests
+
 
 # Expects
 #   TRANSFORM_SUBDIR  transforms subdirectory (such as universal)
@@ -33,20 +33,7 @@ transform-tests:
 	    fi;										\
 	done
 
-.transform-kfp-tests:
-	@KFP_BLACK_LIST=$$(cd ../..; bash scripts/check-workflows.sh -show-kfp-black-list);		\
-	for i in $$(find ../../transforms/$(TRANSFORM_SUBDIR) -mindepth 1 -maxdepth 1 -type d); do	\
-	    z=$$(ls $$i/Makefile*);							\
-	    if [ ! -z "$$z" ]; then							\
-		dir=$$(basename $$i);				\
-		yml=test-$(TRANSFORM_SUBDIR)-$$dir-kfp.yml;                                     \
-		if [ ! -d ../../transforms/$(TRANSFORM_SUBDIR)/$$dir/kfp_ray ]; then		\
-			echo No kfp_ray directory for $$dir. Skipping generation of $$yml;      \
-			continue;			\
-		fi;					\
-		cat test-kfp-transform.template | sed -e "s?@TARGET_TRANSFORM_DIR@?transforms/$${TRANSFORM_SUBDIR}/$$dir?g" > $$yml;    \
-	    fi;						\
-	done
+
 
 
 

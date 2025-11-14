@@ -1,5 +1,5 @@
 numpy<=1.26.4
-docling-core
+docling-core==2.50.1
 docling-ibm-models
 docling-parse
 docling

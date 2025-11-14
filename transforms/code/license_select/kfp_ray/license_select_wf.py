@@ -30,11 +30,11 @@ S3_SECRET = "s3-secret"
 # the name of the job script
 EXEC_SCRIPT_NAME: str = "-m dpk_license_select.ray.runtime"
 
-task_image = "quay.io/dataprep1/data-prep-kit/license_select-ray:latest"
+task_image = "quay.io/dataprep1/data-prep-kit/license_select-ray:1.1.6"
 
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:1.1.6"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)

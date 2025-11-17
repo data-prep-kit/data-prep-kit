@@ -17,14 +17,14 @@ REQUIRED_PYTHON_VERSIONS=">=3.10,<3.13"
 # The suffix is used to create intermediate dev wheels that can be published to pypi
 # for integration testing or other
 
-DPK_NEXT_RELEASE=1.1.6
+DPK_NEXT_RELEASE=1.1.7
 DPK_VERSION_SUFFIX=.dev0
 
 
 DPK_CONNECTOR_NEXT_RELEASE=0.2.4
 DPK_CONNECTOR_SUFFIX=.dev0
 
-TRANSFORM_NEXT_RELEASE=1.1.6
+TRANSFORM_NEXT_RELEASE=1.1.7
 TRANSFORM_VERSION_SUFFIX=.dev0
 
 ################################################################################

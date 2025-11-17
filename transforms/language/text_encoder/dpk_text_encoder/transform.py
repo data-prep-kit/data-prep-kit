@@ -26,7 +26,7 @@ from lance.fragment import write_fragments
 
 import pyarrow as pa
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
-from data_processing.utils import CLIArgumentProvider, TransformUtils
+from data_processing.utils import CLIArgumentProvider, TransformUtils, get_dpk_logger
 from sentence_transformers import SentenceTransformer
 from data_processing.data_access import DataAccess
 

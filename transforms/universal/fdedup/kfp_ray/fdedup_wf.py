@@ -25,7 +25,7 @@ from src.fdedup_compute_execution_params import (
 from workflow_support.compile_utils import ONE_HOUR_SEC, ONE_WEEK_SEC, DEFAULT_KFP_COMPONENT_SPEC_PATH, ComponentUtils
 
 
-task_image = os.getenv("FDEDUP_IMAGE_LOCATION", "quay.io/dataprep1/data-prep-kit/fdedup-ray:1.1.6")
+task_image = os.getenv("FDEDUP_IMAGE_LOCATION", "quay.io/dataprep1/data-prep-kit/fdedup-ray:latest")
 image_pull_secret = os.getenv("FDEDUP_IMAGE_PULL_SECRET", "my_secret")
 
 # The secret name containing the s3 credentials.
@@ -38,7 +38,7 @@ GET_DUPLICATE_LIST_EXEC_SCRIPT_NAME: str = "-m dpk_fdedup.get_duplicate_list.ray
 DATA_CLEANING_EXEC_SCRIPT_NAME: str = "-m dpk_fdedup.data_cleaning.ray.transform"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:1.1.6"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)

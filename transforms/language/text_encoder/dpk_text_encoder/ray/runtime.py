@@ -13,20 +13,20 @@
 
 import sys
 
-from data_processing.runtime.pure_python import PythonTransformLauncher
-from data_processing.runtime.pure_python.runtime_configuration import (
-    PythonTransformRuntimeConfiguration,
-)
 from data_processing.utils import ParamsUtils, get_dpk_logger
+from data_processing_ray.runtime.ray import RayTransformLauncher
+from data_processing_ray.runtime.ray.runtime_configuration import (
+    RayTransformRuntimeConfiguration,
+)
 from dpk_text_encoder.transform import TextEncoderTransformConfiguration
 
 
 logger = get_dpk_logger()
 
 
-class TextEncoderPythonTransformConfiguration(PythonTransformRuntimeConfiguration):
+class TextEncoderRayTransformConfiguration(RayTransformRuntimeConfiguration):
     """
-    Implements the PythonTransformConfiguration for TextEncoder as required by the PythonTransformLauncher.
+    Implements the RayTransformConfiguration for TextEncoder as required by the RayTransformLauncher.
     TextEncoder does not use a RayRuntime class so the superclass only needs the base
     python-only configuration.
     """
@@ -53,17 +53,25 @@ class TextEncoder:
             del self.params["output_folder"]
         except:
             pass
+        try:
+            worker_options = {k: self.params[k] for k in ("num_cpus", "memory")}
+            self.params["runtime_worker_options"] = ParamsUtils.convert_to_ast(worker_options)
+            del self.params["num_cpus"]
+            del self.params["memory"]
+        except:
+            pass
 
     def transform(self):
         sys.argv = ParamsUtils.dict_to_req(d=(self.params))
         # create launcher
-        launcher = PythonTransformLauncher(runtime_config=TextEncoderPythonTransformConfiguration())
+        launcher = RayTransformLauncher(TextEncoderRayTransformConfiguration())
         # launch
         return_code = launcher.launch()
         return return_code
 
 
 if __name__ == "__main__":
-    launcher = PythonTransformLauncher(TextEncoderPythonTransformConfiguration())
+    launcher = RayTransformLauncher(TextEncoderRayTransformConfiguration())
     logger.info("Launching text_encoder transform")
     launcher.launch()
+    

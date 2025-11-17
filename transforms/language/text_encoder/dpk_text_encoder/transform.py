@@ -101,10 +101,6 @@ class TextEncoderTransform(AbstractTableTransform):
         """
         super().__init__(config)
         from data_processing.utils import get_dpk_logger
-<<<<<<< HEAD
-
-=======
->>>>>>> 8f01ca4e7 (replacing existing text_encoder with lanceDB)
         self.logger = get_dpk_logger()
 
         self.model_name = config.get(model_name_key, default_model_name)

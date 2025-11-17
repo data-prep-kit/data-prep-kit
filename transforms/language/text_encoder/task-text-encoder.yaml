@@ -1,0 +1,67 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: text-encoder
+spec:
+  params:
+    - name: TEXT_ENCODER_LANCEDB_DATA_URI
+      type: string
+    - name: TEXT_ENCODER_LANCEDB_FRAGMENTS_JSON_FOLDER
+      type: string
+    - name: TEXT_ENCODER_LANCEDB_TABLE_NAME
+      type: string
+    - name: TEXT_ENCODER_MODEL_NAME
+      type: string
+      default: "ibm-granite/granite-embedding-small-english-r2"
+    - name: TEXT_ENCODER_INPUT_FOLDER
+      type: string
+    - name: TEXT_ENCODER_OUTPUT_FOLDER
+      type: string
+    - name: TEXT_ENCODER_CONTENT_COLUMN_NAME
+      type: string
+      default: "contents"
+    - name: TEXT_ENCODER_OUTPUT_EMBEDDINGS_COLUMN_NAME
+      type: string
+      default: "embeddings"
+    - name: RUNTIME_NUM_WORKERS
+      type: string
+      default: "10"
+  workspaces:
+    - name: jobs
+      description: A workspace to mount the job YAML.
+  steps:
+    - name: run-text-encoder-job
+      image: quay.io/dataprep1/data-prep-kit/kubectl:latest
+      env:
+        - name: TEXT_ENCODER_LANCEDB_DATA_URI
+          value: $(params.TEXT_ENCODER_LANCEDB_DATA_URI)
+        - name: TEXT_ENCODER_LANCEDB_FRAGMENTS_JSON_FOLDER
+          value: $(params.TEXT_ENCODER_LANCEDB_FRAGMENTS_JSON_FOLDER)
+        - name: TEXT_ENCODER_LANCEDB_TABLE_NAME
+          value: $(params.TEXT_ENCODER_LANCEDB_TABLE_NAME)
+        - name: TEXT_ENCODER_MODEL_NAME
+          value: $(params.TEXT_ENCODER_MODEL_NAME)
+        - name: TEXT_ENCODER_INPUT_FOLDER
+          value: $(params.TEXT_ENCODER_INPUT_FOLDER)
+        - name: TEXT_ENCODER_OUTPUT_FOLDER
+          value: $(params.TEXT_ENCODER_OUTPUT_FOLDER)
+        - name: TEXT_ENCODER_CONTENT_COLUMN_NAME
+          value: $(params.TEXT_ENCODER_CONTENT_COLUMN_NAME)
+        - name: TEXT_ENCODER_OUTPUT_EMBEDDINGS_COLUMN_NAME
+          value: $(params.TEXT_ENCODER_OUTPUT_EMBEDDINGS_COLUMN_NAME)
+        - name: RUNTIME_NUM_WORKERS
+          value: $(params.RUNTIME_NUM_WORKERS)
+      script: |
+        #!/bin/sh
+        JOBFILE=/workspace/jobs/data-prep-kit/transforms/language/text_encoder/text-encoder-rayjob.yaml
+        ##############################################################################
+        ## Most jobs follow the same pattern, so we can templatize this in the future
+        JOBNAME=`yq '.metadata.name' $JOBFILE`
+        TMPFILE=$(mktemp)
+        envsubst < "$JOBFILE" > "$TMPFILE"
+        cat "$TMPFILE" && kubectl apply -f "$TMPFILE"
+        echo "Wating for Kubernetes rayjob/$JOBNAME to finish or timeout after 24h..."
+        kubectl wait --for=jsonpath='{.status.jobDeploymentStatus}'=Complete rayjob/$JOBNAME --timeout=24h
+        echo "Kubernetes rayjob/$JOBNAME completed. Check log for completion status..."
+        ##############################################################################
+

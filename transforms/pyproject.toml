@@ -237,6 +237,7 @@ dpk_gopher_repetition_annotator = "universal/gopher_repetition_annotator/dpk_gop
 dpk_gneissweb_classification = "language/gneissweb_classification/dpk_gneissweb_classification"
 dpk_rep_removal = "universal/rep_removal/dpk_rep_removal"
 dpk_tokenization2arrow = "universal/tokenization2arrow/dpk_tokenization2arrow"
+dpk_opensearch = "universal/opensearch/dpk_opensearch"
 dpk_code_profiler = "code/code_profiler/dpk_code_profiler"
 dpk_proglang_select = "code/proglang_select/dpk_proglang_select"
 dpk_header_cleanser = "code/header_cleanser/dpk_header_cleanser"
@@ -245,12 +246,12 @@ dpk_code_quality = "code/code_quality/dpk_code_quality"
 dpk_code2parquet = "code/code2parquet/dpk_code2parquet"
 dpk_malware = "code/malware/dpk_malware"
 dpk_repo_level_order = "code/repo_level_order/dpk_repo_level_order"
-dpk_transform_chain = "chain/dpk_transform_chain"
+dpk_chain = "chain/dpk_transform_chain"
 dpk_faces = "images/faces/dpk_faces"
 dpk_nsfw = "images/nsfw/dpk_nsfw"
 dpk_people = "images/people/dpk_people"
 
-dpk_transform_opensearch = "universal/opensearch/dpk_opensearch"
+
 [tool.setuptools.package-data]
 #"*" = ["*.txt"]
 "dpk_rep_removal.rust" = ["**"]

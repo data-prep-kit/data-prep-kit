@@ -31,28 +31,44 @@ from dpk_opensearch.sink_handler import SinkHandler
 warnings.simplefilter('ignore', InsecureRequestWarning)
 warnings.filterwarnings('ignore', message='Connecting to .* using SSL with verify_certs=False is insecure')
 
+endpoint = "endpoint"
+indx = "index"
+docid_column_name_key = "document_id_column_name"
+dimension_size = "dimension_size"
+content_column_name_key = "content_column_name"
+embeddings_column_name_key = "embeddings_column_name"
+filename_column_name_key = "filename"
+delete_index = "delete_index"
+disable_security = "disable_security"
+verify_certs = "verify_certs"
+vector_method = "vector_method"
+
 short_name = "os"
 cli_prefix = f"{short_name}_"
-endpoint_cli_param = f"{cli_prefix}endpoint"
-index_cli_param = f"{cli_prefix}index"
-docid_cli_param = f"{cli_prefix}document_id_column_name"
-embeddings_cli_param = f"{cli_prefix}embeddings_column_name"
-dimension_size_cli_param = f"{cli_prefix}dimension_size"
-content_column_name_cli_param = f"{cli_prefix}content_column_name"
-delete_index_cli_param = f"{cli_prefix}delete_index"
-disable_security_cli_param = f"{cli_prefix}disable_security"
-verify_certs_cli_param = f"{cli_prefix}verify_certs"
-vector_method_cli_param = f"{cli_prefix}vector_method"
+
+endpoint_cli_param = f"{cli_prefix}{endpoint}"
+index_cli_param = f"{cli_prefix}{indx}"
+docid_cli_param = f"{cli_prefix}{docid_column_name_key}"
+embeddings_cli_param = f"{cli_prefix}{embeddings_column_name_key}"
+dimension_size_cli_param = f"{cli_prefix}{dimension_size}"
+content_column_name_cli_param = f"{cli_prefix}{content_column_name_key}"
+delete_index_cli_param = f"{cli_prefix}{delete_index}"
+disable_security_cli_param = f"{cli_prefix}{disable_security}"
+verify_certs_cli_param = f"{cli_prefix}{verify_certs}"
+vector_method_cli_param = f"{cli_prefix}{vector_method}"
 
 default_endpoint = "localhost:9200"
-default_username = "admin"
 default_port = "9200"
 default_docid_column_name = "document_id"
 default_embeddings_column_name = "embeddings"
 default_content_column_name = "contents"
 default_filename = "filename"
 default_delete_index = False
-user = os.environ.get("OPENSEARCH_USERID", "admin")
+default_disable_security = False
+default_verify_certs = False
+default_username = "admin"
+
+user = os.environ.get("OPENSEARCH_USERID", default_username)
 
 filename_column_name_key = "filename"
 

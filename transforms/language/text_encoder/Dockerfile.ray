@@ -9,6 +9,14 @@ USER ray
 # install pytest
 RUN pip install --no-cache-dir pytest
 
+USER root
+RUN \
+    apt-get update \
+    # install vim
+    && apt-get install -y vim \
+    && apt-get clean
+USER ray
+
 ARG PIP_INSTALL_EXTRA_ARGS
 ARG DPK_WHEEL_FILE_NAME
 # Copy and install data processing libraries 
@@ -22,6 +30,7 @@ RUN pip install ${PIP_INSTALL_EXTRA_ARGS} --no-cache-dir -r requirements.txt
 
 # Set environment
 ENV PYTHONPATH /home/ray
+ENV RAY_DEDUP_LOGS=0
 
 # Put these at the end since they seem to upset the docker cache.
 ARG BUILD_DATE

@@ -19,6 +19,7 @@ from data_processing.utils import ParamsUtils, UnrecoverableException
 from data_processing_ray.runtime.ray import (
     DefaultRayTransformRuntime,
     RayTransformLauncher,
+    Transform,
 )
 from data_processing_ray.runtime.ray.runtime_configuration import (
     RayTransformRuntimeConfiguration,
@@ -109,34 +110,9 @@ class DocIDRayTransformRuntimeConfiguration(RayTransformRuntimeConfiguration):
 
 
 # Class used by the notebooks to ingest binary files and create parquet files
-class DocID:
+class DocID(Transform):
     def __init__(self, **kwargs):
-        self.params = {}
-        for key in kwargs:
-            self.params[key] = kwargs[key]
-        # if input_folder and output_folder are specified, then assume it is represent data_local_config
-        try:
-            local_conf = {k: self.params[k] for k in ("input_folder", "output_folder")}
-            self.params["data_local_config"] = ParamsUtils.convert_to_ast(local_conf)
-            del self.params["input_folder"]
-            del self.params["output_folder"]
-        except:
-            pass
-        try:
-            worker_options = {k: self.params[k] for k in ("num_cpus", "memory")}
-            self.params["runtime_worker_options"] = ParamsUtils.convert_to_ast(worker_options)
-            del self.params["num_cpus"]
-            del self.params["memory"]
-        except:
-            pass
-
-    def transform(self):
-        sys.argv = ParamsUtils.dict_to_req(d=(self.params))
-        # create launcher
-        launcher = RayTransformLauncher(DocIDRayTransformRuntimeConfiguration())
-        # launch
-        return_code = launcher.launch()
-        return return_code
+        super().__init__(DocIDRayTransformRuntimeConfiguration(), **kwargs)
 
 
 if __name__ == "__main__":

@@ -77,13 +77,6 @@ run-cli-python-jsonl:
 				--doc_id_doc_column messages \
 				--data_files_to_use "['.jsonl']"
 
-test-notebooks:
-	make venv
-	source venv/bin/activate && pip install jupyterlab nbconvert python-dotenv
-	@for x in $(TRANSFORM_NAME).ipynb $(TRANSFORM_NAME)-ray.ipynb; do \
-		source venv/bin/activate && jupyter nbconvert --execute $$x --to notebook --output=output_notebook.ipynb; \
-		rm -f output_notebook.ipynb; \
-	done
 
 
 

@@ -108,7 +108,7 @@ class Web2ParquetTransform(AbstractTableTransform):
         #############################################################################
         ## The same transform can also be used to store crawled files to local folder
         if self.folder:
-            dao=DataAccessLocal(local_config={'output_folder':self.folder,'input_folder':'.'})
+            dao=DataAccessLocal({'output_folder': self.folder, 'input_folder': '.'})
             for x in self.docs:
                 dao.save_file(self.folder+'/'+x['filename'], x['contents'])
             

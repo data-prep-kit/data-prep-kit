@@ -28,7 +28,7 @@ Data Prep Kit can readily scale from a commodity laptop all the way to data cent
 - The data modalities supported _today_ are: Natural Language, Code, and Image. 
 - The modules are built on common frameworks for Python, Ray and Spark runtimes for scaling up data processing.
 - The kit provides a framework for developing custom transforms for processing Parquet files as well as ZIP, NDJSON, and JSONL file formats. 
-- The kit uses [Kubeflow Pipelines](https://www.kubeflow.org/docs/components/pipelines/v1/introduction/)-based [workflow automation](kfp/doc/simple_transform_pipeline.md). In Nov. 2025, Kubernetes deployment YAMLs for [Tekton](https://tekton.dev/) were introduced, simplifying pipeline composition without relying on the Kubeflow Pipelines (KFP) infrastructure.
+- The kit has been using [Kubeflow Pipelines (KFP)](https://www.kubeflow.org/docs/components/pipelines/v1/introduction/)-based [workflow automation](kfp/doc/simple_transform_pipeline.md). It now provides examples of how a single transform can be deployed on Kubernetes clusters as a Python or a Ray job. Additionally, when multiple transforms are deployed in a sequence, the kit uses [Tekton](https://tekton.dev/) pipelines, simplifying pipeline composition without relying on the KFP infrastructure.
 
 
 ## Installation

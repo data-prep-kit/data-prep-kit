@@ -19,38 +19,17 @@ from data_processing.runtime.pure_python import (
     DefaultPythonTransformRuntime,
     PythonTransformLauncher,
     PythonTransformRuntimeConfiguration,
+    Transform,
 )
 from data_processing.transform import TransformStatistics
 from data_processing.utils import ParamsUtils
 from dpk_doc_id.transform import (
-    DocIDTransformBase,
+    DocIDTransform,
     DocIDTransformConfigurationBase,
     IDGenerator,
     id_generator_key,
     start_id_key,
 )
-
-
-class DocIDTransform(DocIDTransformBase):
-    """
-    Implements schema modification of a pyarrow Table.
-    """
-
-    def __init__(self, config: dict[str, Any]):
-        """
-        Initialize based on the dictionary of configuration information.
-        """
-        # Make sure that the param name corresponds to the name used in apply_input_params method
-        super().__init__(config)
-        self.id_generator = config.get(id_generator_key, IDGenerator(config.get(start_id_key, 1)))
-
-    def _get_starting_id(self, n_rows: int) -> int:
-        """
-        Get starting ID
-        :param n_rows - number of rows in the table
-        :return: starting id for the table
-        """
-        return self.id_generator.get_ids(n_rows=n_rows)
 
 
 class DocIDTransformConfiguration(DocIDTransformConfigurationBase):
@@ -116,27 +95,9 @@ class DocIDPythonTransformRuntimeConfiguration(PythonTransformRuntimeConfigurati
         )
 
 
-class DocID:
+class DocID(Transform):
     def __init__(self, **kwargs):
-        self.params = {}
-        for key in kwargs:
-            self.params[key] = kwargs[key]
-        # if input_folder and output_folder are specified, then assume it is represent data_local_config
-        try:
-            local_conf = {k: self.params[k] for k in ("input_folder", "output_folder")}
-            self.params["data_local_config"] = ParamsUtils.convert_to_ast(local_conf)
-            del self.params["input_folder"]
-            del self.params["output_folder"]
-        except:
-            pass
-
-    def transform(self):
-        sys.argv = ParamsUtils.dict_to_req(d=(self.params))
-        # create launcher
-        launcher = PythonTransformLauncher(DocIDPythonTransformRuntimeConfiguration())
-        # launch
-        return_code = launcher.launch()
-        return return_code
+        super().__init__(DocIDPythonTransformRuntimeConfiguration(), **kwargs)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-FROM docker.io/python:3.10.14-slim-bullseye
+FROM docker.io/python:3.14-slim
 
 RUN apt-get update && apt-get install -y \
     libgomp1 \

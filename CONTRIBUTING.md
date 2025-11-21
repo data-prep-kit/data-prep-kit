@@ -39,7 +39,18 @@ You will now include the flag `-s | --sign-off` when you commit a change to your
 ```
 git commit -s -m "your commit message"
 ```
+### Coding style guidelines
 
+We also have a requirement that the [pre-commit](https://pre-commit.com/) tool should be installed using the steps below:
+
+#### Installation Steps
+```shell
+pip install pre-commit
+...
+git clone git@github.com:data-prep-kit/data-prep-kit.git
+cd data-prep-kit
+pre-commit install
+```
 
 ### Creating issues
 
@@ -92,6 +103,3 @@ When submitting a PR that has been signed-off (please see above for the signing 
 
 Please note the many useful options of the make command, as shown by using `make help`, that will take care of manual steps that would have been needed for tasks such as building, publishing, setting up or testing transforms in most directories.
 
-## Coding style guidelines
-
-Coding style as enforced by `pre-commit`.

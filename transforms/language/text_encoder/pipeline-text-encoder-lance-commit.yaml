@@ -1,0 +1,99 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: text-encoder-lance-commit
+spec:
+  workspaces:
+    - name: dpk-pipeline-ws
+  params:
+    - name: TEXT_ENCODER_LANCEDB_DATA_URI
+      type: string
+    - name: TEXT_ENCODER_LANCEDB_FRAGMENTS_JSON_FOLDER
+      type: string
+    - name: TEXT_ENCODER_LANCEDB_TABLE_NAME
+      type: string
+    - name: TEXT_ENCODER_MODEL_NAME
+      type: string
+      default: "ibm-granite/granite-embedding-small-english-r2"
+    - name: TEXT_ENCODER_INPUT_FOLDER
+      type: string
+    - name: TEXT_ENCODER_OUTPUT_FOLDER
+      type: string
+    - name: TEXT_ENCODER_CONTENT_COLUMN_NAME
+      type: string
+      default: "contents"
+    - name: TEXT_ENCODER_OUTPUT_EMBEDDINGS_COLUMN_NAME
+      type: string
+      default: "embeddings"
+    - name: RUNTIME_NUM_WORKERS
+      type: string
+      default: "10"
+    - name: LANCEDB_STORAGE_TYPE
+      type: string
+    - name: LANCEDB_URI
+      type: string
+    - name: LANCEDB_DATA_URI
+      type: string
+    - name: LANCEDB_TABLE_NAME
+      type: string
+    - name: LANCEDB_FRAGMENTS_JSON_FOLDER
+      type: string
+    - name: LANCEDB_TABLE_SCHEMA_FOLDER
+      type: string
+  tasks:
+    - name: execute-repo-task
+      taskRef:
+        name: repo
+      workspaces:
+        - name: jobs
+          workspace: dpk-pipeline-ws
+    - name: execute-text-encoder-task
+      taskRef:
+        name: text-encoder
+      runAfter:
+        - execute-repo-task
+      workspaces:
+        - name: jobs
+          workspace: dpk-pipeline-ws
+      params:
+        - name: TEXT_ENCODER_LANCEDB_DATA_URI
+          value: $(params.TEXT_ENCODER_LANCEDB_DATA_URI)
+        - name: TEXT_ENCODER_LANCEDB_FRAGMENTS_JSON_FOLDER
+          value: $(params.TEXT_ENCODER_LANCEDB_FRAGMENTS_JSON_FOLDER)
+        - name: TEXT_ENCODER_LANCEDB_TABLE_NAME
+          value: $(params.TEXT_ENCODER_LANCEDB_TABLE_NAME)
+        - name: TEXT_ENCODER_MODEL_NAME
+          value: $(params.TEXT_ENCODER_MODEL_NAME)
+        - name: TEXT_ENCODER_INPUT_FOLDER
+          value: $(params.TEXT_ENCODER_INPUT_FOLDER)
+        - name: TEXT_ENCODER_OUTPUT_FOLDER
+          value: $(params.TEXT_ENCODER_OUTPUT_FOLDER)
+        - name: TEXT_ENCODER_CONTENT_COLUMN_NAME
+          value: $(params.TEXT_ENCODER_CONTENT_COLUMN_NAME)
+        - name: TEXT_ENCODER_OUTPUT_EMBEDDINGS_COLUMN_NAME
+          value: $(params.TEXT_ENCODER_OUTPUT_EMBEDDINGS_COLUMN_NAME)
+        - name: RUNTIME_NUM_WORKERS
+          value: $(params.RUNTIME_NUM_WORKERS)
+    - name: execute-lance-commit-task
+      taskRef:
+        name: lance-commit
+      runAfter:
+        - execute-text-encoder-task
+      workspaces:
+        - name: jobs
+          workspace: dpk-pipeline-ws
+      params:
+        - name: LANCEDB_STORAGE_TYPE
+          value: $(params.LANCEDB_STORAGE_TYPE)
+        - name: LANCEDB_URI
+          value: $(params.LANCEDB_URI)
+        - name: LANCEDB_DATA_URI
+          value: $(params.LANCEDB_DATA_URI)
+        - name: LANCEDB_TABLE_NAME
+          value: $(params.LANCEDB_TABLE_NAME)
+        - name: LANCEDB_FRAGMENTS_JSON_FOLDER
+          value: $(params.LANCEDB_FRAGMENTS_JSON_FOLDER)
+        - name: LANCEDB_TABLE_SCHEMA_FOLDER
+          value: $(params.LANCEDB_TABLE_SCHEMA_FOLDER)
+
+   

@@ -380,8 +380,27 @@ class Docling2ParquetTransform(AbstractBinaryTransform):
 
             if picture_counter > 0:
                 file_data["num_pictures"] = picture_counter
-                
+
+            if self.contents_type == docling2parquet_contents_types.JSON:
+                file_data["contents"] = self._remove_pictures_from_contents(content_string)
+
         return file_data
+
+    def _remove_pictures_from_contents(self, content_string: str) -> str:
+        import json
+
+        json_content = json.loads(content_string)
+        if 'pictures' in json_content:
+            for pic in json_content['pictures']:
+                if 'image' in pic:
+                    del pic['image']
+
+        if 'pages' in json_content:
+            for key in json_content['pages']:
+                if 'image' in json_content['pages'][key]:
+                    del json_content['pages'][key]['image']
+
+        return ujson_dumps(json_content, double_precision=self.double_precision)
 
     def _detect_mime(self, file_name: str, content_bytes: bytes) -> tuple[str|None, str]:
         kind = filetype.guess(content_bytes)

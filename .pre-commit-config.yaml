@@ -18,19 +18,7 @@ repos:
       hooks:
           - id: isort
     - repo: https://github.com/ibm/detect-secrets
-      rev: 0.13.1+ibm.62.dss
+      rev: 0.13.1+ibm.64.dss
       hooks:
           - id: detect-secrets # pragma: whitelist secret
             args: [--baseline, .secrets.baseline, --fail-on-unaudited]
-### Exclude submodules as some are part of other organizations with their own policies
-exclude: |
-    (?x)^(
-        autopilot/.*|
-        codeflare-cli/.*|
-        codeflare-sdk/.*|
-        docker_build_scripts/.*|
-        mcad/.*|
-        datalake/.*|
-        torchx/.*|
-        tsfm/.*
-    )$

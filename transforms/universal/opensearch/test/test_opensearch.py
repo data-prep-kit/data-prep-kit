@@ -28,8 +28,7 @@ from data_processing.utils import get_dpk_logger
 logger = get_dpk_logger()
 
 from dpk_opensearch.transform import (
-    endpoint_cli_param, default_embeddings_column_name, index_cli_param, filename_column_name_key,
-    vector_method_cli_param, disable_security_cli_param
+    endpoint, indx, filename_column_name_key, vector_method
 )
 
 input_test_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "test-data", "input"))
@@ -162,14 +161,14 @@ class TestOpenSearch:
 #            pytest.skip("Skipping all tests running from github action")
 
         logger.info("Testing connection to OpenSearch")
-        config = {endpoint_cli_param: 'localhost:9200'}
-        vector_method = os.getenv("VECTOR_METHOD")
-        if vector_method != '{}':
-            config[vector_method_cli_param] = vector_method
+        config = {endpoint: 'localhost:9200'}
+        vector_m = os.getenv("VECTOR_METHOD")
+        if vector_m != '{}':
+            config[vector_method] = vector_m
         if method.__name__ == "test_index_name":
             from datetime import datetime
             index_name = f"dpk_test_{datetime.now().strftime('%y%m%d%H%M%S')}"
-            config[index_cli_param] = index_name
+            config[indx] = index_name
         self.x = OpenSearchTransform(config=config)
         try:
             self.x.check_index()

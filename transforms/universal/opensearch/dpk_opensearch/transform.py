@@ -112,18 +112,17 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
 
         super().__init__(config)
         self.logger = get_dpk_logger()
-
         x = config.get(endpoint_cli_param, default_endpoint).split(':')
 
-        self.doc_id_column = config.get(docid_cli_param, default_docid_column_name)
-        self.index_name = config.get(index_cli_param, f"dpk_{datetime.now().strftime('%y%m%d%H%M%S')}")
-        self.embeddings_column = config.get(embeddings_cli_param, default_embeddings_column_name)
-        self.content_column = config.get(content_column_name_cli_param, default_content_column_name)
-        self.dimension_size = config.get(dimension_size_cli_param)
-        self.delete_index = config.get(delete_index_cli_param, default_delete_index)
-        self.verify_certs = config.get(verify_certs_cli_param, False)
-        self.disable_security = config.get(disable_security_cli_param, False)
-        self.vector_method = config.get(vector_method_cli_param, None)
+        self.doc_id_column = config.get(docid_column_name_key, default_docid_column_name)
+        self.index_name = config.get(indx, f"dpk_{datetime.now().strftime('%y%m%d%H%M%S')}")
+        self.embeddings_column = config.get(embeddings_column_name_key, default_embeddings_column_name)
+        self.content_column = config.get(content_column_name_key , default_content_column_name)
+        self.dimension_size = config.get(dimension_size)
+        self.delete_index = config.get(delete_index, default_delete_index)
+        self.verify_certs = config.get(verify_certs, False)
+        self.disable_security = config.get(disable_security, False)
+        self.vector_method = config.get(vector_method, None)
         self.apply_knn = False
 
         self.host = x[0]
@@ -462,7 +461,7 @@ class OpenSearchTransformConfiguration(TransformConfiguration):
         :param args: user defined arguments.
         :return: True, if validate pass or False otherwise
         """
-        captured = CLIArgumentProvider.capture_parameters(args, cli_prefix, True)
+        captured = CLIArgumentProvider.capture_parameters(args, cli_prefix, False)
 
         self.params = self.params | captured
         self.logger.info(f"OpenSearch parameters are : {self.params}")

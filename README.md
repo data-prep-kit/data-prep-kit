@@ -69,8 +69,6 @@ All the transforms in the kit include small sample data files for testing, but a
 
 ## Supported data transforms <a name="table"></a>
 
-<details>
-      <summary>Click to expand for detailed list of transforms.</summary>
 
 The matrix below shows the the combination of modules and supported runtimes. All the modules can be accessed [here](transforms) and can be combined to form data processing pipelines, as shown in the [examples](examples) folder. 
 

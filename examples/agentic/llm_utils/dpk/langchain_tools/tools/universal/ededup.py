@@ -90,14 +90,18 @@ class EdedupTransform(BaseTool):
             add_transform_params(transform_params, kwargs)
             if runtime_type.strip().lower() == "ray":
                 from data_processing_ray.runtime.ray import RayTransformLauncher
-                from dpk_ededup.ray import EdedupRayTransformRuntimeConfiguration
+                from dpk_ededup.ray.transform import (
+                    EdedupRayTransformRuntimeConfiguration,
+                )
 
                 sys.argv = ParamsUtils.dict_to_req(d=transform_params)
                 launcher = RayTransformLauncher(EdedupRayTransformRuntimeConfiguration())
 
             elif runtime_type.strip().lower() == "python":
                 from data_processing.runtime.pure_python import PythonTransformLauncher
-                from dpk_ededup import EdedupPythonTransformRuntimeConfiguration
+                from dpk_ededup.transform_python import (
+                    EdedupPythonTransformRuntimeConfiguration,
+                )
 
                 sys.argv = ParamsUtils.dict_to_req(d=transform_params)
                 launcher = PythonTransformLauncher(EdedupPythonTransformRuntimeConfiguration())

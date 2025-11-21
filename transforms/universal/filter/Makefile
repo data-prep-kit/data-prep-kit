@@ -73,3 +73,22 @@ run-spark-cli-sample:
 			--data_local_config "{ 'input_folder' : '../test-data/input', 'output_folder' : '../output'}"  \
 			--filter_criteria_list "[ 'docq_total_words > 100 AND docq_total_words < 200', 'ibmkenlm_docq_perplex_score < 230']"  \
 			--filter_columns_to_drop "[ 'extra', 'cluster' ]"
+
+
+## Deploying rayjob to ocp cluster assumes that 
+### the user is logged in to the cluster (oc login ... )
+### the context is set for the right project/namespace (oc project ...)
+### the namespace includes s3-secret and hf-secret
+### a .env file exists in the current folders with all the environment variables referenced in the job yaml file
+## Include .env file if any to be exported for use by envsubst
+-include .env
+
+run-ray-job:
+ifneq ($(strip $(wildcard .env)),)
+	$(eval export $(shell sed -ne 's/ *#.*$$//; /./ s/=.*$$// p' .env))
+endif
+	envsubst < filter-rayjob.yaml | kubectl apply -f -
+	
+kill-ray-job:
+	export
+	envsubst < filter-rayjob.yaml | kubectl delete -f -

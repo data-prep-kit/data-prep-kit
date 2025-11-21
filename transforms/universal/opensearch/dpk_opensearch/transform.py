@@ -31,28 +31,44 @@ from dpk_opensearch.sink_handler import SinkHandler
 warnings.simplefilter('ignore', InsecureRequestWarning)
 warnings.filterwarnings('ignore', message='Connecting to .* using SSL with verify_certs=False is insecure')
 
+endpoint = "endpoint"
+indx = "index"
+docid_column_name_key = "document_id_column_name"
+dimension_size = "dimension_size"
+content_column_name_key = "content_column_name"
+embeddings_column_name_key = "embeddings_column_name"
+filename_column_name_key = "filename"
+delete_index = "delete_index"
+disable_security = "disable_security"
+verify_certs = "verify_certs"
+vector_method = "vector_method"
+
 short_name = "os"
 cli_prefix = f"{short_name}_"
-endpoint_cli_param = f"{cli_prefix}endpoint"
-index_cli_param = f"{cli_prefix}index"
-docid_cli_param = f"{cli_prefix}document_id_column_name"
-embeddings_cli_param = f"{cli_prefix}embeddings_column_name"
-dimension_size_cli_param = f"{cli_prefix}dimension_size"
-content_column_name_cli_param = f"{cli_prefix}content_column_name"
-delete_index_cli_param = f"{cli_prefix}delete_index"
-disable_security_cli_param = f"{cli_prefix}disable_security"
-verify_certs_cli_param = f"{cli_prefix}verify_certs"
-vector_method_cli_param = f"{cli_prefix}vector_method"
+
+endpoint_cli_param = f"{cli_prefix}{endpoint}"
+index_cli_param = f"{cli_prefix}{indx}"
+docid_cli_param = f"{cli_prefix}{docid_column_name_key}"
+embeddings_cli_param = f"{cli_prefix}{embeddings_column_name_key}"
+dimension_size_cli_param = f"{cli_prefix}{dimension_size}"
+content_column_name_cli_param = f"{cli_prefix}{content_column_name_key}"
+delete_index_cli_param = f"{cli_prefix}{delete_index}"
+disable_security_cli_param = f"{cli_prefix}{disable_security}"
+verify_certs_cli_param = f"{cli_prefix}{verify_certs}"
+vector_method_cli_param = f"{cli_prefix}{vector_method}"
 
 default_endpoint = "localhost:9200"
-default_username = "admin"
 default_port = "9200"
 default_docid_column_name = "document_id"
 default_embeddings_column_name = "embeddings"
 default_content_column_name = "contents"
 default_filename = "filename"
 default_delete_index = False
-user = os.environ.get("OPENSEARCH_USERID", "admin")
+default_disable_security = False
+default_verify_certs = False
+default_username = "admin"
+
+user = os.environ.get("OPENSEARCH_USERID", default_username)
 
 filename_column_name_key = "filename"
 
@@ -96,18 +112,17 @@ class OpenSearchTransform(AbstractTableTransform, SinkHandler):
 
         super().__init__(config)
         self.logger = get_dpk_logger()
-
         x = config.get(endpoint_cli_param, default_endpoint).split(':')
 
-        self.doc_id_column = config.get(docid_cli_param, default_docid_column_name)
-        self.index_name = config.get(index_cli_param, f"dpk_{datetime.now().strftime('%y%m%d%H%M%S')}")
-        self.embeddings_column = config.get(embeddings_cli_param, default_embeddings_column_name)
-        self.content_column = config.get(content_column_name_cli_param, default_content_column_name)
-        self.dimension_size = config.get(dimension_size_cli_param)
-        self.delete_index = config.get(delete_index_cli_param, default_delete_index)
-        self.verify_certs = config.get(verify_certs_cli_param, False)
-        self.disable_security = config.get(disable_security_cli_param, False)
-        self.vector_method = config.get(vector_method_cli_param, None)
+        self.doc_id_column = config.get(docid_column_name_key, default_docid_column_name)
+        self.index_name = config.get(indx, f"dpk_{datetime.now().strftime('%y%m%d%H%M%S')}")
+        self.embeddings_column = config.get(embeddings_column_name_key, default_embeddings_column_name)
+        self.content_column = config.get(content_column_name_key , default_content_column_name)
+        self.dimension_size = config.get(dimension_size)
+        self.delete_index = config.get(delete_index, default_delete_index)
+        self.verify_certs = config.get(verify_certs, False)
+        self.disable_security = config.get(disable_security, False)
+        self.vector_method = config.get(vector_method, None)
         self.apply_knn = False
 
         self.host = x[0]
@@ -446,7 +461,7 @@ class OpenSearchTransformConfiguration(TransformConfiguration):
         :param args: user defined arguments.
         :return: True, if validate pass or False otherwise
         """
-        captured = CLIArgumentProvider.capture_parameters(args, cli_prefix, True)
+        captured = CLIArgumentProvider.capture_parameters(args, cli_prefix, False)
 
         self.params = self.params | captured
         self.logger.info(f"OpenSearch parameters are : {self.params}")

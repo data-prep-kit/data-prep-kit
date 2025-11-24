@@ -21,6 +21,7 @@ from dpk_doc_quality.spark.runtime import DocQualitySparkTransformConfiguration
 
 
 
+
 class TestSparkDocQualityTransform(AbstractTransformLauncherTest):
     """
     Extends the super-class to define the test data for the tests defined there.

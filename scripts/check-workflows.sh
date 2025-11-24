@@ -2,9 +2,7 @@
 usage() {
 cat << EOF
 Check that each transform in transforms/<category>/<transform> has a corresponding 
-  .github/workflows/test-<category>-<transforms>.yml file and,
-  .github/workflows/test-<category>-<transforms>-kfp.yml file if 
-	there is a kfp_ray directory for the transform, and
+  .github/workflows/test-<category>-<transforms>.yml file and
 	the transform is not in the kfp black list.
 Options:
    -show-kfp-black-list: prints the space separate list of transform 
@@ -35,11 +33,6 @@ for i in $(find transforms  -maxdepth 2 -mindepth 2 -type d | grep -v venv); do
     category=$(basename $category)
     workflows=.github/workflows/test-$category-$transform.yml
     is_blacklisted=$(echo $KFP_BLACK_LIST | grep $transform)     
-    if [ -d $i/kfp_ray -a -z "$is_blacklisted" ]; then
-    	workflows="$workflows .github/workflows/test-$category-$transform-kfp.yml"
-    else
-	echo KFP workflow for $transform is not expected. 
-    fi
     for workflow in $workflows; do
 	if [ ! -e $workflow ] && [ -e transforms/$category/$transform/Makefile ]; then 
 	    echo Missing $workflow for transform $category/$transform 

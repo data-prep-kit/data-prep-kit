@@ -1,0 +1,33 @@
+services:
+  opensearch-node1:
+    image: opensearchproject/opensearch:3.2.0
+    container_name: opensearch-node1
+    environment:
+      - discovery.type=single-node
+      - network.host=0.0.0.0
+      - DISABLE_SECURITY_PLUGIN=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200
+      - 9600:9600
+    healthcheck:
+      test: ["CMD", "curl",  "http://localhost:9200"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:3.2.0
+    container_name: opensearch-dashboards
+    ports:
+      - 5601:5601
+    environment:
+      - OPENSEARCH_HOSTS=["http://opensearch-node1:9200"]
+      - DISABLE_SECURITY_DASHBOARDS_PLUGIN=true
+    depends_on:
+      opensearch-node1:
+        condition: service_healthy
+

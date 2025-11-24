@@ -1,0 +1,51 @@
+# Specify user prefix (UP) and run prefix (RP) before applying the pipeline run
+# UP=MT RP=`date +"%m%d%H"` envsubst < run-gwclassification.yaml | kubectl apply -f -
+
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: text-encoder-lance-commit
+spec:
+  pipelineRef:
+    name: text-encoder-lance-commit
+  timeouts:
+    pipeline: "24h"  # Set to 0 to disable timeout
+  params:
+      - name: TEXT_ENCODER_LANCEDB_DATA_URI
+        value: "s3://bucket-wikimedia-1/DPK_tests/text_encoder/tekton_tests/lance/tekton_tests.db/tekton_tests.lance/"
+      - name: TEXT_ENCODER_LANCEDB_FRAGMENTS_JSON_FOLDER
+        value: "bucket-wikimedia-1/DPK_tests/text_encoder/tekton_tests/lance/tekton_tests_fragments_json/"
+      - name: TEXT_ENCODER_LANCEDB_TABLE_NAME
+        value: "tekton_tests"
+      - name: TEXT_ENCODER_MODEL_NAME
+        value: "ibm-granite/granite-embedding-small-english-r2"
+      - name: TEXT_ENCODER_INPUT_FOLDER
+        value: "bucket-wikimedia-1/DPK_tests/text_encoder/tekton_tests/input_parquets/"
+      - name: TEXT_ENCODER_OUTPUT_FOLDER
+        value: "bucket-wikimedia-1/DPK_tests/text_encoder/tekton_tests/input_parquets_tmp4embeddings/"
+      - name: TEXT_ENCODER_CONTENTS_NAME
+        value: "contents"
+      - name: TEXT_ENCODER_OUTPUT_EMBEDDINGS_COLUMN_NAME
+        value: "embeddings"
+      - name: RUNTIME_NUM_WORKERS
+        value: "2"
+      - name: LANCEDB_STORAGE_TYPE
+        value: "s3"
+      - name: LANCEDB_URI
+        value: "s3://bucket-wikimedia-1/DPK_tests/text_encoder/tekton_tests/lance/tekton_tests.db/"
+      - name: LANCEDB_DATA_URI
+        value: "s3://bucket-wikimedia-1/DPK_tests/text_encoder/tekton_tests/lance/tekton_tests.db/tekton_tests.lance/"
+      - name: LANCEDB_TABLE_NAME
+        value: "tekton_tests"
+      - name: LANCEDB_FRAGMENTS_JSON_FOLDER
+        value: "bucket-wikimedia-1/DPK_tests/text_encoder/tekton_tests/lance/tekton_tests_fragments_json/"
+      - name: LANCEDB_TABLE_SCHEMA_FOLDER
+        value: "bucket-wikimedia-1/DPK_tests/text_encoder/tekton_tests/input_parquets_tmp4embeddings/"
+  workspaces:
+      - name: dpk-pipeline-ws
+        volumeClaimTemplate:
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 1Gi

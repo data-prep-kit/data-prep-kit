@@ -1,5 +1,24 @@
 # Data Prep Kit Release notes
 
+## Release 1.1.6 - 11/13/2025
+
+### Transforms
+
+1. OpenSearch Transform: Enables keyword and vector-based search capabilities using OpenSearch
+   - If the table includes an embeddings column, the transform sets up a k-NN vector index for similarity searches.
+1. Image Transform Modality: Introduced three new transforms for processing image data:
+   - Faces: Detects people and faces using a pre-trained face detection model.
+   - NSFW: Scores content for Not Safe For Work using Hugging Face image-classification pipeline.
+   - People: Counts faces and supports face blurring for privacy.   
+1. Docling2Parquet: Updated options to extract binary image data (images/pages) into a dedicated column (`image_bins`) in Parquet output.
+
+### General
+
+1. Tekton deployment yamls: Introduced Kubernetes deployment YAMLs for Tekton, simplifying pipeline composition without relying on Kubeflow Pipelines (KFP) infrastructure.
+1. Input Handling: Expanded runtime input support to include ZIP, NDJSON, and JSON formats in addition to Parquet.
+1. Logging System: Implemented a new JSON-based logging system that consolidates all DPK logs into a single logger.
+
+
 ## Release 1.1.5 - 10/2/2025
 
 ### Transforms

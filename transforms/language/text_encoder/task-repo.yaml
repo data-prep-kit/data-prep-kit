@@ -1,0 +1,33 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: repo
+spec:
+  params:
+    - name: REPO_URL
+      type: string
+      default: https://github.com/klwuibm/data-prep-kit.git
+    - name: REPO_BRANCH
+      type: string
+      default: text_encoder
+      # default: feature/tekton
+  workspaces:
+    - name: jobs
+      description: A workspace to mount the job YAML.
+  steps:
+    - name: run-repo-job
+      image: quay.io/dataprep1/data-prep-kit/kubectl:latest
+      script: |
+        #!/bin/sh
+        df -h
+        REPO_URL_VAR="$(params.REPO_URL)"
+        REPO_BRANCH_VAR="$(params.REPO_BRANCH)"
+        TARGET_DIR="/workspace/jobs/data-prep-kit"
+
+        echo "Cloning branch: $REPO_BRANCH_VAR from URL: $REPO_URL_VAR to $TARGET_DIR"
+        
+        # Use the local shell variables, which the shell understands perfectly.
+        git clone -b "${REPO_BRANCH_VAR}" --depth 1 "${REPO_URL_VAR}" "${TARGET_DIR}"
+
+
+

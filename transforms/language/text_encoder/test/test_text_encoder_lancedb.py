@@ -43,6 +43,7 @@ text_encoder_params = {
     "content_column_name": "contents",
     "output_embeddings_column_name": "embeddings",
     "embedding_batch_size": 5,
+    "embeddings_in_lanceDB": True,
     "lanceDB_data_uri": lancedb_data_uri,
     "lanceDB_batch_size": 10,
     "lanceDB_fragments_json_folder": fragment_dir,

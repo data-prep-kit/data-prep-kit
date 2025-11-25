@@ -37,7 +37,6 @@ dal = DataAccessLocal(
 text_encoder_params = {
     "data_access": dal,
     "model_name": "ibm-granite/granite-embedding-small-english-r2",
-    "embeddings_in_parquet": True,
     "content_column_name": "contents",
     "output_embeddings_column_name": "embeddings",
     "embedding_batch_size": 5,

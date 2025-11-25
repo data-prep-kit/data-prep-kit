@@ -35,7 +35,6 @@ run-list-sample:
 ############
 
 run-tkn2arrow-python:
-	# TODO: set env variable HF_TOKEN to download tokenizer from HF
 	make venv
 	source venv/bin/activate && \
 	rm -rf output/ds02 && \
@@ -43,7 +42,6 @@ run-tkn2arrow-python:
             --data_local_config "{ 'input_folder' : 'test-data/ds02/input', 'output_folder' : 'output/ds02'}"
 
 run-tkn2arrow-ray:
-	# TODO: set env variable HF_TOKEN to download tokenizer from HF
 	make venv
 	source venv/bin/activate && \
 	rm -rf output/ds02 && \
@@ -52,7 +50,6 @@ run-tkn2arrow-ray:
 			--run_locally True
 
 run-tkn2arrow-list:
-	# TODO: set env variable HF_TOKEN to download tokenizer from HF
 	make venv
 	source venv/bin/activate && \
 	$(PYTHON) -m dpk_tokenization2arrow.runtime \

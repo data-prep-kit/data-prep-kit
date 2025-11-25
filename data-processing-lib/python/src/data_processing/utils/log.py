@@ -12,39 +12,137 @@
 ################################################################################
 
 import logging
+from datetime import datetime
+import sys
+
 from pythonjsonlogger.json import JsonFormatter
 import os
+import traceback
+
+from rich.logging import RichHandler
+from rich.console import Console
+from rich.theme import Theme
+from rich.text import Text
 
 DPK_LOGGER_NAME = "dpk"
+DPK_LOG_LEVEL = "DPK_LOG_LEVEL"
+DPK_LOG_FILE = "DPK_LOG_FILE"
+DPK_LOG_JSON_HANDLER = "DPK_LOG_JSON_HANDLER"
+DPK_LOG_PROPAGATION = "DPK_LOG_PROPAGATION"
+DEFAULT_LOG_LEVEL = "INFO"
 
+theme = Theme({
+    "debug": "white",
+    "info": "cyan dim",
+    "warning": "yellow",
+    "error": "red",
+    "critical": "red",
+    "time": "white",
+    "logger": "dim",
+    "message": "white",
+    "extra": "magenta",
+})
 
-def get_dpk_logger() -> logging.Logger:
-    dpk_log_level = os.environ.get("DPK_LOG_LEVEL", "INFO")
-    dpk_log_file = os.environ.get("DPK_LOG_FILE", None)
-    dpk_log_propagation = os.environ.get("DPK_LOG_PROPAGATION", False)
+console = Console(theme=theme, force_terminal=True, color_system="auto")
 
-    logger = logging.getLogger(DPK_LOGGER_NAME)
+class PrefectStyleRichHandler(RichHandler):
+    """
+    RichHandler that builds the full log line (time, [LEVEL], fileName:lineno - message)
+    with styles pulled from the console theme.
+    """
+    level_map = {
+        logging.DEBUG: "debug",
+        logging.INFO: "info",
+        logging.WARNING: "warning",
+        logging.ERROR: "error",
+        logging.CRITICAL: "critical",
+    }
+
+    def emit(self, record: logging.LogRecord):
+        try:
+            # --- Time ---
+            ts = datetime.fromtimestamp(record.created).strftime("%H:%M:%S")
+            t = Text(ts, style="color(255)")
+
+            # --- Level ---
+            level_style = self.level_map.get(record.levelno, "info")
+            lvl = Text(f" [{record.levelname}]", style=level_style)
+
+            # --- Logger + line ---
+            logger_part = Text(f" {record.pathname}:{record.lineno} - ", style="logger")
+
+            # --- Message ---
+            msg = Text(str(record.getMessage()), style="color(255)")
+
+            # --- Extras ---
+            ignore = {
+                "name", "msg", "args", "levelname", "levelno", "pathname", "filename", "module",
+                "exc_info", "exc_text", "stack_info", "lineno", "funcName", "created", "msecs",
+                "relativeCreated", "thread", "threadName", "processName", "process", "message",
+                "asctime",
+            }
+            extras = [(k, v) for k, v in record.__dict__.items()
+                      if k not in ignore and v is not None]
+
+            extras_text = Text()
+            if extras:
+                extras_line = "\n" + "\n".join(f"{k}={v}" for k, v in extras)
+                extras_text.append(extras_line, style="extra")
+
+            # --- Assemble full line ---
+            full_text = Text.assemble(t, lvl, logger_part, msg, extras_text)
+
+            # Print log line
+            console.print(full_text)
+
+            # --- Print exception traceback (plain) ---
+            if record.exc_info:
+                traceback.print_exception(*record.exc_info)
+
+        except Exception:
+            self.handleError(record)
+
+def get_dpk_logger(name = DPK_LOGGER_NAME ) -> logging.Logger:
+    dpk_log_level = os.environ.get(DPK_LOG_LEVEL, DEFAULT_LOG_LEVEL)
+    dpk_log_file = os.environ.get(DPK_LOG_FILE, None)
+    dpk_json_log_handler = os.environ.get(DPK_LOG_JSON_HANDLER, "").lower() in ("true", "1", "yes", "on")
+    dpk_log_propagation = os.environ.get(DPK_LOG_PROPAGATION, "").lower() in ("true", "1", "yes", "on")
+
+    logger = logging.getLogger(name)
     logger.propagate = dpk_log_propagation
     logger.setLevel(dpk_log_level.upper())
 
 
-    formatter = JsonFormatter(
+    json_formatter = JsonFormatter(
         fmt="%(asctime)s %(name)s %(levelname)s %(message)s",
         datefmt="%H:%M:%S",
         rename_fields={"asctime": "time", "name": "logger", "levelname": "logLevel"}
     )
 
-    def add_handler_once(handler_cls, tag_name, **kwargs):
+    def add_handler_once(handler, tag_name):
         if not any(getattr(h, "_tag", None) == tag_name for h in logger.handlers):
-            handler = handler_cls(**kwargs)
-            handler.setFormatter(formatter)
-            handler._tag = tag_name  # custom attribute to identify it later
+            handler._tag = tag_name
             logger.addHandler(handler)
 
-    add_handler_once(logging.StreamHandler, "stream_handler")
+    if dpk_json_log_handler :
+        stream_handler = logging.StreamHandler(sys.stdout)
+        stream_handler.setLevel(dpk_log_level)
+        stream_handler.setFormatter(json_formatter)
+        add_handler_once(stream_handler, "dpk_stream_handler")
+    else:
+        rich_handler = PrefectStyleRichHandler(
+            console=console,
+            tracebacks_extra_lines=3,
+            tracebacks_suppress=[logging],
+            log_time_format="%H:%M:%S",
+        )
+        rich_handler.setLevel(dpk_log_level)
+        add_handler_once(rich_handler, "dpk_rich_handler")
     if dpk_log_file:
         os.makedirs(os.path.dirname(dpk_log_file) or ".", exist_ok=True)
-        add_handler_once(logging.FileHandler, "file_handler", filename=dpk_log_file, mode="a")
+        file_handler = logging.FileHandler( filename=dpk_log_file, mode="a")
+        file_handler.setFormatter(json_formatter)
+        add_handler_once(file_handler, "dpk_file_handler")
     return logger
 
 
@@ -56,4 +154,10 @@ def get_dpk_logger() -> logging.Logger:
 # logger2.debug("debug message")
 # logger2.info("info message")
 # logger2.warning("warning message")
-# logger2.error("error message")
+# logger.error("error message")
+#
+# try:
+#     1/0
+# except Exception as e:
+#     logger2.exception(e)
+

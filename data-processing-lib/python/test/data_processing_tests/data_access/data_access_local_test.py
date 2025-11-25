@@ -25,6 +25,43 @@ from data_processing.utils import GB, MB, get_dpk_logger
 
 logger = get_dpk_logger()
 
+def test_batch_loading():
+    input_path = os.path.join(os.path.dirname(__file__), "../../../test-data/data_processing/input_batch/")
+    da_config = {
+        "config": {
+            "input_folder": input_path,
+            "output_folder": input_path,
+        },
+        "files_to_use": [".parquet"],
+        "batch_size": 5
+    }
+
+    da = DataAccessLocal(**da_config)
+
+    batches = []
+    for batch_files in da.get_batches_to_process():
+        batches.append(batch_files)
+    assert len(batches) == 2  # number of iterations in generator
+    assert len(batches[0]) == 5  # number of files per generation
+
+    batches = []
+    for batch_files in da.get_batches_to_process(2):
+        batches.append(batch_files)
+    assert len(batches) == 5  # number of iterations in generator
+    assert len(batches[0]) == 2  # number of files per generation
+
+    batches = []
+    for batch_files in da.get_batches_to_process(-1):
+        batches.append(batch_files)
+    assert len(batches) == 1  # number of iterations in generator
+    assert len(batches[0]) == 10  # number of files per generation
+
+    try:
+        batches = []
+        for batch_files in da.get_batches_to_process(0):
+            batches.append(batch_files)
+    except ValueError:
+        assert len(batches) == 0
 
 def test_no_io_config():
     config = {"data_config": {"da_class": "data_processing.data_access.DataAccessLocal"},

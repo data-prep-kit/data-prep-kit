@@ -19,9 +19,9 @@ RUN  pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}
 # END OF STEPS destined for a data-prep-kit base image 
 
 COPY --chown=dpk:root dpk_tokenization/ dpk_tokenization/
+COPY --chown=dpk:root dpk_tokenization2arrow/ dpk_tokenization2arrow/
 COPY --chown=dpk:root requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r  requirements.txt
-
 
 # Set environment
 ENV PYTHONPATH /home/dpk

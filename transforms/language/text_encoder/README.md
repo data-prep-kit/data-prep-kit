@@ -51,7 +51,7 @@ If you have already stored embeddings in parquet, you can also use this transfor
 | `lanceDB_table_name` | `"" ` | The name of the lanceDB table. |
 | `embedding_batch_size` | 8 | The number of documents as a batch to create embeddings in a `model.encode()`. |
 | `embeddings_exist` | False | Flag indicating if embeddings already exist in parquet files. |
-| `embeddings_in_parquet` | False | Flag indicating if embeddings are to be stored in parquet files. | 
+| `embeddings_in_lanceDB` | False | Flag indicating if embeddings are to be stored in lanceDB. | 
 
 
 If the embeddings are to be stored in, or converted from parquet to, lancedb, a `lance_commit.py` needs to be executed to allow the

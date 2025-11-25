@@ -49,7 +49,7 @@ embedding_batch_size_key="embedding_batch_size"
 lanceDB_fragments_json_folder_key="lanceDB_fragments_json_folder"
 lanceDB_table_name_key="lanceDB_table_name"
 embeddings_exist_key="embeddings_exist"
-embeddings_in_parquet_key="embeddings_in_parquet"
+embeddings_in_lanceDB_key="embeddings_in_lanceDB"
 model_max_seq_length_key="model_max_seq_length"
 
 model_name_cli_param = f"{cli_prefix}{model_name_key}"
@@ -61,7 +61,7 @@ embedding_batch_size_cli_param = f"{cli_prefix}{embedding_batch_size_key}"
 lanceDB_fragments_json_folder_cli_param = f"{cli_prefix}{lanceDB_fragments_json_folder_key}"
 lanceDB_table_name_cli_param = f"{cli_prefix}{lanceDB_table_name_key}"
 embeddings_exist_cli_param = f"{cli_prefix}{embeddings_exist_key}"
-embeddings_in_parquet_cli_param = f"{cli_prefix}{embeddings_in_parquet_key}"
+embeddings_in_lanceDB_cli_param = f"{cli_prefix}{embeddings_in_lanceDB_key}"
 model_max_seq_length_cli_param = f"{cli_prefix}{model_max_seq_length_key}"
 
 default_model_name = "ibm-granite/granite-embedding-small-english-r2"
@@ -73,7 +73,7 @@ default_embedding_batch_size = 8
 default_lanceDB_fragments_json_folder = ""
 default_lanceDB_table_name = ""
 default_embeddings_exist = False
-default_embeddings_in_parquet = False
+default_embeddings_in_lanceDB = False
 default_model_max_seq_length = 2048
 
 
@@ -90,7 +90,7 @@ class TextEncoderTransform(AbstractTableTransform):
         lanceDB_fragments_json_folder: str,
         lanceDB_table_name: str,
         embeddings_exist: bool,
-        embeddings_in_parquet: bool,
+        embeddings_in_lanceDB: bool,
         model_max_seq_length: int
     """
 
@@ -128,8 +128,8 @@ class TextEncoderTransform(AbstractTableTransform):
         self.embeddings_exist = config.get(embeddings_exist_key, default_embeddings_exist)
         self.logger.info(f"{self.embeddings_exist=}")
 
-        self.embeddings_in_parquet = config.get(embeddings_in_parquet_key, default_embeddings_in_parquet)
-        self.logger.info(f"{self.embeddings_in_parquet=}")
+        self.embeddings_in_lanceDB = config.get(embeddings_in_lanceDB_key, default_embeddings_in_lanceDB)
+        self.logger.info(f"{self.embeddings_in_lanceDB=}")
 
       
         self.model_max_seq_length = config.get(model_max_seq_length_key, default_model_max_seq_length)
@@ -141,25 +141,26 @@ class TextEncoderTransform(AbstractTableTransform):
             self.model.tokenizer.model_max_length = self.model_max_seq_length
             self.model = self.model.to(self.device)
 
-        # settign up data_access, input_folder, output_folder, and lanceDB_fragments_json_folder
-        self.data_access: DataAccess = config.get("data_access", None)
-        assert self.data_access is not None, f"data_access is missing."
-        self.input_folder = self.data_access.get_input_folder()
-        assert self.input_folder is not None, f"input_folder is missing."
-        self.input_folder = self.input_folder if self.input_folder.endswith("/") else self.input_folder + "/"
-        self.output_folder = self.data_access.get_output_folder()
-        assert self.output_folder is not None, f"output_folder is missing."
-        self.output_folder = self.output_folder if self.output_folder.endswith("/") else self.output_folder + "/"
-        if not os.path.exists(self.output_folder):
-            try:
-                os.makedirs(self.output_folder, exist_ok=True)
-            except OSError as e:
-                self.logger.error(f"Cannot create directories for {self.output_folder}: {e}")
-
+        
         self.embedding_batch_size = config.get(embedding_batch_size_key, default_embedding_batch_size)
 
         # creating embeddings and storing them in lanceDB
-        if not self.embeddings_in_parquet and not self.embeddings_exist:
+        if self.embeddings_in_lanceDB:
+            # settign up data_access, input_folder, output_folder, and lanceDB_fragments_json_folder
+            self.data_access: DataAccess = config.get("data_access", None)
+            assert self.data_access is not None, f"data_access is missing."
+            self.input_folder = self.data_access.get_input_folder()
+            assert self.input_folder is not None, f"input_folder is missing."
+            self.input_folder = self.input_folder if self.input_folder.endswith("/") else self.input_folder + "/"
+            self.output_folder = self.data_access.get_output_folder()
+            assert self.output_folder is not None, f"output_folder is missing."
+            self.output_folder = self.output_folder if self.output_folder.endswith("/") else self.output_folder + "/"
+            if not os.path.exists(self.output_folder):
+                try:
+                    os.makedirs(self.output_folder, exist_ok=True)
+                except OSError as e:
+                    self.logger.error(f"Cannot create directories for {self.output_folder}: {e}")
+
             self.lanceDB_fragments_json_folder = config.get(lanceDB_fragments_json_folder_key, default_lanceDB_fragments_json_folder)
             assert bool(self.lanceDB_fragments_json_folder.strip()), f"lanceDB_fragments_json_folder is missing."
             self.lanceDB_fragments_json_folder = self.lanceDB_fragments_json_folder if self.lanceDB_fragments_json_folder.endswith("/") else self.lanceDB_fragments_json_folder + "/"
@@ -308,7 +309,7 @@ class TextEncoderTransform(AbstractTableTransform):
             embeddings_pa_array = self._converting_embeddings_list_to_pa_array(embeddings)
             new_table = table.set_column(len(table.schema)-1, self.output_embeddings_column_name, embeddings_pa_array)
         
-        if self.embeddings_in_parquet:
+        if not self.embeddings_in_lanceDB:
             metadata = {"num_rows": new_table.num_rows}
             return [new_table], metadata
         else:
@@ -320,7 +321,7 @@ class TextEncoderTransform(AbstractTableTransform):
             return [], metadata
     
     def flush(self) -> tuple[list[pa.Table], dict[str, Any]]:
-        if not self.embeddings_in_parquet:
+        if self.embeddings_in_lanceDB:
             self._lanceDB_flush()
         return [], {}
 
@@ -419,11 +420,11 @@ class TextEncoderTransformConfiguration(TransformConfiguration):
             help="A flag indicating whether or not embeddings exist in parquet",
         )
         parser.add_argument(
-            f"--{embeddings_in_parquet_cli_param}",
+            f"--{embeddings_in_lanceDB_cli_param}",
             type=bool,
             required=False,
-            default=default_embeddings_in_parquet,
-            help="A flag indicating if embeddings are to be stored in parquet, default=False",
+            default=default_embeddings_in_lanceDB,
+            help="A flag indicating if embeddings are to be stored in lanceDB, default=False",
         )
 
     def apply_input_params(self, args: Namespace) -> bool:

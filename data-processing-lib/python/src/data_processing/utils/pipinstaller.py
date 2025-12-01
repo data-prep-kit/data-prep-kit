@@ -19,8 +19,6 @@ warnings.filterwarnings("ignore")
 import subprocess
 import sys
 
-import pkg_resources
-
 
 class PipInstaller:
     """
@@ -49,6 +47,8 @@ class PipInstaller:
 
     @staticmethod
     def validate(name: str) -> bool:
+        import pkg_resources
+
         """
         Check
         :param name: name

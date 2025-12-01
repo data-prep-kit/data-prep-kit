@@ -29,7 +29,6 @@ expected_dir = os.path.abspath(os.path.join(basedir, "../test-data/expected_parq
 text_encoder_params = {
     "data_local_config": {"input_folder": input_dir, "output_folder": output_dir},
     "text_encoder_model_name": "ibm-granite/granite-embedding-small-english-r2",
-    "text_encoder_embeddings_in_parquet": True,
     "text_encoder_content_column_name": "contents",
     "text_encoder_output_embeddings_column_name": "embeddings",
     "text_encoder_embedding_batch_size": 5,

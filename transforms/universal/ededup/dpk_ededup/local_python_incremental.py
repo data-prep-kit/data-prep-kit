@@ -16,13 +16,13 @@ import sys
 
 from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.utils import ParamsUtils
+from dpk_ededup.runtime import EdedupPythonTransformRuntimeConfiguration
 from dpk_ededup.transform_base import (
     doc_column_name_cli_param,
     int_column_name_cli_param,
     snapshot_directory_cli_param,
     use_snapshot_cli_param,
 )
-from dpk_ededup.transform_python import EdedupPythonTransformRuntimeConfiguration
 
 
 # create launcher

@@ -88,7 +88,7 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 | [Resize](transforms/universal/resize/README.md)                           | :white_check_mark: | :white_check_mark: |
 | [Hate, Abuse, Profanity (HAP)](transforms/universal/hap/README.md)               | :white_check_mark: | :white_check_mark: |
 | [Tokenizer](transforms/universal/tokenization/README.md)                         | :white_check_mark: | :white_check_mark: |
-| [Tokenization2Arrow](transforms/universal/tokenization2arrow/README.md)                         | :white_check_mark: | :white_check_mark: | 
+| [Tokenization2Arrow](transforms/universal/tokenization/README-tkn2arrow.md)                         | :white_check_mark: | :white_check_mark: | 
 | [Repetition removal](transforms/universal/rep_removal/README.md)                         | :white_check_mark: | :white_check_mark: |
 | [Bloom filter](transforms/universal/bloom/README.md)                         | :white_check_mark: |  |
 | [Collapse(column concatenation)](transforms/universal/collapse/README.md)                         | :white_check_mark: | :white_check_mark: |
@@ -122,6 +122,17 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 | [NSFW(Not Safe For Work)](transforms/images/README.md)  | :white_check_mark: | :white_check_mark: |
 | [People](transforms/images/README.md)  | :white_check_mark: | :white_check_mark: |
 </details>
+
+## Logging configuration
+DPK uses a unified logger - `dpk`. It can be configured, by setting the following environment variables
+
+| Variable name        | Default value | Description                                                                                                                            |
+|----------------------|-----------|----------------------------------------------------------------------------------------------------------------------------------------|
+| DPK_LOG_LEVEL        | INFO      | The loggger level                                                                                                                      |
+| DPK_LOG_FILE         | None      | The path to the log file, if set the log message will be stored in the file                                                            |
+| DPK_LOG_JSON_HANDLER | ""        | If set to any value of "true", "1", "yes", or "on" (case insensitive) the console logs will be in JSON format                          |
+| DPK_LOG_PROPAGATION  | "" | If set to any value of "true", "1", "yes", or "on" (case insensitive), the logger will propagate all log messages to its parent logger |
+
 
 ## Contributing
 

@@ -65,7 +65,6 @@ all = { file = [
 "universal/tokenization/requirements.txt",
 "universal/web2parquet/requirements.txt",
 "universal/rep_removal/requirements.txt",
-"universal/tokenization2arrow/requirements.txt",
 "universal/collapse/requirements.txt",
 "universal/blocklist/requirements.txt",
 "universal/fineweb_quality_annotator/requirements.txt",
@@ -106,7 +105,6 @@ language = { file = [
 "universal/profiler/requirements.txt",
 "universal/resize/requirements.txt",
 "universal/rep_removal/requirements.txt",
-"universal/tokenization2arrow/requirements.txt",
 "universal/collapse/requirements.txt",
 "universal/blocklist/requirements.txt",
 "universal/opensearch/requirements.txt"
@@ -133,7 +131,6 @@ code = { file = [
 "universal/profiler/requirements.txt",
 "universal/resize/requirements.txt",
 "universal/rep_removal/requirements.txt",
-"universal/tokenization2arrow/requirements.txt",
 "universal/collapse/requirements.txt",
 "universal/blocklist/requirements.txt",
 "universal/fineweb_quality_annotator/requirements.txt",
@@ -156,7 +153,6 @@ gneissweb = { file = [
 "universal/resize/requirements.txt",
 "universal/rep_removal/requirements.txt",
 "universal/bloom/requirements.txt",
-"universal/tokenization2arrow/requirements.txt"
 ]}
 
 # pyproject.toml must be in a parent and cannot be in sibling
@@ -196,7 +192,7 @@ fdedup = { file = ["universal/fdedup/requirements.txt"]}
 tokenization = { file = ["universal/tokenization/requirements.txt"]}
 web2parquet = { file = ["universal/web2parquet/requirements.txt"]}
 rep_removal = { file = ["universal/rep_removal/requirements.txt"]}
-tokenization2arrow = { file = ["universal/tokenization2arrow/requirements.txt"]}
+tokenization2arrow = { file = ["universal/tokenization/requirements.txt"]}
 collapse = { file = ["universal/collapse/requirements.txt"]}
 blocklist = { file = ["universal/blocklist/requirements.txt"]}
 gopher_repetition_annotator = { file = ["universal/gopher_repetition_annotator/requirements.txt"]}
@@ -236,7 +232,7 @@ dpk_fineweb_quality_annotator = "universal/fineweb_quality_annotator/dpk_fineweb
 dpk_gopher_repetition_annotator = "universal/gopher_repetition_annotator/dpk_gopher_repetition_annotator"
 dpk_gneissweb_classification = "language/gneissweb_classification/dpk_gneissweb_classification"
 dpk_rep_removal = "universal/rep_removal/dpk_rep_removal"
-dpk_tokenization2arrow = "universal/tokenization2arrow/dpk_tokenization2arrow"
+dpk_tokenization2arrow = "universal/tokenization/dpk_tokenization2arrow"
 dpk_opensearch = "universal/opensearch/dpk_opensearch"
 dpk_code_profiler = "code/code_profiler/dpk_code_profiler"
 dpk_proglang_select = "code/proglang_select/dpk_proglang_select"

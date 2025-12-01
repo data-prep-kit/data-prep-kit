@@ -10,7 +10,5 @@ boto3<=1.38.18
 mmh3
 psutil
 polars>=1.9.0
-transformers
-fasttext-wheel
-huggingface-hub >= 0.21.4, <1.0.0
 python-json-logger
+rich

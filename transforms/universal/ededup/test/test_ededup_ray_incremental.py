@@ -17,7 +17,7 @@ from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
 from data_processing_ray.runtime.ray import RayTransformLauncher
-from dpk_ededup.ray.transform import (
+from dpk_ededup.ray.runtime import (
     EdedupRayTransformRuntimeConfiguration,
     hash_cpu_cli_params,
     num_hashes_cli_params,
@@ -26,7 +26,7 @@ from dpk_ededup.transform_base import (
     doc_column_name_cli_param,
     int_column_name_cli_param,
     snapshot_directory_cli_param,
-    use_snapshot_cli_param
+    use_snapshot_cli_param,
 )
 
 

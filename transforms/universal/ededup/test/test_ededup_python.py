@@ -17,11 +17,11 @@ from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
 )
+from dpk_ededup.runtime import EdedupPythonTransformRuntimeConfiguration
 from dpk_ededup.transform_base import (
     doc_column_name_cli_param,
-    int_column_name_cli_param
+    int_column_name_cli_param,
 )
-from dpk_ededup.transform_python import EdedupPythonTransformRuntimeConfiguration
 
 
 class TestPythonEdedupTransform(AbstractTransformLauncherTest):
@@ -36,7 +36,7 @@ class TestPythonEdedupTransform(AbstractTransformLauncherTest):
         basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../test-data"))
         launcher = PythonTransformLauncher(EdedupPythonTransformRuntimeConfiguration())
         config = {
-            doc_column_name_cli_param: "contents", 
+            doc_column_name_cli_param: "contents",
             int_column_name_cli_param: "document_id",
-            }
+        }
         return [(launcher, config, basedir + "/input", basedir + "/expected")]

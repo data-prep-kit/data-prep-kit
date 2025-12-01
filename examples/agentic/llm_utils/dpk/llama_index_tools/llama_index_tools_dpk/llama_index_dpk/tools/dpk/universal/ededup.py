@@ -1,21 +1,21 @@
 # SPDX-License-Identifier: Apache-2.0
 import logging
-from typing import Optional, Type
 import sys
-from typing import Any
+from typing import Any, Optional, Type
 
 from pydantic import BaseModel, Field
 
+
 logger = logging.getLogger(__name__)
 
+from data_processing.utils import ParamsUtils
 from llm_utils.dpk.dpk_common import (
     DPKDataAccessInput,
     DPKRuntimeInput,
-    add_runtime_params,
     add_data_access_params,
+    add_runtime_params,
     check_params,
 )
-from data_processing.utils import ParamsUtils
 
 
 class EdedupInput(BaseModel, DPKDataAccessInput, DPKRuntimeInput):
@@ -43,10 +43,12 @@ class EdedupInput(BaseModel, DPKDataAccessInput, DPKRuntimeInput):
     )
     ededup_num_hashes: Optional[int] = Field(
         None,
-        description="Number of hashes should be greater then zero", )
+        description="Number of hashes should be greater then zero",
+    )
     ededup_hash_cpu: Optional[float] = Field(
         None,
-        description="number of CPUs per hash", )
+        description="number of CPUs per hash",
+    )
 
 
 def add_transform_params(transform_params: dict, kwargs):
@@ -79,22 +81,24 @@ def ededup(**kwargs: Any) -> str:
         add_data_access_params(transform_params, data_type, kwargs)
         add_transform_params(transform_params, kwargs)
         if runtime_type.strip().lower() == "ray":
-            from dpk_ededup.ray.transform import EdedupRayTransformRuntimeConfiguration
             from data_processing_ray.runtime.ray import RayTransformLauncher
+            from dpk_ededup.ray.transform import EdedupRayTransformRuntimeConfiguration
 
             sys.argv = ParamsUtils.dict_to_req(d=transform_params)
             launcher = RayTransformLauncher(EdedupRayTransformRuntimeConfiguration())
 
         elif runtime_type.strip().lower() == "python":
             from data_processing.runtime.pure_python import PythonTransformLauncher
-            from dpk_ededup.transform_python import EdedupPythonTransformRuntimeConfiguration
+            from dpk_ededup.transform_python import (
+                EdedupPythonTransformRuntimeConfiguration,
+            )
 
             sys.argv = ParamsUtils.dict_to_req(d=transform_params)
-            launcher = PythonTransformLauncher(
-                EdedupPythonTransformRuntimeConfiguration()
-            )
+            launcher = PythonTransformLauncher(EdedupPythonTransformRuntimeConfiguration())
         else:
-            return f"Error: Unrecognizable type of TransformRuntimeConfiguration  in ededup transform - {runtime_type}."
+            return (
+                f"Error: Unrecognizable type of TransformRuntimeConfiguration  in ededup transform - {runtime_type}."
+            )
         check_params(transform_params, kwargs)
         print(f"launching transform with params: {transform_params}")
         return_code = launcher.launch()

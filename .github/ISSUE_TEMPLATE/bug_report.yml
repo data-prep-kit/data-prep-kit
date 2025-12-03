@@ -29,7 +29,6 @@ body:
           multiple: true
           options:
             - Documentation
-            - KFP workflows
             - Data Connector
             - Ray Runtime
             - Spark Runtime

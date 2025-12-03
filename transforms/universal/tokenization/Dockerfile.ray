@@ -5,7 +5,10 @@ FROM ${BASE_IMAGE}
 # see https://docs.openshift.com/container-platform/4.17/openshift_images/create-images.html#use-uid_create-images
 USER root
 RUN chown ray:root /home/ray && chmod g=u /home/ray
+RUN mkdir -p /home/ray/.cache/huggingface/hub && chmod -R 777 /home/ray/.cache
+RUN chown -R ray:root /home/ray/.cache
 USER ray
+
 
 RUN pip install --upgrade --no-cache-dir pip 
 
@@ -20,6 +23,7 @@ RUN  pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}[ray]
 
 
 COPY --chmod=775 --chown=ray:root dpk_tokenization/ dpk_tokenization/
+COPY --chmod=775 --chown=ray:root dpk_tokenization2arrow/ dpk_tokenization2arrow/
 COPY --chmod=775 --chown=ray:root requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 

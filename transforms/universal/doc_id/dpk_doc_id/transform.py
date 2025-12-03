@@ -94,14 +94,30 @@ class DocIDTransformBase(AbstractTableTransform):
         This implementation makes no modifications so effectively implements a copy of the
         input parquet to the output folder, without modification.
         """
-        TransformUtils.validate_columns(table=table, required=[self.doc_column])
-
         if self.hash_column is not None:
+            import hashlib
+            import json
+
+            TransformUtils.validate_columns(table=table, required=[self.doc_column])
             # add doc id column
             docs = table[self.doc_column]
             doc_ids = [""] * table.num_rows
             for n in range(table.num_rows):
-                doc_ids[n] = TransformUtils.str_to_hash(docs[n].as_py())
+                try:
+                    doc_ids[n] = TransformUtils.str_to_hash(docs[n].as_py())
+                except AttributeError as e:
+                    ### Raised exception if a list type is encountered
+                    doc_ids[n] = hashlib.sha256(
+                        json.dumps(docs[n].as_py(), sort_keys=True, separators=(",", ":")).encode("utf-8")
+                    ).hexdigest()[:16]
+
+            prev_col_name = f"{self.hash_column}.original"
+            if prev_col_name not in table.column_names:
+                new_columns = [
+                    prev_col_name if col_name == self.hash_column else col_name for col_name in table.column_names
+                ]
+                if new_columns != table.column_names:
+                    table = table.rename_columns(new_columns)
             table = TransformUtils.add_column(table=table, name=self.hash_column, content=doc_ids)
         if self.int_column is not None:
             # add integer document id
@@ -179,3 +195,25 @@ class DocIDTransformConfigurationBase(TransformConfiguration):
         self.params = self.params | captured
         self.logger.info(f"Doc id parameters are : {self.params}")
         return True
+
+
+class DocIDTransform(DocIDTransformBase):
+    """
+    Implements schema modification of a pyarrow Table.
+    """
+
+    def __init__(self, config: dict[str, Any]):
+        """
+        Initialize based on the dictionary of configuration information.
+        """
+        # Make sure that the param name corresponds to the name used in apply_input_params method
+        super().__init__(config)
+        self.id_generator = config.get(id_generator_key, IDGenerator(config.get(start_id_key, 1)))
+
+    def _get_starting_id(self, n_rows: int) -> int:
+        """
+        Get starting ID
+        :param n_rows - number of rows in the table
+        :return: starting id for the table
+        """
+        return self.id_generator.get_ids(n_rows=n_rows)

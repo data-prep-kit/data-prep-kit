@@ -44,14 +44,18 @@ class AbstractTableTransform(AbstractBinaryTransform):
                 to metadata.  Each element of the return list, is a tuple of the transformed bytes and a string
                 holding the extension to be used when writing out the new bytes.
         """
-        # validate extension
-        if TransformUtils.get_file_extension(file_name)[1] != ".parquet":
+        # validate extension and convert to table
+        if TransformUtils.get_file_extension(file_name)[1] == ".parquet":
+            table = TransformUtils.convert_binary_to_arrow(data=byte_array)
+        elif TransformUtils.get_file_extension(file_name)[1] in [".ndjson", ".jsonl"]:
+            table = TransformUtils.convert_ndjson_to_arrow (byte_array)
+        elif TransformUtils.get_file_extension(file_name)[1] == ".zip":
+            table = TransformUtils.convert_zip_to_arrow (byte_array)
+        else:
             self.logger.warning(f"Get wrong file type {file_name}")
             return [], {"wrong file type": 1}
-        # convert to table
-        table = TransformUtils.convert_binary_to_arrow(data=byte_array)
         if table is None:
-            self.logger.warning("Transformation of file to table failed")
+            self.logger.warning(f"Failed to load pyarrow from file: {file_name}")
             return [], {"failed_reads": 1}
         # Ensure that table is not empty
         if table.num_rows == 0:

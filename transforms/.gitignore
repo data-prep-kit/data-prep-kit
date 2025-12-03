@@ -4,3 +4,5 @@
 /**/data-processing-lib-ray
 /**/python-transform
 /**/data-processing-dist
+!/**/*-rayjob.yaml
+!/**/*-pythonjob.yaml

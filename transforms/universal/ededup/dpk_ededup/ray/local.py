@@ -16,7 +16,7 @@ import sys
 
 from data_processing.utils import ParamsUtils
 from data_processing_ray.runtime.ray import RayTransformLauncher
-from dpk_ededup.ray.transform import (
+from dpk_ededup.ray.runtime import (
     EdedupRayTransformRuntimeConfiguration,
     hash_cpu_cli_params,
     num_hashes_cli_params,

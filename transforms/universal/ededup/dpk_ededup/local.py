@@ -14,12 +14,12 @@
 import os
 
 from data_processing.data_access import DataAccessLocal
+from dpk_ededup.runtime import EdedupTransform
 from dpk_ededup.transform_base import (
     HashFilter,
     doc_column_name_key,
     int_column_name_key,
 )
-from dpk_ededup.transform_python import EdedupTransform
 
 
 # create parameters

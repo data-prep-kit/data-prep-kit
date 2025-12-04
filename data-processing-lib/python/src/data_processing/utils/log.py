@@ -68,8 +68,13 @@ class PrefectStyleRichHandler(RichHandler):
             level_style = self.level_map.get(record.levelno, "info")
             lvl = Text(f" [{record.levelname}]", style=level_style)
 
+            if record.levelno <= logging.DEBUG:
+                location = f"{record.pathname}:{record.lineno}"
+            else:
+                location = f"{record.filename}:{record.lineno}"
+
             # --- Logger + line ---
-            logger_part = Text(f" {record.pathname}:{record.lineno} - ", style="logger")
+            logger_part = Text(f" {location} - ", style="logger")
 
             # --- Message ---
             msg = Text(str(record.getMessage()), style="color(255)")

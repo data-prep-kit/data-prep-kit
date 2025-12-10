@@ -7,16 +7,11 @@ In general, the design is to use templates and `make` to generate/update the wor
 1. Run only tests for a given transform when only the transform changes.
 Includes python, ray, and spark as available.  
 2. When the core dpk lib components files changes, test all transforms
-3. When the shared kfp components changes or core dpk lib components files changes, 
-   test a randomly selected transform test. Otherwise run kfp test for the changed transforms.
 
 #### Assumptions
 1. All transforms will have test workflows.  A transform can disable its tests locally
 (temporarily?) by renaming its Makefile.  For example,
 `cp transforms/universal/noop/Makefile transforms/universal/noop/Makefile.disabled`.
-A github action for kfp testing will not be generated if it appears in `KFP_BLACK_LIST`
-in the [Makefile](./Makefile).
-
 
 ## DPK libraries (`data-processing-lib` directory)
 The DPK libraries, in data-processing-lib/{python,ray,spark}, are tested

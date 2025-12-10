@@ -28,15 +28,6 @@ test:: .transforms.test-src test-image
 
 clean:: .transforms.clean
 
-## We need to think how we want to do this going forward
-set-versions::
-	if [ -d kfp_ray ]; then		\
-		for FILE in $(shell find kfp_ray -name "*_wf.py") ; do \
-			echo "Processing $$FILE" ; \
-			sed -i.back "s/dataprep1\/data-prep-kit\(.*\):.*\"/dataprep1\/data-prep-kit\1:$(DOCKER_IMAGE_VERSION)\"/" $$FILE ; \
-		done ; \
-	fi
-
 
 ## We need to think how we want to do this going forward
 
@@ -151,29 +142,3 @@ test-notebooks:
 setup:: .transforms.setup
 
 kind-load-image:: .transforms.kind-load-image
-
-.PHONY: workflow-vent
-workflow-venv:
-	if [ -e kfp_ray ]; then                 \
-	    $(MAKE) -C kfp_ray TRANSFORM_NAME=$(TRANSFORM_NAME) workflow-venv;   \
-	fi
-
-.PHONY: workflow-test
-workflow-test:
-	if [ -e kfp_ray ]; then                 \
-	    $(MAKE) -C kfp_ray TRANSFORM_NAME=$(TRANSFORM_NAME) workflow-test;   \
-	fi
-
-.PHONY: workflow-upload
-workflow-upload:
-	if [ -e kfp_ray ]; then                 \
-	    $(MAKE) -C kfp_ray TRANSFORM_NAME=$(TRANSFORM_NAME) workflow-upload; \
-	fi
-
-.PHONY: workflow-build
-workflow-build:
-	if [ -e kfp_ray ]; then                 \
-	    $(MAKE) -C  kfp_ray TRANSFORM_NAME=$(TRANSFORM_NAME) workflow-build; \
-	fi
-
-

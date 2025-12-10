@@ -15,7 +15,6 @@ on:
         paths:
             - "transforms/code/code_profiler/**"
             - "data-processing-lib/**"
-            - "!transforms/code/code_profiler/**/kfp_ray/**" # This is/will be tested in separate workflow
             - "!data-processing-lib/**/test/**"
             - "!data-processing-lib/**/test-data/**"
             - "!**.md"
@@ -30,7 +29,6 @@ on:
         paths:
             - "transforms/code/code_profiler/**"
             - "data-processing-lib/**"
-            - "!transforms/code/code_profiler/**/kfp_ray/**" # This is/will be tested in separate workflow
             - "!data-processing-lib/**/test/**"
             - "!data-processing-lib/**/test-data/**"
             - "!**.md"

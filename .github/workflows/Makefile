@@ -7,8 +7,6 @@ CODE_TRANSFORMS=code2parquet code_quality header_cleanser malware proglang_selec
 LANG_TRANSFORMS=doc_chunk doc_quality lang_id docling2parquet pii_redactor text_encoder
 
 
-# A list that holds transforms that should not be tested with KFP
-
 transform-tests:
 	-rm -rf test-universal-*.yml
 	$(MAKE) TRANSFORM_SUBDIR=universal .transform-tests

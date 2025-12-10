@@ -18,7 +18,6 @@ on:
             - "transforms/.make.transforms"
             - "transforms/universal/rep_removal/**"
             - "data-processing-lib/**"
-            - "!transforms/universal/rep_removal/**/kfp_ray/**" # This is/will be tested in separate workflow
             - "!data-processing-lib/**/test/**"
             - "!data-processing-lib/**/test-data/**"
             - "!**.md"
@@ -35,7 +34,6 @@ on:
             - "transforms/.make.transforms"
             - "transforms/universal/rep_removal/**"
             - "data-processing-lib/**"
-            - "!transforms/universal/rep_removal/**/kfp_ray/**" # This is/will be tested in separate workflow
             - "!data-processing-lib/**/test/**"
             - "!data-processing-lib/**/test-data/**"
             - "!**.md"

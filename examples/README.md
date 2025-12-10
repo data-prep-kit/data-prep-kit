@@ -1,7 +1,7 @@
 
 <h1 align="center">About Data Prep Kit Recipes</h1>
 
-Welcome to cooking with Data Prep Kit. Here we share some of our most asked, searched and shared Data Prep Kit recipes for processing unstructured and structured data for plethora of use cases like RAG, fine-tuning etc. along with examples of KFP workflows.
+Welcome to cooking with Data Prep Kit. Here we share some of our most asked, searched and shared Data Prep Kit recipes for processing unstructured and structured data for plethora of use cases like RAG, fine-tuning etc.
 
  - [**Data Files**](./data-files/)
  - [**Introductory Recipe Notebook to get started**](notebooks/Run_your_first_transform_colab.ipynb)
@@ -10,4 +10,3 @@ Welcome to cooking with Data Prep Kit. Here we share some of our most asked, sea
  - [**Recipe for building RAG system using html data**](./notebooks/rag-html-1/)
  - [**Recipe for curating customer service data for HAP**](./notebooks/hap/)
  - [**Recipe for curating customer service data for PII**](./notebooks/PII/)
- - [**KFP Pipeline Walkthrough**](kfp-pipelines/superworkflows)

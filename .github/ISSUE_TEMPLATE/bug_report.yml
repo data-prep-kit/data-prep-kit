@@ -64,7 +64,7 @@ body:
             - transforms/tokenization
             - transforms/tokenization2arrow
             - transforms/web2parquet
-            - transdforms/Other
+            - transforms/Other
             - Other
       validations:
           required: true

@@ -70,9 +70,6 @@ default_username = "admin"
 
 user = os.environ.get("OPENSEARCH_USERID", default_username)
 
-filename_column_name_key = "filename"
-
-
 class OpenSearchTransform(AbstractTableTransform, SinkHandler):
 
     def __init__(self, config: dict[str, Any]):

@@ -13,6 +13,7 @@
 
 import logging
 from datetime import datetime
+import shutil
 import sys
 
 from pythonjsonlogger.json import JsonFormatter
@@ -43,7 +44,8 @@ theme = Theme({
     "extra": "magenta",
 })
 
-console = Console(theme=theme, force_terminal=True, color_system="auto")
+columns, _ = shutil.get_terminal_size(fallback=(200, 20))
+console = Console(theme=theme, force_terminal=True, color_system="auto", width=columns)
 
 class PrefectStyleRichHandler(RichHandler):
     """
@@ -68,7 +70,7 @@ class PrefectStyleRichHandler(RichHandler):
             level_style = self.level_map.get(record.levelno, "info")
             lvl = Text(f" [{record.levelname}]", style=level_style)
 
-            if record.levelno <= logging.DEBUG:
+            if self.level <= logging.DEBUG or record.levelno >= logging.ERROR:
                 location = f"{record.pathname}:{record.lineno}"
             else:
                 location = f"{record.filename}:{record.lineno}"
@@ -108,14 +110,14 @@ class PrefectStyleRichHandler(RichHandler):
             self.handleError(record)
 
 def get_dpk_logger(name = DPK_LOGGER_NAME ) -> logging.Logger:
-    dpk_log_level = os.environ.get(DPK_LOG_LEVEL, DEFAULT_LOG_LEVEL)
+    dpk_log_level = os.environ.get(DPK_LOG_LEVEL, DEFAULT_LOG_LEVEL).upper()
     dpk_log_file = os.environ.get(DPK_LOG_FILE, None)
     dpk_json_log_handler = os.environ.get(DPK_LOG_JSON_HANDLER, "").lower() in ("true", "1", "yes", "on")
     dpk_log_propagation = os.environ.get(DPK_LOG_PROPAGATION, "").lower() in ("true", "1", "yes", "on")
 
     logger = logging.getLogger(name)
     logger.propagate = dpk_log_propagation
-    logger.setLevel(dpk_log_level.upper())
+    logger.setLevel(dpk_log_level)
 
 
     json_formatter = JsonFormatter(

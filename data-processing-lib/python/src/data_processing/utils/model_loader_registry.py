@@ -44,7 +44,9 @@ def load_transformers_model(model_path: str, token: str = None, **kwargs):
 def load_transformers_model(model_path: str, token: str = None, **kwargs):
     from transformers import AutoModelForSequenceClassification
 
-    model = AutoModelForSequenceClassification.from_pretrained(model_path, token=token, **kwargs)
+    model = AutoModelForSequenceClassification.from_pretrained(
+        model_path, token=token, **kwargs
+    )
     return model
 
 
@@ -73,4 +75,32 @@ def load_fasttext_model(model_path: str, token: str = None, **kwargs):
         model_path = hf_hub_download(repo_id=model_path, filename=filename, token=token)
 
     model = fasttext.load_model(model_path)
+    return model
+
+
+@register_model_loader("yolov")
+def load_yolov_model(model_path: str, token: str = None, **kwargs):
+    import torch
+    from huggingface_hub import hf_hub_download
+
+    if os.path.isfile(model_path):
+        model_path = model_path
+
+    elif os.path.isdir(model_path):
+        found = False
+        for root, _, files in os.walk(model_path):
+            for f in files:
+                if f.endswith(".pt"):
+                    model_path = os.path.join(root, f)
+                    found = True
+                    break
+        if not found:
+            raise FileNotFoundError(f"No .pt file found in : {model_path}")
+
+    else:
+        # assume hugging face repo and download .pt
+        filename = kwargs.get("model_filename", "model.pt")
+        model_path = hf_hub_download(repo_id=model_path, filename=filename, token=token)
+
+    model = torch.load(model_path)
     return model

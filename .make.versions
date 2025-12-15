@@ -30,32 +30,17 @@ TRANSFORM_VERSION_SUFFIX=.dev0
 ################################################################################
 # Begin versions that the repo depends on. 
 
-KFP_v2=2.2.0
-KFP_v2_SDK=2.8.0
-KFP_v1=1.8.5
-KFP_v1_SDK=1.8.22
 RAY=2.36.1
 SPARK_VERSION=3.5.2
-
 
 
 DPK_VERSION=$(DPK_NEXT_RELEASE)$(DPK_VERSION_SUFFIX)
 
 # Data prep lab wheel version
 DPK_LIB_VERSION=$(DPK_VERSION)
-DPK_LIB_KFP_VERSION=$(DPK_VERSION)
-DPK_LIB_KFP_VERSION_v2=$(DPK_VERSION)
-DPK_LIB_KFP_SHARED=$(DPK_VERSION)
 
 
 DPK_CONNECTOR_VERSION=$(DPK_CONNECTOR_NEXT_RELEASE)$(DPK_CONNECTOR_SUFFIX)
-
-
-ifeq ($(KFPv2), 1)
-        WORKFLOW_SUPPORT_LIB=kfp_v2_workflow_support
-else
-        WORKFLOW_SUPPORT_LIB=kfp_v1_workflow_support
-endif
 
 
 TRANSFORMS_PKG_VERSION=$(TRANSFORM_NEXT_RELEASE)$(TRANSFORM_VERSION_SUFFIX)
@@ -86,5 +71,3 @@ transforms-tag::
 # Printout the current release tag for the DPK Connector wheel
 dpk-connector-tag::
 	@echo $(DPK_CONNECTOR_VERSION)
-
-

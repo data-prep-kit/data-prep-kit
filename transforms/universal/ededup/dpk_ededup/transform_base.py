@@ -154,7 +154,7 @@ class EdedupTransformBase(AbstractTableTransform):
             h = TransformUtils.str_to_hash(TransformUtils.normalize_string(str(doc)))
             if h not in hashes:  # Processing this hash for the first time
                 hashes.add(h)  # Remember it locally
-                hd[h] = doc_id
+                hd[h] = str(doc_id) # Add it to the current batch using str for consistency with remove loop below
                 if len(hd) >= REQUEST_LEN:  # time to check remotely
                     unique = unique + self._process_cached_hashes(hd=hd)
                     hd = {}

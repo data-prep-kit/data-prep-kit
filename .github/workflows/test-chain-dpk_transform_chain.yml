@@ -41,7 +41,7 @@ concurrency:
 jobs:
     check_if_allowed:
         # check if user allowed to run restricted workflows
-        runs-on: ubuntu-22.04
+        runs-on: ubuntu-24.04
         outputs:
             restricted_access: ${{ steps.permission.outputs.restricted_access }}
         steps:
@@ -62,7 +62,7 @@ jobs:
     test-src:
 
         needs: [check_if_allowed]
-        runs-on: ubuntu-22.04
+        runs-on: ubuntu-24.04
         env:
             HF_READ_ACCESS_TOKEN: ${{ secrets.HF_READ_ACCESS_TOKEN }}
         steps:

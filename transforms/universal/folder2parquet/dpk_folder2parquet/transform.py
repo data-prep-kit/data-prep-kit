@@ -11,27 +11,38 @@
 # limitations under the License.
 ################################################################################
 
+import io
+import zipfile
 from argparse import ArgumentParser, Namespace
 from typing import Any
-import zipfile
-import io
+
 import pyarrow as pa
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
 from data_processing.utils import (
     CLIArgumentProvider,
+    TransformUtils,
     UnrecoverableException,
     get_dpk_logger,
-    TransformUtils
+    str2bool,
 )
 
 
 logger = get_dpk_logger()
 
-shortname = "ingest"
+shortname = "f2p"
 cli_prefix = f"{shortname}_"
+fewer_parquets_cli_param = "f2p_fewer_parquets"
+content_column_cli_param = "f2p_content_column"
+file_name_column_cli_param = "f2p_file_name"
+document_uuid_column_cli_param = "f2p_document_uuid"
+
+content_column_default = "binary_contents"
+fewer_parquets_default = False
+document_uuid_default = "document_uuid"
+file_name_default = "file_name"
 
 
-class IngestTransform(AbstractTableTransform):
+class Folder2ParquetTransform(AbstractTableTransform):
     """
     Implements splitting large files into smaller ones.
     Two flavours of splitting are supported - based on the amount of documents and based on the size
@@ -42,8 +53,12 @@ class IngestTransform(AbstractTableTransform):
         Initialize based on the dictionary of configuration information.
         """
         super().__init__(config)
-        self.curr_file=None
+        self.curr_file = None
         self.buffer = None
+        self.fewer_parquets = config.get(fewer_parquets_cli_param, fewer_parquets_default)
+        self.content_column = config.get(content_column_cli_param, content_column_default)
+        self.file_name = config.get(file_name_column_cli_param, file_name_default)
+        self.document_uuid = config.get(document_uuid_column_cli_param, document_uuid_default)
 
     def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
         """
@@ -55,7 +70,6 @@ class IngestTransform(AbstractTableTransform):
         logger.error(f"Ivalid call to transform method... filename: {file_name}")
         return [], {}
 
-
     def transform_binary(self, file_name: str, byte_array: bytes) -> tuple[list[tuple[bytes, str]], dict[str, Any]]:
         """
         Converts input file into o or more output files.
@@ -66,21 +80,21 @@ class IngestTransform(AbstractTableTransform):
                 to metadata.  Each element of the return list, is a tuple of the transformed bytes and a string
                 holding the extension to be used when writing out the new bytes.
         """
-        self.curr_file=file_name
+        self.curr_file = file_name
+
         def _new_row(file_name, byte_array):
             import uuid
-            return pa.Table.from_pylist([{
-                'file_name': file_name,
-                'docuument_id': str(uuid.uuid4()),
-                'binary_contents': byte_array 
-                }])
+
+            return pa.Table.from_pylist(
+                [{self.file_name: file_name, self.document_uuid: str(uuid.uuid4()), self.content_column: byte_array}]
+            )
 
         if TransformUtils.get_file_extension(file_name)[1] == ".zip":
             logger.info(f"Iterating through zip file {file_name=} .")
             table = None
             with zipfile.ZipFile(io.BytesIO(byte_array)) as opened_zip:
                 zip_namelist = opened_zip.namelist()
-                for archive_doc_filename in zip_namelist:    
+                for archive_doc_filename in zip_namelist:
                     logger.info("Processing " f"{file_name}/{archive_doc_filename} ")
                     with opened_zip.open(archive_doc_filename) as file:
                         try:
@@ -89,7 +103,9 @@ class IngestTransform(AbstractTableTransform):
                             if table is None:
                                 table = _new_row(f"{file_name}/{archive_doc_filename}", content_bytes)
                             else:
-                                table = pa.concat_tables([table, _new_row(f"{file_name}/{archive_doc_filename}", content_bytes)])
+                                table = pa.concat_tables(
+                                    [table, _new_row(f"{file_name}/{archive_doc_filename}", content_bytes)]
+                                )
                         except Exception as e:
                             logger.error(f" skipping {archive_doc_filename} in {file_name} due to {str(e)}")
                 return [(TransformUtils.convert_arrow_to_binary(table=table), ".parquet")], {}
@@ -109,10 +125,6 @@ class IngestTransform(AbstractTableTransform):
                 logger.warning(f"buffer columns {self.buffer.schema.names}")
                 raise UnrecoverableException()
             return [], {}
-        
-        
-
-
 
     def flush(self) -> tuple[list[pa.Table], dict[str, Any]]:
         result = []
@@ -124,16 +136,16 @@ class IngestTransform(AbstractTableTransform):
             logger.debug(f"Empty buffer. nothing to flush.")
         return result, {"parquet_file": [{self.curr_file: x.num_rows} for x in result]}
 
-
     def enforce_folder_boundary(self):
         """
         This is supporting method for transformers, that implement buffering of tables, and triggers
         a call to flush the buffer prior to switching to a new folder if so required
         :return: true if the runtime should call the flush method before processing the next folder
         """
-        return True
+        return not self.fewer_parquets
 
-class IngestTransformConfiguration(TransformConfiguration):
+
+class Folder2ParquetTransformConfiguration(TransformConfiguration):
 
     """
     Provides support for configuring and using the associated Transform class include
@@ -141,7 +153,7 @@ class IngestTransformConfiguration(TransformConfiguration):
     """
 
     def __init__(self):
-        super().__init__(name=shortname, transform_class=IngestTransform)
+        super().__init__(name=shortname, transform_class=Folder2ParquetTransform)
 
     def add_input_params(self, parser: ArgumentParser) -> None:
         """
@@ -150,6 +162,31 @@ class IngestTransformConfiguration(TransformConfiguration):
         By convention a common prefix should be used for all transform-specific CLI args
         (e.g, noop_, pii_, etc.)
         """
+        parser.add_argument(
+            f"--{content_column_cli_param}",
+            type=str,
+            default=content_column_default,
+            help="name of the column containing document",
+        )
+        parser.add_argument(
+            f"--{fewer_parquets_cli_param}",
+            type=lambda x: bool(str2bool(x)),
+            default=fewer_parquets_default,
+            help="name of the column containing document id",
+        )
+
+        parser.add_argument(
+            f"--{file_name_column_cli_param}",
+            type=str,
+            default=file_name_default,
+            help="name of the column containing file name",
+        )
+        parser.add_argument(
+            f"--{document_uuid_column_cli_param}",
+            type=str,
+            default=document_uuid_default,
+            help="name of the column containing document uuid",
+        )
         return
 
     def apply_input_params(self, args: Namespace) -> bool:
@@ -159,7 +196,7 @@ class IngestTransformConfiguration(TransformConfiguration):
         :return: True, if validate pass or False otherwise
         """
         # Capture the args that are specific to this transform
-        captured = CLIArgumentProvider.capture_parameters(args, cli_prefix, False)
+        captured = CLIArgumentProvider.capture_parameters(args, cli_prefix, True)
         self.params = self.params | captured
         logger.info(f"Ingest file parameters are : {self.params}")
         return True

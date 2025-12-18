@@ -20,12 +20,17 @@ generate-expected:
 	source venv/bin/activate && \
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
              --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'test-data/expected'}" \
-			 --data_files_to_use="['.txt','.zip']"
+			 --data_files_to_use "['.txt','.zip']"
 
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
+             --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'test-data/expected2'}" \
+			 --data_files_to_use "['.txt','.zip']" \
+             --f2p_fewer_parquets "True"
 
-generate-test:
+test-cli:
 	$(MAKE) venv
 	source venv/bin/activate && \
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
-             --data_local_config "{ 'input_folder' : 'test-data/testin', 'output_folder' : 'test-data/testout'}" \
-			 --data_files_to_use="['.pdf']"
+             --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'test-data/output'}" \
+			 --data_files_to_use "['.txt','.zip', 'pdf']"

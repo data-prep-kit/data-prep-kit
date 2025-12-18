@@ -12,19 +12,20 @@
 ################################################################################
 
 import sys
+
 from data_processing.runtime.pure_python import (
     PythonTransformLauncher,
     PythonTransformRuntimeConfiguration,
     Transform,
 )
 from data_processing.utils import get_dpk_logger
-from dpk_ingest.transform import IngestTransformConfiguration
+from dpk_folder2parquet.transform import Folder2ParquetTransformConfiguration
 
 
 logger = get_dpk_logger()
 
 
-class IngestPythonTransformConfiguration(PythonTransformRuntimeConfiguration):
+class Folder2ParquetPythonTransformConfiguration(PythonTransformRuntimeConfiguration):
     """
     Implements the PythonTransformConfiguration for ingest as required by the PythonTransformLauncher.
     """
@@ -33,15 +34,16 @@ class IngestPythonTransformConfiguration(PythonTransformRuntimeConfiguration):
         """
         Initialization
         """
-        super().__init__(transform_config=IngestTransformConfiguration())
+        super().__init__(transform_config=Folder2ParquetTransformConfiguration())
 
-class Ingest(Transform):
+
+class Folder2Parquet(Transform):
     def __init__(self, **kwargs):
-        super().__init__(IngestTransformConfiguration(), **kwargs)
+        super().__init__(Folder2ParquetTransformConfiguration(), **kwargs)
 
 
 if __name__ == "__main__":
 
-    launcher = PythonTransformLauncher(IngestPythonTransformConfiguration())
+    launcher = PythonTransformLauncher(Folder2ParquetPythonTransformConfiguration())
     logger.info("Launching Ingest transform")
     launcher.launch()

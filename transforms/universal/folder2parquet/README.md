@@ -30,4 +30,7 @@ The transform can be initialized with the following parameters.
 |---------------------------|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `data_files_to_use`       | -               | The files extensions to be considered when running the transform. Example value `['.txt','.pdf','.docx','.pptx','.zip']`.                        |
 | `fewer_parquets`              | False              | Reduce the number of parquet files by consolidating all files found in all subfolders in a single parquet. zip files will always be loaded into seperate zip files                                                                             |
-                                                  
+| `f2p_content_column`              | 'binary_content'              | Name of the column where the file content is stored.                                                                              |
+| `f2p_file_name`              | 'file_name'              | Name of the column where the filename is stored                                                                             |                                            
+| `f2p_document_uuid`              | 'document_uuid'              | Name of the column where the document uuid is stored. |
+

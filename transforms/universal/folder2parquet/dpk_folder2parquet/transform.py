@@ -75,7 +75,7 @@ class Folder2ParquetTransform(AbstractTableTransform):
 
     def transform_binary(self, file_name: str, byte_array: bytes) -> tuple[list[tuple[bytes, str]], dict[str, Any]]:
         """
-        Converts input file into o or more output files.
+        Converts input file into one or more output files.
         If there is an error, an exception must be raised - exit()ing is not generally allowed.
         :param byte_array: contents of the input file to be transformed.
         :param file_name: the file name of the file containing the given byte_array.

@@ -116,7 +116,7 @@ class Folder2ParquetTransform(AbstractTableTransform):
         else:
             try:
                 if self.buffer is not None:
-                    logger.debug(f"Added new row {file_name} to existing buffer buffer with {self.buffer.num_rows}")
+                    logger.debug(f"Added new row {file_name} to existing  buffer with {self.buffer.num_rows}")
                     self.buffer = pa.concat_tables([self.buffer, _new_row(self.relative_path, byte_array)])
                 else:
                     logger.debug(f"Starting buffer with {file_name}")

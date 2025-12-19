@@ -70,7 +70,7 @@ class Folder2ParquetTransform(AbstractTableTransform):
         :param file_name: name of the file
         :return: resulting set of tables
         """
-        logger.error(f"Ivalid call to transform method... filename: {file_name}")
+        logger.error(f"Invalid call to transform method... filename: {file_name}")
         return [], {}
 
     def transform_binary(self, file_name: str, byte_array: bytes) -> tuple[list[tuple[bytes, str]], dict[str, Any]]:

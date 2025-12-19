@@ -1,6 +1,6 @@
 # Folder2Parquet
 
-The Folder2Parquet transforms load content form files and folders into a parquet file.
+The Folder2Parquet transform loads content from files and folders into a parquet file.
 Per the set of [transform project conventions](../../README.md#transform-project-conventions)
 the following runtimes are available:
 

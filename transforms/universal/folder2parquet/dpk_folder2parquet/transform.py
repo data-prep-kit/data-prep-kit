@@ -12,6 +12,7 @@
 ################################################################################
 
 import io
+import os
 import zipfile
 from argparse import ArgumentParser, Namespace
 from typing import Any
@@ -53,7 +54,9 @@ class Folder2ParquetTransform(AbstractTableTransform):
         Initialize based on the dictionary of configuration information.
         """
         super().__init__(config)
-        self.curr_file = None
+        logger.info(config)
+        self.input_folder = config.get("data_access").get_input_folder()
+        self.relative_path = None
         self.buffer = None
         self.fewer_parquets = config.get(fewer_parquets_cli_param, fewer_parquets_default)
         self.content_column = config.get(content_column_cli_param, content_column_default)
@@ -80,13 +83,13 @@ class Folder2ParquetTransform(AbstractTableTransform):
                 to metadata.  Each element of the return list, is a tuple of the transformed bytes and a string
                 holding the extension to be used when writing out the new bytes.
         """
-        self.curr_file = file_name
+        self.relative_path = file_name.replace(self.input_folder, "").lstrip(os.sep)
 
-        def _new_row(file_name, byte_array):
+        def _new_row(file_path, byte_array):
             import uuid
 
             return pa.Table.from_pylist(
-                [{self.file_name: file_name, self.document_uuid: str(uuid.uuid4()), self.content_column: byte_array}]
+                [{self.file_name: file_path, self.document_uuid: str(uuid.uuid4()), self.content_column: byte_array}]
             )
 
         if TransformUtils.get_file_extension(file_name)[1] == ".zip":
@@ -101,10 +104,10 @@ class Folder2ParquetTransform(AbstractTableTransform):
                             # Read the content of the file
                             content_bytes = file.read()
                             if table is None:
-                                table = _new_row(f"{file_name}/{archive_doc_filename}", content_bytes)
+                                table = _new_row(f"{self.relative_path}/{archive_doc_filename}", content_bytes)
                             else:
                                 table = pa.concat_tables(
-                                    [table, _new_row(f"{file_name}/{archive_doc_filename}", content_bytes)]
+                                    [table, _new_row(f"{self.relative_path}/{archive_doc_filename}", content_bytes)]
                                 )
                         except Exception as e:
                             logger.error(f" skipping {archive_doc_filename} in {file_name} due to {str(e)}")
@@ -114,10 +117,10 @@ class Folder2ParquetTransform(AbstractTableTransform):
             try:
                 if self.buffer is not None:
                     logger.debug(f"Added new row {file_name} to existing buffer buffer with {self.buffer.num_rows}")
-                    self.buffer = pa.concat_tables([self.buffer, _new_row(file_name, byte_array)])
+                    self.buffer = pa.concat_tables([self.buffer, _new_row(self.relative_path, byte_array)])
                 else:
                     logger.debug(f"Starting buffer with {file_name}")
-                    self.buffer = _new_row(file_name, byte_array)
+                    self.buffer = _new_row(self.relative_path, byte_array)
                 ## Wait for flush when folder change before writing new parquet file
             except Exception as _:  # Can happen if schemas are different
                 # Raise unrecoverable error to stop the execution
@@ -134,7 +137,7 @@ class Folder2ParquetTransform(AbstractTableTransform):
             self.buffer = None
         else:
             logger.debug(f"Empty buffer. nothing to flush.")
-        return result, {"parquet_file": [{self.curr_file: x.num_rows} for x in result]}
+        return result, {"parquet_file": [{self.relative_path: x.num_rows} for x in result]}
 
     def enforce_folder_boundary(self):
         """

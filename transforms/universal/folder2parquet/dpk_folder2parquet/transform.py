@@ -161,7 +161,7 @@ class Folder2ParquetTransformConfiguration(TransformConfiguration):
     def add_input_params(self, parser: ArgumentParser) -> None:
         """
         Add Transform-specific arguments to the given  parser.
-        This will be included in a dictionary used to initialize the IngestTransform.
+        This will be included in a dictionary used to initialize the Folder2ParquetTransform.
         By convention a common prefix should be used for all transform-specific CLI args
         (e.g, noop_, pii_, etc.)
         """

@@ -10,41 +10,51 @@
 # limitations under the License.
 ################################################################################
 
+import copy
 from typing import Any
 
 from argparse import Namespace, ArgumentParser
 
-from data_processing.multimodal.abstract_transform import AbstractMultimodalTransform, AbstractMultimodalTransformConfiguration
-from ultralytics import YOLO
-from data_processing.utils import CLIArgumentProvider
+from data_processing.multimodal.abstract_transform import (
+    AbstractMultimodalTransform,
+    AbstractMultimodalTransformConfiguration,
+)
+from data_processing.utils import CLIArgumentProvider, load_model
 
 from data_processing.multimodal.util import JsonUtils
 import os
+
 shortname = "faces"
 cli_prefix = f"{shortname}_"
-model_path_key = "model_path"
-model_path_default = os.path.abspath(os.path.join(os.path.dirname(__file__), "../models/yolov8n-face.pt"))
-model_path_cli_key = f"{cli_prefix}{model_path_key}"
+model_url_key = "model_url"
+model_credential_key = "model_credential"
+model_url_cli_param = f"{cli_prefix}{model_url_key}"
+model_credential_cli_param = f"{cli_prefix}{model_credential_key}"
+model_credential_from_env = os.environ.get("HF_READ_ACCESS_TOKEN", "")
+
 
 class FacesTransform(AbstractMultimodalTransform):
-    def __init__(self, config: dict[str,Any]):
+    def __init__(self, config: dict[str, Any]):
         super().__init__(config)
         # load model
-        model_path = config.get(model_path_key,model_path_default)
-        self.model = YOLO(model_path)  # load a pretrained model (recommended for training)
-        #self.model = None
 
-    def _merge_annotations(self, merged: dict, addend: dict, past_merge_count: int) -> dict:
+        self.model = load_model(
+            config.get(model_url_key), "yolo", config.get(model_credential_key)
+        )  # load a pretrained model (recommended for training)
+        # self.model = None
+
+    def _merge_annotations(
+        self, merged: dict, addend: dict, past_merge_count: int
+    ) -> dict:
         """
         Merges the two dictionaries of annotations from across multiple images in the same row.
         """
         new_dict = {}
 
         for key, value in merged.items():
-             new_dict[key] = value + addend[key]
+            new_dict[key] = value + addend[key]
 
-        return new_dict   # TODO: needs implementation
-
+        return new_dict  # TODO: needs implementation
 
     def _get_dummy_annotations(self):
         """
@@ -52,8 +62,9 @@ class FacesTransform(AbstractMultimodalTransform):
         """
         return {"faces": -1}
 
-    def _annotate_images(self, image_batch:list[bytes], image_paths:list[str]) -> list[dict]:
-
+    def _annotate_images(
+        self, image_batch: list[bytes], image_paths: list[str]
+    ) -> list[dict]:
         annotations_batch = []
         # Use self.model to annotate all images.
 
@@ -76,8 +87,8 @@ class FacesTransform(AbstractMultimodalTransform):
 
         return annotations_batch
 
-class FacesTransformConfiguration(AbstractMultimodalTransformConfiguration):
 
+class FacesTransformConfiguration(AbstractMultimodalTransformConfiguration):
     def __init__(self):
         super().__init__("faces", FacesTransform)
 
@@ -89,12 +100,16 @@ class FacesTransformConfiguration(AbstractMultimodalTransformConfiguration):
         (e.g, noop_, pii_, etc.)
         """
         parser.add_argument(
-            f"--{model_path_cli_key}",
-            type=str,
-            default=model_path_default,
-            help=f"The path to the faces model to load. Default {model_path_default}.",
+            f"--{model_credential_cli_param}",
+            required=False,
+            default=model_credential_from_env,
+            help="Credential to access model for faces detection placed in url",
         )
-
+        parser.add_argument(
+            f"--{model_url_cli_param}",
+            required=True,
+            help="Url to model for faces detection",
+        )
 
     def apply_input_params(self, args: Namespace) -> bool:
         """
@@ -104,5 +119,11 @@ class FacesTransformConfiguration(AbstractMultimodalTransformConfiguration):
         """
         captured = CLIArgumentProvider.capture_parameters(args, cli_prefix, False)
         self.params = self.params | captured
-        self.logger.info(f"parameters are : {self.params}")
+        params_no_creds = copy.deepcopy(self.params)
+        if model_credential_key not in params_no_creds:
+            self.logger.warning(f"{model_credential_key} are missing")
+        else:
+            if params_no_creds[model_credential_key] != "":
+                params_no_creds[model_credential_key] = "****"
+        self.logger.info(f"yolov8n-face parameters are : {params_no_creds}")
         return True

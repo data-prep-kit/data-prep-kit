@@ -78,9 +78,9 @@ def load_fasttext_model(model_path: str, token: str = None, **kwargs):
     return model
 
 
-@register_model_loader("yolov")
-def load_yolov_model(model_path: str, token: str = None, **kwargs):
-    import torch
+@register_model_loader("yolo")
+def load_yolo_model(model_path: str, token: str = None, **kwargs):
+    from ultralytics import YOLO
     from huggingface_hub import hf_hub_download
 
     if os.path.isfile(model_path):
@@ -102,5 +102,5 @@ def load_yolov_model(model_path: str, token: str = None, **kwargs):
         filename = kwargs.get("model_filename", "model.pt")
         model_path = hf_hub_download(repo_id=model_path, filename=filename, token=token)
 
-    model = torch.load(model_path)
+    model = YOLO(model_path)
     return model

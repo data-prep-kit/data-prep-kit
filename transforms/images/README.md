@@ -1,11 +1,5 @@
 ## Multimedia/Multimodal Transforms
-There is an initial set of 3 transforms: `Faces`, `People` and `NSFW`. Each one is using a model that should be downloaded to the local machine as a pre-requisite. 
-Asssuming that the transforms would be run in a virtual environment after cloning the repo, and that you are in the `transforms/multimodal` directory, running the command:
-```shell
-make models
-```
-will create the `models` subdirectory and will download the 3 models; `yolov8m_200e.pt`, `yolov8m-seg.pt`, and `	yolov8n-face.pt` into this subdirectory. 
-
+There is an initial set of 3 transforms: `Faces`, `People` and `NSFW`.
 ## Faces 
 
 This transform detects people and faces in the image. It provides a pre-trained model designed specifically for face detection.

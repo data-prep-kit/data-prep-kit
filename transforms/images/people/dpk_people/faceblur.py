@@ -17,7 +17,7 @@ from PIL import Image, ImageDraw, ImageFilter
 from datetime import datetime
 import os
 import copy
-from ultralytics import YOLO
+from data_processing.utils import load_model
 import traceback
 import numpy as np
 import tarfile
@@ -27,12 +27,12 @@ import cv2
 from dpk_people.utils import *
 
 
-class FaceBlur():
-    def __init__(self, yolo_modelpath, verbosebit=False):
+class FaceBlur:
+    def __init__(self, model_url_key, model_credential_key, verbosebit=False):
         # torch.cuda.set_device(1)
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print("device = ", device)
-        self.model = YOLO(yolo_modelpath)
+        self.model = load_model(model_url_key, "yolo", model_credential_key)
         self.model.to(device)
         self.verbose = verbosebit
 
@@ -42,16 +42,22 @@ class FaceBlur():
     def run_face_blur_objectlist(self, objectlist, threshold, batchsize):
         start_time = datetime.now()
         # same size as the given images
-        out_objects = []  # If no people are found, the image is returned as is without modification
+        out_objects = (
+            []
+        )  # If no people are found, the image is returned as is without modification
         # marks if the results are in Number of Faces or -1 if there is an error. 0 if no faces.
 
         for maxj in range(0, len(objectlist), batchsize):
-            #if (maxj % 100 == 0):
+            # if (maxj % 100 == 0):
             #    print(maxj, " out of ", len(objectlist), maxj, maxj + batchsize)
-            resultperbatch = self.run_face_blur_perobjectbatch(objectlist[maxj:(maxj + batchsize)], threshold)
+            resultperbatch = self.run_face_blur_perobjectbatch(
+                objectlist[maxj : (maxj + batchsize)], threshold
+            )
             out_objects += resultperbatch  # concatenation
-        if (len(objectlist) != len(out_objects)):
-            print("Mismatch between the inputs and output lengths could be due to other reasons")
+        if len(objectlist) != len(out_objects):
+            print(
+                "Mismatch between the inputs and output lengths could be due to other reasons"
+            )
 
         duration = datetime.now() - start_time
         print("Time taken = ", duration)
@@ -68,7 +74,7 @@ class FaceBlur():
         imageMap = {}
         actual_faces = 0
         imageMap["error-message"] = None
-        if (len(bboxes) > 0):
+        if len(bboxes) > 0:
             for j in range(len(bboxes)):
                 (x1, y1, x2, y2), score, c = bboxes[j], scores[j], cls[j]
                 if score >= threshold:  # check here if c is actually a face class
@@ -79,9 +85,9 @@ class FaceBlur():
                     w = xp - x
                     h = yp - y
                     print(w, h)
-                    roi = outimg[y:y + h, x:x + w]
+                    roi = outimg[y : y + h, x : x + w]
                     roi = cv2.GaussianBlur(roi, (41, 41), 10)
-                    outimg[y:y + roi.shape[0], x:x + roi.shape[1]] = roi
+                    outimg[y : y + roi.shape[0], x : x + roi.shape[1]] = roi
                     actual_faces += 1
 
         imageMap["blurred-im"] = outimg
@@ -92,7 +98,7 @@ class FaceBlur():
     def composite_blur(self, image, result, threshold):
         imgwidth = image.shape[0]
         imgheight = image.shape[1]
-        img = Image.fromarray(image, 'RGB')
+        img = Image.fromarray(image, "RGB")
         outimg = img.copy()
         mask = Image.new(mode="L", size=img.size, color="white")
         bboxes = result.boxes.xyxy.cpu().numpy()
@@ -101,19 +107,23 @@ class FaceBlur():
         imageMap = {}
         actual_faces = 0
         imageMap["error-message"] = None
-        if (len(bboxes) > 0):
+        if len(bboxes) > 0:
             max_diagonal = 0
             draw = ImageDraw.Draw(mask)
             for j in range(len(bboxes)):
                 (x1, y1, x2, y2), score, c = bboxes[j], scores[j], cls[j]
                 # print("Class = ", c)
-                if (c > 0):
+                if c > 0:
                     print(c)
                 if score >= threshold:  # check here if c is actually a face class
-
                     diagonal = max(x2 - x1, y2 - y1)
                     max_diagonal = max(max_diagonal, diagonal)
-                    maskbbox = [x1 - 0.1 * diagonal, y1 - 0.1 * diagonal, x2 + 0.1 * diagonal, y2 + 0.1 * diagonal]
+                    maskbbox = [
+                        x1 - 0.1 * diagonal,
+                        y1 - 0.1 * diagonal,
+                        x2 + 0.1 * diagonal,
+                        y2 + 0.1 * diagonal,
+                    ]
                     draw.rectangle(maskbbox, fill="black")
                     actual_faces += 1
             blurred_img = outimg.filter(ImageFilter.GaussianBlur(0.1 * max_diagonal))
@@ -126,16 +136,19 @@ class FaceBlur():
     # either returns an empty list or a full list of size objectbatchlist
     # empty list is an indication to go into debug mode and examine one image at a time (go to individual mode)
     def run_face_blur_perbatch(self, objectbatchlist, threshold):
-
         try:
             # print(imagepathlist)
             red = (255, 0, 0)
             resultlist = []
-            results = self.model.predict(objectbatchlist, verbose=self.verbose, save=False)
-            if (len(results) == (len(objectbatchlist))):
+            results = self.model.predict(
+                objectbatchlist, verbose=self.verbose, save=False
+            )
+            if len(results) == (len(objectbatchlist)):
                 for i, result in enumerate(results):
                     # imageMap=self.cv2_blur(objectbatchlist[i],result,threshold)
-                    imageMap = self.composite_blur(objectbatchlist[i], result, threshold)
+                    imageMap = self.composite_blur(
+                        objectbatchlist[i], result, threshold
+                    )
                     # print(imageMap)
                     resultlist.append(imageMap)
             return resultlist
@@ -155,8 +168,10 @@ class FaceBlur():
         try:
             for i in range(len(objectpathlist)):
                 # only one file is passed in
-                perimagelist = self.run_face_blur_perbatch([objectpathlist[i]], threshold)
-                if (len(perimagelist) != 1):
+                perimagelist = self.run_face_blur_perbatch(
+                    [objectpathlist[i]], threshold
+                )
+                if len(perimagelist) != 1:
                     imageMap = self.empty_map()
                     resultlist.append(imageMap)
                 else:
@@ -170,12 +185,9 @@ class FaceBlur():
     def run_face_blur_perobjectbatch(self, objectpathlist, threshold):
         # first run on the entire batch. If it succeeds, we are done
         resultlist = self.run_face_blur_perbatch(objectpathlist, threshold)
-        if (len(resultlist) == len(objectpathlist)):
+        if len(resultlist) == len(objectpathlist):
             # no need to recurse, return result
             return resultlist
         else:
             # no need to recurse even here since the list is small and we can manually check
             return self.run_individual_mode(objectpathlist, threshold)
-
-
-

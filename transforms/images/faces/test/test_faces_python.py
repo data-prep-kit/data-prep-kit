@@ -26,13 +26,23 @@ class TestRayProtoTransform(AbstractTransformLauncherTest):
     """
 
     def get_test_transform_fixtures(self) -> list[tuple]:
+        cli_params = {
+            "faces_model_credential": os.environ.get(
+                "HF_READ_ACCESS_TOKEN", "PUT YOUR OWN HUGGINGFACE CREDENTIAL"
+            ),
+            "faces_model_url": "yolo-face/yolov8n-face",
+        }
         basedir = "../"
         basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))
         fixtures = []
         # launcher = ProtoRayLauncher()
         launcher = PythonTransformLauncher(FacesPythonTransformConfiguration())
         fixtures.append(
-            (launcher, {},
-                basedir + "/test-data/input", basedir + "/test-data/expected")
+            (
+                launcher,
+                {},
+                basedir + "/test-data/input",
+                basedir + "/test-data/expected",
+            )
         )
         return fixtures

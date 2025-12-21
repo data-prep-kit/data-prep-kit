@@ -40,7 +40,7 @@ class TestRayProtoTransform(AbstractTransformLauncherTest):
         fixtures.append(
             (
                 launcher,
-                {},
+                cli_params,
                 basedir + "/test-data/input",
                 basedir + "/test-data/expected",
             )

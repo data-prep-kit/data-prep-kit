@@ -26,7 +26,7 @@ class TestRayProtoTransform(AbstractTransformLauncherTest):
     """
 
     def get_test_transform_fixtures(self) -> list[tuple]:
-        cli_params = {
+        config = {
             "people_blur_model_credential": os.environ.get(
                 "HF_READ_ACCESS_TOKEN", "PUT YOUR OWN HUGGINGFACE CREDENTIAL"
             ),

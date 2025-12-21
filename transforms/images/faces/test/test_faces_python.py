@@ -30,7 +30,7 @@ class TestRayProtoTransform(AbstractTransformLauncherTest):
             "faces_model_credential": os.environ.get(
                 "HF_READ_ACCESS_TOKEN", "PUT YOUR OWN HUGGINGFACE CREDENTIAL"
             ),
-            "faces_model_url": "yolo-face/yolov8n-face",
+            "faces_model_url": "deepghs/yolo-face",
         }
         basedir = "../"
         basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), basedir))

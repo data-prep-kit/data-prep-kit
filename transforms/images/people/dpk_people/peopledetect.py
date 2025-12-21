@@ -27,7 +27,12 @@ class PeopleDetect:
     def __init__(self, model_url_key, model_credential_key):
         # torch.cuda.set_device(1)
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.model = load_model(model_url_key, "yolo", model_credential_key)
+        self.model = load_model(
+            model_url_key,
+            "yolo",
+            model_credential_key,
+            revision="4b1db35121179d189754a3bf0b4a86aa44c03eef",
+        )
         self.model.to(device)
 
     ## *********** Code for handling object arrays for people detector ************

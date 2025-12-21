@@ -100,7 +100,17 @@ def load_yolo_model(model_path: str, token: str = None, **kwargs):
     else:
         # assume hugging face repo and download .pt
         filename = kwargs.get("model_filename", "model.pt")
-        model_path = hf_hub_download(repo_id=model_path, filename=filename, token=token)
+        if "subfolder" in kwargs:
+            subfolder = kwargs["subfolder"]
+        if "revision" in kwargs:
+            revision = kwargs["revision"]
+        model_path = hf_hub_download(
+            repo_id=model_path,
+            subfolder=subfolder,
+            revision=revision,
+            filename=filename,
+            token=token,
+        )
 
     model = YOLO(model_path)
     return model

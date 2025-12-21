@@ -32,7 +32,12 @@ class FaceBlur:
         # torch.cuda.set_device(1)
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print("device = ", device)
-        self.model = load_model(model_url_key, "yolo", model_credential_key)
+        self.model = load_model(
+            model_url_key,
+            "yolo",
+            model_credential_key,
+            revision="69cc72e30cb576392ce6113ef41aa3779d656dfc",
+        )
         self.model.to(device)
         self.verbose = verbosebit
 

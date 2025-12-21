@@ -39,7 +39,10 @@ class FacesTransform(AbstractMultimodalTransform):
         # load model
 
         self.model = load_model(
-            config.get(model_url_key), "yolo", config.get(model_credential_key)
+            config.get(model_url_key),
+            "yolo",
+            config.get(model_credential_key),
+            subfolder="yolov8n-face",
         )  # load a pretrained model (recommended for training)
         # self.model = None
 

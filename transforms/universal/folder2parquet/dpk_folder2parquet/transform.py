@@ -36,21 +36,20 @@ cli_prefix = f"{shortname}_"
 input_folder_cli_param = "f2p_input_folder"
 fewer_parquets_cli_param = "f2p_fewer_parquets"
 content_column_cli_param = "f2p_content_column"
-file_name_column_cli_param = "f2p_file_name"
+file_path_column_cli_param = "f2p_file_path"
 document_uuid_column_cli_param = "f2p_document_uuid"
-data_files_to_use_cli_param = "f2p_data_files_to_use"
+file_types_to_use_cli_param = "f2p_file_types_to_use"
 
 content_column_default = "binary_contents"
 fewer_parquets_default = False
 document_uuid_default = "document_uuid"
-file_name_default = "file_name"
-data_files_to_use_default = "*"
+file_path_default = "file_path"
+file_types_to_use_default = "*"
 
 
 class Folder2ParquetTransform(AbstractTableTransform):
     """
-    Implements splitting large files into smaller ones.
-    Two flavours of splitting are supported - based on the amount of documents and based on the size
+    Implements creating parquet tables that store the contents of the files of an input folder.
     """
 
     def __init__(self, config: dict[str, Any]):
@@ -75,13 +74,13 @@ class Folder2ParquetTransform(AbstractTableTransform):
         self.buffer = None
         self.fewer_parquets = config.get(fewer_parquets_cli_param, fewer_parquets_default)
         self.content_column = config.get(content_column_cli_param, content_column_default)
-        self.file_name = config.get(file_name_column_cli_param, file_name_default)
+        self.file_path = config.get(file_path_column_cli_param, file_path_default)
         self.document_uuid = config.get(document_uuid_column_cli_param, document_uuid_default)
-        extensions_raw = config.get(data_files_to_use_cli_param, data_files_to_use_default)
+        extensions_raw = config.get(file_types_to_use_cli_param, file_types_to_use_default)
         if isinstance(extensions_raw, str):
-            self.data_files_to_use = {ext.strip().lower() for ext in extensions_raw.split(",")}
+            self.file_types_to_use = {ext.strip().lower() for ext in extensions_raw.split(",")}
         else:
-            self.data_files_to_use = {ext.lower() for ext in extensions_raw}
+            self.file_types_to_use = {ext.lower() for ext in extensions_raw}
 
     def transform(self, table: pa.Table) -> tuple[list[pa.Table], dict[str, Any]]:
         """
@@ -91,8 +90,8 @@ class Folder2ParquetTransform(AbstractTableTransform):
         for file_path in Path(self.input_folder).rglob("*"):
             if file_path.is_file() and not file_path.name.startswith("."):
                 if (
-                    "*" in self.data_files_to_use
-                    or file_path.suffix.lower() in self.data_files_to_use
+                    "*" in self.file_types_to_use
+                    or file_path.suffix.lower() in self.file_types_to_use
                 ):
                     try:
                         with open(file_path, "rb") as f:
@@ -123,7 +122,7 @@ class Folder2ParquetTransform(AbstractTableTransform):
             import uuid
 
             return pa.Table.from_pylist(
-                [{self.file_name: file_path, self.document_uuid: str(uuid.uuid4()), self.content_column: byte_array}]
+                [{self.file_path: file_path, self.document_uuid: str(uuid.uuid4()), self.content_column: byte_array}]
             )
 
         if TransformUtils.get_file_extension(file_name)[1] == ".zip":
@@ -213,9 +212,9 @@ class Folder2ParquetTransformConfiguration(TransformConfiguration):
         )
 
         parser.add_argument(
-            f"--{file_name_column_cli_param}",
+            f"--{file_path_column_cli_param}",
             type=str,
-            default=file_name_default,
+            default=file_path_default,
             help="name of the column containing file name",
         )
         parser.add_argument(
@@ -225,9 +224,9 @@ class Folder2ParquetTransformConfiguration(TransformConfiguration):
             help="name of the column containing document uuid",
         )
         parser.add_argument(
-            f"--{data_files_to_use_cli_param}",
+            f"--{file_types_to_use_cli_param}",
             type=str,
-            default=data_files_to_use_default,
+            default=file_types_to_use_default,
             help="Comma-separated list of file extensions to include (e.g., .txt,.pdf)",
         )
         return

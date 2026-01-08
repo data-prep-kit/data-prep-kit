@@ -62,14 +62,7 @@ The output table will contain a single additional column:
 | output column name | data type | description |
 |-|-|-|
 | contents | string | the original input text |
-| similarity_score | json | the annotations that describe in which document a potential match was found and which sentence in the document was the closest match  |
-
-<mark>
-Note: similarity_score will be soon changed into similarity_annotiation.
-Within the annotation, the field score will be changed to rank.
-The current score numbe shouldn't be taken as an absolute value, rather a rank for the returned results.
-Higher ranking results are more closely similar to the input text.
-</mark>
+| similarity_annotation | json | the annotations that describe in which document a potential match was found and which sentence in the document was the closest match  |
 
 
 Example of single cell contents in the output column:
@@ -77,14 +70,14 @@ Example of single cell contents in the output column:
 I bet the company staffs want an increase in the wages
 ```
 
-Example of single cell content in the similarity_score column:
+Example of single cell content in the similarity_annotation column:
 
 ```py
   {
       'contents': array(['I bet the company staffs want to have an increase in the wages.'], dtype=object), 
       'id': '123456789', 
       'index': 'myPrivateDocumentsIndex', 
-      'score': 29.345
+      'rank': 1
   }
 ```
 
@@ -100,7 +93,7 @@ The transform can be initialized with the following parameters.
 | `similarity_es_index` | - | The Elasticsearch index to query |
 | `similarity_shingle_size` | 8 | Shingle size for query construction (default is 8) |
 | `similarity_result_size` | 1 | result size for matched sentences (default is 1) |
-| `similarity_annotation_column` | similarity_score | The column name that will contain the similarity annotations, in json format |
+| `similarity_annotation_column` | similarity_annotation | The column name that will contain the similarity annotations, in json format |
 
 Example
 

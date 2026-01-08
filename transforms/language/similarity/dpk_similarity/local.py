@@ -28,7 +28,7 @@ local_conf = {
 similarity_params = {
     "es_endpoint": None,
     "es_index": "mydata",
-    "annotation_column": "similarity_score",
+    "annotation_column": "similarity_annotation",
     "doc_text_column": "contents"
 }
 

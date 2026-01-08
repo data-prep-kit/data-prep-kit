@@ -53,7 +53,7 @@ RESULT_SIZE_DEFAULT = 1
 
 ANNOTATION_COLUMN_KEY = "annotation_column"
 ANNOTATION_COLUMN_CLI_PARAM = f"{cli_prefix}{ANNOTATION_COLUMN_KEY}"
-ANNOTATION_COLUMN_DEFAULT = "similarity_score"
+ANNOTATION_COLUMN_DEFAULT = "similarity_annotation"
 
 DOC_TEXT_COLUMN_KEY = "doc_text_column"
 DOC_TEXT_COLUMN_CLI_PARAM = f"{cli_prefix}{DOC_TEXT_COLUMN_KEY}"
@@ -117,7 +117,7 @@ PARAMS = [
         "default": ANNOTATION_COLUMN_DEFAULT,
         "type": str,
         "required": False,
-        "help": "The column name that will contain the similarity score",
+        "help": "The column name that will contain the similarity annotation",
     },
     {
         "key": DOC_TEXT_COLUMN_KEY,
@@ -173,8 +173,8 @@ class SimilarityTransform(AbstractTableTransform):
             q = r.json()
             res = []
             # try:
-            for d in q["hits"]["hits"]:
-                ddd = {"id":d["fields"]["_id"][0],"index":d["fields"]["_index"][0], "score" :d["_score"]}
+            for i, d in enumerate (q["hits"]["hits"]):
+                ddd = {"id":d["fields"]["_id"][0],"index":d["fields"]["_index"][0], "rank" :i+1}
                 ddd["contents"] = d["highlight"]["contents"]
                 res.append(ddd)
             # except Exception as ex:

@@ -20,7 +20,7 @@
     "es_index": "cnn_dailymail",
     "shingle_size": 8,
     "result_size": 1,
-    "annotation_column": "similarity_score",
+    "annotation_column": "similarity_annotiation",
     "doc_text_column": "contents",
     "checkpointing": false,
     "max_files": -1,

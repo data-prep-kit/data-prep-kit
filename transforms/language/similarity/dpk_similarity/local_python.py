@@ -38,7 +38,7 @@ params = {
 similarity_params = {
     "similarity_es_endpoint": None,
     "similarity_es_index": "mydata",
-    "similarity_annotation_column": "similarity_score",
+    "similarity_annotation_column": "similarity_annotation",
     "similarity_doc_text_column": "contents"
 }
 

@@ -60,9 +60,20 @@ class Folder2ParquetTransform(AbstractTableTransform):
         super().__init__(config)
         logger.info(config)
         # self.input_folder = config.get("data_access").get_input_folder()
+        data_access = config.get("data_access")
+        input_folder = None
+        if data_access and hasattr(data_access, "get_input_folder"):
+            try:
+                input_folder = data_access.get_input_folder()
+            except Exception:
+                input_folder = None
+
+        if input_folder is None:
+            input_folder = config.get(input_folder_cli_param)
+
+        self.input_folder = input_folder
         self.relative_path = None
         self.buffer = None
-        self.input_folder = config.get(input_folder_cli_param, fewer_parquets_default)
         self.fewer_parquets = config.get(fewer_parquets_cli_param, fewer_parquets_default)
         self.content_column = config.get(content_column_cli_param, content_column_default)
         self.file_name = config.get(file_name_column_cli_param, file_name_default)

@@ -15,6 +15,7 @@ import io
 import os
 import zipfile
 from argparse import ArgumentParser, Namespace
+from pathlib import Path
 from typing import Any
 
 import pyarrow as pa
@@ -32,15 +33,18 @@ logger = get_dpk_logger()
 
 shortname = "f2p"
 cli_prefix = f"{shortname}_"
+input_folder_cli_param = "f2p_input_folder"
 fewer_parquets_cli_param = "f2p_fewer_parquets"
 content_column_cli_param = "f2p_content_column"
 file_name_column_cli_param = "f2p_file_name"
 document_uuid_column_cli_param = "f2p_document_uuid"
+data_files_to_use_cli_param = "f2p_data_files_to_use"
 
 content_column_default = "binary_contents"
 fewer_parquets_default = False
 document_uuid_default = "document_uuid"
 file_name_default = "file_name"
+data_files_to_use_default = "*"
 
 
 class Folder2ParquetTransform(AbstractTableTransform):
@@ -55,23 +59,43 @@ class Folder2ParquetTransform(AbstractTableTransform):
         """
         super().__init__(config)
         logger.info(config)
-        self.input_folder = config.get("data_access").get_input_folder()
+        # self.input_folder = config.get("data_access").get_input_folder()
         self.relative_path = None
         self.buffer = None
+        self.input_folder = config.get(input_folder_cli_param, fewer_parquets_default)
         self.fewer_parquets = config.get(fewer_parquets_cli_param, fewer_parquets_default)
         self.content_column = config.get(content_column_cli_param, content_column_default)
         self.file_name = config.get(file_name_column_cli_param, file_name_default)
         self.document_uuid = config.get(document_uuid_column_cli_param, document_uuid_default)
+        extensions_raw = config.get(data_files_to_use_cli_param, data_files_to_use_default)
+        if isinstance(extensions_raw, str):
+            self.data_files_to_use = {ext.strip().lower() for ext in extensions_raw.split(",")}
+        else:
+            self.data_files_to_use = {ext.lower() for ext in extensions_raw}
 
-    def transform(self, table: pa.Table, file_name: str = None) -> tuple[list[pa.Table], dict[str, Any]]:
+    def transform(self, table: pa.Table) -> tuple[list[pa.Table], dict[str, Any]]:
         """
-        split larger files into the smaller ones
-        :param table: table
-        :param file_name: name of the file
+        Processes a local folder and returns a PyArrow Table.
         :return: resulting set of tables
         """
-        logger.error(f"Invalid call to transform method... filename: {file_name}")
-        return [], {}
+        for file_path in Path(self.input_folder).rglob("*"):
+            if file_path.is_file() and not file_path.name.startswith("."):
+                if (
+                    "*" in self.data_files_to_use
+                    or file_path.suffix.lower() in self.data_files_to_use
+                ):
+                    try:
+                        with open(file_path, "rb") as f:
+                            content = f.read()
+                        # transform_binary will buffer the files
+                        self.transform_binary(str(file_path), content)
+                        logger.info(f"Buffered: {file_path.name}")
+                    except Exception as e:
+                        logger.error(f"Failed to process {file_path}: {e}")
+                else:
+                    logger.debug(f"Skipping {file_path.name} (extension not included)")
+
+        return self.flush()
 
     def transform_binary(self, file_name: str, byte_array: bytes) -> tuple[list[tuple[bytes, str]], dict[str, Any]]:
         """
@@ -189,6 +213,12 @@ class Folder2ParquetTransformConfiguration(TransformConfiguration):
             type=str,
             default=document_uuid_default,
             help="name of the column containing document uuid",
+        )
+        parser.add_argument(
+            f"--{data_files_to_use_cli_param}",
+            type=str,
+            default=data_files_to_use_default,
+            help="Comma-separated list of file extensions to include (e.g., .txt,.pdf)",
         )
         return
 

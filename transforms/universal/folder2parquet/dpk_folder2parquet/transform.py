@@ -59,7 +59,6 @@ class Folder2ParquetTransform(AbstractTableTransform):
         """
         super().__init__(config)
         logger.info(config)
-        # self.input_folder = config.get("data_access").get_input_folder()
         data_access = config.get("data_access")
         input_folder = None
         if data_access and hasattr(data_access, "get_input_folder"):

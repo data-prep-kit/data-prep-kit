@@ -212,32 +212,3 @@ def get_dpk_logger(
         logger.addHandler(create_file_handler(log_file, log_level))
 
     return logger
-
-
-# Test logging
-# logger = get_dpk_logger()
-# logger.info("Hello, JSON world!", extra={"transaction_ID": "TRANSACTION999", "user_id": "USER999"})
-#
-# logger2 = get_dpk_logger()
-# logger2.debug("debug message")
-# logger2.info("info message")
-# logger2.warning("warning message")
-# logger.error("error message")
-#
-# try:
-#     1/0
-# except Exception as e:
-#     logger2.exception(e)
-#
-# logger3 = get_dpk_logger(replace_handlers=True, handlers=[logging.NullHandler()])
-# logger3.info("3 info message")
-# logger3.warning("3 warning message")
-# custom_logger = get_dpk_logger(
-#     handlers=[
-#         logging.StreamHandler(),
-#     ],
-#     replace_handlers=True,
-# )
-# custom_logger.warning("4 warning message")
-# logger4 = get_dpk_logger()
-# logger4.warning("custom warning message")

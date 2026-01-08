@@ -3,8 +3,3 @@ transformers>=4.35.2
 lancedb>=0.21.2
 pylance>=0.25.0
 hf-xet>=1.1.1
-boto3==1.35.74
-fastparquet
-datasets
-s3fs
-faiss-cpu

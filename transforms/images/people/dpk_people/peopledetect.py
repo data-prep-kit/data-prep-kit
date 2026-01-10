@@ -24,14 +24,14 @@ from data_processing.utils import load_model
 
 
 class PeopleDetect:
-    def __init__(self, model_url_key, model_credential_key):
+    def __init__(self, model_url_key, model_credential_key, revision="4b1db35121179d189754a3bf0b4a86aa44c03eef"):
         # torch.cuda.set_device(1)
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = load_model(
             model_url_key,
             "yolo",
             model_credential_key,
-            revision="4b1db35121179d189754a3bf0b4a86aa44c03eef",
+            revision=revision,
         )
         self.model.to(device)
         

@@ -33,9 +33,8 @@ class TestRayProtoTransform(AbstractTransformLauncherTest):
             "people_mode": "blur",
             "people_threshold": "0.6",
             "people_batch_size": "50",
-            "people_blur_model_url": "ZiqianLiu/yolov8_face",
-            "people_count_model_url": "thejagstudio/textilev1Plain",
-            "people_count_model_credential": os.environ.get(
+            "people_model_url": "ZiqianLiu/yolov8_face",            
+            "people_model_credential": os.environ.get(
                 "HF_READ_ACCESS_TOKEN", "PUT YOUR OWN HUGGINGFACE CREDENTIAL"
             ),
         }

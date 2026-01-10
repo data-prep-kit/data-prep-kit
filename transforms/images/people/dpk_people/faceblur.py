@@ -28,7 +28,7 @@ from dpk_people.utils import *
 
 
 class FaceBlur:
-    def __init__(self, model_url_key, model_credential_key, verbosebit=False):
+    def __init__(self, model_url_key, model_credential_key, revision="69cc72e30cb576392ce6113ef41aa3779d656dfc", verbosebit=False):
         # torch.cuda.set_device(1)
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         print("device = ", device)
@@ -36,7 +36,7 @@ class FaceBlur:
             model_url_key,
             "yolo",
             model_credential_key,
-            revision="69cc72e30cb576392ce6113ef41aa3779d656dfc",
+            revision=revision,
         )
         self.model.to(device)
         self.verbose = verbosebit

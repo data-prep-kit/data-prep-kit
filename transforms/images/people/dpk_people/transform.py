@@ -32,23 +32,16 @@ logger = get_dpk_logger()
 
 shortname = "people"
 cli_prefix = f"{shortname}_"
-model_path_key = "model_path"
 
-count_model_path_default = os.path.abspath(os.path.join(os.path.dirname(__file__), "../models/yolov8m-seg.pt"))
-blur_model_path_default = os.path.abspath(os.path.join(os.path.dirname(__file__), "../models/yolov8m_200e.pt"))
-model_path_default = blur_model_path_default    # to match default mode = blur
-model_path_cli_key = f"{cli_prefix}{model_path_key}"
 
-blur_model_url_key = "blur_model_url"
-count_model_url_key = "count_model_url"
-blur_model_credential_key = "blur_model_credential"
-count_model_credential_key = "count_model_credential"
-model_credential_key = blur_model_credential_key  # to match default mode = blur
+model_url_key = "model_url"
+model_credential_key = "model_credential"
+model_credential_key = model_credential_key  # to match default mode = blur
 model_url_cli_param = (
-    f"{cli_prefix}{blur_model_url_key}"  # to match default mode = blur
+    f"{cli_prefix}{model_url_key}"  # to match default mode = blur
 )
 model_credential_cli_param = (
-    f"{cli_prefix}{blur_model_credential_key}"  # to match default mode = blur
+    f"{cli_prefix}{model_credential_key}"  # to match default mode = blur
 )
 model_credential_from_env = os.environ.get("HF_READ_ACCESS_TOKEN", "")
 
@@ -70,14 +63,11 @@ class PeopleTransform(AbstractMultimodalTransform):
     def __init__(self, config: dict[str,Any]):
         super().__init__(config)
         self.mode = config.get(mode_key, mode_default)
-        if self.mode == "blur":
-            self.model_url_key = blur_model_url_key
-            self.model_credential_key = blur_model_credential_key
-        else:
-            self.model_url_key = count_model_url_key
-            self.model_credential_key = count_model_credential_key
-        self.threshold = config.get(threshold_key, threshold_default)
-        self.batch_size = config.get(batch_size_key, batch_size_default)
+        self.model_url_key = model_url_key
+        self.model_credential_key = model_credential_key
+        
+        self.threshold = config.get(threshold_key,threshold_default)
+        self.batch_size = config.get(batch_size_key,batch_size_default)
 
         if "count" in self.mode:
             self.pdetect = PeopleDetect(self.model_url_key, self.model_credential_key)
@@ -248,19 +238,19 @@ class PeopleTransformConfiguration(AbstractMultimodalTransformConfiguration):
             f"--{mode_cli_key}",
             type=str,
             default=mode_default,
-            help=f"Mode of operation, one of 'blur' or 'count'. Default is {mode_default}",
+            help=f"Mode of operation, one of 'blur' or 'count'. Default is {mode_default}"
         )
         parser.add_argument(
             f"--{threshold_cli_key}",
             type=float,
             default=threshold_default,
-            help=f"Threshold to use when detecting faces/people. Default is {threshold_default}",
+            help=f"Threshold to use when detecting faces/people. Default is {threshold_default}"
         )
         parser.add_argument(
             f"--{batch_size_cli_key}",
             type=int,
             default=batch_size_default,
-            help=f"Batch size to use when processing images.  Default is {batch_size_default}",
+            help=f"Batch size to use when processing images.  Default is {batch_size_default}"
         )
 
     def apply_input_params(self, args: Namespace) -> bool:

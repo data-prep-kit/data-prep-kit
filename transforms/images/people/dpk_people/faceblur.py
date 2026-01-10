@@ -30,7 +30,7 @@ from dpk_people.utils import *
 class FaceBlur:
     def __init__(self, model_url_key, model_credential_key, verbosebit=False):
         # torch.cuda.set_device(1)
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         print("device = ", device)
         self.model = load_model(
             model_url_key,
@@ -51,16 +51,12 @@ class FaceBlur:
         # marks if the results are in Number of Faces or -1 if there is an error. 0 if no faces.
 
         for maxj in range(0, len(objectlist), batchsize):
-            # if (maxj % 100 == 0):
+            #if (maxj % 100 == 0):
             #    print(maxj, " out of ", len(objectlist), maxj, maxj + batchsize)
-            resultperbatch = self.run_face_blur_perobjectbatch(
-                objectlist[maxj : (maxj + batchsize)], threshold
-            )
+            resultperbatch = self.run_face_blur_perobjectbatch(objectlist[maxj:(maxj + batchsize)], threshold)
             out_objects += resultperbatch  # concatenation
-        if len(objectlist) != len(out_objects):
-            print(
-                "Mismatch between the inputs and output lengths could be due to other reasons"
-            )
+        if (len(objectlist) != len(out_objects)):
+            print("Mismatch between the inputs and output lengths could be due to other reasons")
 
         duration = datetime.now() - start_time
         print("Time taken = ", duration)

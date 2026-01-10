@@ -343,42 +343,21 @@ class PeopleDetect:
     
 
 def parsearguments():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--model", type=str, default="yolov8m-seg.pt", help="path to the model file"
-    )
-    parser.add_argument(
-        "--mode",
-        type=str,
-        default="image",
-        help="Mode in which to operate: Choices are: 'image', 'list','bulk','tar'",
-    )
-    # group1 = parser.add_argument_group(title='Group of optional arguments')
-    parser.add_argument(
-        "--topdir", default=".", type=str, help="image directory name ends with /"
-    )
-    parser.add_argument(
-        "--confidence", default=0.5, type=float, help="confidence score for persons"
-    )
-    parser.add_argument(
-        "--batchsize", default=100, type=int, help="batch size for bulk processing"
-    )
-    parser.add_argument(
-        "--verbose", default=False, type=bool, help="Whether detailed output is needed"
-    )
-    parser.add_argument(
-        "--name",
-        type=str,
-        help="Name of image file if image file, else imagelist, else directory, etc. or output file in bulk mode",
-    )
-    args = parser.parse_args()
-    return args
-
-
-# usage:
-# python peopledetect.py --mode='bulk' --topdir='/gpfs/fs0/data/BioInspiredMems/datasets/flickr30k/test/' --name='out.txt' --batchsize=5 --verbose=True
-# python peopledetect.py --mode='list' --topdir='/gpfs/fs0/data/BioInspiredMems/datasets/flickr30k/flickr30k-images/' --name='imagelist.txt' --batchsize=5
-# python peopledetect.py --mode='image' --name='/gpfs/fs0/data/BioInspiredMems/datasets/flickr30k/flickr30k-images/2326133103.jpg'
+        parser = argparse.ArgumentParser()
+        parser.add_argument('--model', type=str, default='yolov8m-seg.pt', help="path to the model file")
+        parser.add_argument('--mode', type=str, default='image', help="Mode in which to operate: Choices are: 'image', 'list','bulk','tar'")
+       # group1 = parser.add_argument_group(title='Group of optional arguments')
+        parser.add_argument('--topdir', default='.',type=str,help='image directory name ends with /')
+        parser.add_argument('--confidence', default=0.5, type=float,help="confidence score for persons")
+        parser.add_argument('--batchsize', default=100, type=int,help='batch size for bulk processing')
+        parser.add_argument('--verbose', default=False, type=bool,help="Whether detailed output is needed")
+        parser.add_argument('--name', type=str, help="Name of image file if image file, else imagelist, else directory, etc. or output file in bulk mode")
+        args = parser.parse_args()
+        return args
+#usage:
+#python peopledetect.py --mode='bulk' --topdir='/gpfs/fs0/data/BioInspiredMems/datasets/flickr30k/test/' --name='out.txt' --batchsize=5 --verbose=True
+#python peopledetect.py --mode='list' --topdir='/gpfs/fs0/data/BioInspiredMems/datasets/flickr30k/flickr30k-images/' --name='imagelist.txt' --batchsize=5
+#python peopledetect.py --mode='image' --name='/gpfs/fs0/data/BioInspiredMems/datasets/flickr30k/flickr30k-images/2326133103.jpg'
 if __name__ == "__main__":
     args = parsearguments()
     #print(args)

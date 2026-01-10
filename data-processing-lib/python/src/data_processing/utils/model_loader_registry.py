@@ -44,9 +44,7 @@ def load_transformers_model(model_path: str, token: str = None, **kwargs):
 def load_transformers_model(model_path: str, token: str = None, **kwargs):
     from transformers import AutoModelForSequenceClassification
 
-    model = AutoModelForSequenceClassification.from_pretrained(
-        model_path, token=token, **kwargs
-    )
+    model = AutoModelForSequenceClassification.from_pretrained(model_path, token=token, **kwargs)
     return model
 
 

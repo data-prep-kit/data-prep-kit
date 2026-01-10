@@ -34,6 +34,10 @@ shortname = "people"
 cli_prefix = f"{shortname}_"
 model_path_key = "model_path"
 
+count_model_path_default = os.path.abspath(os.path.join(os.path.dirname(__file__), "../models/yolov8m-seg.pt"))
+blur_model_path_default = os.path.abspath(os.path.join(os.path.dirname(__file__), "../models/yolov8m_200e.pt"))
+model_path_default = blur_model_path_default    # to match default mode = blur
+model_path_cli_key = f"{cli_prefix}{model_path_key}"
 
 blur_model_url_key = "blur_model_url"
 count_model_url_key = "count_model_url"
@@ -49,7 +53,7 @@ model_credential_cli_param = (
 model_credential_from_env = os.environ.get("HF_READ_ACCESS_TOKEN", "")
 
 mode_key = "mode"
-# mode_default = "count" # or blur
+#mode_default = "count" # or blur
 mode_default = "blur"
 mode_cli_key = f"{cli_prefix}{mode_key}"
 
@@ -63,7 +67,7 @@ batch_size_cli_key = f"{cli_prefix}{batch_size_key}"
 
 
 class PeopleTransform(AbstractMultimodalTransform):
-    def __init__(self, config: dict[str, Any]):
+    def __init__(self, config: dict[str,Any]):
         super().__init__(config)
         self.mode = config.get(mode_key, mode_default)
         if self.mode == "blur":
@@ -80,9 +84,7 @@ class PeopleTransform(AbstractMultimodalTransform):
         else:
             self.fb = FaceBlur(self.model_url_key, self.model_credential_key)
 
-    def _merge_annotations(
-        self, merged: dict, addend: dict, past_merge_count: int
-    ) -> dict:
+    def _merge_annotations(self, merged: dict, addend: dict, past_merge_count: int) -> dict:
         """
         Merges the two dictionaries of annotations from across multiple images in the same row.
         """
@@ -90,21 +92,22 @@ class PeopleTransform(AbstractMultimodalTransform):
 
         if "count" in self.mode:
             for key, value in merged.items():
-                new_dict[key] = value + addend[key]
+                 new_dict[key] = value + addend[key]
         else:
             for key, value in merged.items():
-                if key == "blurred_images":
+                if key == 'blurred_images':
                     assert isinstance(value, list)
                     assert isinstance(addend[key], list)
                     copy = merged[key].copy()
                     copy.extend(addend[key])
                     extended = copy
-                    # self.logger.info(f"{value=}, {addend[key]=}, {copy=}, {extended=}")
+                    #self.logger.info(f"{value=}, {addend[key]=}, {copy=}, {extended=}")
                     new_dict[key] = extended
                 else:
                     new_dict[key] = value + addend[key]
 
-        return new_dict  # TODO: needs implementation
+        return new_dict   # TODO: needs implementation
+
 
     def _get_dummy_annotations(self):
         """
@@ -115,17 +118,14 @@ class PeopleTransform(AbstractMultimodalTransform):
         else:
             return {"blurred_images": [], "nfaces": 0}
 
-    def _annotate_images(
-        self, image_batch: list[bytes], image_paths: list[str]
-    ) -> list[dict]:
+    def _annotate_images(self, image_batch: list[bytes], image_paths:list[str]) -> list[dict]:
         if "count" in self.mode:
             return self._count_people(image_batch)
         else:
             return self._blur_people(image_batch, image_paths)
 
-    def _blur_people(
-        self, image_batch: list[bytes], image_paths: list[str]
-    ) -> list[dict]:
+    def _blur_people(self, image_batch: list[bytes], image_paths:list[str]) -> list[dict]:
+
         # Use self.model to annotate all images.
 
         blur_annotations_batch = []
@@ -135,8 +135,8 @@ class PeopleTransform(AbstractMultimodalTransform):
         ct = 0
         for image in image_batch:
             # An appended set of columns for this image.
-            image = JsonUtils.convert_bytes_to_image(image)
-            # imgarray = image #np.asarray(image)
+            image  = JsonUtils.convert_bytes_to_image(image)
+            #imgarray = image #np.asarray(image)
             imgarray = np.asarray(image)
             im_list.append(imgarray)
             fmt = image.format
@@ -145,36 +145,34 @@ class PeopleTransform(AbstractMultimodalTransform):
                 tokens = impth.split(".")
                 fmt = tokens[-1].lower()
                 if fmt == "jpg":
-                    fmt = "jpeg"
-                # print('None converted to ', f"{fmt=}")
-            # print(image_paths[ct])
+                    fmt = 'jpeg'
+                #print('None converted to ', f"{fmt=}")
+            #print(image_paths[ct])
 
-            # print('using ', f"{fmt=}")
+            #print('using ', f"{fmt=}")
             format_list.append(fmt)
             ct += 1
 
-        res_list = self.fb.run_face_blur_objectlist(
-            im_list, self.threshold, self.batch_size
-        )
+        res_list = self.fb.run_face_blur_objectlist(im_list, self.threshold, self.batch_size)
         logger.debug(f"{res_list}")
-        assert len(res_list) == len(im_list)
+        assert len(res_list)==len(im_list)
 
         ct = 0
         for result in res_list:
-            blurim = result["blurred-im"]
-            nfaces = result["nfaces"]
+            blurim = result['blurred-im']
+            nfaces = result['nfaces']
 
             if blurim is None:  # error in annotation
                 # blurim = Image.fromarray(blurim)
                 blur_annotations = None
-                # raise RuntimeError("some image failed") #this is temporary till we fix the superclass
+                #raise RuntimeError("some image failed") #this is temporary till we fix the superclass
             else:
                 if nfaces == 0:  # no error but no faces
                     blurim = None
                 else:
-                    # blurim = JsonUtils.convert_PILimage_to_image(blurim, format_list[ct])
+                    #blurim = JsonUtils.convert_PILimage_to_image(blurim, format_list[ct])
                     blurim = JsonUtils.convert_numpy_to_image(blurim, format_list[ct])
-                    # blurim = blurim.tobytes()
+                    #blurim = blurim.tobytes()
 
                 blur_annotations = {"blurred_images": [blurim], "nfaces": nfaces}
 
@@ -185,6 +183,7 @@ class PeopleTransform(AbstractMultimodalTransform):
         return blur_annotations_batch
 
     def _count_people(self, image_batch: list[bytes]) -> list[dict]:
+
         annotations_batch = []
         # Use self.model to annotate all images.
 
@@ -195,41 +194,35 @@ class PeopleTransform(AbstractMultimodalTransform):
             # An appended set of columns for this image.
 
             image = JsonUtils.convert_bytes_to_image(image)
-            imgarray = image  # np.asarray(image)
+            imgarray = image #np.asarray(image)
             im_list.append(imgarray)
 
-        # print(f"{len(im_list)=}")
-        # results = self.model(image)
+        #print(f"{len(im_list)=}")
+        #results = self.model(image)
         confidence = 0.5
         verbose = False
         batchsize = 200
-        (
-            people_count,
-            nonpeople_count,
-            res_list,
-        ) = self.pdetect.run_people_detector_objectlist(
-            im_list, confidence, batchsize, verbose
-        )
-        # result = self.pdetect.run_people_detector_object(image, confidence, verbose)
-        # print(f"{len(im_list) = }")
-        # print(f"{len(res_list) = }")
+        people_count, nonpeople_count, res_list = self.pdetect.run_people_detector_objectlist(im_list, confidence, batchsize, verbose)
+        #result = self.pdetect.run_people_detector_object(image, confidence, verbose)
+        #print(f"{len(im_list) = }")
+        #print(f"{len(res_list) = }")
 
         for result in res_list:
-            if result == True:
-                image_annotations = {"people": 1}
-            else:
-                image_annotations = {"people": 0}
+           if result == True:
+             image_annotations = {"people": 1}
+           else:
+             image_annotations = {"people": 0}
 
-            annotations_batch.append(image_annotations)
+           annotations_batch.append(image_annotations)
 
-        # print(f"{res_list=}")
-        # print(f"{len(res_list)=}")
-        # print(f"{annotations_batch=}")
+        #print(f"{res_list=}")
+        #print(f"{len(res_list)=}")
+        #print(f"{annotations_batch=}")
 
         return annotations_batch
 
-
 class PeopleTransformConfiguration(AbstractMultimodalTransformConfiguration):
+
     def __init__(self):
         super().__init__("people", PeopleTransform)
 

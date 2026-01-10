@@ -15,10 +15,7 @@ from typing import Any
 
 from argparse import Namespace, ArgumentParser
 
-from data_processing.multimodal.abstract_transform import (
-    AbstractMultimodalTransform,
-    AbstractMultimodalTransformConfiguration,
-)
+from data_processing.multimodal.abstract_transform import AbstractMultimodalTransform, AbstractMultimodalTransformConfiguration
 from data_processing.utils import CLIArgumentProvider, load_model
 
 from data_processing.multimodal.util import JsonUtils
@@ -34,7 +31,7 @@ model_credential_from_env = os.environ.get("HF_READ_ACCESS_TOKEN", "")
 
 
 class FacesTransform(AbstractMultimodalTransform):
-    def __init__(self, config: dict[str, Any]):
+    def __init__(self, config: dict[str,Any]):
         super().__init__(config)
         # load model
 
@@ -46,18 +43,16 @@ class FacesTransform(AbstractMultimodalTransform):
         )  # load a pretrained model (recommended for training)
         # self.model = None
 
-    def _merge_annotations(
-        self, merged: dict, addend: dict, past_merge_count: int
-    ) -> dict:
+    def _merge_annotations(self, merged: dict, addend: dict, past_merge_count: int) -> dict:
         """
         Merges the two dictionaries of annotations from across multiple images in the same row.
         """
         new_dict = {}
 
         for key, value in merged.items():
-            new_dict[key] = value + addend[key]
+             new_dict[key] = value + addend[key]
 
-        return new_dict  # TODO: needs implementation
+        return new_dict   # TODO: needs implementation
 
     def _get_dummy_annotations(self):
         """
@@ -65,9 +60,8 @@ class FacesTransform(AbstractMultimodalTransform):
         """
         return {"faces": -1}
 
-    def _annotate_images(
-        self, image_batch: list[bytes], image_paths: list[str]
-    ) -> list[dict]:
+    def _annotate_images(self, image_batch:list[bytes], image_paths:list[str]) -> list[dict]:
+        
         annotations_batch = []
         # Use self.model to annotate all images.
 

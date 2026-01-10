@@ -35,8 +35,7 @@ cli_prefix = f"{shortname}_"
 
 
 model_url_key = "model_url"
-model_credential_key = "model_credential"
-model_credential_key = model_credential_key  # to match default mode = blur
+model_credential_key = "model_credential"  # to match default mode = blur
 model_url_cli_param = (
     f"{cli_prefix}{model_url_key}"  # to match default mode = blur
 )

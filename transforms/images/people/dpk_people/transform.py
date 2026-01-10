@@ -26,17 +26,24 @@ from dpk_people.faceblur import *
 import os
 
 from data_processing.utils import get_dpk_logger
+
 logger = get_dpk_logger()
 
 
 shortname = "people"
 cli_prefix = f"{shortname}_"
-model_path_key = "model_path"
 
-count_model_path_default = os.path.abspath(os.path.join(os.path.dirname(__file__), "../models/yolov8m-seg.pt"))
-blur_model_path_default = os.path.abspath(os.path.join(os.path.dirname(__file__), "../models/yolov8m_200e.pt"))
-model_path_default = blur_model_path_default    # to match default mode = blur
-model_path_cli_key = f"{cli_prefix}{model_path_key}"
+
+model_url_key = "model_url"
+model_credential_key = "model_credential"
+model_credential_key = model_credential_key  # to match default mode = blur
+model_url_cli_param = (
+    f"{cli_prefix}{model_url_key}"  # to match default mode = blur
+)
+model_credential_cli_param = (
+    f"{cli_prefix}{model_credential_key}"  # to match default mode = blur
+)
+model_credential_from_env = os.environ.get("HF_READ_ACCESS_TOKEN", "")
 
 mode_key = "mode"
 #mode_default = "count" # or blur
@@ -51,25 +58,21 @@ batch_size_key = "batch_size"
 batch_size_default = 50
 batch_size_cli_key = f"{cli_prefix}{batch_size_key}"
 
+
 class PeopleTransform(AbstractMultimodalTransform):
     def __init__(self, config: dict[str,Any]):
         super().__init__(config)
-        self.mode = config.get(mode_key,mode_default)
-        self.model_path = config.get(model_path_key, None)
-        if self.model_path is None:
-            if self.mode == "blur":
-                self.model_path = blur_model_path_default
-            else:
-                self.model_path = count_model_path_default
+        self.mode = config.get(mode_key, mode_default)
+        self.model_url_key = model_url_key
+        self.model_credential_key = model_credential_key
+        
         self.threshold = config.get(threshold_key,threshold_default)
         self.batch_size = config.get(batch_size_key,batch_size_default)
 
         if "count" in self.mode:
-            self.pdetect = PeopleDetect(self.model_path)
+            self.pdetect = PeopleDetect(self.model_url_key, self.model_credential_key)
         else:
-            self.fb = FaceBlur(self.model_path)
-
-
+            self.fb = FaceBlur(self.model_url_key, self.model_credential_key)
 
     def _merge_annotations(self, merged: dict, addend: dict, past_merge_count: int) -> dict:
         """
@@ -221,10 +224,15 @@ class PeopleTransformConfiguration(AbstractMultimodalTransformConfiguration):
         (e.g, noop_, pii_, etc.)
         """
         parser.add_argument(
-            f"--{model_path_cli_key}",
-            type=str,
-            default=None,   # Let init() set the default based on mode, if not provided here.
-            help=f"The path to the people model to load. Default {model_path_default}.",
+            f"--{model_credential_cli_param}",
+            required=False,
+            default=model_credential_from_env,
+            help="Credential to access model for faces/people detection placed in url",
+        )
+        parser.add_argument(
+            f"--{model_url_cli_param}",
+            required=True,
+            help="Url to model for faces/people detection",
         )
         parser.add_argument(
             f"--{mode_cli_key}",

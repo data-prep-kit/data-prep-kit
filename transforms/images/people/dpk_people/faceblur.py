@@ -17,7 +17,7 @@ from PIL import Image, ImageDraw, ImageFilter
 from datetime import datetime
 import os
 import copy
-from ultralytics import YOLO
+from data_processing.utils import load_model
 import traceback
 import numpy as np
 import tarfile
@@ -27,12 +27,17 @@ import cv2
 from dpk_people.utils import *
 
 
-class FaceBlur():
-    def __init__(self, yolo_modelpath, verbosebit=False):
+class FaceBlur:
+    def __init__(self, model_url_key, model_credential_key, revision="69cc72e30cb576392ce6113ef41aa3779d656dfc", verbosebit=False):
         # torch.cuda.set_device(1)
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         print("device = ", device)
-        self.model = YOLO(yolo_modelpath)
+        self.model = load_model(
+            model_url_key,
+            "yolo",
+            model_credential_key,
+            revision=revision,
+        )
         self.model.to(device)
         self.verbose = verbosebit
 
@@ -176,6 +181,4 @@ class FaceBlur():
         else:
             # no need to recurse even here since the list is small and we can manually check
             return self.run_individual_mode(objectpathlist, threshold)
-
-
 

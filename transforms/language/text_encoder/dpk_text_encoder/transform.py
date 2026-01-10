@@ -119,7 +119,6 @@ class TextEncoderTransform(AbstractTableTransform):
 
         if torch.cuda.is_available():
             self.logger.info(f"GPU is available!")
-            self.model.half()
             self.device = torch.device("cuda")  # Use GPU
         else:
             self.logger.info(f"GPU is not available. Using CPU.")
@@ -131,7 +130,6 @@ class TextEncoderTransform(AbstractTableTransform):
         self.embeddings_in_lanceDB = config.get(embeddings_in_lanceDB_key, default_embeddings_in_lanceDB)
         self.logger.info(f"{self.embeddings_in_lanceDB=}")
 
-      
         self.model_max_seq_length = config.get(model_max_seq_length_key, default_model_max_seq_length)
         self.logger.info(f"{self.model_max_seq_length=}")
 
@@ -140,7 +138,9 @@ class TextEncoderTransform(AbstractTableTransform):
             self.model.max_seq_length = self.model_max_seq_length
             self.model.tokenizer.model_max_length = self.model_max_seq_length
             self.model = self.model.to(self.device)
-
+            if torch.cuda.is_available():
+                self.model.half()
+            
         
         self.embedding_batch_size = config.get(embedding_batch_size_key, default_embedding_batch_size)
 

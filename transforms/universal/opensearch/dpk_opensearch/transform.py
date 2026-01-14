@@ -22,10 +22,9 @@ from datetime import datetime, timezone
 
 from opensearchpy import OpenSearch, helpers
 
-from data_processing.transform import AbstractTableTransform, TransformConfiguration
+from data_processing.transform import AbstractTableTransform, TransformConfiguration, SinkHandler
 from data_processing.utils import CLIArgumentProvider
 from data_processing.utils import UnrecoverableException, get_dpk_logger
-from dpk_opensearch.sink_handler import SinkHandler
 
 # Suppress SSL warnings for self-signed certificates
 warnings.simplefilter('ignore', InsecureRequestWarning)

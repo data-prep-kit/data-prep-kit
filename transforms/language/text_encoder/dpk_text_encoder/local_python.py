@@ -21,7 +21,6 @@ from dpk_text_encoder.transform import (
     model_name_cli_param,
     content_column_name_cli_param,
     output_embeddings_column_name_cli_param,
-    embeddings_in_parquet_cli_param
 )
 from dpk_text_encoder.runtime import TextEncoderPythonTransformConfiguration
 
@@ -43,7 +42,6 @@ params = {
     "runtime_code_location": ParamsUtils.convert_to_ast(code_location),
     "data_checkpointing": False,
     # text_encoder params
-    embeddings_in_parquet_cli_param: True,
     model_name_cli_param: "ibm-granite/granite-embedding-small-english-r2",
     content_column_name_cli_param: "contents",
     output_embeddings_column_name_cli_param: "embeddings",

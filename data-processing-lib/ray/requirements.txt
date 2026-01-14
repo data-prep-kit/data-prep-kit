@@ -1,3 +1,4 @@
-ray[default]==2.36.1
+ray[default]==2.36.1; python_version < "3.13"
+ray[default]==2.45.0; python_version >= "3.13"
 fastapi>=0.110.2
 pillow>=10.3.0

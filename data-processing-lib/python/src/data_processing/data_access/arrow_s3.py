@@ -66,7 +66,7 @@ class ArrowS3:
         :param key: complete folder name
         :return: bucket name and prefix
         """
-        prefixes = key.split("/")
+        prefixes = str(key).split("/")
         return prefixes[0], "/".join(prefixes[1:])
 
     # get list of the files (names and sizes) for a given prefix (including bucket name)

@@ -3,7 +3,8 @@
 #If using `np.array(obj, copy=False)` replace it with `np.asarray(obj)` to allow a copy when needed (no behavior change in NumPy 1.x).
 #For more details, see https://numpy.org/devdocs/numpy_2_0_migration_guide.html#adapting-to-changes-in-the-copy-keyword.
 numpy < 2.0.0
-pyarrow<=17.0.0
+pyarrow<=17.0.0; python_version <= "3.12"
+pyarrow; python_version > "3.12"
 # Later version 1.38.7 is breaking authentication. 
 # check compatibility with other applications that depend on botocore(DMF, DSift, etc.)
 boto3>=1.41

@@ -1,14 +1,14 @@
-pandas
-click
-httpx-sse
-ibm-generative-ai
-matplotlib
-matplotlib-inline
-networkx
-numpy<=1.26.4
-plotly
-pyarrow
-streamlit
-tree-sitter==0.21.3
-tree-sitter-languages==1.10.2
-sentence_transformers
+pandas; python_version <= "3.12"
+click; python_version <= "3.12"
+httpx-sse; python_version <= "3.12"
+ibm-generative-ai; python_version <= "3.12"
+matplotlib; python_version <= "3.12"
+matplotlib-inline; python_version <= "3.12"
+networkx; python_version <= "3.12"
+numpy<=1.26.4; python_version <= "3.12"
+plotly; python_version <= "3.12"
+pyarrow; python_version <= "3.12"
+streamlit; python_version <= "3.12"
+tree-sitter==0.21.3; python_version <= "3.12"
+tree-sitter-languages==1.10.2; python_version <= "3.12"
+sentence_transformers; python_version <= "3.12"

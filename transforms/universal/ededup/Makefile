@@ -52,3 +52,21 @@ run-cli-ray:
             	--ededup_doc_id "document_id" \
 				--ededup_use_snapshot "True" \
 				--ededup_snapshot_directory test-data-ray/input/snapshot
+
+
+run-cli-test:
+	make venv
+	source venv/bin/activate && \
+	python -m dpk_$(TRANSFORM_NAME).runtime \
+                --data_local_config "{ 'input_folder' : 'extracted', 'output_folder' : 'output'}"  \
+				--ededup_doc_column "contents" \
+            	--ededup_doc_id "doc_id"
+
+run-docker-test:
+	docker run -dt --name ededup-test -v $(PWD):/pwd ededup-python:latest \
+		python -m dpk_ededup.runtime \
+                --data_local_config "{ 'input_folder' : '/pwd/extracted', 'output_folder' : '/pwd/output'}"  \
+				--ededup_doc_column "contents" \
+            	--ededup_doc_id "doc_id"
+
+

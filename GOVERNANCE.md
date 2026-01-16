@@ -23,10 +23,10 @@ A *committer* is a contributor who has the additional privilege to commit code d
 Current committers (in alphabetic order):
 
 - [Constantin Adam](https://github.com/cmadam)
+- [Santosh Borse](https://github.com/santoshborse)
 - [Revital Eres](https://github.com/revit13)
 - [Alexey Roytman](https://github.com/roytman)
 - [Shivdeep Singh](https://github.com/shivdeep-singh-ibm)
-- [Shalisha Witherspoon](https://github.com/swith005)
 - [David Wood](https://github.com/daw3rd)
 - [Kun-Lung Wu](https://github.com/klwuibm)
 
@@ -51,14 +51,14 @@ The *Techincal Steering Committee (TSC) members* are committers who have additio
 Current TSC members (in alphabetic order):
 
 - [Shahrokh Daijavad](https://github.com/shahrokhDaijavad)
-- [Nirmit Desai](https://github.com/nirmit-desai)
 - [Adrian Lee](https://github.com/alee121)
 - [Jean-Claude Mamou](https://github.com/jcmamou)
 - [Maroun Touma](https://github.com/touma-I/)
+- [Shalisha Witherspoon](https://github.com/swith005)
 
 One of the TSC members is the chairperson of the TSC and should ensure the smooth running of the TSC. They do not have more voting power than other TSC members.
 
-Currently [Nirmit Desai](https://github.com/nirmit-desai) is the chairperson of the TSC.
+Currently [Shahrokh Daijavad](https://github.com/shahrokhDaijavad) is the chairperson of the TSC.
 
 #### Process for becoming a TSC member
 

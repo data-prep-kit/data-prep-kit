@@ -98,12 +98,8 @@ def load_yolo_model(model_path: str, token: str = None, **kwargs):
     else:
         # assume hugging face repo and download .pt
         filename = kwargs.get("model_filename", "model.pt")
-        subfolder = None
-        revision = None
-        if "subfolder" in kwargs:
-            subfolder = kwargs["subfolder"]
-        if "revision" in kwargs:
-            revision = kwargs["revision"]
+        subfolder = kwargs.get("subfolder", None)
+        revision = kwargs.get("revision", None)
         model_path = hf_hub_download(
             repo_id=model_path,
             subfolder=subfolder,

@@ -37,6 +37,7 @@ class FaceBlur:
             "yolo",
             model_credential_key,
             revision=revision,
+            model_filename='yolov8m-seg.pt',
         )
         self.model.to(device)
         self.verbose = verbosebit

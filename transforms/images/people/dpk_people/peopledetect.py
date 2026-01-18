@@ -32,6 +32,7 @@ class PeopleDetect:
             "yolo",
             model_credential_key,
             revision=revision,
+            model_filename='yolov8m_200e.pt',
         )
         self.model.to(device)
         

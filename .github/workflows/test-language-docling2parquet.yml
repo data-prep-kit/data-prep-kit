@@ -14,7 +14,6 @@ on:
             - "*"
         paths:
             - "transforms/language/docling2parquet/**"
-            - "!transforms/language/docling2parquet/**/kfp_ray/**" # This is/will be tested in separate workflow
             - "!**.md"
             - "!**/doc/**"
             - "!**/images/**"
@@ -26,7 +25,6 @@ on:
             - "feature/**"
         paths:
             - "transforms/language/docling2parquet/**"
-            - "!transforms/language/docling2parquet/**/kfp_ray/**" # This is/will be tested in separate workflow
             - "!**.md"
             - "!**/doc/**"
             - "!**/images/**"

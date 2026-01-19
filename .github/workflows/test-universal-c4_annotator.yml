@@ -17,7 +17,6 @@ on:
             - "transforms/.make.transforms"
             - "transforms/universal/c4_annotator/**"
             - "data-processing-lib/**"
-            - "!transforms/universal/c4_annotator/**/kfp_ray/**" # This is/will be tested in separate workflow
             - "!data-processing-lib/**/test/**"
             - "!data-processing-lib/**/test-data/**"
             - "!**.md"
@@ -34,7 +33,6 @@ on:
             - "transforms/.make.transforms"
             - "transforms/universal/c4_annotator/**"
             - "data-processing-lib/**"
-            - "!transforms/universal/c4_annotator/**/kfp_ray/**" # This is/will be tested in separate workflow
             - "!data-processing-lib/**/test/**"
             - "!data-processing-lib/**/test-data/**"
             - "!**.md"

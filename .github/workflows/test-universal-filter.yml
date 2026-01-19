@@ -18,7 +18,6 @@ on:
             - "transforms/.make.transforms"
             - "transforms/universal/filter/**"
             - "data-processing-lib/**"
-            - "!transforms/universal/filter/**/kfp_ray/**" # This is/will be tested in separate workflow
             - "!data-processing-lib/**/test/**"
             - "!data-processing-lib/**/test-data/**"
             - "!**.md"
@@ -35,7 +34,6 @@ on:
             - "transforms/.make.transforms"
             - "transforms/universal/filter/**"
             - "data-processing-lib/**"
-            - "!transforms/universal/filter/**/kfp_ray/**" # This is/will be tested in separate workflow
             - "!data-processing-lib/**/test/**"
             - "!data-processing-lib/**/test-data/**"
             - "!**.md"

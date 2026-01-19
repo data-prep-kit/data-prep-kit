@@ -113,6 +113,5 @@ class RayTransformLauncher(AbstractTransformLauncher):
         """
         res = super().launch()
         if not self.run_locally and res > 0:
-            # if we are running in kfp exit to signal kfp that we failed
             sys.exit(1)
         return res

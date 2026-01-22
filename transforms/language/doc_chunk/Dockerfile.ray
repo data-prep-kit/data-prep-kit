@@ -20,7 +20,7 @@ RUN pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}[ray]
 
 COPY --chmod=775 --chown=ray:root dpk_doc_chunk/ dpk_doc_chunk/
 COPY --chmod=775 --chown=ray:root requirements.txt requirements.txt
-RUN uv pip install ${PIP_INSTALL_EXTRA_ARGS} --no-cache-dir -r requirements.txt
+RUN uv pip install ${PIP_INSTALL_EXTRA_ARGS} --no-cache-dir --system -r requirements.txt
 
 # Set environment
 ENV PYTHONPATH /home/ray

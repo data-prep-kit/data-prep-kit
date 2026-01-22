@@ -22,7 +22,7 @@ RUN pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}
 
 COPY --chown=dpk:root dpk_pii_redactor/ dpk_pii_redactor/
 COPY --chown=dpk:root requirements.txt requirements.txt
-RUN uv pip install -r requirements.txt
+RUN uv pip install --system -r requirements.txt
 
 # Set environment
 ENV PYTHONPATH /home/dpk

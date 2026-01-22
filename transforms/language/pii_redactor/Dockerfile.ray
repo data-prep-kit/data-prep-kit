@@ -21,7 +21,7 @@ RUN pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}[ray]
 ## Copy the python version of the tansform
 COPY --chown=ray:users dpk_pii_redactor/ dpk_pii_redactor/
 COPY --chown=ray:users requirements.txt requirements.txt
-RUN uv pip install -r requirements.txt
+RUN uv pip install --system -r requirements.txt
 
 # Grant non-root users the necessary permissions to the ray directory
 RUN chmod 755 /home/ray

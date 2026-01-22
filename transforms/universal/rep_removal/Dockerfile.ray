@@ -12,7 +12,7 @@ RUN apt update && apt install curl -y && apt install gcc -y
 USER ray
 
 # install pytest
-RUN uv pip install --no-cache-dir pytest
+RUN uv pip install --no-cache-dir  --system pytest
 ARG DPK_WHEEL_FILE_NAME
 ARG TRANSFORM_NAME
 
@@ -24,12 +24,12 @@ ENV PATH="$PATH:$HOME/.cargo/bin"
 # Copy and install data processing libraries 
 # These are expected to be placed in the docker context before this is run (see the make image).
 COPY --chmod=775 --chown=ray:root data-processing-dist data-processing-dist
-RUN  uv pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}[ray]
+RUN  uv pip install --system data-processing-dist/${DPK_WHEEL_FILE_NAME}[ray]
 
 
 COPY --chmod=775 --chown=ray:root dpk_${TRANSFORM_NAME}/ dpk_${TRANSFORM_NAME}/
 COPY --chmod=775 --chown=ray:root requirements.txt requirements.txt 
-RUN uv pip install --no-cache-dir -r requirements.txt
+RUN uv pip install --no-cache-dir --system -r requirements.txt
 
 # Set environment
 ENV PYTHONPATH="/home/ray"

@@ -16,14 +16,14 @@ RUN pip install --upgrade --no-cache-dir pip
 RUN pip install uv
 
 # install pytest
-RUN uv pip install --no-cache-dir pytest
+RUN uv pip install --no-cache-dir  --system pytest
 ARG DPK_WHEEL_FILE_NAME
 ARG TRANSFORM_NAME
 
 # Copy and install data processing libraries 
 # These are expected to be placed in the docker context before this is run (see the make image).
 COPY --chmod=775 --chown=ray:root data-processing-dist data-processing-dist
-RUN  uv pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}[ray]
+RUN  uv pip install --system data-processing-dist/${DPK_WHEEL_FILE_NAME}[ray]
 
 
 COPY --chmod=775 --chown=ray:root dpk_${TRANSFORM_NAME}/ dpk_${TRANSFORM_NAME}/
@@ -32,7 +32,7 @@ COPY models models
 
 ARG EXTRA_INDEX_URL
 COPY --chown=ray:root requirements*.txt .
-RUN uv pip install --no-cache-dir -r requirements.txt
+RUN uv pip install --no-cache-dir --system -r requirements.txt
 RUN if [ -f requirements-private.txt ]; then uv pip install --extra-index-url ${EXTRA_INDEX_URL} -r requirements-private.txt; fi
 
 # Set environment

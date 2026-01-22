@@ -43,7 +43,7 @@ class PipInstaller:
                 # Use 'uv pip install'.
                 # Note: uv requires --system to install into the system Python
                 # instead of a virtual environment.
-                subprocess.check_call([uv_path, "pip", "install", package])
+                subprocess.check_call([uv_path, "pip", "install", "--system", package])
                 return True
             except Exception as e:
                 print(f"uv installation failed for {package}: {e}")

@@ -34,7 +34,7 @@ venv::
 	rm -rf src/*egg-info || true
 	rm makeenv || true
 	$(MAKE) .defaults.python-lib-src-venv
-	source venv/bin/activate && pip install -r ../requirements-dev.txt
+	source venv/bin/activate && uv pip install -r ../requirements-dev.txt
 
 
 image:: 

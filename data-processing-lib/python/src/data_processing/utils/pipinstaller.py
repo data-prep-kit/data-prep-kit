@@ -18,7 +18,7 @@ warnings.filterwarnings("ignore")
 
 import subprocess
 import sys
-
+import shutil
 
 class PipInstaller:
     """
@@ -36,14 +36,27 @@ class PipInstaller:
         """
         # build pip package string
         package = f"git+{project}#subdirectory={subdirectory}&egg={name}"
-        try:
-            # Do pip install (in sub process)
-            subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-            return True
-        except Exception as e:
-            # process exception
-            print(f"Exception installing package {name}: {e}")
-            return False
+
+        uv_path = shutil.which("uv")
+        if uv_path:
+            try:
+                # Use 'uv pip install'.
+                # Note: uv requires --system to install into the system Python
+                # instead of a virtual environment.
+                subprocess.check_call([uv_path, "pip", "install", package])
+                return True
+            except Exception as e:
+                print(f"uv installation failed for {package}: {e}")
+                return False
+        else:
+            try:
+                # Do uv pip install (in sub process)
+                subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+                return True
+            except Exception as e:
+                # process exception
+                print(f"Exception installing package {name}: {e}")
+                return False
 
     @staticmethod
     def validate(name: str) -> bool:

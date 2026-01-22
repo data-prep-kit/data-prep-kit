@@ -37,7 +37,7 @@ publish:: .check-env  .defaults.publish-dist
 venv:
 	@# Help: Create the virtual environment using pyproject.toml
 	$(MAKE) .defaults.create-venv .defaults.install-ray-lib-src-venv
-	@source venv/bin/activate; pip install -e ${REPOROOT}/kfp/kfp_support_lib/shared_workflow_support
+	@source venv/bin/activate; uv pip install -e ${REPOROOT}/kfp/kfp_support_lib/shared_workflow_support
 	$(MAKE) .defaults.install-local-requirements-venv
 
 test:: venv 

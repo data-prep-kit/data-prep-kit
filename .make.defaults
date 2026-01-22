@@ -8,7 +8,7 @@
 # DOCKER_IMAGE_NAME - defines the name of the docker image
 #	For example DOCKER_IMAGE_NAME=noop
 # EXTRA_INDEX_URL - can define an additional pipy index for use 
-#	in creating venv and images.  This will be used on pip installs
+#	in creating venv and images.  This will be used on uv pip installs
 #	when building the venv and will be made available as
 #	a docker build argument when building the docker image.
 #	This is useful when the repo is used in conjunction with an 
@@ -28,18 +28,18 @@ include $(REPOROOT)/.make.versions
 
 # Command to run python 
 PYTHON?=python
-PIP=$(PYTHON) -m pip
+PIP=$(PYTHON) -m uv pip
 # Command to run pytest
 PYTEST=pytest -s
 PYTHON_VERSION=$(shell $(PYTHON) --version)
 ABS_REPOROOT=$(shell (cd $(REPOROOT); pwd))
 DOCKER_FILE?=Dockerfile
-#DOCKER_IMAGE_NAME?=xyzzy	# Must be defined by the includeing makefile
+#DOCKER_IMAGE_NAME?=xyzzy	# Must be defined by the including makefile
 DOCKER?=docker
 DOCKER_PLATFORM?=linux/amd64
 # Can be used by transforms or others to add args to the "docker build" command in .defaults.image target
 DOCKER_BUILD_EXTRA_ARGS?=
-# Can be used by transforms or others to add args to the "pip install" commands referencing toml or requirements.txt files
+# Can be used by transforms or others to add args to the "uv pip install" commands referencing toml or requirements.txt files
 PIP_INSTALL_EXTRA_ARGS?=
 DOCKER_HOSTNAME?=quay.io
 DOCKER_NAMESPACE ?= dataprep1/data-prep-kit
@@ -331,18 +331,18 @@ __check_defined = \
 		extra_url='--extra-index-url $(EXTRA_INDEX_URL)';	\
 		if [ -e $(PYTHON_PROJECT_BUILD_DIR)/requirements-private.txt ]; then \
 		    echo "$(PYTHON_PROJECT_BUILD_DIR)/requirements-private.txt" ;\
-		    pip install $$extra_url -r $(PYTHON_PROJECT_BUILD_DIR)/requirements-private.txt; \
+		    uv pip install $$extra_url -r $(PYTHON_PROJECT_BUILD_DIR)/requirements-private.txt; \
         fi; \
 	fi;								\
 	if [ -e $(PYTHON_PROJECT_BUILD_DIR)/requirements.txt ]; then \
 		echo "installing $(PYTHON_PROJECT_BUILD_DIR)/requirements.txt" ;\
-		pip install -r  $(PYTHON_PROJECT_BUILD_DIR)/requirements.txt; \
+		uv pip install -r  $(PYTHON_PROJECT_BUILD_DIR)/requirements.txt; \
 	fi; \
 	if [ -e $(PYTHON_PROJECT_BUILD_DIR)/pyproject.toml ]; then \
 		if [ -z "$(PROJECT_BUILD_EXTRA)" ]; then \
-		   pip install $(PIP_INSTALL_EXTRA_ARGS) $${extra_url}  -e $(PYTHON_PROJECT_BUILD_DIR); \
+		   uv pip install $(PIP_INSTALL_EXTRA_ARGS) $${extra_url}  -e $(PYTHON_PROJECT_BUILD_DIR); \
 		else \
-	   		pip install $(PIP_INSTALL_EXTRA_ARGS) $${extra_url}  -e $(PYTHON_PROJECT_BUILD_DIR)[$(PROJECT_BUILD_EXTRA)]; \
+	   		uv pip install $(PIP_INSTALL_EXTRA_ARGS) $${extra_url}  -e $(PYTHON_PROJECT_BUILD_DIR)[$(PROJECT_BUILD_EXTRA)]; \
 		fi;\
 	fi
 	@echo Done installing source from $(PYTHON_PROJECT_BUILD_DIR) into venv
@@ -365,7 +365,7 @@ __check_defined = \
 .PHONY: .defaults.pip-install-NOT-USED-YET
 .defaults.pip-install:
 	$(call check_defined, PIP_TARGET)
-	pip install $(PIP_TARGET) 
+	uv pip install $(PIP_TARGET)
 	
 # Install all source from the repo for a python runtime transform into an existing venv 
 .PHONY: .defaults.install-python-lib-src-venv
@@ -457,7 +457,7 @@ endif
 # This is small convenience and the image itself must already be created.
 .PHONY: .defaults.test-image-pytest
 .defaults.test-image-pytest:: 
-	# Put this 2nd so its help showss up instead of .defaults.image help
+	# Put this 2nd so its help shows up instead of .defaults.image help
 	@# Help: Test $(DOCKER_LOCAL_IMAGE) using test source inside the image. 
 	$(DOCKER) run -t --rm $(DOCKER_LOCAL_IMAGE) pytest -s test 
 	
@@ -510,7 +510,7 @@ endif
 # Create the local virtual environment, assuming python is already installed and available
 # We upgrade pip as that seems to be required by watson_nlp
 # We install wheel, because it seems to be required for fasttext install on redhat.
-# We use "pip" instead of "$(PIP)" below because otherwise if the user has overriddent PYTHON
+# We use "pip" instead of "$(PIP)" below because otherwise if the user has overridden PYTHON
 # they will end up installing into that PYTHON and NOT the venv.
 .PHONY: .defaults.venv
 .defaults.venv: .defaults.create-venv .defaults.install-local-requirements-venv
@@ -521,7 +521,8 @@ endif
 	$(PYTHON) -m venv venv
 	@source venv/bin/activate;		\
 	pip install --upgrade pip;		\
-	pip install wheel pytest pytest-cov;
+	pip install uv;		\
+	uv pip install wheel pytest pytest-cov;
 
 # Install requirements defined in the current directory into an existing venv
 .PHONY: .defaults.install-local-requirements-venv
@@ -530,16 +531,16 @@ endif
 	if [ ! -z "$(EXTRA_INDEX_URL)" ]; then				\
 		extra_url='--extra-index-url $(EXTRA_INDEX_URL)';	\
 		if [ -e requirements-private.txt ]; then \
-		    pip install $$extra_url -r requirements-private.txt; \
+		    uv pip install $$extra_url -r requirements-private.txt; \
         fi; \
 	fi;								\
 	if [ -e requirements.txt ]; then				\
 		echo Installing requirements from requirements.txt;	\
-		pip install $(PIP_INSTALL_EXTRA_ARGS) $$extra_url -r requirements.txt;		\
+		uv pip install $(PIP_INSTALL_EXTRA_ARGS) $$extra_url -r requirements.txt;		\
 	fi;	\
 	if [ -e pyproject.toml ]; then				\
 		echo Installing from pyproject.toml;			\
-		pip install $(PIP_INSTALL_EXTRA_ARGS) $$extra_url -e .;	\
+		uv pip install $(PIP_INSTALL_EXTRA_ARGS) $$extra_url -e .;	\
 	fi
 
 .PHONY: .defaults.check.installed

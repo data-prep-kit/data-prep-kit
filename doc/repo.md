@@ -15,8 +15,9 @@ Two important development tools will also be installed using the steps below:
 
 #### Installation Steps
 ```shell
-pip install pre-commit
-pip install twine
+pip install uv
+uv pip install pre-commit
+uv pip install twine
 ...
 git clone git@github.com:IBM/data-prep-kit.git
 cd data-prep-kit
@@ -102,7 +103,7 @@ to define them unless a parent directory does not recurse into the directory.
     cd transforms
     rm -fr build dist data_prep_toolkit_transforms.egg-info
     make build-pkg-dist
-    pip install twine
+    uv pip install twine
     make publish-dist
     ```
 1. **Note**- 'make publish-dist' will fail if a previous build with the same tag is already present on pypi. In this case, add a 'build tag' and publish again. The 'build tag' is a number that immediately follows the distribution package version seperated by a dash `({distribution}-{version}(-{build tag})?-{python tag}-{abi tag}-{platform tag}.whl)`
@@ -115,7 +116,7 @@ to define them unless a parent directory does not recurse into the directory.
     ```
    **Note**-  'make publish-dist' will fail if the choosen 'build tag' already exists. In this case, consult the pypi site to identify the latest build tag previously used and increment by 1
    
-1. When testing the new wheel in a notebook or a venv, make sure to use the --no-cache option: `pip install --no-cache data-prep-toolkit-transforms-1.0.1.dev1`
+1. When testing the new wheel in a notebook or a venv, make sure to use the --no-cache option: `uv pip install --no-cache data-prep-toolkit-transforms-1.0.1.dev1`
     
     
 

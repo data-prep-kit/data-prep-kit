@@ -56,7 +56,8 @@ or by installing the DPK transform wheel
 ```shell
 python -m venv venv
 source venv/bin/activate
-pip install data-prep-transforms
+pip install uv
+uv pip install data-prep-transforms
 ```
 Now that we have a virtual environment containing the transform,
 we invoke the transform from the CLI using the runtime parameters and those from the transform itself (i.e. the table above).

@@ -1,9 +1,10 @@
 FROM docker.io/python:3.10.14-slim-bullseye
 
-RUN pip install --upgrade --no-cache-dir pip 
+RUN pip install --upgrade --no-cache-dir pip
+RUN pip install uv
 
 # install pytest
-RUN pip install --no-cache-dir pytest
+RUN uv pip install --no-cache-dir pytest
 
 # for OpenCV dependencies
 RUN apt-get update && \
@@ -20,7 +21,7 @@ ARG TRANSFORM_NAME
 # Copy and install data processing libraries 
 # These are expected to be placed in the docker context before this is run (see the make image).
 COPY --chown=dpk:users data-processing-dist data-processing-dist
-RUN  pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}
+RUN  uv pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}
 
 # END OF STEPS destined for a data-prep-kit base image 
 
@@ -30,8 +31,8 @@ COPY models models
 
 ARG EXTRA_INDEX_URL
 COPY --chown=dpk:users requirements*.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-RUN if [ -f requirements-private.txt ]; then pip install --extra-index-url ${EXTRA_INDEX_URL} -r requirements-private.txt; fi
+RUN uv pip install --no-cache-dir -r requirements.txt
+RUN if [ -f requirements-private.txt ]; then uv pip install --extra-index-url ${EXTRA_INDEX_URL} -r requirements-private.txt; fi
 
 # Set environment
 ENV PYTHONPATH /home/dpk

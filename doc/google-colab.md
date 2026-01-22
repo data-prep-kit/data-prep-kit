@@ -25,7 +25,8 @@ We need to install data prep kit and libraries in Colab
 
 ```python
 if RUNNING_IN_COLAB:
-    ! pip install  --default-timeout=100  data-prep-toolkit-transforms-ray==0.2.1.dev3
+    ! pip install uv
+    ! uv pip install  --default-timeout=100  data-prep-toolkit-transforms-ray==0.2.1.dev3
 ```
 
 ## Downloading Data Files on Colab

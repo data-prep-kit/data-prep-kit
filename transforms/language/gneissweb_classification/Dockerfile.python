@@ -1,9 +1,10 @@
 FROM docker.io/python:3.11.11-slim-bullseye
 
-RUN pip install --upgrade --no-cache-dir pip 
+RUN pip install --upgrade --no-cache-dir pip
+RUN pip install uv
 
 # install pytest
-RUN pip install --no-cache-dir pytest
+RUN uv pip install --no-cache-dir pytest
 
 # Create a user and use it to run the transform
 RUN useradd -ms /bin/bash dpk
@@ -14,7 +15,7 @@ ARG DPK_WHEEL_FILE_NAME
 # Copy and install data processing libraries 
 # These are expected to be placed in the docker context before this is run (see the make image).
 COPY --chown=dpk:root data-processing-dist/ data-processing-dist/
-RUN  pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}
+RUN  uv pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}
 
 # END OF STEPS destined for a data-prep-kit base image 
 
@@ -27,7 +28,7 @@ USER dpk
 
 COPY --chown=dpk:root dpk_gneissweb_classification/ dpk_gneissweb_classification/
 COPY --chown=dpk:root requirements.txt requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN uv pip install --no-cache-dir -r requirements.txt
 
 # clean up apt
 USER root 

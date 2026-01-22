@@ -7,10 +7,11 @@ USER root
 RUN chown ray:root /home/ray && chmod 775 /home/ray
 USER ray
 
-RUN pip install --upgrade --no-cache-dir pip 
+RUN pip install --upgrade --no-cache-dir pip
+RUN pip install uv
 
 # install pytest
-RUN pip install --no-cache-dir pytest
+RUN uv pip install --no-cache-dir pytest
 ARG DPK_WHEEL_FILE_NAME
 
 # set up environment required to install and use huggingface and fasttext
@@ -23,12 +24,12 @@ USER ray
 # Copy and install data processing libraries 
 # These are expected to be placed in the docker context before this is run (see the make image).
 COPY --chmod=775 --chown=ray:root data-processing-dist data-processing-dist
-RUN  pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}[ray]
+RUN  uv pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}[ray]
 
 
 COPY --chmod=775 --chown=ray:root dpk_gneissweb_classification/ dpk_gneissweb_classification/
 COPY --chmod=775 --chown=ray:root requirements.txt requirements.txt 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN uv pip install --no-cache-dir -r requirements.txt
 
 # clean up apt
 USER root 

@@ -23,7 +23,7 @@ This script reads a CSV file containing documents, generates embeddings for a sp
 1. **Install Dependencies**  
    Install Python dependencies using:
    ```bash
-   pip install -r requirements.txt
+   uv pip install -r requirements.txt
 ## Running the script
    ```bash
    python set_up_elasticsearch.py

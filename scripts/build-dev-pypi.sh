@@ -65,7 +65,7 @@ while [ $i ]; do
 done
 
 make build-pkg-dist
-#pip install twine
+#uv pip install twine
 #make publish-dist
 
 

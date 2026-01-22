@@ -14,7 +14,7 @@ ARG DPK_WHEEL_FILE_NAME
 # Copy and install data processing libraries 
 # These are expected to be placed in the docker context before this is run (see the make image).
 COPY --chmod=775 --chown=ray:root data-processing-dist data-processing-dist
-RUN  uv pip install --system data-processing-dist/${DPK_WHEEL_FILE_NAME}[ray]
+RUN pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}[ray]
 
 COPY requirements.txt requirements.txt
 RUN uv pip install --no-cache-dir -r  requirements.txt

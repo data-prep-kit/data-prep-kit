@@ -357,6 +357,7 @@ __check_defined = \
 .PHONY: .defaults.pip-uninstall
 .defaults.pip-uninstall:
 	$(call check_defined, PIP_TARGET)
+	pip install uv
 	pip uninstall -y $(PIP_TARGET) 
 
 # Provided for similar reasons as the .defaults.pip-uninstall target.
@@ -365,6 +366,7 @@ __check_defined = \
 .PHONY: .defaults.pip-install-NOT-USED-YET
 .defaults.pip-install:
 	$(call check_defined, PIP_TARGET)
+	pip install uv
 	uv pip install $(PIP_TARGET)
 	
 # Install all source from the repo for a python runtime transform into an existing venv 
@@ -687,6 +689,7 @@ endif
 	fi
 	rm -rf dist || true
 	rm -rf src/*egg-info || true
+	pip install uv
 	${PIP} install --upgrade build
 	${PYTHON} -m build $(BUILD_WHEEL_EXTRA_ARG)
 

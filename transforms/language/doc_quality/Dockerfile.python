@@ -10,6 +10,8 @@ RUN uv pip install --no-cache-dir  --system pytest
 RUN useradd -ms /bin/bash dpk
 USER dpk
 WORKDIR /home/dpk
+RUN uv venv /home/dpk/venv
+ENV PATH="/home/dpk/venv/bin:$PATH"
 
 ARG DPK_WHEEL_FILE_NAME
 
@@ -22,7 +24,7 @@ RUN pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}
 
 COPY --chown=dpk:root dpk_doc_quality/ dpk_doc_quality/
 COPY --chown=dpk:root requirements.txt requirements.txt
-RUN uv pip install --system -r requirements.txt
+RUN uv pip install -r requirements.txt
 
 # Set environment
 ENV PYTHONPATH /home/dpk

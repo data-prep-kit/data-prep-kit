@@ -33,7 +33,7 @@ publish-image:: .defaults.publish-image
 
 venv::
 	$(MAKE) .defaults.spark-lib-src-venv
-	uv pip install pytest pytest-cov
+	pip install pytest pytest-cov
 
 image:: image-spark
 

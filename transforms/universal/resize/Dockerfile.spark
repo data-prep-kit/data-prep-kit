@@ -20,7 +20,7 @@ RUN pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}[spark]
 ## Copy the python version of the tansform
 COPY --chown=spark:users dpk_${TRANSFORM_NAME}/ dpk_${TRANSFORM_NAME}/
 COPY --chown=spark:users requirements.txt requirements.txt
-RUN uv pip install --system -r requirements.txt
+RUN uv pip install -r requirements.txt
 
 
 USER spark

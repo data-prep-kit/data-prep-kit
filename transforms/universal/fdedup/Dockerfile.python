@@ -7,6 +7,8 @@ RUN pip install uv
 RUN useradd -ms /bin/bash dpk
 USER dpk
 WORKDIR /home/dpk
+RUN uv venv /home/dpk/venv
+ENV PATH="/home/dpk/venv/bin:$PATH"
 ARG DPK_WHEEL_FILE_NAME
 
 # Copy and install data processing libraries 

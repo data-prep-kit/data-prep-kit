@@ -37,7 +37,7 @@ publish-dist :: .check-env .defaults.publish-dist
 
 venv::
 	$(MAKE) .defaults.ray-lib-src-venv
-	uv pip install moto==5.0.5 markupsafe==2.0.1
+	pip install moto==5.0.5 markupsafe==2.0.1
 
 
 image:: 

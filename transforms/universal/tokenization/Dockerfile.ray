@@ -26,7 +26,7 @@ RUN pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}[ray]
 COPY --chmod=775 --chown=ray:root dpk_tokenization/ dpk_tokenization/
 COPY --chmod=775 --chown=ray:root dpk_tokenization2arrow/ dpk_tokenization2arrow/
 COPY --chmod=775 --chown=ray:root requirements.txt requirements.txt
-RUN uv pip install --no-cache-dir --system -r requirements.txt
+RUN uv pip install --no-cache-dir -r requirements.txt
 
 # Set environment
 ENV PYTHONPATH /home/ray

@@ -29,7 +29,7 @@ USER dpk
 
 COPY --chown=dpk:root dpk_lang_id/ dpk_lang_id/
 COPY --chown=dpk:root requirements.txt requirements.txt
-RUN uv pip install --no-cache-dir --system -r requirements.txt
+RUN uv pip install --no-cache-dir -r requirements.txt
 
 # clean up apt
 USER root 

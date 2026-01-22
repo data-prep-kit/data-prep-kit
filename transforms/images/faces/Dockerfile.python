@@ -33,7 +33,7 @@ COPY models models
 
 ARG EXTRA_INDEX_URL
 COPY --chown=dpk:users requirements*.txt .
-RUN uv pip install --no-cache-dir --system -r requirements.txt
+RUN uv pip install --no-cache-dir -r requirements.txt
 RUN if [ -f requirements-private.txt ]; then uv pip install --extra-index-url ${EXTRA_INDEX_URL} -r requirements-private.txt; fi
 
 # Set environment

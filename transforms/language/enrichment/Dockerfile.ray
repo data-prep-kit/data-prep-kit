@@ -23,7 +23,7 @@ RUN  uv pip install --no-cache-dir data-processing-dist/${DPK_WHEEL_FILE_NAME}[r
 COPY --chmod=775 --chown=ray:root dpk_${TRANSFORM_NAME}/ dpk_${TRANSFORM_NAME}/
 
 COPY --chown=ray:root requirements.txt requirements.txt 
-RUN uv pip install --no-cache-dir --system -r requirements.txt
+RUN uv pip install --no-cache-dir -r requirements.txt
 
 RUN python -c 'import nltk; nltk.download("punkt_tab")'
 

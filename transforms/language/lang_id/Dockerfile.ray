@@ -28,7 +28,7 @@ RUN pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}[ray]
 
 COPY --chmod=775 --chown=ray:root dpk_lang_id/ dpk_lang_id/
 COPY --chmod=775 --chown=ray:root requirements.txt requirements.txt 
-RUN uv pip install --no-cache-dir --system -r requirements.txt
+RUN uv pip install --no-cache-dir -r requirements.txt
 
 # clean up apt
 USER root 

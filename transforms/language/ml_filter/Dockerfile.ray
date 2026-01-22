@@ -4,6 +4,8 @@ FROM docker.io/rayproject/ray:2.36.1-py311
 USER root
 RUN chown ray:root /home/ray && chmod g=u /home/ray
 USER ray
+RUN uv venv /home/ray/venv
+ENV PATH="/home/ray/venv/bin:$PATH"
 
 RUN pip install --upgrade --no-cache-dir pip
 RUN pip install uv

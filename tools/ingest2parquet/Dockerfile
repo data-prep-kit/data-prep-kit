@@ -6,6 +6,8 @@ FROM ${BASE_IMAGE}
 USER root
 RUN chown ray:root /home/ray && chmod g=u /home/ray
 USER ray
+RUN uv venv /home/ray/venv
+ENV PATH="/home/ray/venv/bin:$PATH"
 
 # install pytest
 RUN uv pip install --no-cache-dir  --system pytest

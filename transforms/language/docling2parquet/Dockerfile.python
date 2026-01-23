@@ -17,6 +17,8 @@ RUN \
 RUN useradd -d /home/dpk -ms /bin/bash -g root dpk
 WORKDIR /home/dpk
 USER dpk
+RUN uv venv /home/dpk/venv
+ENV PATH="/home/dpk/venv/bin:$PATH"
 
 ARG PIP_INSTALL_EXTRA_ARGS
 ARG DPK_WHEEL_FILE_NAME

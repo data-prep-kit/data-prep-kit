@@ -11,6 +11,8 @@ RUN uv pip install --no-cache-dir  --system pytest
 RUN useradd -d /home/dpk -ms /bin/bash -g root dpk
 WORKDIR /home/dpk
 USER dpk
+RUN uv venv /home/dpk/venv
+ENV PATH="/home/dpk/venv/bin:$PATH"
 
 ARG DPK_WHEEL_FILE_NAME
 ARG TRANSFORM_NAME

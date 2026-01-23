@@ -8,10 +8,10 @@ RUN chown ray:root /home/ray && chmod g=u /home/ray
 RUN mkdir -p /home/ray/.cache/huggingface/hub && chmod -R 777 /home/ray/.cache
 RUN chown -R ray:root /home/ray/.cache
 USER ray
-
-
-RUN pip install --upgrade --no-cache-dir pip
 RUN pip install uv
+RUN uv venv /home/ray/venv
+ENV PATH="/home/ray/venv/bin:$PATH"
+RUN pip install --upgrade --no-cache-dir pip
 
 # Install pytest so we can test the image later
 RUN uv pip install --no-cache-dir  --system pytest

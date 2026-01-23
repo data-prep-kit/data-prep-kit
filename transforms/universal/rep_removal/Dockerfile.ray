@@ -10,6 +10,8 @@ RUN pip install uv
 RUN apt update && apt install curl -y && apt install gcc -y
 
 USER ray
+RUN uv venv /home/ray/venv
+ENV PATH="/home/ray/venv/bin:\$PATH"
 
 # install pytest
 RUN uv pip install --no-cache-dir  --system pytest

@@ -1,7 +1,7 @@
 FROM docker.io/python:3.10.14-slim-bullseye
 
 RUN pip install --upgrade --no-cache-dir pip
-
+RUN pip install uv
 # install pytest
 RUN uv pip install --no-cache-dir  --system pytest
 

@@ -6,6 +6,7 @@ FROM ${BASE_IMAGE}
 USER root
 RUN chown ray:root /home/ray && chmod g=u /home/ray
 USER ray
+RUN pip install uv
 RUN uv venv /home/ray/venv
 ENV PATH="/home/ray/venv/bin:$PATH"
 

@@ -10,11 +10,12 @@ RUN apt-get update && apt-get install -y \
 
 RUN chown ray:root /home/ray && chmod g=u /home/ray
 USER ray
+RUN pip install uv
 RUN uv venv /home/ray/venv
 ENV PATH="/home/ray/venv/bin:$PATH"
 
 RUN pip install --upgrade --no-cache-dir pip
-RUN pip install uv
+
 
 # install pytest
 RUN uv pip install --no-cache-dir  --system pytest

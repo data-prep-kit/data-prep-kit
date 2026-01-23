@@ -6,10 +6,10 @@ USER root
 RUN chown ray:root /home/ray && chmod 775 /home/ray
 
 RUN pip install --upgrade --no-cache-dir pip
-RUN pip install uv
 RUN apt update && apt install curl -y && apt install gcc -y
 
 USER ray
+RUN pip install uv
 RUN uv venv /home/ray/venv
 ENV PATH="/home/ray/venv/bin:\$PATH"
 

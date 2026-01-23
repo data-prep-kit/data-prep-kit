@@ -2,7 +2,7 @@ FROM quay.io/dataprep1/data-prep-kit/data-prep-kit-spark-3.5.2:latest
 
 USER root
 # install pytest
-RUN upip install --no-cache-dir pytest
+RUN pip install --no-cache-dir pytest
 
 WORKDIR ${SPARK_HOME}/work-dir
 ARG DPK_WHEEL_FILE_NAME

@@ -1,10 +1,9 @@
 FROM docker.io/python:3.12-slim
 
 RUN pip install --upgrade --no-cache-dir pip
-RUN pip install uv
 
 # install pytest
-RUN uv pip install --no-cache-dir  --system pytest
+RUN pip install --no-cache-dir pytest
 
 
 RUN \
@@ -17,26 +16,24 @@ RUN \
 RUN useradd -d /home/dpk -ms /bin/bash -g root dpk
 WORKDIR /home/dpk
 USER dpk
-RUN uv venv /home/dpk/venv
-ENV PATH="/home/dpk/venv/bin:$PATH"
 
 ARG PIP_INSTALL_EXTRA_ARGS
 ARG DPK_WHEEL_FILE_NAME
 
-# Copy and install data processing libraries 
+# Copy and install data processing libraries
 # These are expected to be placed in the docker context before this is run (see the make image).
 COPY --chown=dpk:root data-processing-dist/ data-processing-dist/
-RUN uv pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}
+RUN  pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}
 
-# END OF STEPS destined for a data-prep-kit base image 
+# END OF STEPS destined for a data-prep-kit base image
 
 COPY --chown=dpk:root dpk_docling2parquet/ dpk_docling2parquet/
 COPY --chown=dpk:root requirements.txt requirements.txt
-RUN uv pip install ${PIP_INSTALL_EXTRA_ARGS} -r requirements.txt
+RUN pip install ${PIP_INSTALL_EXTRA_ARGS} -r requirements.txt
 
 # Set environment
 ENV PYTHONPATH=/home/dpk
-ENV PATH="/home/dpk/.local/bin:${PATH}" 
+ENV PATH="/home/dpk/.local/bin:${PATH}"
 ENV HOME=/home/dpk
 
 # Download models

@@ -6,15 +6,11 @@ FROM ${BASE_IMAGE}
 USER root
 RUN chown ray:root /home/ray && chmod g=u /home/ray
 USER ray
-RUN pip install uv
-RUN uv venv /home/ray/venv
-ENV PATH="/home/ray/venv/bin:$PATH"
 
 RUN pip install --upgrade --no-cache-dir pip
 
-
 # install pytest
-RUN uv pip install --no-cache-dir  --system pytest
+RUN pip install --no-cache-dir pytest
 
 ARG PIP_INSTALL_EXTRA_ARGS
 ARG DPK_WHEEL_FILE_NAME
@@ -25,20 +21,20 @@ RUN \
     && sudo apt-get install -y libgl1 libglib2.0-0 curl wget \
     && sudo apt-get clean
 
-# Copy and install data processing libraries 
+# Copy and install data processing libraries
 # These are expected to be placed in the docker context before this is run (see the make image).
 COPY --chmod=775 --chown=ray:root data-processing-dist data-processing-dist
-RUN uv pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}[ray]
-    
+RUN  pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}[ray]
+
 
 ## Copy the python version of the tansform
 COPY --chmod=775 --chown=ray:root dpk_docling2parquet/ dpk_docling2parquet/
 COPY --chmod=775 --chown=ray:root requirements.txt requirements.txt
-RUN uv pip install ${PIP_INSTALL_EXTRA_ARGS} -r requirements.txt
+RUN pip install ${PIP_INSTALL_EXTRA_ARGS} -r requirements.txt
 
 # Set environment
 ENV PYTHONPATH /home/ray
-ENV PATH="/home/ray/.local/bin:${PATH}" 
+ENV PATH="/home/ray/.local/bin:${PATH}"
 
 # Download models
 RUN docling-tools models download layout tableformer picture_classifier easyocr

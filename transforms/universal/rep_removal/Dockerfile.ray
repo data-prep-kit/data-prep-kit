@@ -6,15 +6,16 @@ USER root
 RUN chown ray:root /home/ray && chmod 775 /home/ray
 
 RUN pip install --upgrade --no-cache-dir pip
-RUN apt update && apt install curl -y && apt install gcc -y
-
-USER ray
 RUN pip install uv
-RUN uv venv /home/ray/venv
-ENV PATH="/home/ray/venv/bin:\$PATH"
+RUN apt update && apt install curl -y && apt install gcc -y
 
 # install pytest
 RUN uv pip install --no-cache-dir  --system pytest
+
+USER ray
+RUN uv venv /home/ray/venv
+ENV PATH="/home/ray/venv/bin:\$PATH"
+
 ARG DPK_WHEEL_FILE_NAME
 ARG TRANSFORM_NAME
 

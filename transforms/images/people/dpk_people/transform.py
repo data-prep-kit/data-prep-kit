@@ -62,8 +62,8 @@ class PeopleTransform(AbstractMultimodalTransform):
     def __init__(self, config: dict[str,Any]):
         super().__init__(config)
         self.mode = config.get(mode_key, mode_default)
-        self.model_url_key = model_url_key
-        self.model_credential_key = model_credential_key
+        self.model_url_key = config.get(model_url_key, "")
+        self.model_credential_key = config.get(model_credential_key, "")
         
         self.threshold = config.get(threshold_key,threshold_default)
         self.batch_size = config.get(batch_size_key,batch_size_default)

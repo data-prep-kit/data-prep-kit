@@ -24,7 +24,7 @@ from data_processing.utils import load_model
 
 
 class PeopleDetect:
-    def __init__(self, model_url_key, model_credential_key, revision="4b1db35121179d189754a3bf0b4a86aa44c03eef"):
+    def __init__(self, model_url_key, model_credential_key, revision="69cc72e30cb576392ce6113ef41aa3779d656dfc"):
         # torch.cuda.set_device(1)
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = load_model(
@@ -32,7 +32,7 @@ class PeopleDetect:
             "yolo",
             model_credential_key,
             revision=revision,
-            model_filename='yolov8m_200e.pt',
+            model_filename='yolov8m-seg.pt',
         )
         self.model.to(device)
         

@@ -40,7 +40,6 @@ class TestRayProtoTransform(AbstractTransformLauncherTest):
         fixtures = []
         # launcher = ProtoRayLauncher()
         launcher = PythonTransformLauncher(PeoplePythonTransformConfiguration())
-        config = {}
         fixtures.append(
             (
                 launcher,

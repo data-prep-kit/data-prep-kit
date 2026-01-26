@@ -25,6 +25,8 @@ WORKDIR ${HOME}
 RUN uv venv /home/ray/venv
 ENV PATH="/home/ray/venv/bin:$PATH"
 
+RUN uv pip install setuptools
+
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 # Fix: Ensure Cargo is added to the PATH correctly
 ENV PATH="/home/ray/.cargo/bin:$PATH"

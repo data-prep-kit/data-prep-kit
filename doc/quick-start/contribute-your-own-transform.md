@@ -381,7 +381,7 @@ cp ../../language/doc_chunk/test-data/expected/*.parquet test-data/input
 cd data-prep-kit/transforms/universal/digest
 python -m venv venv && source venv/bin/activate
 pip intall data-prep-toolkit
-pip install -r requirements.txt
+uv pip install -r requirements.txt
 python -m dpk_digest.runtime --digest_algorithm sha256 --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'expected’}” 
 ```
 If the test code runs properly, we should see 2 new files created in the test-data/expected folder:

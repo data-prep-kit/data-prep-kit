@@ -27,10 +27,10 @@ python -m venv venv
 source venv/bin/activate
 
 
-pip install ".[all]"
+uv pip install ".[all]"
 
 cd ../data-process-lib
-pip install . 
+uv pip install . 
 ```
 
 ---

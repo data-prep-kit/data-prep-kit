@@ -45,7 +45,7 @@ We also have a requirement that the [pre-commit](https://pre-commit.com/) tool s
 
 #### Installation Steps
 ```shell
-pip install pre-commit
+uv pip install pre-commit
 ...
 git clone git@github.com:data-prep-kit/data-prep-kit.git
 cd data-prep-kit

@@ -15,13 +15,13 @@ Features:
 ### From PyPI
 
 ```sh
-pip install data-prep-connector
+uv pip install data-prep-connector
 ```
 
 ### From Github
 
 ```sh
-pip install git+https://github.com/data-prep-kit/data-prep-kit.git@dev#subdirectory=data-connector-lib
+uv pip install git+https://github.com/data-prep-kit/data-prep-kit.git@dev#subdirectory=data-connector-lib
 ```
 
 ## Example usage

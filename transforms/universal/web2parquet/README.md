@@ -1,6 +1,6 @@
 # Web Crawler to Parquet
 
-This tranform crawls the web and downloads files in real-time.
+This transform crawls the web and downloads files in real-time.
 
 This first release of the transform, only accepts the following 4 parameters. Additional releases will extend the functionality to allow the user to specify additional constraints such as mime-type, domain-focus, etc.
 
@@ -25,14 +25,15 @@ Set up the local environment to run Jupyter notebook:
 ```
 python -v venv venv
 source venv/bin/activate
-pip install jupyter lab
+pip install uv
+uv pip install jupyter lab
 ```
 Install pre-requisites:
 
 ```
-pip install data-prep-connector
-pip install data-prep-toolkit>=0.2.2.dev2
-pip install 'data-prep-toolkit-transforms[web2parquet]>=0.2.2.dev3'
+uv pip install data-prep-connector
+uv pip install data-prep-toolkit>=0.2.2.dev2
+uv pip install 'data-prep-toolkit-transforms[web2parquet]>=0.2.2.dev3'
 ```
 
 If working from a fork in the git repo, from the root folder of the git repo, do the following:
@@ -41,7 +42,7 @@ If working from a fork in the git repo, from the root folder of the git repo, do
 cd transforms/universal/web2parquet
 make venv
 source venv/bin/activate
-pip install -r requirements.txt
+uv pip install -r requirements.txt
 ```
 
 ## Invoking the transform from a notebook

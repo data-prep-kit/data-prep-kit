@@ -5,8 +5,8 @@
     "job name": "docling2parquet",
     "job type": "pure python",
     "job id": "job_id",
-    "start_time": "2025-10-16 17:15:47",
-    "end_time": "2025-10-16 17:15:55",
+    "start_time": "2026-01-23 13:03:02",
+    "end_time": "2026-01-23 13:03:12",
     "status": "success"
   },
   "code": {
@@ -26,6 +26,9 @@
     "pdf_backend": "dlparse_v2",
     "double_precision": 0,
     "pipeline": "multi_stage",
+    "generate_picture_images": false,
+    "generate_page_images": false,
+    "images_scale": 2.0,
     "checkpointing": false,
     "max_files": -1,
     "random_samples": -1,
@@ -39,29 +42,29 @@
     "num_processors": 0
   },
   "execution_stats": {
-    "cpus": 146.2,
+    "cpus": 28.4,
     "gpus": 0,
-    "memory": 13.77,
+    "memory": 16.04,
     "object_store": 0,
-    "execution time, min": 0.136
+    "execution time, min": 0.181
   },
   "job_output_stats": {
     "source_files": 3,
     "source_size": 949011,
     "result_files": 1,
-    "processing_time": 4.699,
+    "processing_time": 5.785,
     "nrows": 4,
     "nsuccess": 4,
     "nfail": 0,
     "nskip": 0,
-    "result_size": 58152
+    "result_size": 58202
   },
   "source": {
-    "name": "/Users/shalisha.witherspoonibm.com/Documents/DPK_DOCLING_FIX/data-prep-kit/transforms/language/docling2parquet/test-data/input",
+    "name": "/Users/shalisha.witherspoonibm.com/Documents/DPK_UV/data-prep-kit-outer/transforms/language/docling2parquet/test-data/input",
     "type": "path"
   },
   "target": {
-    "name": "/Users/shalisha.witherspoonibm.com/Documents/DPK_DOCLING_FIX/data-prep-kit/transforms/language/docling2parquet/test-data/expected_batch",
+    "name": "/Users/shalisha.witherspoonibm.com/Documents/DPK_UV/data-prep-kit-outer/transforms/language/docling2parquet/test-data/expected_batch",
     "type": "path"
   }
 }

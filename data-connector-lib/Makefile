@@ -32,8 +32,9 @@ venv::	pyproject.toml
 	$(PYTHON) -m venv venv
 	source venv/bin/activate; 	\
 	pip install --upgrade pip;	\
-	pip install -e .;		\
-	pip install pytest pytest-mock pytest-datadir pytest-cov moto==5.0.5 markupsafe==2.0.1
+	pip install uv;	\
+	uv pip install -e .;		\
+	uv pip install pytest pytest-mock pytest-datadir pytest-cov moto==5.0.5 markupsafe==2.0.1
 
 image::
 	@# Help: Placeholder does nothing for now.

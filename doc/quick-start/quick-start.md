@@ -1,5 +1,5 @@
 # Quick Start for Data Prep Kit 
-Here we provided short examples of various uses of the Data Prep Kit. Most users who want to jump right in can use standard pip install to deploy the data-prep-kit and the python or ray transforms to their virtual python environment. 
+Here we provided short examples of various uses of the Data Prep Kit. Most users who want to jump right in can use standard uv pip install to deploy the data-prep-kit and the python or ray transforms to their virtual python environment. 
 
 When setting up a __virtual environment__ it is recommended to use __python3.11__ as in the example below using conda. 
 
@@ -35,27 +35,27 @@ The command above should say: 3.11
 **install data prep toolkit**
 
 ```shell
-pip install 'data-prep-toolkit-transforms[ray,all]'
+uv pip install 'data-prep-toolkit-transforms[ray,all]'
 ```
 the command above install the complete library with all the tansforms. In certain situations, it may be desirable to install a specific transform with or without the ray runtime. In that case, the command can specify the name of the transform in the \[extra\] value such as:
 
 To install the lang_id transform (lang_id transform is used for identifying the language of the content ), use the following command:
 
 ```shell
-pip install 'data-prep-toolkit-transforms[lang_id]' 
+uv pip install 'data-prep-toolkit-transforms[lang_id]' 
 ```
 
 to install the lang_id transform with the ray runtime, use the following command:
 
 ```shell
-pip install 'data-prep-toolkit-transforms[ray,lang_id]' 
+uv pip install 'data-prep-toolkit-transforms[ray,lang_id]' 
 ```
 
 
 ## Setting up Jupyter lab for local experimentation with transform notebooks <a name = "jupyter"></a>
 
 ```bash
-pip install jupyterlab ipykernel ipywidgets
+uv pip install jupyterlab ipykernel ipywidgets
 python -m ipykernel install --user --name=data-prep-kit --display-name "dataprepkit"
 ```
 ## Running transforms 
@@ -81,7 +81,7 @@ which means logs are not written to a file.
     cd data-prep-kit/transforms/universal/fdedup
     make venv
     source venv/bin/activate 
-    pip install jupyterlab
+    uv pip install jupyterlab
     jupyter lab
     ```
     You can now run the [Python version](../../transforms/universal/fdedup/fdedup_python.ipynb), [Ray version](../../transforms/universal/fdedup/fdedup_ray.ipynb) or [Spark version](../../transforms/universal/fdedup/fdedup_spark.ipynb) of the three notebooks for this transform. 

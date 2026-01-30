@@ -9,13 +9,14 @@ venv::
 	@# Help: Create the virtual environment using pyproject.toml
 	$(PYTHON) -m venv venv
 	source venv/bin/activate; \
-	$(PYTHON) -m pip install --no-cache-dir -e $(REPOROOT)/data-processing-lib; \
-	$(PYTHON) -m pip install --no-cache-dir -e $(REPOROOT)/transforms; \
-	$(PYTHON) -m pip install --no-cache-dir -r $(REPOROOT)/transforms/language/lang_id/requirements.txt; \
-	$(PYTHON) -m pip install --no-cache-dir -r $(REPOROOT)/transforms/language/doc_quality/requirements.txt; \
-	$(PYTHON) -m pip install --no-cache-dir -r $(REPOROOT)/transforms/language/docling2parquet/requirements.txt; \
-	$(PYTHON) -m pip install --no-cache-dir -r $(REPOROOT)/transforms/language/doc_chunk/requirements.txt; \
-	$(PYTHON) -m pip install pytest;
+	pip install uv; \
+	$(PYTHON) -m uv pip install --no-cache-dir -e $(REPOROOT)/data-processing-lib; \
+	$(PYTHON) -m uv pip install --no-cache-dir -e $(REPOROOT)/transforms; \
+	$(PYTHON) -m uv pip install --no-cache-dir -r $(REPOROOT)/transforms/language/lang_id/requirements.txt; \
+	$(PYTHON) -m uv pip install --no-cache-dir -r $(REPOROOT)/transforms/language/doc_quality/requirements.txt; \
+	$(PYTHON) -m uv pip install --no-cache-dir -r $(REPOROOT)/transforms/language/docling2parquet/requirements.txt; \
+	$(PYTHON) -m uv pip install --no-cache-dir -r $(REPOROOT)/transforms/language/doc_chunk/requirements.txt; \
+	$(PYTHON) -m uv pip install pytest;
 	## When running on Ubuntu as part of the github workflow, it is failing to install the extras \
 	## Hence adding the specific requirements here for lang_id, doc_quality, docling2parquet, and doc_chunk
 

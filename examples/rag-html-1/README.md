@@ -17,7 +17,7 @@ conda activate rag-html-1
 Install modules
 
 ```bash
-pip install -r requirements.txt 
+uv pip install -r requirements.txt 
 ```
 
 ## Step-2: Configuration

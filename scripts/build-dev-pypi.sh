@@ -66,7 +66,6 @@ done
 
 make build-pkg-dist
 #uv pip install twine
-#make publish-dist
 
 
 

@@ -33,10 +33,11 @@ Data Prep Kit can readily scale from a commodity laptop all the way to data cent
 
 ## Installation
 
-The latest version of the Data Prep Kit is available on PyPi for Python 3.10, 3.11 and 3.12. It can be installed using: 
+The latest version of the Data Prep Kit is available on PyPi for Python 3.10, 3.11, 3.12, and 3.13. It can be installed using: 
 
 ```bash
-pip install 'data-prep-toolkit-transforms[all]'
+pip install uv
+uv pip install 'data-prep-toolkit-transforms[all]'
 ```
 
 This will install all available transforms. 

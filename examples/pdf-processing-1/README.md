@@ -27,7 +27,7 @@ conda activate data-prep-kit
 
 # install the following in 'data-prep-kit' environment
 cd examples/pdf-processing-1
-pip install -r requirements.txt
+uv pip install -r requirements.txt
 
 # start jupyter and run the notebooks with this jupyter
 jupyter lab

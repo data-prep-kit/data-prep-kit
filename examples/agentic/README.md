@@ -35,10 +35,10 @@ cd examples/agentic
 ```bash
 python -m venv venv
 source venv/bin/activate
-pip install --upgrade pip
-pip install jupyter
-pip install ipython && pip install ipykernel
-pip install -r requirements.txt
+uv pip install --upgrade pip
+uv pip install jupyter
+uv pip install ipython && uv pip install ipykernel
+uv pip install -r requirements.txt
 ```
 
 3. Configure access to LLM:

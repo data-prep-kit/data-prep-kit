@@ -2,13 +2,14 @@
 
 ## installation
 
-The [transforms](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/README.md) are delivered as a standard pyton library available on pypi and can be installed using pip install:
+The [transforms](https://github.com/data-prep-kit/data-prep-kit/blob/dev/transforms/README.md) are delivered as a standard pyton library available on pypi and can be installed using uv pip install:
+`pip install uv`
 
-`python -m pip install data-prep-toolkit-transforms[all]`
+`python -m uv pip install data-prep-toolkit-transforms[all]`
 or
-`python -m pip install data-prep-toolkit-transforms[ray, all]`
+`python -m uv pip install data-prep-toolkit-transforms[ray, all]`
 or
-`python -m pip install data-prep-toolkit-transforms[language]`
+`python -m uv pip install data-prep-toolkit-transforms[language]`
 
 
 installing the python transforms will also install  `data-prep-toolkit`

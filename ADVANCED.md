@@ -93,7 +93,7 @@ Here is an example of the code needed to download a sample file,
 first install huggingface_hub
 
  ```bash
- pip install --upgrade huggingface_hub
+ uv pip install --upgrade huggingface_hub
 ```
 Then use the following to download a specific file, 
 ```python

@@ -48,7 +48,7 @@ To run the Transform on an M1 mac, two more things must be considered:
 A) Install a compatible **psutils** library in the environment (uninstall if already present):
 ```shell
 pip uninstall psutil
-pip install --no-binary :all: psutil
+uv pip install --no-binary :all: psutil
 
 ```
 
@@ -62,7 +62,7 @@ pip install --no-binary :all: psutil
 
 [//]: # (```)
 
-[//]: # (- Install from pip install &#40;Note: Activate venv before running next commands&#41;:)
+[//]: # (- Install from uv pip install &#40;Note: Activate venv before running next commands&#41;:)
 
 [//]: # (```shell)
 

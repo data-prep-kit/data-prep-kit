@@ -16,7 +16,7 @@ runtimes.
 The latest version of the Data Prep Kit is available on PyPi for Python 3.10, 3.11 or 3.12. It can be installed using: 
 
 ```bash
-pip install  'data-prep-toolkit-transforms[ray,all]'
+uv pip install  'data-prep-toolkit-transforms[ray,all]'
 ```
 
 The above installs all available transforms and both the python and Ray runtimes. 
@@ -30,7 +30,7 @@ Alternatively, you may choose to install only the transform(s) of interest (see 
 
 When installing select transforms, users can specify the name of the transform in the pip command, rather than [all]. For example, use the following command to install only the docling2parquet transform:
 ```bash
-pip install 'data-prep-toolkit-transforms[docling2parquet]'
+uv pip install 'data-prep-toolkit-transforms[docling2parquet]'
 ```
 As an alternative, installing in a conda environment
 can be found

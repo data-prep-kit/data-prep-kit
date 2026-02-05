@@ -97,7 +97,7 @@ extra-help:
 # Create the local virtual environment, assuming python is already installed and available
 # We upgrade pip as that seems to be required by watson_nlp
 # We install wheel, because it seems to be required for fasttext install on redhat.
-# We use "pip" instead of "$(PIP)" below because otherwise if the user has overriddent PYTHON
+# We use "pip" instead of "$(PIP)" below because otherwise if the user has overridden PYTHON
 # they will end up installing into that PYTHON and NOT the venv.
 .PHONY: .transforms.python-venv
 .transforms.python-venv:: .defaults.python-lib-src-venv

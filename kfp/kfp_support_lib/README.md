@@ -18,7 +18,7 @@ and implementation of the actual [workflow](../../doc/simple_transform_pipeline.
 1. python 3.10 or later
 2. git command line tools
 3. [pre-commit](https://pre-commit.com/)
-4. twine (pip install twine)
+4. twine (uv pip install twine)
     * but on Mac you may have to include a dir in your PATH, such as `export PATH=$PATH:/Library/Frameworks/Python.framework/Versions/3.10/bin`
 
 ### Git

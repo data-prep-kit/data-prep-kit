@@ -24,8 +24,9 @@ RUN uv pip install setuptools
 # END OF STEPS destined for a data-prep-kit base image 
 
 COPY --chown=dpk:users dpk_${TRANSFORM_NAME}/ dpk_${TRANSFORM_NAME}/
-COPY --chown=dpk:users requirements.txt requirements.txt 
+COPY --chown=dpk:users requirements.txt requirements.txt
 RUN uv pip install --no-cache-dir -r requirements.txt
+RUN uv pip install --force-reinstall setuptools
 
 # Set environment
 ENV PYTHONPATH /home/dpk

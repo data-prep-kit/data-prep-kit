@@ -8,6 +8,7 @@ USER ray
 RUN pip install uv
 RUN uv venv /home/ray/venv
 ENV PATH="/home/ray/venv/bin:$PATH"
+RUN uv pip install setuptools
 RUN pip install --upgrade --no-cache-dir pip
 
 # install pytest

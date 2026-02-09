@@ -12,6 +12,7 @@ USER dpk
 WORKDIR /home/dpk
 RUN uv venv /home/dpk/venv
 ENV PATH="/home/dpk/venv/bin:$PATH"
+RUN uv pip install setuptools
 ARG DPK_WHEEL_FILE_NAME
 ARG TRANSFORM_NAME
 

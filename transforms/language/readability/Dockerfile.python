@@ -12,14 +12,14 @@ USER dpk
 WORKDIR /home/dpk
 RUN uv venv /home/dpk/venv
 ENV PATH="/home/dpk/venv/bin:$PATH"
-RUN uv pip install setuptools
 ARG DPK_WHEEL_FILE_NAME
 ARG TRANSFORM_NAME
 
-# Copy and install data processing libraries 
+# Copy and install data processing libraries
 # These are expected to be placed in the docker context before this is run (see the make image).
 COPY --chown=dpk:users data-processing-dist data-processing-dist
 RUN uv pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}
+RUN uv pip install setuptools
 
 # END OF STEPS destined for a data-prep-kit base image 
 

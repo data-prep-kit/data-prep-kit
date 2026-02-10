@@ -1,4 +1,4 @@
-setuptools
+setuptools<82.0.0
 textstat<=0.7.5
 cmudict<=1.0.32
 pandas

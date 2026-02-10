@@ -98,6 +98,7 @@ The matrix below shows the the combination of modules and supported runtimes. Al
 | [Fineweb quality annotator](transforms/universal/fineweb_quality_annotator/README.md)                         | :white_check_mark: |  :white_check_mark: |
 | [Gopher repetition annotator](transforms/universal/gopher_repetition_annotator/README.md)                         | :white_check_mark: |  :white_check_mark: |
 | [Opensearch](transforms/universal/opensearch/README.md)                         | :white_check_mark: |  :white_check_mark: |
+| [Folder2Parquet](transforms/universal/folder2parquet/README.md)                         | :white_check_mark: |  |
 **Language-only**                                                                    |                    |                    |                    |                    |
 | [Language identification](transforms/language/lang_id/README.md)              | :white_check_mark: | :white_check_mark: |
 | [Document quality](transforms/language/doc_quality/README.md)                 | :white_check_mark: | :white_check_mark: |

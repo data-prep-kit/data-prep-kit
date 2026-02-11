@@ -28,10 +28,10 @@ S3_SECRET = "s3-secret"
 EXEC_SCRIPT_NAME: str = "-m dpk_gopher_repetition_annotator.ray.runtime"
 PREFIX: str = ""
 
-task_image = "quay.io/dataprep1/data-prep-kit/gopher_repetition_annotator-ray:latest"
+task_image = "quay.io/dataprep1/data-prep-kit/gopher_repetition_annotator-ray:1.1.7"
 
 # components
-base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:latest"
+base_kfp_image = "quay.io/dataprep1/data-prep-kit/kfp-data-processing:1.1.7"
 
 # path to kfp component specifications files
 component_spec_path = os.getenv("KFP_COMPONENT_SPEC_PATH", DEFAULT_KFP_COMPONENT_SPEC_PATH)

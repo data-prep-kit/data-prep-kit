@@ -1,5 +1,21 @@
 # Data Prep Kit Release notes
 
+## Release 1.1.7 - 2/10/2025
+
+### Transforms
+
+1. Folder-to-Parquet Transform: Added a new transform that converts a folder of files into a unified Parquet dataset.
+1. Text Encoder: Updated to use LanceDB for improved vector storage and retrieval performance.
+1. Spark Support: Added Spark compatibility for both doc_quality and docling2parquet transforms.
+1. Ededup: Fixed a type mismatch between str and int when using int_doc_id.
+
+### General
+
+1. Python 3.13 Support: Expanded compatibility to include Python 3.13.
+1. Faster Installation with uv: Migrated repository to use uv for significantly faster environment setup and dependency installation.
+1. Rich Logging: Introduced a Rich-based log handler for more readable, structured, and colorized console output.
+1. Image Modeler Improvements: Updated model downloader to fetch YOLOv models used by the image transforms.
+
 ## Release 1.1.6 - 11/13/2025
 
 ### Transforms

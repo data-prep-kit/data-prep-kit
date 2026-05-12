@@ -1,0 +1,10 @@
+# Generated at build time by scripts/fetch_rules.py (tracks upstream HEAD);
+# do not commit. Ruleset is driven by assets/sources.json.
+rules/
+
+# Standard local artifacts
+output/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/

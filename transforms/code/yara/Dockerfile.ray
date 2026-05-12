@@ -1,0 +1,68 @@
+ARG BASE_IMAGE=docker.io/rayproject/ray:2.24.0-py310
+
+FROM ${BASE_IMAGE} AS base
+
+# see https://docs.openshift.com/container-platform/4.17/openshift_images/create-images.html#use-uid_create-images
+USER root
+RUN chown ray:root /home/ray && chmod g=u /home/ray
+USER ray
+RUN pip install uv
+RUN uv venv /home/ray/venv
+ENV PATH="/home/ray/venv/bin:$PATH"
+
+RUN pip install --upgrade --no-cache-dir pip
+
+RUN uv pip install --no-cache-dir --system pytest
+
+# git required for fetch_rules.py
+USER root
+RUN apt -y update \
+    && apt install -y --no-install-recommends git \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+USER ray
+
+FROM base AS yara
+
+ARG EXTRA_ARTIFACTORY_URL
+ARG DPK_WHEEL_FILE_NAME
+ARG TRANSFORM_NAME
+
+# Copy and install data processing libraries
+# These are expected to be placed in the docker context before this is run (see the make image).
+COPY --chmod=775 --chown=ray:root data-processing-dist data-processing-dist
+RUN uv pip install data-processing-dist/${DPK_WHEEL_FILE_NAME}[ray]
+
+COPY --chmod=775 --chown=ray:root dpk_${TRANSFORM_NAME}/ dpk_${TRANSFORM_NAME}/
+COPY --chmod=775 --chown=ray:root requirements.txt requirements.txt
+RUN uv pip install --no-cache-dir -r requirements.txt
+
+# Bake YARA rules into the image at build time (tracks HEAD)
+COPY --chmod=775 --chown=ray:root assets/ /home/ray/assets/
+COPY --chmod=775 --chown=ray:root scripts/fetch_rules.py /home/ray/scripts/fetch_rules.py
+USER root
+RUN mkdir -p /app/rules && chown -R ray:root /app/rules && chmod -R 775 /app/rules
+USER ray
+RUN python /home/ray/scripts/fetch_rules.py \
+    --sources /home/ray/assets/sources.json \
+    --rules-dir /app/rules
+
+# Set environment
+ENV PYTHONPATH=/home/ray
+ENV DPK_YARA_RULES_DIR=/app/rules
+
+COPY --chown=ray:root test/ test/
+COPY --chown=ray:root test-data/ test-data/
+COPY --chown=ray:root test-rules/ test-rules/
+
+# Put these at the end since they seem to upset the docker cache.
+ARG BUILD_DATE
+ARG GIT_COMMIT
+ARG TRANSFORM_PATH
+ARG GIT_URL
+ENV GIT_URL=$GIT_URL
+ENV TRANSFORM_PATH=$TRANSFORM_PATH
+ENV BUILD_DATE=$BUILD_DATE
+ENV GIT_COMMIT=$GIT_COMMIT
+LABEL build-date=$BUILD_DATE
+LABEL git-commit=$GIT_COMMIT

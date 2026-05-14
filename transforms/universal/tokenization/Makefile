@@ -23,13 +23,40 @@ run-cli-sample:
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
             --data_local_config "{ 'input_folder' : 'test-data/ds01/input', 'output_folder' : 'output'}"
 
-run-list-sample: 
+run-list-sample:
 	make venv
 	source venv/bin/activate && \
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
 			--tkn_doc_content_column  curr_file_contents \
 			--tkn_doc_id_column pulls_and_issues_id \
             --data_local_config "{ 'input_folder' : 'test-data/list/input', 'output_folder' : 'output'}"
+
+generate-expected:
+	make venv
+	source venv/bin/activate && \
+	rm -rf test-data/ds01/expected && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
+			--tkn_tokenizer hf-internal-testing/llama-tokenizer \
+			--tkn_doc_id_column document_id \
+			--tkn_doc_content_column contents \
+			--tkn_text_lang en \
+			--tkn_chunk_size 0 \
+            --data_local_config "{ 'input_folder' : 'test-data/ds01/input', 'output_folder' : 'test-data/ds01/expected'}"
+	source venv/bin/activate && \
+	rm -rf test-data/ds02/expected && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
+			--tkn_tokenizer hf-internal-testing/llama-tokenizer \
+			--tkn_doc_id_column document_id \
+			--tkn_doc_content_column contents \
+			--tkn_text_lang en \
+			--tkn_chunk_size 20000 \
+            --data_local_config "{ 'input_folder' : 'test-data/ds02/input', 'output_folder' : 'test-data/ds02/expected'}"
+	source venv/bin/activate && \
+	rm -rf test-data/list/expected && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
+			--tkn_doc_id_column pulls_and_issues_id \
+			--tkn_doc_content_column curr_file_contents \
+            --data_local_config "{ 'input_folder' : 'test-data/list/input', 'output_folder' : 'test-data/list/expected'}"
 
 
 ############

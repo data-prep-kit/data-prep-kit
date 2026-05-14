@@ -15,7 +15,6 @@ import math
 from abc import ABCMeta, abstractmethod
 
 import fasttext
-import numpy as np
 from huggingface_hub import hf_hub_download
 import os
 from langcodes import standardize_tag

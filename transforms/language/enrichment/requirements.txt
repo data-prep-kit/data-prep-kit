@@ -1,8 +1,7 @@
 ftfy
 unicategories
 unicodedataplus
-## datatrove higher versions are pulling in numpy > 2 and breaking things
-datatrove<0.4.0
-fasttext-wheel
+datatrove
+fasttext-predict
 nltk
 spacy

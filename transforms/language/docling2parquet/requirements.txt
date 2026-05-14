@@ -1,8 +1,8 @@
-numpy<=1.26.4
+numpy<=1.26.4; python_version < "3.13"
 docling-core==2.50.1
 docling-ibm-models
 docling-parse
 docling
 easyocr
 filetype >=1.2.0, <2.0.0
-mlx-vlm; sys_platform == 'darwin'
+mlx-vlm; sys_platform == 'darwin' and python_version < "3.13"

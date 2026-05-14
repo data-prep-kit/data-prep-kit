@@ -7,6 +7,6 @@ pytest-cov>=4.1.0
 pytest-mock>=3.10.0
 moto==5.0.5
 markupsafe==2.0.1
-fasttext-wheel
+fasttext-predict
 huggingface-hub >= 0.21.4, <1.0.0
 transformers

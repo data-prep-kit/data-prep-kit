@@ -1,7 +1,7 @@
 # Later versions of numpy is causing error with:
 # AttributeError: module 'numpy' has no attribute 'AxisError'
 # cupy-cuda12x 13.1.0 requires numpy<1.29,>=1.22, but you have numpy 2.3.1 which is incompatible.
-numpy<1.29,>=1.22
+numpy<1.29,>=1.22; python_version < "3.13"
 # Force upgrade to pydantic 2.8.1 as pydantic 2.5.0 is causing error with python 3.12
 #TypeError: ForwardRef._evaluate() missing 1 required keyword-only argument: 'recursive_guard'
 pydantic>=2.8.2

@@ -14,10 +14,11 @@
 import argparse
 import ast
 import json
+import os
 from typing import Any
+
 import duckdb
 import pyarrow as pa
-import os
 from data_processing.data_access import DataAccess
 from data_processing.transform import AbstractTableTransform, TransformConfiguration
 from data_processing.utils import CLIArgumentProvider, TransformUtils, get_dpk_logger
@@ -50,11 +51,13 @@ filter_output_arrow_folder_cli_param = f"{cli_prefix}{filter_output_arrow_folder
 filter_doc_id_column_name_cli_param = f"{cli_prefix}{filter_doc_id_column_name_key}"
 
 
-captured_arg_keys = [filter_criteria_key, 
-                     filter_columns_to_drop_key, 
-                     filter_input_arrow_folder_key,
-                     filter_output_arrow_folder_key,
-                     filter_doc_id_column_name_key]
+captured_arg_keys = [
+    filter_criteria_key,
+    filter_columns_to_drop_key,
+    filter_input_arrow_folder_key,
+    filter_output_arrow_folder_key,
+    filter_doc_id_column_name_key,
+]
 """ The set of keys captured from the command line """
 
 # defaults
@@ -93,27 +96,34 @@ class FilterTransform(AbstractTableTransform):
         # ensure the path endswith("/") if they are not None
         self.input_arrow_folder = config.get(filter_input_arrow_folder_key, "")
         if bool(self.input_arrow_folder.strip()):
-            self.input_arrow_folder = self.input_arrow_folder if self.input_arrow_folder.endswith("/") else f"{self.input_arrow_folder}/"
+            self.input_arrow_folder = (
+                self.input_arrow_folder if self.input_arrow_folder.endswith("/") else f"{self.input_arrow_folder}/"
+            )
         self.output_arrow_folder = config.get(filter_output_arrow_folder_key, "")
         if bool(self.output_arrow_folder.strip()):
-            self.output_arrow_folder = self.output_arrow_folder if self.output_arrow_folder.endswith("/") else f"{self.output_arrow_folder}/"
-        
+            self.output_arrow_folder = (
+                self.output_arrow_folder if self.output_arrow_folder.endswith("/") else f"{self.output_arrow_folder}/"
+            )
 
         # Need to extract the parquet input folder names, especially it needs to end with '/'
         self.parquet_input_folder = None
         if self.data_access is not None:
             self.parquet_input_folder = self.data_access.get_input_folder()
         if self.parquet_input_folder is not None:
-            self.parquet_input_folder = self.parquet_input_folder if self.parquet_input_folder.endswith("/") else f"{self.parquet_input_folder}/"
+            self.parquet_input_folder = (
+                self.parquet_input_folder
+                if self.parquet_input_folder.endswith("/")
+                else f"{self.parquet_input_folder}/"
+            )
         # ref: https://duckdb.org/docs/stable/guides/python/multiple_threads.html
         duckdb_con = duckdb.connect()
         self.local_con = duckdb_con.cursor()
-    
+
     def _construct_arrow_meta_file_path(self, parquet_file_name: str):
         """
         use parquet_file_name to construct all the input and output arrow and meta data file paths
         """
-        parquet_file_name_wo_folder = parquet_file_name[len(self.parquet_input_folder):]
+        parquet_file_name_wo_folder = parquet_file_name[len(self.parquet_input_folder) :]
         arrow_file_name_wo_folder = parquet_file_name_wo_folder.replace(".parquet", ".arrow")
         docs_file_name_wo_folder = arrow_file_name_wo_folder.replace(".arrow", ".docs")
         ids_file_name_wo_input_folder = docs_file_name_wo_folder.replace(".docs", ".docs.ids")
@@ -122,21 +132,23 @@ class FilterTransform(AbstractTableTransform):
         self.output_arrow_file = os.path.join(self.output_arrow_folder, arrow_file_name_wo_folder)
         self.output_docs_file = os.path.join(self.output_arrow_folder, "meta/", docs_file_name_wo_folder)
         self.output_ids_file = os.path.join(self.output_arrow_folder, "meta/", ids_file_name_wo_input_folder)
-    
+
     def _filter_arrow_and_meta_files(self, file_name: str, filtered_ids_list: list):
         # read in the arrow and meta data
         try:
             input_ids_bytes, _ = self.data_access.get_file(self.input_ids_file)
-            input_ids_data = input_ids_bytes.decode('utf-8')
+            input_ids_data = input_ids_bytes.decode("utf-8")
             arrow_bytes, _ = self.data_access.get_file(self.input_arrow_file)
             arrow_reader = pa.ipc.open_file(arrow_bytes)
             _ = arrow_reader.read_all()
-            input_arrow_tokens_batches = [arrow_reader.get_batch(i)["tokens"].to_pylist() for i in range(arrow_reader.num_record_batches)]
+            input_arrow_tokens_batches = [
+                arrow_reader.get_batch(i)["tokens"].to_pylist() for i in range(arrow_reader.num_record_batches)
+            ]
         except Exception as e:
             self.logger.error(f"Error reading input arrow or meta files: {e}")
-        input_ids_lines = [line for line in input_ids_data.split('\n')]
-        input_ids_list = [line.split(',')[0].strip() for line in input_ids_lines]
-        input_token_count_list = [int(line.split(',')[1].strip()) for line in input_ids_lines]
+        input_ids_lines = [line for line in input_ids_data.split("\n")]
+        input_ids_list = [line.split(",")[0].strip() for line in input_ids_lines]
+        input_token_count_list = [int(line.split(",")[1].strip()) for line in input_ids_lines]
 
         # construct output arrow and output meta file contents
         output_arrow_tokens_batches = []
@@ -154,9 +166,11 @@ class FilterTransform(AbstractTableTransform):
                 total_tokens += token_count
 
         # print(f"{output_arrow_tokens_batches=}")
-        
+
         # prepare the output arrow and meta data file contents for pyarrow to write out
-        output_ids_lines = [f"{doc_id}, {token_count}\n" for doc_id, token_count in zip(filtered_ids_list, output_token_count_list)]
+        output_ids_lines = [
+            f"{doc_id}, {token_count}\n" for doc_id, token_count in zip(filtered_ids_list, output_token_count_list)
+        ]
         # print(f"{output_ids_lines=}")
         output_docs_line = f"{os.path.basename(file_name)}, documents: {total_docs}, tokens: {total_tokens}"
         output_ids_data = "".join(output_ids_lines)
@@ -175,8 +189,10 @@ class FilterTransform(AbstractTableTransform):
             self.data_access.save_file(self.output_ids_file, output_ids_data.encode("utf-8"))
             # write the output arrow file
             schema = pa.schema([("tokens", pa.uint32())])
-            output_arrow_tokens_array =[pa.array(batch_tokens) for batch_tokens in output_arrow_tokens_batches]
-            output_arrow_record_batches = [pa.RecordBatch.from_arrays([array], schema=schema) for array in output_arrow_tokens_array]
+            output_arrow_tokens_array = [pa.array(batch_tokens) for batch_tokens in output_arrow_tokens_batches]
+            output_arrow_record_batches = [
+                pa.RecordBatch.from_arrays([array], schema=schema) for array in output_arrow_tokens_array
+            ]
             with pa.ipc.RecordBatchFileWriter(self.output_arrow_file, schema) as writer:
                 for record_batch in output_arrow_record_batches:
                     writer.write_batch(record_batch)
@@ -192,13 +208,7 @@ class FilterTransform(AbstractTableTransform):
         """
         if bool(self.input_arrow_folder.strip()):
             TransformUtils.validate_columns(table=table, required=[self.doc_id_column_name])
-        if file_name is not None:
-            if not file_name.endswith(".parquet"):
-                self.logger.error(f"Error: input_file name doesn't end with '.parquet': {file_name}")
-                if isinstance(table, pa.Table):
-                    return [table.schema.empty_table()], {"wrong file type": 1}
-                else:
-                    return [], {"wrong file type": 1}
+
         # move table under a different name, to avoid SQL query parsing error
         input_table = table
         total_docs = input_table.num_rows
@@ -248,7 +258,7 @@ class FilterTransform(AbstractTableTransform):
         metadata["docs_after_filter"] = filtered_table.num_rows
         metadata["columns_after_filter"] = filtered_table_cols_dropped.num_columns
         metadata["bytes_after_filter"] = filtered_table.nbytes
-        
+
         if filtered_table_cols_dropped.num_rows == 0:
             return [table.schema.empty_table()], metadata
         else:
@@ -260,7 +270,7 @@ class FilterTransform(AbstractTableTransform):
                 self._filter_arrow_and_meta_files(file_name, filtered_id_list)
             else:
                 self.logger.warning(f"NOTE: no input_arrow_folder provided. Only parquet files are filtered.")
-        
+
             return [filtered_table_cols_dropped], metadata
 
 
@@ -320,23 +330,22 @@ class FilterTransformConfiguration(TransformConfiguration):
             type=str,
             required=False,
             default="",
-            help="the input path to the .arrow files"
+            help="the input path to the .arrow files",
         )
         parser.add_argument(
             f"--{filter_output_arrow_folder_cli_param}",
             type=str,
             required=False,
             default="",
-            help="the output path to the .arrow files"
+            help="the output path to the .arrow files",
         )
         parser.add_argument(
             f"--{filter_doc_id_column_name_cli_param}",
             type=str,
             required=False,
             default="id",
-            help="the unique doc_id column name"
+            help="the unique doc_id column name",
         )
-
 
     def apply_input_params(self, args: argparse.Namespace) -> bool:
         """

@@ -1,0 +1,119 @@
+###
+# Pre-requisites On a standalone kind cluster:
+#    helm repo add kuberay https://ray-project.github.io/kuberay-helm/
+#    helm repo update
+#    helm install kuberay-operator kuberay/kuberay-operator --version 1.5.0
+# Usage:
+# export $(cat .env | xargs)
+# envsubst < doc_id-rayjob.yaml | kubectl apply -f -
+###
+apiVersion: ray.io/v1alpha1
+kind: RayJob
+metadata:
+    name: rayjob-filter # Name of your RayCluster
+spec:
+    shutdownAfterJobFinishes: true
+    ttlSecondsAfterFinished: 10
+    rayClusterSpec:
+        rayVersion: "2.36.1" # Specify the Ray version
+        headGroupSpec:
+            # Service type for the head node, can be ClusterIP or NodePort
+            serviceType: ClusterIP
+            # Ray container image for the head node
+            rayStartParams:
+                dashboard-host: "0.0.0.0"
+            template:
+                spec:
+                    containers:
+                        - name: ray-head
+                          env:
+                              - name: DPK_LOG_LEVEL
+                                value: DEBUG
+                              - name: S3_ACCESS_KEY
+                                valueFrom:
+                                    secretKeyRef:
+                                        name: s3-secret
+                                        key: s3-key
+                              - name: S3_SECRET_KEY
+                                valueFrom:
+                                    secretKeyRef:
+                                        name: s3-secret
+                                        key: s3-secret
+                              - name: S3_ENDPOINT
+                                valueFrom:
+                                    secretKeyRef:
+                                        name: s3-secret
+                                        key: s3-endpoint
+                              - name: WORKER_CPU_REQUEST
+                                valueFrom:
+                                    resourceFieldRef:
+                                        resource: requests.cpu
+                          image: quay.io/dataprep1/data-prep-kit/filter-ray:latest
+                          imagePullPolicy: Always
+                          ports:
+                              - containerPort: 6379 # Ray port
+                                name: ray-client
+                              - containerPort: 8265 # Ray Dashboard port
+                                name: dashboard
+                          resources:
+                              requests:
+                                  cpu: 8
+                                  memory: 16Gi
+                              limits:
+                                  cpu: 8
+                                  memory: 16Gi
+        workerGroupSpecs:
+            - groupName: small-group
+              replicas: 5 # Initial number of worker nodes
+              minReplicas: 5
+              maxReplicas: 5
+              rayStartParams: {}
+              template:
+                  spec:
+                      containers:
+                          - name: ray-worker
+                            env:
+                                - name: DPK_LOG_LEVEL
+                                  value: DEBUG
+                                - name: S3_ACCESS_KEY
+                                  valueFrom:
+                                      secretKeyRef:
+                                          name: s3-secret
+                                          key: s3-key
+                                - name: S3_SECRET_KEY
+                                  valueFrom:
+                                      secretKeyRef:
+                                          name: s3-secret
+                                          key: s3-secret
+                                - name: S3_ENDPOINT
+                                  valueFrom:
+                                      secretKeyRef:
+                                          name: s3-secret
+                                          key: s3-endpoint
+                            image: quay.io/dataprep1/data-prep-kit/filter-ray:latest
+                            imagePullPolicy: Always
+                            resources:
+                                requests:
+                                    cpu: 1
+                                    memory: 16Gi
+                                limits:
+                                    cpu: 1
+                                    memory: 16Gi
+    # Job details
+    # The command to execute the Python script
+    entrypoint: >
+        python -m dpk_filter.ray.runtime
+        --run_locally False
+        --data_s3_config "{'input_folder': '$S3_BUCKET_PATH/$FILTER_INPUT', 'output_folder': '$S3_BUCKET_PATH/$FILTER_OUTPUT'}"
+        --filter_criteria_list "['docq_total_words > 100 AND docq_total_words < 200', 'ibmkenlm_docq_perplex_score < 230']"
+        --filter_logical_operator "AND"
+        --filter_columns_to_drop "['extra', 'cluster']"
+        --filter_doc_id_column_name document_id
+        --data_files_to_use "[ '.parquet' ]" 
+        --data_checkpointing False 
+        --runtime_num_workers 5
+        --runtime_worker_options "{ 'num_cpus': 0.8, 'max_restarts': 0, 'max_task_retries': 0 }"
+
+#    --data_max_files -1
+#    --data_num_samples -1
+

@@ -185,21 +185,21 @@ class YaraTransform(AbstractTableTransform):
         unique_rules = set(r for row in rules_out for r in row)
 
         metadata = {
-            "total_rows": nrows,
-            "clean": nrows - infected,
-            "infected": infected,
+            "total_docs": nrows,
+            "docs_clean": nrows - infected,
+            "docs_infected": infected,
             "total_rule_hits": total_rule_hits,
             "unique_rules_matched": len(unique_rules),
         }
 
         for cat in sorted(set(c for row in cats_out for c in row)):
-            metadata[f"infected_by_{cat}"] = sum(1 for row in cats_out if cat in row)
+            metadata[f"docs_infected_by_{cat}"] = sum(1 for row in cats_out if cat in row)
 
         rule_counts = Counter(r for row in rules_out for r in row)
         for rule, count in rule_counts.most_common(10):
             metadata[f"rule_{rule}"] = count
 
-        logger.debug(f"YARA: {infected}/{nrows} rows matched, {total_rule_hits} total rule hits")
+        logger.debug(f"YARA: {infected}/{nrows} docs matched, {total_rule_hits} total rule hits")
         return [table], metadata
 
 

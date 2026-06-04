@@ -33,14 +33,10 @@ class YaraRayTransformRuntime(DefaultRayTransformRuntime):
         super().__init__(params)
 
     def compute_execution_stats(self, stats: dict[str, Any]) -> dict[str, Any]:
-        total = stats.get("total_rows", 0)
+        total = stats.get("total_docs", 0)
         if total > 0:
-            stats["pct_infected"] = round(100.0 * stats.get("infected", 0) / total, 2)
-            stats["pct_clean"] = round(100.0 * stats.get("clean", 0) / total, 2)
-            for key in list(stats.keys()):
-                if key.startswith("infected_by_"):
-                    category = key[len("infected_by_"):]
-                    stats[f"pct_infected_by_{category}"] = round(100.0 * stats[key] / total, 2)
+            stats["pct_docs_infected"] = round(100.0 * stats.get("docs_infected", 0) / total, 2)
+            stats["pct_docs_clean"] = round(100.0 * stats.get("docs_clean", 0) / total, 2)
         return stats
 
 

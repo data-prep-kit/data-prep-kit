@@ -35,14 +35,10 @@ class YaraPythonTransformRuntime(DefaultPythonTransformRuntime):
 
     def compute_execution_stats(self, stats: TransformStatistics) -> None:
         s = stats.get_execution_stats()
-        total = s.get("total_rows", 0)
+        total = s.get("total_docs", 0)
         if total > 0:
-            s["pct_infected"] = round(100.0 * s.get("infected", 0) / total, 2)
-            s["pct_clean"] = round(100.0 * s.get("clean", 0) / total, 2)
-            for key in list(s.keys()):
-                if key.startswith("infected_by_"):
-                    category = key[len("infected_by_"):]
-                    s[f"pct_infected_by_{category}"] = round(100.0 * s[key] / total, 2)
+            s["pct_docs_infected"] = round(100.0 * s.get("docs_infected", 0) / total, 2)
+            s["pct_docs_clean"] = round(100.0 * s.get("docs_clean", 0) / total, 2)
 
 
 class YaraPythonTransformConfiguration(PythonTransformRuntimeConfiguration):

@@ -35,3 +35,12 @@ run-local-python-sample:
 	$(MAKE) venv
 	@source venv/bin/activate && \
 	$(PYTHON) -m dpk_$(TRANSFORM_NAME).local_python
+
+# Regenerate test-data/expected by running the transform with output pointed at the
+# expected directory. Uses the local-only path (es_endpoint unset -> reads result_list.json),
+# matching the test fixture in test/test_similarity_python.py.
+generate-expected:
+	$(MAKE) venv
+	@source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).transform_python \
+                --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'test-data/expected'}"

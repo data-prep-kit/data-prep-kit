@@ -20,15 +20,27 @@ TRANSFORM_RAY_SRC="-m dpk_$(TRANSFORM_NAME).ray.runtime"
 run-cli-sample:
 	make venv
 	source venv/bin/activate && \
-	$(PYTHON) -m dpk_$(TRANSFORM_NAME).transform_python \
-             --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
+             --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"
            
 			
 
-run-ray-cli-sample: 
+run-ray-cli-sample:
 	make venv
 	source venv/bin/activate && \
-	$(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.transform \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).ray.runtime \
 		--data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'output'}"  \
-        --run_locally True 
- 
+        --run_locally True
+
+# Regenerate test-data/expected by running the transform with output pointed at the
+# expected directory. Mirrors the config used by test/test_code2parquet_python.py
+# (.zip inputs, language detection on, repo lang_extensions.json).
+generate-expected:
+	$(MAKE) venv
+	@source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
+             --data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'test-data/expected'}" \
+             --data_files_to_use "['.zip']" \
+             --code2parquet_supported_langs_file "test-data/languages/lang_extensions.json" \
+             --code2parquet_detect_programming_lang True
+

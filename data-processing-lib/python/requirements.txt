@@ -1,6 +1,5 @@
 numpy
-pyarrow<=17.0.0; python_version <= "3.12"
-pyarrow; python_version > "3.12"
+pyarrow
 # Later version 1.38.7 is breaking authentication. 
 # check compatibility with other applications that depend on botocore(DMF, DSift, etc.)
 boto3>=1.41

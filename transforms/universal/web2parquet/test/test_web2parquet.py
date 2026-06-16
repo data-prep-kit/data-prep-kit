@@ -13,6 +13,7 @@
 
 import os
 
+import pytest
 from data_processing.runtime.pure_python import PythonTransformLauncher
 from data_processing.test_support.launch.transform_test import (
     AbstractTransformLauncherTest,
@@ -25,6 +26,17 @@ class TestPythonNOOPTransform(AbstractTransformLauncherTest):
     Extends the super-class to define the test data for the tests defined there.
     The name of this class MUST begin with the word Test so that pytest recognizes it as a test class.
     """
+
+    # This test performs a live web crawl of an external site (thealliance.ai) via
+    # dpk_connector. In CI there is no reliable outbound network and the crawl has no
+    # effective timeout, so the test can hang indefinitely. Skip it on CI runners; it
+    # still runs locally where outbound internet is available.
+    @pytest.mark.skipif(
+        os.environ.get("GITHUB_ACTIONS") == "true",
+        reason="Performs a live external web crawl; unreliable/hangs in CI without network.",
+    )
+    def test_transform(self, launcher, cli_params, in_table_path, expected_out_table_path, ignore_columns):
+        super().test_transform(launcher, cli_params, in_table_path, expected_out_table_path, ignore_columns)
 
     def get_test_transform_fixtures(self) -> list[tuple]:
         src_file_dir = os.path.abspath(os.path.dirname(__file__))

@@ -1,40 +1,54 @@
 {
-    "pipeline": "pipeline_id",
-    "job details": {
-        "job category": "preprocessing",
-        "job name": "code2parquet",
-        "job type": "pure python",
-        "job id": "job_id",
-        "start_time": "2024-07-25 15:38:20",
-        "end_time": "2024-07-25 15:38:21",
-        "status": "success"
-    },
-    "code": null,
-    "job_input_params": {
-        "supported_langs_file": "/Users/dawood/git/data-prep-kit/transforms/code/code2parquet/python/test-data/languages/lang_extensions.json",
-        "detect_programming_lang": true,
-        "snapshot": null,
-        "domain": null,
-        "s3_cred": null,
-        "checkpointing": false,
-        "max_files": -1,
-        "random_samples": -1,
-        "files_to_use": [".zip"]
-    },
-    "job_output_stats": {
-        "source_files": 3,
-        "source_size": 33885652,
-        "result_files": 3,
-        "result_size": 70167,
-        "processing_time": 1.5678541660308838,
-        "number of rows": 74
-    },
-    "source": {
-        "name": "/Users/dawood/git/data-prep-kit/transforms/code/code2parquet/python/test-data/input",
-        "type": "path"
-    },
-    "target": {
-        "name": "/tmp/code2parquetbl3prm61",
-        "type": "path"
-    }
+  "pipeline": "pipeline_id",
+  "job details": {
+    "job category": "preprocessing",
+    "job name": "code2parquet",
+    "job type": "pure python",
+    "job id": "job_id",
+    "start_time": "2026-06-16 11:44:49",
+    "end_time": "2026-06-16 11:44:50",
+    "status": "success"
+  },
+  "code": {
+    "github": "UNDEFINED",
+    "build-date": "UNDEFINED",
+    "commit_hash": "UNDEFINED",
+    "path": "UNDEFINED"
+  },
+  "job_input_params": {
+    "supported_langs_file": "test-data/languages/lang_extensions.json",
+    "detect_programming_lang": true,
+    "snapshot": null,
+    "domain": null,
+    "checkpointing": false,
+    "max_files": -1,
+    "random_samples": -1,
+    "files_to_use": [
+      ".zip"
+    ],
+    "num_processors": 0
+  },
+  "execution_stats": {
+    "cpus": 52.2,
+    "gpus": 0,
+    "memory": 13.29,
+    "object_store": 0,
+    "execution time, min": 0.003
+  },
+  "job_output_stats": {
+    "source_files": 3,
+    "source_size": 33885652,
+    "result_files": 3,
+    "result_size": 62190,
+    "processing_time": 0.151,
+    "number of rows": 74
+  },
+  "source": {
+    "name": "/Users/shalisha.witherspoonibm.com/Documents/DPK_RAY_UPDATE/data-prep-kit-outer/transforms/code/code2parquet/test-data/input",
+    "type": "path"
+  },
+  "target": {
+    "name": "/Users/shalisha.witherspoonibm.com/Documents/DPK_RAY_UPDATE/data-prep-kit-outer/transforms/code/code2parquet/test-data/expected",
+    "type": "path"
+  }
 }

@@ -1,1 +1,6 @@
 trafilatura==1.12.0
+# Pin tzlocal (transitive via trafilatura -> htmldate -> dateparser). tzlocal 5.4.x
+# (released 2026-06-15/16) ships a broken install where the module dir is missing despite
+# the dist-info being present, causing "ModuleNotFoundError: No module named 'tzlocal'".
+# 5.3.1 is the last known-good release.
+tzlocal==5.3.1

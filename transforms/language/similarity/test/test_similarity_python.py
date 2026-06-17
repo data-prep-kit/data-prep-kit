@@ -12,37 +12,50 @@
 ################################################################################
 
 import os
+import sys
+import tempfile
 
+import pyarrow.parquet as pq
 from data_processing.runtime.pure_python import PythonTransformLauncher
-from data_processing.test_support.launch.transform_test import (
-    AbstractTransformLauncherTest,
-)
+from data_processing.utils import ParamsUtils
 
 from dpk_similarity.transform import ES_ENDPOINT_CLI_PARAM
 from dpk_similarity.transform_python import SimilarityPythonTransformConfiguration
 
-class TestPythonSimilarityTransform(AbstractTransformLauncherTest):
+# Reuse the representation-tolerant table comparison defined alongside the direct test.
+from test_similarity import assert_tables_equivalent
+
+
+class TestPythonSimilarityTransform:
     """
-    Extends the super-class to define the test data for the tests defined there.
-    The name of this class MUST begin with the word Test so that pytest recognizes it as a test class.
+    Run the similarity transform through the Python launcher and compare the produced
+    parquet against the expected fixture using a representation-tolerant comparison.
+
+    We do not use AbstractTransformLauncherTest's directory comparison here because it
+    asserts exact pyarrow schema equality, which is unstable for this transform: it
+    round-trips data through pandas, so the output `contents` type (string vs
+    large_string) and list field naming depend on the installed pyarrow/pandas versions.
     """
 
-    def get_test_transform_fixtures(self) -> list[tuple]:
+    def test_transform(self):
         src_file_dir = os.path.abspath(os.path.dirname(__file__))
-        fixtures = []
-
-        launcher = PythonTransformLauncher(SimilarityPythonTransformConfiguration())
         input_dir = os.path.join(src_file_dir, "../test-data/input")
         expected_dir = os.path.join(src_file_dir, "../test-data/expected")
-        transform_config = {ES_ENDPOINT_CLI_PARAM: None}
-        fixtures.append(
-            (
-                launcher,
-                transform_config,
-                input_dir,
-                expected_dir,
-                [],  # optional list of column names to ignore in comparing test-generated with expected.
-            )
-        )
 
-        return fixtures
+        with tempfile.TemporaryDirectory(prefix="similarity", dir="/tmp") as temp_dir:
+            local_config = {"input_folder": input_dir, "output_folder": temp_dir}
+            sys.argv = ParamsUtils.dict_to_req(
+                {
+                    "data_local_config": local_config,
+                    ES_ENDPOINT_CLI_PARAM: None,
+                }
+            )
+            launcher = PythonTransformLauncher(SimilarityPythonTransformConfiguration())
+            assert launcher.launch() == 0, "Launcher did not complete successfully"
+
+            for fname in os.listdir(expected_dir):
+                if not fname.endswith(".parquet"):
+                    continue
+                produced = pq.read_table(os.path.join(temp_dir, fname))
+                expected = pq.read_table(os.path.join(expected_dir, fname))
+                assert_tables_equivalent(produced, expected)

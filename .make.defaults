@@ -659,10 +659,6 @@ ifeq ($(USE_REPO_LIB_SRC), 1)
 		-e 's/"data-prep-toolkit-spark\([=><~][=]\).*"/"data-prep-toolkit-spark\1$(DPK_LIB_VERSION)"/' 	\
 		-e 's/"data-prep-toolkit-kfp\([=><~][=]\).*"/"data-prep-toolkit-kfp\1$(DPK_LIB_KFP_VERSION)"/' 	\
 		-e 's/"data-prep-toolkit\([=><~][=]\).*"/"data-prep-toolkit\1$(DPK_LIB_VERSION)"/' 		\
-		-e '/python_version *< *"3\.13"/s/"ray\[default\]==[^;"]*/"ray[default]==$(RAY_PY312)/'	\
-		-e '/python_version *== *"3\.13\.\*"/s/"ray\[default\]==[^;"]*/"ray[default]==$(RAY_PY313)/'	\
-		-e '/python_version *>= *"3\.14"/s/"ray\[default\]==[^;"]*/"ray[default]==$(RAY_PY314)/'	\
-		-e '/;/!s/"ray\[default\]\([=><~][=]\).*"/"ray\[default\]\1$(RAY)"/'			\
 		-e 's/"data-prep-toolkit-kfp-shared\(..\).*"/"data-prep-toolkit-kfp-shared\1$(DPK_LIB_KFP_VERSION)"/'     \
 		> tt.toml;				\
 	    mv tt.toml pyproject.toml;			\
@@ -675,10 +671,6 @@ ifeq ($(USE_REPO_LIB_SRC), 1)
 		-e 's/data-prep-toolkit-spark\([=><~][=]\).*/data-prep-toolkit-spark\1$(DPK_LIB_VERSION)/' 	\
 		-e 's/data-prep-toolkit-kfp\([=><~][=]\).*/data-prep-toolkit-kfp\1$(DPK_LIB_KFP_VERSION)/' 	\
 		-e 's/data-prep-toolkit\([=><~][=]\).*/data-prep-toolkit\1$(DPK_LIB_VERSION)/' 		\
-		-e '/python_version *< *"3\.13"/s/ray\[default\]==[^;]*/ray[default]==$(RAY_PY312)/'	\
-		-e '/python_version *== *"3\.13\.\*"/s/ray\[default\]==[^;]*/ray[default]==$(RAY_PY313)/'	\
-		-e '/python_version *>= *"3\.14"/s/ray\[default\]==[^;]*/ray[default]==$(RAY_PY314)/'	\
-		-e '/;/!s/ray\[default\]\([=><~][=]\).*/ray\[default\]\1$(RAY)/'			\
 		-e 's/data-prep-toolkit-kfp-shared\(..\).*/data-prep-toolkit-kfp-shared\1$(DPK_LIB_KFP_VERSION)/'     \
 		> tt.txt;				\
 	    mv tt.txt requirements.txt;			\

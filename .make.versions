@@ -34,13 +34,9 @@ KFP_v2=2.2.0
 KFP_v2_SDK=2.8.0
 KFP_v1=1.8.5
 KFP_v1_SDK=1.8.22
-# Ray version per Python minor — wheel tag availability (cp3XX).
-# Update the variable matching the Python minor you are bumping.
-RAY_PY312=2.36.1
-RAY_PY313=2.45.0
-RAY_PY314=2.55.1
-# Back-compat alias: unconditional `ray[default]==...` lines rewrite to this.
-RAY=$(RAY_PY312)
+# Ray version used across all supported Python versions (3.10-3.14).
+# Also used for the Ray Docker base image tag (see RAY_BASE_IMAGE in .make.defaults).
+RAY=2.55.1
 SPARK_VERSION=3.5.2
 
 

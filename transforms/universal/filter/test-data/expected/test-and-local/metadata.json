@@ -4,9 +4,14 @@
     "total_columns_count": 25,
     "docs_filtered_out_by 'docq_total_words > 100 AND docq_total_words < 200'": 78,
     "bytes_filtered_out_by 'docq_total_words > 100 AND docq_total_words < 200'": 429191,
+    "docs_matching 'docq_total_words > 100 AND docq_total_words < 200'": 22,
     "docs_filtered_out_by 'ibmkenlm_docq_perplex_score < 230'": 53,
     "bytes_filtered_out_by 'ibmkenlm_docq_perplex_score < 230'": 275911,
+    "docs_matching 'ibmkenlm_docq_perplex_score < 230'": 47,
     "docs_after_filter": 11,
     "bytes_after_filter": 24061,
-    "columns_after_filter": 23
+    "columns_after_filter": 23,
+    "docs_kept": 11,
+    "pct_docs_kept": 11.0,
+    "kept_per_million_docs": 110000.0
 }

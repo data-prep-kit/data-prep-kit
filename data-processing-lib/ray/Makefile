@@ -17,27 +17,9 @@ setup::
 
 set-versions: .check-env
 	$(MAKE) TOML_VERSION=$(DPK_LIB_VERSION) .defaults.update-toml
-	if [ -e pyproject.toml ]; then					\
-		cat pyproject.toml | sed								\
-			-e '/python_version *< *"3\.13"/s/"ray\[default\]==[^;"]*/"ray[default]==$(RAY_PY312)/'		\
-			-e '/python_version *== *"3\.13\.\*"/s/"ray\[default\]==[^;"]*/"ray[default]==$(RAY_PY313)/'	\
-			-e '/python_version *>= *"3\.14"/s/"ray\[default\]==[^;"]*/"ray[default]==$(RAY_PY314)/'	\
-			-e '/;/!s/"ray\[default\]==.*",/"ray[default]==$(RAY)",/'					\
-			> tt.toml; \
-		mv tt.toml pyproject.toml; \
-	fi
-	if [ -e requirements.txt ]; then					\
-		cat requirements.txt | sed								\
-			-e '/python_version *< *"3\.13"/s/ray\[default\]==[^;]*/ray[default]==$(RAY_PY312)/'		\
-			-e '/python_version *== *"3\.13\.\*"/s/ray\[default\]==[^;]*/ray[default]==$(RAY_PY313)/'	\
-			-e '/python_version *>= *"3\.14"/s/ray\[default\]==[^;]*/ray[default]==$(RAY_PY314)/'		\
-			-e '/;/!s/ray\[default\]==.*/ray[default]==$(RAY)/'						\
-			> tt.txt; \
-		mv tt.txt requirements.txt; \
-	fi
 
 
-build:: build-dist 
+build:: build-dist
 
 build-dist :: .defaults.build-dist 
 

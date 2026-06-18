@@ -16,6 +16,8 @@ From the main folder, edit the [`.make.versions`](.make.versions) and make the s
 make set-versions
 ```
 
+> **Note:** The root `make set-versions` does not recurse into `data-connector-lib` (the connector is versioned independently and is not always part of a release). If the connector IS being released, propagate its version separately with `make -C data-connector-lib set-versions` and confirm `data-connector-lib/pyproject.toml` updated.
+
 ```
 git add .
 git commit -s -m "adding dev1 release for regression testing"
@@ -24,10 +26,10 @@ git push --set-upstream origin x.x.x.dev1
 
 Create a PR against the dev branch, review, approve and merge PR.
 
-Once merged, build a wheel for `data-processing-lib` and `transforms` and upload to pypi: 
+Once merged, build a wheel for `data-processing-lib` and `transforms` and upload to pypi. These targets live in the component Makefiles, so run them from each component folder:
 ```
-make build-pkg-dist
-make publish-dist
+make -C data-processing-lib build-pkg-dist publish-dist
+make -C transforms build-pkg-dist publish-dist
 ```
 
 After testing notebooks and confirming success - proceed to Step 1 for release
@@ -44,6 +46,8 @@ From the main folder, edit the [`.make.versions`](.make.versions) and remove the
 make set-versions
 ```
 
+> **Note:** If `data-connector-lib` is among the components being released, also run `make -C data-connector-lib set-versions` — the root recursion skips it by design.
+
 Edit the release notes [`release-notes.md`](release-notes.md) and add bullet list of major enhancements and bug fixes included in this release.
 
 ```
@@ -54,10 +58,10 @@ git push --set-upstream origin pending-release/x.x.x
 
 Create a PR against the dev branch, review, approve and merge PR.
 
-Once merged, build a wheel for `data-processing-lib` and `transforms` and upload to pypi: 
+Once merged, build a wheel for `data-processing-lib` and `transforms` and upload to pypi. These targets live in the component Makefiles, so run them from each component folder:
 ```
-make build-pkg-dist
-make publish-dist
+make -C data-processing-lib build-pkg-dist publish-dist
+make -C transforms build-pkg-dist publish-dist
 ```
 
 
@@ -81,6 +85,9 @@ From the main folder, edit the `.make.versions`, increment minor or major and ad
 ```
 make set-versions
 ```
+
+> **Note:** If `data-connector-lib` was part of the release, also run `make -C data-connector-lib set-versions` — the root recursion skips it by design.
+
 ```
 git add .
 git commit -s -m "preparing for a new release"

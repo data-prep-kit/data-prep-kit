@@ -16,6 +16,8 @@ You are guiding the user through the **data-prep-kit** release process. This is 
 
 All versions live in `.make.versions` (single source of truth). After editing versions, `make set-versions` propagates them to all `pyproject.toml` files.
 
+> **NOTE — connector is independent:** `data-connector-lib` is versioned on its own track (e.g. `0.2.x`) and is **not** always part of a release, so the root `make set-versions` deliberately does **not** recurse into it. When the connector IS being released alongside the other packages (as it is in some releases), you must propagate its version separately: `make -C data-connector-lib set-versions`. After running it, verify `data-connector-lib/pyproject.toml` matches `DPK_CONNECTOR_NEXT_RELEASE` + `DPK_CONNECTOR_SUFFIX`. If the connector is not part of this release, leave its version untouched.
+
 ## When invoked, present a menu
 
 Ask the user which release step to perform:
@@ -49,8 +51,8 @@ Ask the user which release step to perform:
    - `DPK_VERSION_SUFFIX=.dev1`
    - `DPK_CONNECTOR_SUFFIX=.dev1`
    - `TRANSFORM_VERSION_SUFFIX=.dev1`
-5. Run `make set-versions` to propagate version changes to all pyproject.toml files.
-6. Verify versions propagated correctly by reading the pyproject.toml files for each package.
+5. Run `make set-versions` to propagate version changes to all pyproject.toml files. **If the connector is part of this release**, also run `make -C data-connector-lib set-versions` (the root recursion skips it by design).
+6. Verify versions propagated correctly by reading the pyproject.toml files for each package — including `data-connector-lib/pyproject.toml` if the connector is being released.
 7. Stage, commit, and push:
    ```
    git add .
@@ -60,7 +62,11 @@ Ask the user which release step to perform:
 8. Create a PR against the `dev` branch using `gh pr create`.
 9. Inform the user of next steps:
    - Review and merge the PR
-   - After merge, build and publish wheels: `make build-pkg-dist && make publish-dist`
+   - After merge, build and publish wheels for `data-processing-lib` and `transforms`. These targets live in the component Makefiles, not the repo root — run them from each component folder:
+     ```
+     make -C data-processing-lib build-pkg-dist publish-dist
+     make -C transforms build-pkg-dist publish-dist
+     ```
    - Test notebooks and confirm success before proceeding to Step 1
 
 ### Step 1: Pending Release
@@ -81,8 +87,8 @@ Ask the user which release step to perform:
    - `DPK_VERSION_SUFFIX=`
    - `DPK_CONNECTOR_SUFFIX=`
    - `TRANSFORM_VERSION_SUFFIX=`
-5. Run `make set-versions` to propagate.
-6. Verify versions propagated correctly.
+5. Run `make set-versions` to propagate. **If the connector is part of this release**, also run `make -C data-connector-lib set-versions` (the root recursion skips it by design).
+6. Verify versions propagated correctly, including `data-connector-lib/pyproject.toml` if the connector is being released.
 7. Check `release-notes.md` for an entry for this version. If missing, prompt the user to provide release notes. Help draft them by:
    - Running `git log` to find commits since the last release tag
    - Categorizing changes into Transforms, General, and other sections
@@ -96,7 +102,11 @@ Ask the user which release step to perform:
 9. Create a PR against the `dev` branch using `gh pr create`.
 10. Inform the user of next steps:
     - Review and merge the PR
-    - After merge, build and publish wheels: `make build-pkg-dist && make publish-dist`
+    - After merge, build and publish wheels for `data-processing-lib` and `transforms`. These targets live in the component Makefiles, not the repo root — run them from each component folder:
+      ```
+      make -C data-processing-lib build-pkg-dist publish-dist
+      make -C transforms build-pkg-dist publish-dist
+      ```
     - Proceed to Step 2 to create the actual release
 
 ### Step 2: Create Release
@@ -144,8 +154,8 @@ This step involves browser-based actions on GitHub. Guide the user through:
      - `DPK_VERSION_SUFFIX=.dev0`
      - `DPK_CONNECTOR_SUFFIX=.dev0`
      - `TRANSFORM_VERSION_SUFFIX=.dev0`
-6. Run `make set-versions` to propagate.
-7. Verify versions propagated correctly.
+6. Run `make set-versions` to propagate. **If the connector was part of the release**, also run `make -C data-connector-lib set-versions` (the root recursion skips it by design).
+7. Verify versions propagated correctly, including `data-connector-lib/pyproject.toml` if the connector was released.
 8. Stage, commit, and push:
    ```
    git add .
@@ -178,7 +188,7 @@ Analyze the current state of the repository to determine where in the release pr
 
 - **Always confirm with the user** before making any edits to `.make.versions` or `release-notes.md`.
 - **Always show a diff preview** of version changes before committing.
-- **Never run `make publish-dist`** automatically — only instruct the user to do it after PR merge.
+- **Never run `publish-dist`** automatically — only instruct the user to do it (from the component folders) after PR merge.
 - **Never force-push** or modify release branches/tags.
 - **Verify branch state** (clean working tree, correct base branch) before creating new branches.
 - When creating commits, always use the `-s` flag (signed-off-by) as required by the project.

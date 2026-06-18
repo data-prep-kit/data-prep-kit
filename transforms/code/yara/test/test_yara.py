@@ -42,7 +42,22 @@ expected_table = pa.table(
         "yara_categories": pa.array([[], ["eicar"]], type=pa.list_(pa.string())),
     }
 )
-expected_metadata_list = [{"clean": 1, "infected": 1}, {}]
+# Metadata is asserted exactly (AbstractTableTransformTest compares the full
+# dict). These per-rule / per-category keys (rule_*, docs_infected_by_*) are
+# stable here because this test compiles only the local test-rules/ directory
+# (one EICAR rule in category "eicar"), not the image's full ruleset.
+expected_metadata_list = [
+    {
+        "total_docs": 2,
+        "docs_clean": 1,
+        "docs_infected": 1,
+        "total_rule_hits": 1,
+        "unique_rules_matched": 1,
+        "docs_infected_by_eicar": 1,
+        "rule_EICAR_Test_String": 1,
+    },
+    {},
+]
 
 
 class TestYaraTransform(AbstractTableTransformTest):

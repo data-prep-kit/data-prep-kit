@@ -11,8 +11,11 @@
 # limitations under the License.
 ################################################################################
 
+from typing import Any
+
 from data_processing.utils import get_dpk_logger
 from data_processing_ray.runtime.ray import (
+    DefaultRayTransformRuntime,
     RayTransformLauncher,
     RayTransformRuntimeConfiguration,
     Transform,
@@ -23,9 +26,26 @@ from dpk_yara.transform import YaraTransformConfiguration
 logger = get_dpk_logger()
 
 
+class YaraRayTransformRuntime(DefaultRayTransformRuntime):
+    """Custom runtime that computes percentage stats after all batches are aggregated."""
+
+    def __init__(self, params: dict[str, Any]):
+        super().__init__(params)
+
+    def compute_execution_stats(self, stats: dict[str, Any]) -> dict[str, Any]:
+        total = stats.get("total_docs", 0)
+        if total > 0:
+            stats["pct_docs_infected"] = round(100.0 * stats.get("docs_infected", 0) / total, 2)
+            stats["pct_docs_clean"] = round(100.0 * stats.get("docs_clean", 0) / total, 2)
+        return stats
+
+
 class YaraRayTransformConfiguration(RayTransformRuntimeConfiguration):
     def __init__(self):
-        super().__init__(transform_config=YaraTransformConfiguration())
+        super().__init__(
+            transform_config=YaraTransformConfiguration(),
+            runtime_class=YaraRayTransformRuntime,
+        )
 
 
 class Yara(Transform):

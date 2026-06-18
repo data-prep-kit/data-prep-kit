@@ -223,6 +223,13 @@ class FilterTransform(AbstractTableTransform):
                 bytes_filtered = total_bytes - filter_table.nbytes
                 metadata[f"docs_filtered_out_by '{filter_criterion}'"] = docs_filtered
                 metadata[f"bytes_filtered_out_by '{filter_criterion}'"] = bytes_filtered
+                # docs_filtered_out_by is each criterion evaluated in ISOLATION as
+                # "total - rows passing this one clause" — useful for AND-style
+                # narrowing filters, but it reads backwards for OR-style "keep what
+                # matches" filters (e.g. malware keep_flagged), where the counts do
+                # not sum and do not equal docs_after_filter. Also record the direct
+                # match count so OR-mode results are legible without arithmetic.
+                metadata[f"docs_matching '{filter_criterion}'"] = filter_table.num_rows
 
             # use filtering criteria to build the SQL query for filtering
             filter_clauses = [f"({x})" for x in self.filter_criteria]
@@ -248,6 +255,19 @@ class FilterTransform(AbstractTableTransform):
         metadata["docs_after_filter"] = filtered_table.num_rows
         metadata["columns_after_filter"] = filtered_table_cols_dropped.num_columns
         metadata["bytes_after_filter"] = filtered_table.nbytes
+
+        # legible summary of the combined result (after applying the logical
+        # operator across all criteria). docs_kept mirrors docs_after_filter but
+        # is named to read naturally for "keep what matches" filters. Rates use 6
+        # decimals + a per-million companion because keep_flagged hit rates are
+        # tiny (e.g. 167 in 28.7M docs ~= 0.00058%), matching the malware
+        # transform's stats convention; 2-decimal rounding would collapse to 0.0.
+        kept = filtered_table.num_rows
+        metadata["docs_kept"] = kept
+        if total_docs > 0:
+            rate = kept / total_docs
+            metadata["pct_docs_kept"] = round(100.0 * rate, 6)
+            metadata["kept_per_million_docs"] = round(rate * 1_000_000, 3)
         
         if filtered_table_cols_dropped.num_rows == 0:
             return [table.schema.empty_table()], metadata

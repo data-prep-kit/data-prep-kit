@@ -35,10 +35,17 @@ run-cli-sample: installed.txt
 		$(TEST_PARAMS) && \
 	deactivate
 
-run-ray-cli-sample: installed.txt 
+run-ray-cli-sample: installed.txt
 	source venv/bin/activate && \
 	$(PYTHON) -m dpk_enrichment.ray.runtime --run_locally True \
 		--data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'ray-output'}" \
 		$(TEST_PARAMS) && \
 	deactivate
+
+generate-expected:
+	make venv
+	source venv/bin/activate && \
+	$(PYTHON) -m dpk_$(TRANSFORM_NAME).runtime \
+		--data_local_config "{ 'input_folder' : 'test-data/input', 'output_folder' : 'test-data/expected'}" \
+		$(TEST_PARAMS)
 

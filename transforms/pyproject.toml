@@ -34,6 +34,7 @@ all = { file = [
 "code/code_profiler/requirements.txt",
 "code/malware/requirements.txt",
 "code/repo_level_order/requirements.txt",
+"code/yara/requirements.txt",
 
 "language/pii_redactor/requirements.txt",
 "language/lang_id/requirements.txt",
@@ -70,7 +71,8 @@ all = { file = [
 "universal/fineweb_quality_annotator/requirements.txt",
 "universal/gopher_repetition_annotator/requirements.txt",
 "universal/opensearch/requirements.txt",
-    
+"universal/folder2parquet/requirements.txt",
+
 ]}
 
 language = { file = [
@@ -119,6 +121,7 @@ code = { file = [
 "code/code_profiler/requirements.txt",
 "code/malware/requirements.txt",
 "code/repo_level_order/requirements.txt",
+"code/yara/requirements.txt",
 
 "universal/filter/requirements.txt",
 "universal/doc_id/requirements.txt",
@@ -135,7 +138,8 @@ code = { file = [
 "universal/blocklist/requirements.txt",
 "universal/fineweb_quality_annotator/requirements.txt",
 "universal/gopher_repetition_annotator/requirements.txt",
-"universal/opensearch/requirements.txt"
+"universal/opensearch/requirements.txt",
+"universal/folder2parquet/requirements.txt"
 ]}
 
 images = { file = [
@@ -166,6 +170,8 @@ code2parquet = {file =  ["code/code2parquet/requirements.txt"]}
 malware = {file =  ["code/code2parquet/requirements.txt"]}
 code_profiler = { file = ["code/code_profiler/requirements.txt"]}
 repo_level_order = { file= ["code/repo_level_order/requirements.txt"]}
+yara = { file = ["code/yara/requirements.txt"]}
+folder2parquet = { file = ["universal/folder2parquet/requirements.txt"]}
 
 opensearch = { file = ["universal/opensearch/requirements.txt"]}
 profiler = { file = ["universal/profiler/requirements.txt"]}
@@ -242,6 +248,8 @@ dpk_code_quality = "code/code_quality/dpk_code_quality"
 dpk_code2parquet = "code/code2parquet/dpk_code2parquet"
 dpk_malware = "code/malware/dpk_malware"
 dpk_repo_level_order = "code/repo_level_order/dpk_repo_level_order"
+dpk_yara = "code/yara/dpk_yara"
+dpk_folder2parquet = "universal/folder2parquet/dpk_folder2parquet"
 dpk_transform_chain = "chain/dpk_transform_chain"
 dpk_faces = "images/faces/dpk_faces"
 dpk_nsfw = "images/nsfw/dpk_nsfw"

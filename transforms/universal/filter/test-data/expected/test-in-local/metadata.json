@@ -4,7 +4,11 @@
     "total_columns_count": 25,
     "docs_filtered_out_by 'document IN ('CC-MAIN-20190221132217-20190221154217-00305.warc.gz', 'CC-MAIN-20200528232803-20200529022803-00154.warc.gz', 'CC-MAIN-20190617103006-20190617125006-00025.warc.gz')'": 97,
     "bytes_filtered_out_by 'document IN ('CC-MAIN-20190221132217-20190221154217-00305.warc.gz', 'CC-MAIN-20200528232803-20200529022803-00154.warc.gz', 'CC-MAIN-20190617103006-20190617125006-00025.warc.gz')'": 468010,
+    "docs_matching 'document IN ('CC-MAIN-20190221132217-20190221154217-00305.warc.gz', 'CC-MAIN-20200528232803-20200529022803-00154.warc.gz', 'CC-MAIN-20190617103006-20190617125006-00025.warc.gz')'": 3,
     "docs_after_filter": 3,
     "columns_after_filter": 25,
-    "bytes_after_filter": 10592
+    "bytes_after_filter": 10592,
+    "docs_kept": 3,
+    "pct_docs_kept": 3.0,
+    "kept_per_million_docs": 30000.0
 }

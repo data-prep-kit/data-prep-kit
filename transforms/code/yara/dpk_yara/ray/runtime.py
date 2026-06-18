@@ -1,0 +1,59 @@
+# SPDX-License-Identifier: Apache-2.0
+# (C) Copyright IBM Corp. 2024.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#  http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+################################################################################
+
+from typing import Any
+
+from data_processing.utils import get_dpk_logger
+from data_processing_ray.runtime.ray import (
+    DefaultRayTransformRuntime,
+    RayTransformLauncher,
+    RayTransformRuntimeConfiguration,
+    Transform,
+)
+from dpk_yara.transform import YaraTransformConfiguration
+
+
+logger = get_dpk_logger()
+
+
+class YaraRayTransformRuntime(DefaultRayTransformRuntime):
+    """Custom runtime that computes percentage stats after all batches are aggregated."""
+
+    def __init__(self, params: dict[str, Any]):
+        super().__init__(params)
+
+    def compute_execution_stats(self, stats: dict[str, Any]) -> dict[str, Any]:
+        total = stats.get("total_docs", 0)
+        if total > 0:
+            stats["pct_docs_infected"] = round(100.0 * stats.get("docs_infected", 0) / total, 2)
+            stats["pct_docs_clean"] = round(100.0 * stats.get("docs_clean", 0) / total, 2)
+        return stats
+
+
+class YaraRayTransformConfiguration(RayTransformRuntimeConfiguration):
+    def __init__(self):
+        super().__init__(
+            transform_config=YaraTransformConfiguration(),
+            runtime_class=YaraRayTransformRuntime,
+        )
+
+
+class Yara(Transform):
+    def __init__(self, **kwargs):
+        super().__init__(YaraTransformConfiguration(), **kwargs)
+
+
+if __name__ == "__main__":
+    launcher = RayTransformLauncher(YaraRayTransformConfiguration())
+    logger.info("Launching yara transform")
+    launcher.launch()

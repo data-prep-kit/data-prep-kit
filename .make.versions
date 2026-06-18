@@ -8,7 +8,7 @@
 #
 ################################################################################
 
-REQUIRED_PYTHON_VERSIONS=">=3.10,<3.14"
+REQUIRED_PYTHON_VERSIONS=">=3.10,<3.15"
 
 ################################################################################
 # The *_NEXT_RELEASE below designated the next planned release for the given package
@@ -18,14 +18,14 @@ REQUIRED_PYTHON_VERSIONS=">=3.10,<3.14"
 # for integration testing or other
 
 DPK_NEXT_RELEASE=1.1.8
-DPK_VERSION_SUFFIX=.dev0
+DPK_VERSION_SUFFIX=.dev1
 
 
 DPK_CONNECTOR_NEXT_RELEASE=0.2.5
-DPK_CONNECTOR_SUFFIX=.dev0
+DPK_CONNECTOR_SUFFIX=.dev1
 
 TRANSFORM_NEXT_RELEASE=1.1.8
-TRANSFORM_VERSION_SUFFIX=.dev0
+TRANSFORM_VERSION_SUFFIX=.dev1
 
 ################################################################################
 # Begin versions that the repo depends on. 
@@ -34,7 +34,9 @@ KFP_v2=2.2.0
 KFP_v2_SDK=2.8.0
 KFP_v1=1.8.5
 KFP_v1_SDK=1.8.22
-RAY=2.36.1
+# Ray version used across all supported Python versions (3.10-3.14).
+# Also used for the Ray Docker base image tag (see RAY_BASE_IMAGE in .make.defaults).
+RAY=2.55.1
 SPARK_VERSION=3.5.2
 
 

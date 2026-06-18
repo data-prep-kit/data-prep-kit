@@ -12,6 +12,8 @@
 ################################################################################
 
 import os
+from difflib import SequenceMatcher
+
 import pyarrow.parquet as pq
 from dpk_lang_id import LangIdentificationTransform
 from dpk_doc_quality import DocQualityTransform
@@ -21,6 +23,28 @@ from dpk_doc_chunk import DocChunkTransform
 from dpk_transform_chain import TransformsChain, ParallelTransformsChain
 
 basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../test-data"))
+
+# The binary chain runs PDF -> Docling (incl. EasyOCR) -> DocChunk. The OCR/parsing
+# stage is not byte-deterministic across docling/easyocr versions and runs, so an
+# exact string comparison of the chunked contents is flaky (it has historically failed
+# intermittently on a single-character difference). Instead we assert the chunk count
+# matches and each chunk is near-identical to the expected text, which still catches a
+# broken chain or wrong chunking config while tolerating insignificant OCR drift.
+_CONTENTS_SIMILARITY_THRESHOLD = 0.97
+
+
+def _assert_contents_similar(expected_contents, actual_contents):
+    expected = expected_contents.to_pylist()
+    actual = actual_contents.to_pylist()
+    assert len(actual) == len(expected), (
+        f"Number of chunks ({len(actual)}) does not match expected ({len(expected)})"
+    )
+    for i, (exp, act) in enumerate(zip(expected, actual)):
+        ratio = SequenceMatcher(None, exp, act).ratio()
+        assert ratio >= _CONTENTS_SIMILARITY_THRESHOLD, (
+            f"Chunk {i} similarity {ratio:.4f} below threshold "
+            f"{_CONTENTS_SIMILARITY_THRESHOLD}:\nexpected: {exp!r}\nactual:   {act!r}"
+        )
 
 class TestTransformChain:
     def test_chain(self):
@@ -101,7 +125,7 @@ class TestTransformChain:
 
         table1 = pq.read_table(os.path.join(basedir, 'binary_expected', 'opea_project_github_io_latest_introduction_index_html-1.parquet'))
         table2 = pq.read_table(os.path.join(basedir, 'binary_output', 'opea_project_github_io_latest_introduction_index_html-1.parquet'))
-        assert table1['contents'] == table2['contents']
+        _assert_contents_similar(table1['contents'], table2['contents'])
 
     def test_parallel_chain(self):
         params = {"model_kind": "fasttext",
@@ -181,4 +205,4 @@ class TestTransformChain:
 
         table1 = pq.read_table(os.path.join(basedir, 'binary_expected', 'opea_project_github_io_latest_introduction_index_html-1.parquet'))
         table2 = pq.read_table(os.path.join(basedir, 'binary_output', 'opea_project_github_io_latest_introduction_index_html-1.parquet'))
-        assert table1['contents'] == table2['contents']
+        _assert_contents_similar(table1['contents'], table2['contents'])

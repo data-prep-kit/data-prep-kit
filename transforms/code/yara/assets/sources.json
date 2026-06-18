@@ -1,0 +1,18 @@
+[
+  {
+    "type": "yara",
+    "name": "ReversingLabs YARA Rules",
+    "url": "https://github.com/reversinglabs/reversinglabs-yara-rules",
+    "git_url": "https://github.com/reversinglabs/reversinglabs-yara-rules.git",
+    "description": "Professional-grade rules built by ReversingLabs threat analysts, tested against 10B+ binaries with zero-false-positive guarantee. Covers ransomware, trojans, infostealers, exploits, and viruses.",
+    "license": "MIT"
+  },
+  {
+    "type": "yara",
+    "name": "Trellix ATR YARA Rules",
+    "url": "https://github.com/advanced-threat-research/Yara-Rules",
+    "git_url": "https://github.com/advanced-threat-research/Yara-Rules.git",
+    "description": "600+ rules from the Trellix Advanced Threat Research team, tied to published blog post investigations. Covers APT campaigns and common malware families.",
+    "license": "Apache-2.0"
+  }
+]

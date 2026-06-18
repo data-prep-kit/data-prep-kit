@@ -17,17 +17,9 @@ setup::
 
 set-versions: .check-env
 	$(MAKE) TOML_VERSION=$(DPK_LIB_VERSION) .defaults.update-toml
-	if [ -e pyproject.toml ]; then					\
-		cat pyproject.toml | sed -e 's/"ray[default]==.*",/"ray[default]==$(RAY)",/' > tt.toml; \
-		mv tt.toml pyproject.toml; \
-	fi
-	if [ -e requirements.txt ]; then					\
-		cat requirements.txt | sed -e 's/ray[default]==.*/ray[default]==$(RAY)/' > tt.txt; \
-		mv tt.txt requirements.txt; \
-	fi
 
 
-build:: build-dist 
+build:: build-dist
 
 build-dist :: .defaults.build-dist 
 

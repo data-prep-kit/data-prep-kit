@@ -4,5 +4,8 @@
     "total_columns_count": 25,
     "docs_after_filter": 100,
     "columns_after_filter": 25,
-    "bytes_after_filter": 478602
+    "bytes_after_filter": 478602,
+    "docs_kept": 100,
+    "pct_docs_kept": 100.0,
+    "kept_per_million_docs": 1000000.0
 }

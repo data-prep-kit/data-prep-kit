@@ -10,8 +10,8 @@
 [![PyPI version](https://img.shields.io/pypi/v/data-prep-toolkit-transforms)](https://pypi.org/project/data-prep-toolkit-transforms/)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Apache 2.0](https://img.shields.io/github/license/data-prep-kit/data-prep-kit)](https://opensource.org/license/apache-2-0)
-[![GitHub Issues](https://img.shields.io/github/issues/kylelobo/The-Documentation-Compendium.svg)](https://github.com/data-prep-kit/data-prep-kit/issues)
-  [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/kylelobo/The-Documentation-Compendium.svg)](https://github.com/data-prep-kit/data-prep-kit/pulls)
+[![GitHub Issues](https://img.shields.io/github/issues/data-prep-kit/data-prep-kit.svg)](https://github.com/data-prep-kit/data-prep-kit/issues)
+  [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/data-prep-kit/data-prep-kit.svg)](https://github.com/data-prep-kit/data-prep-kit/pulls)
   [![LF AI & Data](https://img.shields.io/badge/LF%20AI%20%26%20Data-003778?logo=linuxfoundation&logoColor=fff&color=0094ff&labelColor=003778)](https://lfaidata.foundation/projects/)
   [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/10250/badge)](https://www.bestpractices.dev/projects/10250)
 

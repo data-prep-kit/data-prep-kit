@@ -18,14 +18,14 @@ REQUIRED_PYTHON_VERSIONS=">=3.10,<3.15"
 # for integration testing or other
 
 DPK_NEXT_RELEASE=1.1.8
-DPK_VERSION_SUFFIX=.dev1
+DPK_VERSION_SUFFIX=
 
 
 DPK_CONNECTOR_NEXT_RELEASE=0.2.5
-DPK_CONNECTOR_SUFFIX=.dev1
+DPK_CONNECTOR_SUFFIX=
 
 TRANSFORM_NEXT_RELEASE=1.1.8
-TRANSFORM_VERSION_SUFFIX=.dev1
+TRANSFORM_VERSION_SUFFIX=
 
 ################################################################################
 # Begin versions that the repo depends on. 

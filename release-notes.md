@@ -1,6 +1,19 @@
 # Data Prep Kit Release notes
 
-## Release 1.1.7 - 2/10/2025
+## Release 1.1.8 - 6/22/2026
+
+### Transforms
+
+1. YARA Transform (new): Added a new transform that scans a bytes/string column using [YARA](https://virustotal.github.io/yara/) rules and annotates each row with match metadata (`yara_matched`, `yara_rules`, `yara_tags`, `yara_categories`). Designed as the downstream of folder2parquet for flagging malware, suspicious patterns, or corpus contaminants.
+1. Malware Transform: Updated the output `metadata.json` statistics format, now reporting `docs_infected`, `total_signature_hits`, `unique_signatures_matched`, and per-signature hit counts.
+
+### General
+
+1. Python 3.14 Support: Expanded compatibility to include Python 3.14 (now >=3.10,<3.15).
+1. Ray Upgrade: Updated Ray to 2.55.1 across all supported Python versions.
+1. Release Tooling: Added a Claude Code release-management skill and related GitHub Actions to streamline the release process.
+
+## Release 1.1.7 - 2/10/2026
 
 ### Transforms
 

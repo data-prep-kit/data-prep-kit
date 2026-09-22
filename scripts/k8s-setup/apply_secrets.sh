@@ -9,9 +9,7 @@ if [ -f .env ]; then
   source .env
 fi
 
-if [[ -z "${S3_ACCESS_KEY}" ]] || [[ -z "${S3_SECRET_KEY}" ]] || [[ -z "${S3_ENDPOINT}" ]]; then
-  echo "Cannot set S3 secret- Environment Variables S3_ACCESS_KEY , S3_SECRET_KEY and S3_ENDPOINT must be set first"
-else
+if [[ -n "${S3_ACCESS_KEY}" ]] && [[ -n "${S3_SECRET_KEY}" ]] && [[ -n "${S3_ENDPOINT}" ]]; then
   echo "#######################################################################"
   echo "Creating Opaque secret lh-secret-s3"
   echo "#######################################################################"
@@ -26,6 +24,7 @@ else
   apiVersion: v1
   metadata:
       name: s3-secret
+      namespace: kubeflow
   data:
       s3-endpoint: "${S3_ENDPOINT_BASE64}"
       s3-key: "${S3_ACCESS_KEY_BASE64}"
@@ -37,9 +36,7 @@ EOF
 fi
 
 
-if [[ -z "${HF_READ_ACCESS_TOKEN}" ]]; then
-  echo "Cannot set Hugging Face Token- Environment Variable HF_READ_ACCESS_TOKEN  must be set first"
-else
+if [[ -n "${HF_READ_ACCESS_TOKEN}" ]]; then
   echo "#######################################################################"
   echo "Creating Opaque secret hf-secret"
   echo "#######################################################################" 
@@ -49,6 +46,7 @@ else
   kind: Secret
   metadata:
     name: hf-secret
+    namespace: kubeflow
   type: Opaque
   stringData:
         hf-token: "${HF_READ_ACCESS_TOKEN}"

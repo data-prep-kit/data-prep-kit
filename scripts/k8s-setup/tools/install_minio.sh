@@ -9,7 +9,10 @@ MAX_RETRIES="${MAX_RETRIES:-20}"
 EXIT_CODE=0
 
 deploy() {
-  kubectl apply -f ${K8S_SETUP_SCRIPTS}/s3_secret.yaml
+  export S3_ENDPOINT="${S3_ENDPOINT:-http://minio-service.kubeflow.svc.cluster.local:9000}"
+  export S3_ACCESS_KEY="${S3_ACCESS_KEY:-minio}"
+  export S3_SECRET_KEY="${S3_SECRET_KEY:-minio123}"
+  ${K8S_SETUP_SCRIPTS}/apply_secrets.sh
 	kubectl apply -f ${K8S_SETUP_SCRIPTS}/minio_ingress.yaml
 }
 

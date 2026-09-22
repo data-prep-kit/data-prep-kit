@@ -291,8 +291,9 @@ Before we can run the pipeline we need to create required secrets (one for image
 image registry and one for S3 access). As KFP is deployed in `kubeflow` namespace, workflow execution will happen
 there as well, which means that secrets have to be created there as well.
 
-When the MinIO Object Store, deployed as part of KFP, is used, its access secret is deployed as part of the cluster preparation, 
-see [s3_secret.yaml](../../scripts/k8s-setup/s3_secret.yaml). 
+When the MinIO Object Store, deployed as part of KFP, is used, its access secret is deployed as part of the cluster preparation
+via [`apply_secrets.sh`](../../scripts/k8s-setup/apply_secrets.sh), which reads credentials from environment variables
+(`S3_ENDPOINT`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`).
 Creation a secret to pull images from a private repository described [here](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 )
 

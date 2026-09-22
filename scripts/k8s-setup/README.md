@@ -97,7 +97,10 @@ as the secret key.
 A secret needs to be created for accessing MinIO using the following command:
 
 ```shell
-kubectl apply -f $REPOROOT/scripts/k8s-setup/s3_secret.yaml
+export S3_ENDPOINT=http://minio-service.kubeflow.svc.cluster.local:9000
+export S3_ACCESS_KEY=minio
+export S3_SECRET_KEY=minio123
+$REPOROOT/scripts/k8s-setup/apply_secrets.sh
 ```
 
 #### Copy test data

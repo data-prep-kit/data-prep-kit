@@ -111,8 +111,10 @@ LoadBalancer services, Ingresses or Routes.
 order to do this, please provide external access to the Minio (`svc/minio-service` in the `kubeflow` ns) and execute the 
 following commands from the root directory: 
 ```shell
-export MINIO_SERVER=<Minio external URL>
-kubectl apply -f scripts/k8s-setup/s3_secret.yaml
+export S3_ENDPOINT=<Minio external URL>
+export S3_ACCESS_KEY=minio
+export S3_SECRET_KEY=minio123
+scripts/k8s-setup/apply_secrets.sh
 scripts/k8s-setup/populate_minio.sh
 ```
 

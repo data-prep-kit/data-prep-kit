@@ -317,90 +317,57 @@ The cluster clean up is described at [Clean up the cluster](./setup#cleanup)
 ## Using HugginFace token <a name = "hf"></a>
 
 This section explains how to use the HugginFace token for transforms that require it.
-To prevent exposing the token in the pipeline, it is assumed that the token is stored as a kubernetes secret in the namespace where the pipeline runs.
-To support that, the transform pipeline should include the following code after the [Components definition](#components) section:
+The token is stored as a Kubernetes secret and injected into Ray pods at runtime — it never passes through KFP or appears in the pipeline YAML.
+
+### Create the Kubernetes secret
+
+Before running the pipeline, export your token and create the secret using `apply_hugginface_secret.sh`:
 
 ```bash
-from python_apiserver_client.params import (
-    EnvVarFrom,
-    EnvironmentVariables,
-    EnvVarSource,
-)
+export HF_READ_ACCESS_TOKEN=<HugginFace token>
+scripts/k8s-setup/apply_hugginface_secret.sh
+```
 
+This creates a secret named `hf-secret` with key `hf-token` in the `kubeflow` namespace.
+
+### Wire the secret into the pipeline via `other_secrets`
+
+In the pipeline definition, declare an `other_secrets` parameter whose default maps the secret name and key to the environment variable name it should produce in the Ray pods:
+
+```python
 # The name of the secret that holds the HugginFace token
 HF_SECRET = "hf-secret"
 # The secret key that holds the HugginFace token
 HF_SECRET_KEY = "hf-token"
-# HuggingFace token is exported as environment variables in Ray node pods.
-env_v = EnvVarFrom(source=EnvVarSource.SECRET, name=HF_SECRET, key=HF_SECRET_KEY)
-envs = EnvironmentVariables(from_ref={"HF_READ_ACCESS_TOKEN": env_v})
-```
 
-In addition, `"environment": envs.to_dict()` should be added to `ray_head_options`
-and `ray_worker_options` in [Input parameters definition](#inputs) section. For
-example, for `ray_head_options`:
-```bash
-ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image, "environment": envs.to_dict()},
-```
-
-and for `ray_worker_options`:
-```bash
-ray_worker_options: dict = {
-        "replicas": 2,
-        "max_replicas": 2,
-        "min_replicas": 2,
-        "cpu": 2,
-        "memory": 4,
-        "image": task_image,
-        "environment": envs.to_dict(),
-    },
-```
-
-Before running the pipeline, create a secret named `hf-secret` as shown below, ensuring that the `HF_READ_ACCESS_TOKEN` environment variable is defined first, holding the HugginFace token.
-
-```bash
-export HF_READ_ACCESS_TOKEN=<HugginFace token>
-```
-```bash
-apiVersion: v1
-kind: Secret
-metadata:
-  name: hf-secret
-  namespace: kubeflow
-type: Opaque
-stringData:
-      hf-token: "${HF_READ_ACCESS_TOKEN}"
-``` 
-
-### Exporting multiple secrets to ray cluster pods
-
-To export multiple secrets to Ray cluster pods, you can extend the approach shown above by adding additional environment variables to `EnvironmentVariables`.
-For example, similar to how `HF_READ_ACCESS_TOKEN` was used, you can export a new env var named `NEW_TOKEN` as follows (note that the secret details remain unchanged in this example):
-```bash
-envs = EnvironmentVariables(from_ref={"HF_READ_ACCESS_TOKEN": env_v, "NEW_TOKEN": env_v})
-```
-
-These environment variables are then passed to the Ray pods by including them in `ray_head_options` or `ray_worker_options`, as shown below:
-```bash
-ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image, "environment": envs.to_dict()},
-```
-
-Another way to export secrets is by using the `other_secrets` KFP pipeline parameter, as shown in the code_quality workflow example below.
-In this example, two environment variables are defined: `HF_READ_ACCESS_TOKEN` and `NEW_TOKEN`, whose values are derived from the 
-Kubernetes secrets `hf-secret` and `new-hf-secret`, respectively.
-With this approach, secret values can be modified at runtime.
-Note that secrets defined in other_secrets are applied to both the head and worker pods.
-
-```bash
-...
-def code_quality(
-    # Ray cluster
-    ray_name: str = "code_quality-kfp-ray",  # name of Ray cluster
+def my_pipeline(
     ...
-    other_secrets: dict = {"hf-secret": {"HF_READ_ACCESS_TOKEN": HF_SECRET_KEY}, "new-hf-secret": {"NEW_TOKEN": HF_SECRET_KEY}},
+    other_secrets: dict = {HF_SECRET: {"HF_READ_ACCESS_TOKEN": HF_SECRET_KEY}},
     ...
+):
 ```
 
-If an environment variable is defined in both `other_secrets` and `ray_head_options` or `ray_worker_options`, the latter will take precedence.
-For example, in the examples above "HF_READ_ACCESS_TOKEN" and "NEW_TOKEN" env variables are defined 
-for both `other_secrets` and `ray_head_options` dicts. In this case, their values are taken from `ray_head_options` dict.
+Pass `other_secrets` to `create_ray_op` when creating the Ray cluster:
+
+```python
+ray_cluster = create_ray_op(
+    ...
+    other_secrets=other_secrets,
+    ...
+)
+```
+
+`create_ray_cluster.py` resolves the secret reference at runtime inside the cluster. The Ray head and worker pods receive `HF_READ_ACCESS_TOKEN` as an environment variable sourced from the `hf-secret` Kubernetes secret. The token value never leaves Kubernetes.
+
+### Exporting multiple secrets to Ray cluster pods
+
+To inject multiple secrets, add additional entries to `other_secrets`. Each entry maps a Kubernetes secret name to a dict of `{ENV_VAR_NAME: secret_key}` pairs:
+
+```python
+other_secrets: dict = {
+    "hf-secret": {"HF_READ_ACCESS_TOKEN": "hf-token"},
+    "new-hf-secret": {"NEW_TOKEN": "new-token"},
+},
+```
+
+Note that secrets defined in `other_secrets` are applied to both the head and worker pods. If an environment variable is defined in both `other_secrets` and `ray_head_options`/`ray_worker_options`, the value in `ray_head_options`/`ray_worker_options` takes precedence.

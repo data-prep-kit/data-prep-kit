@@ -22,12 +22,6 @@ from workflow_support.compile_utils import (
     ComponentUtils,
 )
 
-from python_apiserver_client.params import (
-        EnvironmentVariables,
-        EnvVarFrom,
-        EnvVarSource,
-)
-
 # The secret name containing the s3 credentials. 
 S3_SECRET = "s3-secret"
 
@@ -103,14 +97,6 @@ cleanup_ray_op = comp.load_component_from_file(component_spec_path + "deleteRayC
 # Task name is part of the pipeline name, the ray cluster name and the job name in DMF.
 TASK_NAME: str = "code_quality"
 
-# HuggingFace token is exported as environment variables in Ray node pods.
-# Alternatively, the secret name can be passed to the KFP component,
-# which will set it as an environment variable in the Ray nodes.
-# In this option the secret name can be set at runtime
-# but is dependent on the KFP version.
-env_v = EnvVarFrom(source=EnvVarSource.SECRET, name=HF_SECRET, key=HF_SECRET_KEY)
-envs = EnvironmentVariables(from_ref={"HF_READ_ACCESS_TOKEN": env_v})
-
 # Pipeline to invoke execution on remote resource
 @dsl.pipeline(
     name=TASK_NAME + "-ray-pipeline",
@@ -121,8 +107,8 @@ def code_quality(
     ray_name: str = "code_quality-kfp-ray",  # name of Ray cluster
     ray_run_id_KFPv2: str = "",   # Ray cluster unique ID used only in KFP v2
     # Add image_pull_secret and image_pull_policy to ray workers if needed
-    ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image, "environment": envs.to_dict()},
-    ray_worker_options: dict = {"replicas": 2, "max_replicas": 2, "min_replicas": 2, "cpu": 2, "memory": 4, "image": task_image, "environment": envs.to_dict()},
+    ray_head_options: dict = {"cpu": 1, "memory": 4, "image": task_image},
+    ray_worker_options: dict = {"replicas": 2, "max_replicas": 2, "min_replicas": 2, "cpu": 2, "memory": 4, "image": task_image},
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
     data_s3_config: str = "{'input_folder': 'test/code_quality/input/', 'output_folder': 'test/code_quality/output/'}",

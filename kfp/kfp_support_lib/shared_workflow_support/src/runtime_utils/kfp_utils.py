@@ -112,6 +112,19 @@ class KFPUtils:
 
         return f"{ray_name[:9]}-{ray_name_suffix}"
 
+    # Keys whose values must never appear in logs
+    _SENSITIVE_KEYS = frozenset({"credential", "token", "secret", "password", "key"})
+
+    @staticmethod
+    def _redact_req(res: str) -> str:
+        """Replace the value of any --flag that contains a sensitive keyword with ****."""
+        return re.sub(
+            r'(--\S*(?:' + '|'.join(KFPUtils._SENSITIVE_KEYS) + r')\S*=)"[^"]*"',
+            r'\1"****"',
+            res,
+            flags=re.IGNORECASE,
+        )
+
     @staticmethod
     def dict_to_req(d: dict[str, Any], executor: str = "transformer_launcher.py") -> str:
         res = f"python {executor} "
@@ -126,7 +139,7 @@ class KFPUtils:
                 else:
                     res += f"--{key}={value} "
 
-        logger.info(f"request to execute: {res}")
+        logger.info(f"request to execute: {KFPUtils._redact_req(res)}")
         return res
 
     # Load a string that represents a json to python dictionary

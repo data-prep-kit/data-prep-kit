@@ -21,12 +21,6 @@ from workflow_support.compile_utils import (
     ONE_WEEK_SEC,
     ComponentUtils,
 )
-from python_apiserver_client.params import (
-        EnvironmentVariables,
-        EnvVarFrom,
-        EnvVarSource,
-)
-
 # The name of the secret that holds the HugginFace token
 HF_SECRET = "hf-secret"
 # The secret key that holds the HugginFace token
@@ -103,15 +97,6 @@ cleanup_ray_op = comp.load_component_from_file(component_spec_path + "deleteRayC
 TASK_NAME: str = "gneissweb_classification"
 
 
-# HuggingFace token is exported as environment variables in Ray node pods.
-# Alternatively, the secret name can be passed to the KFP component,
-# which will set it as an environment variable in the Ray nodes.
-# In this option the secret name can be set at runtime
-# but is dependent on the KFP version.
-env_v = EnvVarFrom(source=EnvVarSource.SECRET, name=HF_SECRET, key=HF_SECRET_KEY)
-envs = EnvironmentVariables(from_ref={"HF_READ_ACCESS_TOKEN": env_v})
-
-
 @dsl.pipeline(
     name=TASK_NAME + "-ray-pipeline",
     description="Pipeline for Gneissweb Classification task",
@@ -121,7 +106,7 @@ def gneissweb_classification(
     ray_name: str = "gneissweb_classification-kfp-ray",  # name of Ray cluster
     ray_run_id_KFPv2: str = "",  # Ray cluster unique ID used only in KFP v2
     # Add image_pull_secret and image_pull_policy to ray workers if needed
-    ray_head_options: dict = {"cpu": 16, "memory": 16, "image": task_image, "environment": envs.to_dict()},
+    ray_head_options: dict = {"cpu": 16, "memory": 16, "image": task_image},
     ray_worker_options: dict = {
         "replicas": 1,
         "max_replicas": 1,
@@ -129,13 +114,12 @@ def gneissweb_classification(
         "cpu": 16,
         "memory": 16,
         "image": task_image,
-        "environment": envs.to_dict()
     },
     server_url: str = "http://kuberay-apiserver-service.kuberay.svc.cluster.local:8888",
     # data access
     data_s3_config: str = "{'input_folder': 'test/gneissweb_classification/input', 'output_folder': 'test/gneissweb_classification/output/'}",
     data_s3_secret: str = S3_SECRET,
-    other_secrets: dict = {},
+    other_secrets: dict = {HF_SECRET: {"HF_READ_ACCESS_TOKEN": HF_SECRET_KEY}},
     data_max_files: int = -1,
     data_num_samples: int = -1,
     data_checkpointing: bool = False,

@@ -26,19 +26,7 @@ class ParamsUtils:
         :param d: dictionary
         :return: an AST string
         """
-        ast_string = "{"
-        first = True
-        for key, value in d.items():
-            if first:
-                first = False
-            else:
-                ast_string += ", "
-            if isinstance(value, str):
-                ast_string += f"'{key}': '{value}'"
-            else:
-                ast_string += f"'{key}': {value}"
-        ast_string += "}"
-        return ast_string
+        return repr(d)
 
     @staticmethod
     def dict_to_req(d: dict[str, Any], executor: str = "") -> list[str]:
